@@ -161,8 +161,11 @@ export class APKBuilder {
       // Create EAS build configuration
       await this.createEASConfig(tempDir);
 
-      // Generate yarn.lock file for build consistency
-      await execAsync(`cd ${tempDir} && yarn install`);
+      // Create Expo app entry point
+      await this.createExpoEntry(tempDir);
+
+      // Skip yarn install to avoid resource issues - let Expo handle it
+      console.log('Skipping local yarn install - Expo will handle dependencies in cloud build');
 
       // Initialize git in temp directory
       await execAsync(`cd ${tempDir} && git init`);
@@ -338,23 +341,29 @@ export class APKBuilder {
     // Read the original package.json
     const originalPackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
     
-    // Create mobile-compatible version with compatible dependencies
+    // Create mobile-compatible version with minimal dependencies
     const mobilePackage = {
-      ...originalPackage,
       name: "wealth-sprint-mobile",
       version: "1.0.0",
+      main: "expo/AppEntry.js",
       dependencies: {
-        ...originalPackage.dependencies,
-        // Remove problematic dependencies that require newer Node.js
-        "vite-plugin-glsl": undefined,
+        "expo": "~51.0.0",
+        "react": originalPackage.dependencies.react,
+        "react-dom": originalPackage.dependencies["react-dom"],
+        "react-native": "0.74.5",
+        "react-native-web": "~0.19.10",
+        "@expo/webpack-config": "^19.0.0",
+        // Essential UI dependencies only
+        "@radix-ui/react-slot": originalPackage.dependencies["@radix-ui/react-slot"],
+        "class-variance-authority": originalPackage.dependencies["class-variance-authority"],
+        "clsx": originalPackage.dependencies.clsx,
+        "tailwind-merge": originalPackage.dependencies["tailwind-merge"],
+        "lucide-react": originalPackage.dependencies["lucide-react"],
       },
       devDependencies: {
-        ...originalPackage.devDependencies,
-        // Keep only essential dev dependencies
-        "@types/node": "^18.18.0", // Use compatible Node.js version
-        "typescript": originalPackage.devDependencies.typescript,
-        "vite": originalPackage.devDependencies.vite,
-        "@vitejs/plugin-react": originalPackage.devDependencies["@vitejs/plugin-react"],
+        "@babel/core": "^7.20.0",
+        "@types/react": "~18.2.45",
+        "typescript": "~5.3.3",
       },
       scripts: {
         "start": "expo start",
@@ -430,6 +439,31 @@ export default defineConfig({
     };
 
     fs.writeFileSync(path.join(tempDir, 'eas.json'), JSON.stringify(easConfig, null, 2));
+  }
+
+  private async createExpoEntry(tempDir: string): Promise<void> {
+    // Create expo directory and App.js entry point
+    await execAsync(`mkdir -p ${path.join(tempDir, 'expo')}`);
+    
+    const appEntryContent = `import { registerRootComponent } from 'expo';
+import App from '../client/src/App';
+
+// registerRootComponent calls React.render() on the app component
+registerRootComponent(App);`;
+
+    fs.writeFileSync(path.join(tempDir, 'expo', 'AppEntry.js'), appEntryContent);
+
+    // Create a basic metro.config.js for React Native bundling
+    const metroConfig = `const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+// Add support for .ts and .tsx files
+config.resolver.sourceExts.push('ts', 'tsx');
+
+module.exports = config;`;
+
+    fs.writeFileSync(path.join(tempDir, 'metro.config.js'), metroConfig);
   }
 
   private async getOrCreateProjectId(): Promise<string> {
