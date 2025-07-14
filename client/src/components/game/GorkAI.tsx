@@ -39,8 +39,7 @@ export default function SageAI({ className }: SageAIProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const languages = [
-    'English', 'Hindi', 'Hinglish', 'French', 'Spanish', 
-    'Marathi', 'Tamil', 'Bengali', 'Arabic'
+    'English', 'Hindi', 'Hinglish'
   ];
 
   const userName = 'Ayush'; // TODO: Get from auth system
@@ -229,14 +228,14 @@ export default function SageAI({ className }: SageAIProps) {
           width: 64,
           height: 64,
           borderRadius: '50%',
-          background: '#e1eaff',
+          background: 'white',
           boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
           cursor: 'grab',
-          padding: '10px'
+          padding: '12px'
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -264,7 +263,7 @@ export default function SageAI({ className }: SageAIProps) {
           }}
         >
           <Card style={{ 
-            background: '#1f2433', 
+            background: '#1E293B', 
             borderRadius: '16px',
             padding: '16px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
@@ -356,7 +355,7 @@ export default function SageAI({ className }: SageAIProps) {
                           : 'bg-blue-50 text-gray-700 rounded-xl p-3' // AI: soft blue
                       }`}
                       style={{
-                        backgroundColor: message.role === 'user' ? '#d1f7c4' : '#eef5ff',
+                        backgroundColor: message.role === 'user' ? '#B9FBC0' : '#D0EFFF',
                         color: message.role === 'user' ? '#1a1a1a' : '#333333',
                         borderRadius: '12px',
                         padding: '8px 12px',
@@ -370,7 +369,7 @@ export default function SageAI({ className }: SageAIProps) {
                 {isLoading && (
                   <div className="flex justify-start">
                     <div style={{ 
-                      backgroundColor: '#eef5ff', 
+                      backgroundColor: '#D0EFFF', 
                       color: '#333333',
                       borderRadius: '12px',
                       padding: '8px 12px'
