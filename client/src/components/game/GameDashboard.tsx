@@ -57,6 +57,7 @@ import StrategyCardsSection from './sections/StrategyCardsSection';
 import TeamHiringDashboard from './TeamHiringDashboard';
 import StockMarketTicker from './StockMarketTicker';
 import EnhancedStockMarket from './EnhancedStockMarket';
+import GorkAI from './GorkAI';
 
 const GameDashboard: React.FC = () => {
   const { financialData, playerStats, currentWeek, currentDay, gameStarted } = useWealthSprintGame();
@@ -302,6 +303,9 @@ const GameDashboard: React.FC = () => {
           }} 
         />
       )}
+      
+      {/* GORK AI Assistant */}
+      <GorkAI />
     </div>
   );
 };

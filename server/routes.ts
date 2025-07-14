@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { APKBuilder } from "./apk-builder";
+import { registerGorkRoutes } from "./gork-api";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -53,6 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.end();
     }
   });
+
+  // Register GORK AI routes
+  registerGorkRoutes(app);
 
   const httpServer = createServer(app);
 
