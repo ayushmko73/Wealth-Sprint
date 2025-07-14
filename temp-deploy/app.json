@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Wealth Sprint",
+    "slug": "wealth-sprint",
+    "owner": "ayushmk32",
+    "version": "1.0.0",
+    "appVersion": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./generated-icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./generated-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./generated-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.wealthsprint.app"
+    },
+    "web": {
+      "favicon": "./generated-icon.png"
+    },
+    "build": {
+      "production": {}
+    }
+  }
+}
