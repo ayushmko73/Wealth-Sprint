@@ -125,54 +125,13 @@ export class APKBuilder {
         console.log(`Repository ${this.repoName} already exists, using existing repo...`);
       }
 
-      // Create a temporary directory for clean deployment
-      const tempDir = './temp-deploy';
-      await execAsync(`rm -rf ${tempDir}`);
-      await execAsync(`mkdir -p ${tempDir}`);
-
-      // Copy only necessary files (avoid any files with potential secrets)
-      const filesToCopy = [
-        'client/',
-        'server/',
-        'shared/',
-        'package.json',
-        'tsconfig.json',
-        'tailwind.config.ts',
-        'vite.config.ts',
-        'postcss.config.js',
-        'drizzle.config.ts',
-        'app.json',
-        'eas.json',
-        '.gitignore'
-      ];
-
-      for (const file of filesToCopy) {
-        try {
-          await execAsync(`cp -r ${file} ${tempDir}/ 2>/dev/null || true`);
-        } catch {
-          // Skip files that don't exist
-        }
-      }
-
-      // Initialize git in temp directory
-      await execAsync(`cd ${tempDir} && git init`);
-      await execAsync(`cd ${tempDir} && git branch -M main`);
-      await execAsync(`cd ${tempDir} && git config user.email "build@wealthsprint.com"`);
-      await execAsync(`cd ${tempDir} && git config user.name "Wealth Sprint Build"`);
-
-      // Add GitHub remote with token authentication
-      const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
-      await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
-
-      // Stage files and commit
-      await execAsync(`cd ${tempDir} && git add .`);
-      await execAsync(`cd ${tempDir} && git commit -m "Deploy clean project for Expo build"`);
+      // Simple git operations from main project directory
+      await execAsync('git add .');
+      await execAsync('git commit -m "Auto commit for APK build" || echo "⚠️ Nothing to commit"');
       
-      // Push to GitHub
-      await execAsync(`cd ${tempDir} && git push -f origin main`);
-      
-      // Clean up temp directory
-      await execAsync(`rm -rf ${tempDir}`);
+      // Push to GitHub using token authentication
+      const remoteUrl = `https://oauth2:${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
+      await execAsync(`git push ${remoteUrl}`);
       
       console.log('GitHub push completed successfully');
     } catch (error) {

@@ -12,11 +12,13 @@ function App() {
 
   useEffect(() => {
     // Initialize game  
-    if (!gameStarted) {
+    const timer = setTimeout(() => {
       setGameStarted(true);
-    }
-    setShowGame(true);
-  }, [gameStarted]);
+      setShowGame(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!showGame) {
     return (
