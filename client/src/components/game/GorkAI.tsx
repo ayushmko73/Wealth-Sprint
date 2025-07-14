@@ -43,7 +43,7 @@ export default function SageAI({ className }: SageAIProps) {
     'Marathi', 'Tamil', 'Bengali', 'Arabic'
   ];
 
-  const userName = 'User'; // TODO: Get from auth system
+  const userName = 'Ayush'; // TODO: Get from auth system
 
   const handleDragEnd = (event: any, info: any) => {
     setPosition({ x: info.point.x, y: info.point.y });
@@ -229,24 +229,21 @@ export default function SageAI({ className }: SageAIProps) {
           width: 64,
           height: 64,
           borderRadius: '50%',
-          background: 'rgba(15, 23, 42, 0.85)',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+          background: '#e1eaff',
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
           cursor: 'grab',
-          border: '1px solid rgba(51, 65, 85, 0.6)',
-          backdropFilter: 'blur(8px)'
+          padding: '10px'
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={className}
       >
-        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full text-slate-200">
-          <Brain className="w-5 h-5" />
-        </div>
+        <Brain className="w-6 h-6" style={{ color: '#3a4d8f' }} />
       </motion.div>
 
       {/* Sage Chat Interface */}
@@ -266,14 +263,19 @@ export default function SageAI({ className }: SageAIProps) {
             maxHeight: '80vh'
           }}
         >
-          <Card style={{ background: '#1B2430' }} className="border-slate-700 shadow-xl h-full flex flex-col">
+          <Card style={{ 
+            background: '#1f2433', 
+            borderRadius: '16px',
+            padding: '16px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+          }} className="border-slate-700 h-full flex flex-col">
             <CardHeader className="pb-3 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center">
-                    <Brain className="w-4 h-4 text-slate-200" />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#e1eaff' }}>
+                    <Brain className="w-4 h-4" style={{ color: '#3a4d8f' }} />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-slate-200">
+                  <CardTitle className="text-lg font-semibold text-white">
                     Sage AI
                   </CardTitle>
                 </div>
@@ -282,7 +284,7 @@ export default function SageAI({ className }: SageAIProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowChatHistory(!showChatHistory)}
-                    className="h-8 px-2 text-slate-400 hover:text-slate-200"
+                    className="h-8 px-2 text-white hover:text-gray-200"
                   >
                     <Folder className="w-4 h-4 mr-1" />
                     <span className="text-xs">History</span>
@@ -291,7 +293,7 @@ export default function SageAI({ className }: SageAIProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsOpen(false)}
-                    className="h-8 w-8 p-0 text-slate-400 hover:text-slate-200"
+                    className="h-8 w-8 p-0 text-white hover:text-gray-200"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -300,15 +302,15 @@ export default function SageAI({ className }: SageAIProps) {
               
               {/* Language Selector */}
               <div className="flex items-center space-x-2 mt-2">
-                <Globe className="w-4 h-4 text-slate-400" />
-                <span className="text-xs text-slate-400">Language:</span>
+                <Globe className="w-4 h-4 text-white" />
+                <span className="text-xs text-white">Language:</span>
                 <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className="w-32 h-6 text-xs bg-slate-800 border-slate-600 text-slate-200">
+                  <SelectTrigger className="w-32 h-6 text-xs bg-white border-gray-300 text-gray-700">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-600">
+                  <SelectContent className="bg-white border-gray-300">
                     {languages.map((lang) => (
-                      <SelectItem key={lang} value={lang} className="text-slate-200 hover:bg-slate-700">
+                      <SelectItem key={lang} value={lang} className="text-gray-700 hover:bg-gray-100">
                         {lang}
                       </SelectItem>
                     ))}
@@ -318,18 +320,18 @@ export default function SageAI({ className }: SageAIProps) {
 
               {/* Chat History Dropdown */}
               {showChatHistory && (
-                <div className="mt-2 max-h-32 overflow-y-auto bg-slate-800 rounded-lg border border-slate-600">
+                <div className="mt-2 max-h-32 overflow-y-auto bg-white rounded-lg border border-gray-300">
                   {chatHistory.length === 0 ? (
-                    <div className="p-2 text-xs text-slate-400">No previous chats</div>
+                    <div className="p-2 text-xs text-gray-500">No previous chats</div>
                   ) : (
                     chatHistory.slice(0, 10).map((session) => (
                       <button
                         key={session.id}
                         onClick={() => loadChatSession(session.id)}
-                        className="w-full p-2 text-left text-xs text-slate-300 hover:bg-slate-700 border-b border-slate-600 last:border-b-0"
+                        className="w-full p-2 text-left text-xs text-gray-700 hover:bg-gray-100 border-b border-gray-200 last:border-b-0"
                       >
                         <div className="truncate">{formatChatPreview(session)}</div>
-                        <div className="text-slate-500 text-xs mt-1">
+                        <div className="text-gray-500 text-xs mt-1">
                           {new Date(session.timestamp).toLocaleDateString()}
                         </div>
                       </button>
@@ -340,19 +342,26 @@ export default function SageAI({ className }: SageAIProps) {
             </CardHeader>
 
             {/* Messages Area */}
-            <CardContent className="flex-1 overflow-hidden p-3">
-              <div className="h-full overflow-y-auto space-y-3" style={{ maxHeight: '300px' }}>
+            <CardContent className="flex-1 overflow-hidden p-0">
+              <div className="h-full overflow-y-auto space-y-3 p-3" style={{ maxHeight: '300px' }}>
                 {messages.map((message, index) => (
                   <div
                     key={index}
                     className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[80%] rounded-lg p-3 text-sm ${
+                      className={`max-w-[80%] text-sm ${
                         message.role === 'user'
-                          ? 'bg-green-400 text-slate-900' // User: neon green
-                          : 'bg-slate-700 text-slate-200' // AI: dark blue
+                          ? 'bg-green-200 text-gray-800 rounded-xl p-3' // User: soft green
+                          : 'bg-blue-50 text-gray-700 rounded-xl p-3' // AI: soft blue
                       }`}
+                      style={{
+                        backgroundColor: message.role === 'user' ? '#d1f7c4' : '#eef5ff',
+                        color: message.role === 'user' ? '#1a1a1a' : '#333333',
+                        borderRadius: '12px',
+                        padding: '8px 12px',
+                        fontFamily: 'Inter, sans-serif'
+                      }}
                     >
                       {message.text}
                     </div>
@@ -360,11 +369,16 @@ export default function SageAI({ className }: SageAIProps) {
                 ))}
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-slate-700 text-slate-200 rounded-lg p-3 text-sm">
+                    <div style={{ 
+                      backgroundColor: '#eef5ff', 
+                      color: '#333333',
+                      borderRadius: '12px',
+                      padding: '8px 12px'
+                    }} className="text-sm">
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
                     </div>
                   </div>
@@ -374,7 +388,7 @@ export default function SageAI({ className }: SageAIProps) {
             </CardContent>
 
             {/* Input Area */}
-            <div className="p-3 border-t border-slate-600 flex-shrink-0">
+            <div className="p-3 border-t border-gray-300 flex-shrink-0">
               <div className="flex space-x-2">
                 <textarea
                   ref={textareaRef}
@@ -382,14 +396,14 @@ export default function SageAI({ className }: SageAIProps) {
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message..."
-                  className="flex-1 bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-400 resize-none min-h-[40px] max-h-[80px] overflow-y-auto"
+                  className="flex-1 bg-white border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-700 placeholder-gray-400 resize-none min-h-[40px] max-h-[80px] overflow-y-auto"
                   disabled={isLoading}
-                  style={{ lineHeight: '1.4' }}
+                  style={{ lineHeight: '1.4', fontFamily: 'Inter, sans-serif' }}
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!currentInput.trim() || isLoading}
-                  className="bg-slate-600 hover:bg-slate-500 text-slate-200 rounded-xl px-3 h-10 flex-shrink-0"
+                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-3 h-10 flex-shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
