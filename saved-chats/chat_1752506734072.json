@@ -1,0 +1,54 @@
+{
+  "user": "Ayush",
+  "language": "English",
+  "mood": "Friendly",
+  "messages": [
+    {
+      "role": "ai",
+      "text": "Hello Ayush, I am your personal emotional financial advisor.",
+      "timestamp": "2025-07-14T15:25:34.071Z"
+    },
+    {
+      "role": "user",
+      "text": "Hhu",
+      "timestamp": "2025-07-14T15:25:36.999Z"
+    },
+    {
+      "role": "ai",
+      "text": "I can help you build better financial habits and make smarter decisions. What specific area would you like to focus on today?",
+      "timestamp": "2025-07-14T15:25:37.089Z"
+    },
+    {
+      "role": "user",
+      "text": "What I can do today",
+      "timestamp": "2025-07-14T15:25:47.445Z"
+    },
+    {
+      "role": "ai",
+      "text": "Money decisions can feel overwhelming sometimes. Let's break this down into smaller, manageable steps. What's your biggest concern right now?",
+      "timestamp": "2025-07-14T15:25:47.568Z"
+    },
+    {
+      "role": "user",
+      "text": "How I can improve",
+      "timestamp": "2025-07-14T15:26:02.923Z"
+    },
+    {
+      "role": "ai",
+      "text": "Great question! Financial growth happens step by step. Let me share some insights based on your current situation.",
+      "timestamp": "2025-07-14T15:26:03.038Z"
+    },
+    {
+      "role": "user",
+      "text": "How you help",
+      "timestamp": "2025-07-14T15:26:12.592Z"
+    },
+    {
+      "role": "ai",
+      "text": "I can help you build better financial habits and make smarter decisions. What specific area would you like to focus on today?",
+      "timestamp": "2025-07-14T15:26:12.675Z"
+    }
+  ],
+  "timestamp": "2025-07-14T15:26:19.714Z",
+  "id": "chat_1752506734072"
+}

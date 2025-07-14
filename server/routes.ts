@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { APKBuilder } from "./apk-builder";
 import { registerSageRoutes } from "./gork-api";
+import { registerAdvancedAIRoutes } from "./advanced-ai";
+import { initializeDatabase } from "./supabase";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -55,8 +57,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Initialize database for AI learning
+  await initializeDatabase();
+  
   // Register Sage AI routes
   registerSageRoutes(app);
+  
+  // Register advanced AI routes
+  registerAdvancedAIRoutes(app);
 
   const httpServer = createServer(app);
 

@@ -42,7 +42,7 @@ export default function SageAI({ className }: SageAIProps) {
     'English', 'Hindi', 'Hinglish'
   ];
 
-  const userName = 'Ayush'; // TODO: Get from auth system
+  const userName = 'Player'; // TODO: Get from game state/auth system
 
   const handleDragEnd = (event: any, info: any) => {
     setPosition({ 
@@ -134,7 +134,19 @@ export default function SageAI({ className }: SageAIProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/sage/analyze', {
+      // Get current game state for contextual AI response
+      const gameState = {
+        emotional_state: 'Focused', // TODO: Get from game state
+        loop_status: 'Clear', // TODO: Get from game state
+        xp_level: 25, // TODO: Get from game state
+        mood: 'Curious', // TODO: Get from game state
+        financial_data: {}, // TODO: Get from game state
+        team_data: {}, // TODO: Get from game state
+        current_section: 'Dashboard', // TODO: Get from current game section
+        player_name: userName
+      };
+
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,9 +154,8 @@ export default function SageAI({ className }: SageAIProps) {
         body: JSON.stringify({
           userInput: userMessage.text,
           language,
-          emotionalState: 'Friendly',
-          financialContext: {},
-          recentDecisions: []
+          gameState,
+          playerName: userName
         }),
       });
 

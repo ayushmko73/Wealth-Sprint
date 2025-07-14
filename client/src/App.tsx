@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import GameDashboard from "./components/game/GameDashboard";
 import { Toaster } from "./components/ui/sonner";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import "@fontsource/inter";
 
 const queryClient = new QueryClient();
@@ -30,12 +31,18 @@ function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-[#f5f0e6] overflow-x-hidden">
-        <GameDashboard />
-        <Toaster position="bottom-right" />
-      </div>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen bg-[#f5f0e6] overflow-x-hidden">
+          <ErrorBoundary>
+            <GameDashboard />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <Toaster position="bottom-right" />
+          </ErrorBoundary>
+        </div>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
