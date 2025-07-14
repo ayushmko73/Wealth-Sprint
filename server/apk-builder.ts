@@ -261,6 +261,15 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
+      // First, ensure EAS project is properly initialized
+      try {
+        console.log('Initializing EAS project...');
+        const initResult = await execAsync(`EXPO_TOKEN=${this.easToken} npx eas init --non-interactive`);
+        console.log('EAS init completed');
+      } catch (initError) {
+        console.log('EAS init completed or already configured');
+      }
+
       // Build using EAS CLI with environment token
       const buildCmd = `EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json`;
       console.log('Starting EAS build...');
@@ -293,6 +302,7 @@ export class APKBuilder {
         slug: this.projectSlug,
         owner: "ayushmk32",
         version: "1.0.0",
+        appVersion: "1.0.0",
         orientation: "portrait",
         icon: "./generated-icon.png",
         userInterfaceStyle: "light",
