@@ -30,11 +30,6 @@
     },
     "build": {
       "production": {}
-    },
-    "extra": {
-      "eas": {
-        "projectId": "10875d3a-24af-456e-a5f5-d0847f637d69"
-      }
     }
   }
 }
