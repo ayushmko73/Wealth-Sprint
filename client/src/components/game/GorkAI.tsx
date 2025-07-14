@@ -27,7 +27,7 @@ interface SageAIProps {
 
 export default function SageAI({ className }: SageAIProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState('');
   const [language, setLanguage] = useState('English');
@@ -45,7 +45,10 @@ export default function SageAI({ className }: SageAIProps) {
   const userName = 'Ayush'; // TODO: Get from auth system
 
   const handleDragEnd = (event: any, info: any) => {
-    setPosition({ x: info.point.x, y: info.point.y });
+    setPosition({ 
+      x: Math.max(0, Math.min(window.innerWidth - 64, info.point.x)), 
+      y: Math.max(0, Math.min(window.innerHeight - 64, info.point.y)) 
+    });
   };
 
   const scrollToBottom = () => {
@@ -220,11 +223,11 @@ export default function SageAI({ className }: SageAIProps) {
         drag
         dragMomentum={false}
         onDragEnd={handleDragEnd}
-        initial={{ bottom: 20, right: 20 }}
+        animate={{ x: position.x, y: position.y }}
         style={{
           position: 'fixed',
-          bottom: 20,
-          right: 20,
+          left: 0,
+          top: 0,
           width: 64,
           height: 64,
           borderRadius: '50%',

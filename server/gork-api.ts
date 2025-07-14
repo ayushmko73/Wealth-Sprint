@@ -41,6 +41,9 @@ if (!fs.existsSync(CHATS_DIR)) {
   fs.mkdirSync(CHATS_DIR, { recursive: true });
 }
 
+// Track conversation context to avoid repetitive responses
+const conversationMemory = new Map<string, string[]>();
+
 export function registerSageRoutes(app: Express) {
   app.post('/api/sage/analyze', async (req, res) => {
     try {
@@ -71,8 +74,9 @@ Provide a brief, supportive response that:
 
 Respond in a calm, mentor-like tone without being judgmental.`;
 
-      // Generate response based on context and language
-      const responses = generateSageResponse(userInput, language, emotionalState, financialContext);
+      // Generate response based on context and language with memory
+      const userId = 'user_' + (req.ip || 'default'); // Simple user identification
+      const responses = generateSageResponse(userInput, language, emotionalState, financialContext, userId);
       
       res.json(responses);
     } catch (error) {
@@ -153,7 +157,7 @@ Respond in a calm, mentor-like tone without being judgmental.`;
   });
 }
 
-function generateSageResponse(userInput: string, language?: string, emotionalState?: string, financialContext?: any): SageResponse {
+function generateSageResponse(userInput: string, language?: string, emotionalState?: string, financialContext?: any, userId?: string): SageResponse {
   // Language-specific responses with much more variety
   const responses: { [key: string]: any } = {
     English: [
@@ -227,6 +231,13 @@ function generateSageResponse(userInput: string, language?: string, emotionalSta
   // Get responses for the selected language (fallback to English)
   const languageResponses = responses[language || 'English'] || responses['English'];
   
+  // Track user's conversation history to avoid repetitive responses
+  const userKey = userId || 'default';
+  if (!conversationMemory.has(userKey)) {
+    conversationMemory.set(userKey, []);
+  }
+  const userHistory = conversationMemory.get(userKey)!;
+  
   // Much smarter response selection based on user input
   let selectedResponse = languageResponses[0]; // Default
   
@@ -268,49 +279,29 @@ function generateSageResponse(userInput: string, language?: string, emotionalSta
   }
   // Random selection for generic inputs to add variety
   else {
-    const randomIndex = Math.floor(Math.random() * languageResponses.length);
-    selectedResponse = languageResponses[randomIndex];
+    // Filter out recently used responses
+    const availableResponses = languageResponses.filter((resp, index) => 
+      !userHistory.includes(resp.message.substring(0, 30))
+    );
+    
+    if (availableResponses.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableResponses.length);
+      selectedResponse = availableResponses[randomIndex];
+    } else {
+      // If all responses were used, reset history and pick random
+      userHistory.length = 0;
+      const randomIndex = Math.floor(Math.random() * languageResponses.length);
+      selectedResponse = languageResponses[randomIndex];
+    }
   }
 
-  return selectedResponse;
+  // Remember this response to avoid repetition
+  const responseKey = selectedResponse.message.substring(0, 30);
+  userHistory.push(responseKey);
   
-  // Help/guidance related queries
-  if (input.includes('help') || input.includes('guide') || input.includes('assist') || 
-      input.includes('मदद') || input.includes('help kar') || input.includes('guide kar')) {
-    selectedResponse = languageResponses[0];
-  }
-  // Questions about improvement/skills/learning
-  else if (input.includes('improve') || input.includes('skill') || input.includes('learn') || 
-           input.includes('better') || input.includes('grow') || input.includes('develop') ||
-           input.includes('सुधार') || input.includes('skill') || input.includes('सीख')) {
-    selectedResponse = languageResponses[1];
-  }
-  // Stress/worry/tension related
-  else if (input.includes('stress') || input.includes('worry') || input.includes('tension') || 
-           input.includes('anxious') || input.includes('चिंता') || input.includes('परेशान')) {
-    selectedResponse = languageResponses[2] || languageResponses[0];
-  }
-  // Progress/good/positive related
-  else if (input.includes('good') || input.includes('progress') || input.includes('success') ||
-           input.includes('अच्छा') || input.includes('achha') || input.includes('progress') ||
-           input.includes('सफल')) {
-    selectedResponse = languageResponses[3] || languageResponses[1] || languageResponses[0];
-  }
-  // Money/financial concerns
-  else if (input.includes('money') || input.includes('financial') || input.includes('invest') ||
-           input.includes('save') || input.includes('earn') || input.includes('पैसा') ||
-           input.includes('निवेश') || input.includes('बचत')) {
-    selectedResponse = languageResponses[5] || languageResponses[0];
-  }
-  // Goal/future planning
-  else if (input.includes('goal') || input.includes('plan') || input.includes('future') ||
-           input.includes('target') || input.includes('लक्ष्य') || input.includes('योजना')) {
-    selectedResponse = languageResponses[6] || languageResponses[1] || languageResponses[0];
-  }
-  // Random selection for generic inputs to add variety
-  else {
-    const randomIndex = Math.floor(Math.random() * languageResponses.length);
-    selectedResponse = languageResponses[randomIndex];
+  // Keep only last 5 responses in memory
+  if (userHistory.length > 5) {
+    userHistory.shift();
   }
 
   return selectedResponse;
