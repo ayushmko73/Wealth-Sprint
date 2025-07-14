@@ -120,6 +120,8 @@ Changelog:
 - July 14, 2025. Upgraded APK automation system: Fixed deprecated expo login, added EAS CLI support, improved security with proper environment variable handling
 - July 14, 2025. Transformed Sage AI into real-time multilingual chat assistant: Added conversation storage, chat history, language support (9 languages), emotional financial guidance, compact responsive design with dark theme integration
 - July 14, 2025. Implemented GORK AI Advanced Learning System: Created sophisticated emotional intelligence engine with Supabase integration, game state access, multilingual support (English/Hindi/Hinglish), contextual responses based on XP/mood/financial status, conversation learning and player profiling. AI now provides personalized emotional financial guidance with real-time adaptation.
+- July 14, 2025. Fixed critical startup error: Made Supabase initialization conditional and graceful, preventing app crashes when database is unavailable. Added null-safety for all database operations.
+- July 14, 2025. Resolved APK build compatibility issues: Created mobile-specific package.json without vite-plugin-glsl (Node.js incompatibility), added automatic yarn.lock generation, EAS configuration with Node.js 18.18.0 compatibility, and mobile-optimized vite config for successful Expo builds.
 ```
 
 ## User Preferences

@@ -135,10 +135,8 @@ export class APKBuilder {
         'client/',
         'server/',
         'shared/',
-        'package.json',
         'tsconfig.json',
         'tailwind.config.ts',
-        'vite.config.ts',
         'postcss.config.js',
         'drizzle.config.ts',
         'app.json',
@@ -153,6 +151,18 @@ export class APKBuilder {
           // Skip files that don't exist
         }
       }
+
+      // Create mobile-compatible package.json (removes problematic dependencies)
+      await this.createMobilePackageJson(tempDir);
+
+      // Create mobile-compatible vite.config.ts without glsl plugin
+      await this.createMobileViteConfig(tempDir);
+
+      // Create EAS build configuration
+      await this.createEASConfig(tempDir);
+
+      // Generate yarn.lock file for build consistency
+      await execAsync(`cd ${tempDir} && yarn install --frozen-lockfile=false`);
 
       // Initialize git in temp directory
       await execAsync(`cd ${tempDir} && git init`);
@@ -322,6 +332,104 @@ export class APKBuilder {
     };
 
     fs.writeFileSync('app.json', JSON.stringify(expoConfig, null, 2));
+  }
+
+  private async createMobilePackageJson(tempDir: string): Promise<void> {
+    // Read the original package.json
+    const originalPackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    
+    // Create mobile-compatible version with compatible dependencies
+    const mobilePackage = {
+      ...originalPackage,
+      name: "wealth-sprint-mobile",
+      version: "1.0.0",
+      dependencies: {
+        ...originalPackage.dependencies,
+        // Remove problematic dependencies that require newer Node.js
+        "vite-plugin-glsl": undefined,
+      },
+      devDependencies: {
+        ...originalPackage.devDependencies,
+        // Keep only essential dev dependencies
+        "@types/node": "^18.18.0", // Use compatible Node.js version
+        "typescript": originalPackage.devDependencies.typescript,
+        "vite": originalPackage.devDependencies.vite,
+        "@vitejs/plugin-react": originalPackage.devDependencies["@vitejs/plugin-react"],
+      },
+      scripts: {
+        "start": "expo start",
+        "android": "expo start --android",
+        "ios": "expo start --ios",
+        "web": "expo start --web"
+      }
+    };
+
+    // Remove undefined values
+    Object.keys(mobilePackage.dependencies).forEach(key => {
+      if (mobilePackage.dependencies[key] === undefined) {
+        delete mobilePackage.dependencies[key];
+      }
+    });
+
+    fs.writeFileSync(path.join(tempDir, 'package.json'), JSON.stringify(mobilePackage, null, 2));
+  }
+
+  private async createMobileViteConfig(tempDir: string): Promise<void> {
+    const mobileViteConfig = `import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
+  plugins: [
+    react(),
+    // Note: glsl plugin removed for mobile compatibility
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "client", "src"),
+      "@shared": path.resolve(__dirname, "shared"),
+    },
+  },
+  root: path.resolve(__dirname, "client"),
+  build: {
+    outDir: path.resolve(__dirname, "dist/public"),
+    emptyOutDir: true,
+  },
+  // Add support for large models and audio files
+  assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"],
+});`;
+
+    fs.writeFileSync(path.join(tempDir, 'vite.config.ts'), mobileViteConfig);
+  }
+
+  private async createEASConfig(tempDir: string): Promise<void> {
+    const easConfig = {
+      cli: {
+        version: ">= 16.0.0"
+      },
+      build: {
+        development: {
+          developmentClient: true,
+          distribution: "internal"
+        },
+        preview: {
+          distribution: "internal"
+        },
+        production: {
+          node: "18.18.0", // Use compatible Node.js version
+          distribution: "store"
+        }
+      },
+      submit: {
+        production: {}
+      }
+    };
+
+    fs.writeFileSync(path.join(tempDir, 'eas.json'), JSON.stringify(easConfig, null, 2));
   }
 
   private async getOrCreateProjectId(): Promise<string> {
