@@ -11,6 +11,10 @@ import {
   AIKnowledgeBase
 } from './supabase';
 
+// In-memory conversation tracking for anti-repetition
+const conversationMemory = new Map();
+const MAX_MEMORY_SIZE = 20; // Keep last 20 conversations per player
+
 interface GameState {
   emotional_state: string;
   loop_status: string;
@@ -111,8 +115,12 @@ async function generateAdvancedResponse(request: AdvancedAIRequest): Promise<AIR
     playerProfile,
     conversationHistory,
     relevantKnowledge,
-    emotionalContext
+    emotionalContext,
+    playerName
   });
+  
+  // Store conversation in memory immediately for anti-repetition
+  storeInMemory(playerName, userInput, response.message, language);
   
   // Store conversation for learning
   const conversationEntry: ConversationEntry = {
@@ -196,14 +204,52 @@ function calculateContextRelevance(input: string, gameState: GameState): number 
   return Math.min(relevanceScore, 1.0);
 }
 
+// Get conversation history from memory  
+function getMemoryHistory(playerName: string): Array<{userInput: string; aiResponse: string; timestamp: Date; language: string}> {
+  return conversationMemory.get(playerName) || [];
+}
+
+// Store conversation in memory
+function storeInMemory(playerName: string, userInput: string, aiResponse: string, language: string) {
+  const history = getMemoryHistory(playerName);
+  history.unshift({
+    userInput,
+    aiResponse,
+    timestamp: new Date(),
+    language
+  });
+  
+  // Keep only recent conversations
+  if (history.length > MAX_MEMORY_SIZE) {
+    history.splice(MAX_MEMORY_SIZE);
+  }
+  
+  conversationMemory.set(playerName, history);
+}
+
 // Generate contextual response using advanced AI logic
 async function generateContextualResponse(context: any): Promise<AIResponse> {
-  const { userInput, language, gameState, playerProfile, conversationHistory, emotionalContext } = context;
+  const { userInput, language, gameState, playerProfile, conversationHistory, emotionalContext, playerName } = context;
   
-  // Use conversation history for context
-  const recentContext = conversationHistory.slice(0, 2).map(conv => 
+  // Combine database and memory history
+  let fullHistory = conversationHistory || [];
+  if (fullHistory.length === 0) {
+    const memoryHistory = getMemoryHistory(playerName);
+    fullHistory = memoryHistory.map(conv => ({
+      user_input: conv.userInput,
+      ai_response: conv.aiResponse,
+      timestamp: conv.timestamp,
+      language: conv.language
+    }));
+  }
+  
+  // Use conversation history for context and avoid repetition
+  const recentContext = fullHistory.slice(0, 3).map(conv => 
     `User: ${conv.user_input}\nAI: ${conv.ai_response}`
   ).join('\n');
+  
+  // Get recent AI responses to avoid repetition
+  const recentAIResponses = fullHistory.slice(0, 8).map(conv => conv.ai_response);
   
   // Create personalized response based on game state and history
   let response = '';
@@ -213,22 +259,22 @@ async function generateContextualResponse(context: any): Promise<AIResponse> {
   // Language-specific response patterns
   const responsePatterns = getResponsePatterns(language);
   
-  // Context-aware response generation
+  // Advanced context-aware response generation with anti-repetition
   if (emotionalContext.primary_emotion === 'stress' && gameState.loop_status === 'Looping') {
-    response = selectResponse(responsePatterns.stress_loop, language);
+    response = selectUniqueResponse(responsePatterns.stress_loop, language, recentAIResponses);
     suggestions = getStressReliefSuggestions(language);
   } else if (gameState.xp_level > 20 && gameState.mood === 'tired') {
-    response = selectResponse(responsePatterns.high_xp_tired, language);
+    response = selectUniqueResponse(responsePatterns.high_xp_tired, language, recentAIResponses);
     suggestions = getBalanceSuggestions(language);
   } else if (emotionalContext.primary_emotion === 'confusion') {
-    response = selectResponse(responsePatterns.confusion, language);
+    response = selectUniqueResponse(responsePatterns.confusion, language, recentAIResponses);
     suggestions = getClaritySuggestions(language);
   } else if (userInput.toLowerCase().includes('help') || userInput.toLowerCase().includes('मदद')) {
-    response = selectResponse(responsePatterns.help_request, language);
+    response = selectUniqueResponse(responsePatterns.help_request, language, recentAIResponses);
     suggestions = getHelpSuggestions(gameState, language);
   } else {
-    // Default contextual response
-    response = generateDefaultResponse(userInput, gameState, language, recentContext);
+    // Generate dynamic contextual response
+    response = generateDynamicResponse(userInput, gameState, language, recentContext, recentAIResponses);
     suggestions = getGeneralSuggestions(gameState, language);
   }
   
@@ -242,7 +288,8 @@ async function generateContextualResponse(context: any): Promise<AIResponse> {
     `Emotional context: ${emotionalContext.primary_emotion}`,
     `Game state: XP=${gameState.xp_level}, Mood=${gameState.mood}`,
     `Language preference: ${language}`,
-    `Context relevance: ${emotionalContext.context_relevance}`
+    `Context relevance: ${emotionalContext.context_relevance}`,
+    `Conversation depth: ${conversationHistory.length}`
   ];
   
   return {
@@ -333,6 +380,47 @@ function getResponsePatterns(language: string) {
 // Select response with variation to avoid repetition
 function selectResponse(responses: string[], language: string): string {
   return responses[Math.floor(Math.random() * responses.length)];
+}
+
+// Select unique response that hasn't been used recently
+function selectUniqueResponse(responses: string[], language: string, recentResponses: string[]): string {
+  // Filter out recently used responses
+  const availableResponses = responses.filter(response => 
+    !recentResponses.some(recent => 
+      recent.toLowerCase().includes(response.toLowerCase().substring(0, 20))
+    )
+  );
+  
+  // If all responses were used recently, use all responses but add variation
+  const finalResponses = availableResponses.length > 0 ? availableResponses : responses;
+  const baseResponse = finalResponses[Math.floor(Math.random() * finalResponses.length)];
+  
+  // Add subtle variation to prevent exact repetition
+  return addResponseVariation(baseResponse, language);
+}
+
+// Add subtle variations to responses
+function addResponseVariation(response: string, language: string): string {
+  const variations = {
+    English: {
+      prefixes: ['', 'Actually, ', 'You know, ', 'Here\'s the thing - ', 'Listen, '],
+      suffixes: ['', '...', '. What do you think?', '. Does that help?', '. Let me know your thoughts.']
+    },
+    Hindi: {
+      prefixes: ['', 'वैसे, ', 'देखिए, ', 'बात यह है - ', 'सुनिए, '],
+      suffixes: ['', '...', '. आपको क्या लगता है?', '. यह helpful है?', '. अपने विचार बताएं।']
+    },
+    Hinglish: {
+      prefixes: ['', 'Actually, ', 'Dekho, ', 'Yeh baat hai - ', 'Suno, '],
+      suffixes: ['', '...', '. Tumko kya lagta hai?', '. Helpful hai?', '. Bolo kya thoughts hain.']
+    }
+  };
+  
+  const langVariations = variations[language as keyof typeof variations] || variations.English;
+  const prefix = langVariations.prefixes[Math.floor(Math.random() * langVariations.prefixes.length)];
+  const suffix = langVariations.suffixes[Math.floor(Math.random() * langVariations.suffixes.length)];
+  
+  return prefix + response + suffix;
 }
 
 // Generate suggestions based on emotional state and game context
@@ -475,6 +563,49 @@ function generateDefaultResponse(userInput: string, gameState: GameState, langua
     .replace('{topic}', topic)
     .replace('{xp}', gameState.xp_level.toString())
     .replace('{mood}', gameState.mood);
+}
+
+// Generate dynamic response with better context awareness
+function generateDynamicResponse(userInput: string, gameState: GameState, language: string, recentContext: string, recentAIResponses: string[]): string {
+  const topic = extractMainTopic(userInput);
+  const isFollowUp = recentContext.length > 0;
+  
+  // Dynamic response templates with more variety
+  const dynamicTemplates = {
+    English: [
+      `Let me help you with ${topic}. Based on your XP of ${gameState.xp_level} and current ${gameState.mood} mood, I'd suggest...`,
+      `Interesting question about ${topic}. Since you're feeling ${gameState.mood} and at level ${gameState.xp_level}, here's my take...`,
+      `I can see you're curious about ${topic}. Given your current game situation, let me share some insights...`,
+      `That's a great point about ${topic}. Your progress shows ${gameState.xp_level} XP, so let's build on that...`,
+      `Thanks for asking about ${topic}. With your ${gameState.emotional_state} state, I think we should focus on...`
+    ],
+    Hindi: [
+      `मैं आपकी ${topic} के साथ help करूंगा। आपका XP ${gameState.xp_level} और ${gameState.mood} mood देखते हुए...`,
+      `${topic} के बारे में interesting question। आप ${gameState.mood} feel कर रहे हैं और level ${gameState.xp_level} पर हैं...`,
+      `मैं देख सकता हूं कि आप ${topic} के बारे में curious हैं। आपकी current situation देखते हुए...`,
+      `यह ${topic} के बारे में great point है। आपकी progress ${gameState.xp_level} XP shows करती है...`,
+      `${topic} के बारे में पूछने के लिए thanks। आपकी ${gameState.emotional_state} state के साथ...`
+    ],
+    Hinglish: [
+      `Main tumhari ${topic} ke saath help karunga. Tumhara XP ${gameState.xp_level} aur ${gameState.mood} mood dekhte hue...`,
+      `${topic} ke baare mein interesting question. Tum ${gameState.mood} feel kar rahe ho aur level ${gameState.xp_level} pe ho...`,
+      `Main dekh sakta hun ki tum ${topic} ke baare mein curious ho. Tumhari current situation dekhte hue...`,
+      `Yeh ${topic} ke baare mein great point hai. Tumhari progress ${gameState.xp_level} XP show karti hai...`,
+      `${topic} ke baare mein puchne ke liye thanks. Tumhari ${gameState.emotional_state} state ke saath...`
+    ]
+  };
+  
+  const templates = dynamicTemplates[language as keyof typeof dynamicTemplates] || dynamicTemplates.English;
+  
+  // Select template that hasn't been used recently
+  const availableTemplates = templates.filter(template => 
+    !recentAIResponses.some(recent => 
+      recent.toLowerCase().includes(template.toLowerCase().substring(0, 15))
+    )
+  );
+  
+  const finalTemplates = availableTemplates.length > 0 ? availableTemplates : templates;
+  return finalTemplates[Math.floor(Math.random() * finalTemplates.length)];
 }
 
 // Extract main topic from user input
