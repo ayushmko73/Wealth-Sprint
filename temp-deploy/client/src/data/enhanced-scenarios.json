@@ -1,0 +1,697 @@
+[
+  {
+    "id": 1,
+    "title": "Your old friend asks for a ₹20,000 loan",
+    "description": "A close friend from college contacts you asking for an emergency loan of ₹20,000. They promise to pay back within 3 months.",
+    "category": "relationships",
+    "choices": [
+      {
+        "text": "Lend it immediately",
+        "effects": {
+          "karma": 5,
+          "money": -20000,
+          "reputation": 3,
+          "emotion": 2
+        }
+      },
+      {
+        "text": "Deny politely",
+        "effects": {
+          "reputation": -3,
+          "stress": 2,
+          "emotion": -1
+        }
+      },
+      {
+        "text": "Ask for collateral",
+        "effects": {
+          "karma": 2,
+          "money": -20000,
+          "logic": 3,
+          "reputation": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Job promotion with relocation",
+    "description": "You've been offered a promotion with 40% salary increase, but you need to move to a different city, leaving family behind.",
+    "category": "career",
+    "choices": [
+      {
+        "text": "Accept the promotion",
+        "effects": {
+          "money": 50000,
+          "logic": 4,
+          "stress": 3,
+          "emotion": -2
+        }
+      },
+      {
+        "text": "Decline and stay",
+        "effects": {
+          "emotion": 3,
+          "karma": 2,
+          "energy": 1,
+          "reputation": -1
+        }
+      },
+      {
+        "text": "Negotiate remote work",
+        "effects": {
+          "logic": 5,
+          "money": 25000,
+          "reputation": 3,
+          "stress": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Investment scam alert",
+    "description": "A smooth-talking salesman offers guaranteed 30% returns on a new cryptocurrency scheme. It sounds too good to be true.",
+    "category": "investment",
+    "choices": [
+      {
+        "text": "Invest ₹50,000",
+        "effects": {
+          "money": -50000,
+          "stress": 4,
+          "logic": -3,
+          "reputation": -2
+        }
+      },
+      {
+        "text": "Do thorough research first",
+        "effects": {
+          "logic": 4,
+          "energy": -1,
+          "reputation": 2
+        }
+      },
+      {
+        "text": "Walk away immediately",
+        "effects": {
+          "logic": 3,
+          "karma": 1,
+          "stress": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Medical emergency in family",
+    "description": "Your parent needs urgent surgery costing ₹2,00,000. Insurance covers only 60%.",
+    "category": "family",
+    "choices": [
+      {
+        "text": "Pay from savings",
+        "effects": {
+          "money": -80000,
+          "karma": 5,
+          "emotion": 2,
+          "stress": 2
+        }
+      },
+      {
+        "text": "Take a loan",
+        "effects": {
+          "money": -80000,
+          "stress": 4,
+          "karma": 3,
+          "logic": 2
+        }
+      },
+      {
+        "text": "Crowdfund from relatives",
+        "effects": {
+          "reputation": 3,
+          "emotion": 1,
+          "stress": 1,
+          "karma": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Startup opportunity",
+    "description": "Your colleague invites you to join their startup as a co-founder. You need to invest ₹1,00,000 and quit your job.",
+    "category": "business",
+    "choices": [
+      {
+        "text": "Join the startup",
+        "effects": {
+          "money": -100000,
+          "stress": 5,
+          "logic": 3,
+          "energy": 4
+        }
+      },
+      {
+        "text": "Stay in your job",
+        "effects": {
+          "stress": -2,
+          "logic": 2,
+          "emotion": -1,
+          "energy": -1
+        }
+      },
+      {
+        "text": "Invest but keep job",
+        "effects": {
+          "money": -100000,
+          "stress": 3,
+          "logic": 4,
+          "energy": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Expensive vacation temptation",
+    "description": "Your friends are planning a luxury trip to Europe costing ₹1,50,000. You have the money but it's your emergency fund.",
+    "category": "lifestyle",
+    "choices": [
+      {
+        "text": "Go on the trip",
+        "effects": {
+          "money": -150000,
+          "emotion": 5,
+          "stress": -3,
+          "energy": 3,
+          "logic": -2
+        }
+      },
+      {
+        "text": "Skip the trip",
+        "effects": {
+          "logic": 4,
+          "emotion": -2,
+          "stress": 1,
+          "reputation": -1
+        }
+      },
+      {
+        "text": "Plan a budget alternative",
+        "effects": {
+          "logic": 3,
+          "money": -50000,
+          "emotion": 2,
+          "reputation": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Charity donation request",
+    "description": "A reputable NGO asks for a ₹25,000 donation for flood relief. You believe in the cause but money is tight.",
+    "category": "social",
+    "choices": [
+      {
+        "text": "Donate the full amount",
+        "effects": {
+          "money": -25000,
+          "karma": 6,
+          "reputation": 4,
+          "emotion": 3
+        }
+      },
+      {
+        "text": "Donate a smaller amount",
+        "effects": {
+          "money": -5000,
+          "karma": 3,
+          "reputation": 2,
+          "emotion": 1
+        }
+      },
+      {
+        "text": "Volunteer time instead",
+        "effects": {
+          "karma": 4,
+          "energy": -2,
+          "reputation": 3,
+          "emotion": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Wedding expense dilemma",
+    "description": "Your cousin's wedding is approaching and family expects you to contribute ₹75,000 for ceremonies.",
+    "category": "family",
+    "choices": [
+      {
+        "text": "Pay the full amount",
+        "effects": {
+          "money": -75000,
+          "reputation": 5,
+          "karma": 3,
+          "stress": 2
+        }
+      },
+      {
+        "text": "Contribute less",
+        "effects": {
+          "money": -30000,
+          "reputation": 1,
+          "stress": 1,
+          "emotion": -1
+        }
+      },
+      {
+        "text": "Explain financial constraints",
+        "effects": {
+          "logic": 3,
+          "stress": 2,
+          "reputation": -2,
+          "emotion": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Real estate investment",
+    "description": "A property dealer offers you a flat at 20% below market rate, but you need to pay ₹5,00,000 in black money.",
+    "category": "investment",
+    "choices": [
+      {
+        "text": "Take the deal",
+        "effects": {
+          "money": -500000,
+          "stress": 4,
+          "karma": -4,
+          "reputation": -3
+        }
+      },
+      {
+        "text": "Report to authorities",
+        "effects": {
+          "karma": 5,
+          "reputation": 3,
+          "stress": 2,
+          "logic": 4
+        }
+      },
+      {
+        "text": "Walk away silently",
+        "effects": {
+          "logic": 2,
+          "stress": 1,
+          "karma": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Work-life balance crisis",
+    "description": "Your boss demands you work weekends for the next month. Refusing might affect your appraisal.",
+    "category": "career",
+    "choices": [
+      {
+        "text": "Agree to work weekends",
+        "effects": {
+          "money": 15000,
+          "stress": 5,
+          "energy": -4,
+          "reputation": 2
+        }
+      },
+      {
+        "text": "Refuse politely",
+        "effects": {
+          "energy": 2,
+          "emotion": 2,
+          "reputation": -2,
+          "stress": 1
+        }
+      },
+      {
+        "text": "Negotiate partial weekends",
+        "effects": {
+          "logic": 3,
+          "money": 7500,
+          "stress": 2,
+          "reputation": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Insurance policy upgrade",
+    "description": "Your insurance agent suggests upgrading your policy with higher premium but better coverage. It costs ₹30,000 extra annually.",
+    "category": "financial",
+    "choices": [
+      {
+        "text": "Upgrade the policy",
+        "effects": {
+          "money": -30000,
+          "logic": 4,
+          "stress": -1,
+          "reputation": 1
+        }
+      },
+      {
+        "text": "Keep current policy",
+        "effects": {
+          "logic": 2,
+          "stress": 1,
+          "money": 0
+        }
+      },
+      {
+        "text": "Research alternatives",
+        "effects": {
+          "logic": 5,
+          "energy": -1,
+          "reputation": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Side hustle opportunity",
+    "description": "You can start freelancing in your spare time, potentially earning ₹20,000/month, but it means less family time.",
+    "category": "career",
+    "choices": [
+      {
+        "text": "Start freelancing",
+        "effects": {
+          "money": 20000,
+          "energy": -3,
+          "stress": 2,
+          "logic": 3
+        }
+      },
+      {
+        "text": "Focus on family time",
+        "effects": {
+          "emotion": 4,
+          "energy": 1,
+          "karma": 2,
+          "stress": -1
+        }
+      },
+      {
+        "text": "Try part-time freelancing",
+        "effects": {
+          "money": 10000,
+          "energy": -1,
+          "emotion": 1,
+          "logic": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Credit card debt trap",
+    "description": "You have ₹1,50,000 credit card debt at 36% interest. You can pay minimum or clear with emergency fund.",
+    "category": "financial",
+    "choices": [
+      {
+        "text": "Pay minimum amount",
+        "effects": {
+          "money": -5000,
+          "stress": 4,
+          "logic": -2,
+          "reputation": -1
+        }
+      },
+      {
+        "text": "Clear with emergency fund",
+        "effects": {
+          "money": -150000,
+          "stress": -3,
+          "logic": 5,
+          "reputation": 2
+        }
+      },
+      {
+        "text": "Negotiate payment plan",
+        "effects": {
+          "logic": 4,
+          "money": -75000,
+          "stress": 1,
+          "reputation": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Health and fitness investment",
+    "description": "A premium gym membership costs ₹50,000 annually but promises excellent facilities and personal training.",
+    "category": "lifestyle",
+    "choices": [
+      {
+        "text": "Buy premium membership",
+        "effects": {
+          "money": -50000,
+          "energy": 4,
+          "emotion": 3,
+          "stress": -2
+        }
+      },
+      {
+        "text": "Join basic gym",
+        "effects": {
+          "money": -15000,
+          "energy": 2,
+          "logic": 3,
+          "emotion": 1
+        }
+      },
+      {
+        "text": "Exercise at home",
+        "effects": {
+          "logic": 2,
+          "energy": 1,
+          "money": -5000,
+          "stress": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Technology upgrade decision",
+    "description": "Your laptop is 4 years old and slowing down. A new MacBook Pro costs ₹2,50,000 but will boost productivity.",
+    "category": "business",
+    "choices": [
+      {
+        "text": "Buy the MacBook Pro",
+        "effects": {
+          "money": -250000,
+          "energy": 2,
+          "logic": 3,
+          "reputation": 1
+        }
+      },
+      {
+        "text": "Buy a budget laptop",
+        "effects": {
+          "money": -75000,
+          "logic": 4,
+          "energy": 1,
+          "stress": 1
+        }
+      },
+      {
+        "text": "Repair current laptop",
+        "effects": {
+          "money": -15000,
+          "logic": 2,
+          "stress": 2,
+          "energy": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Home renovation project",
+    "description": "Your house needs renovation. It will cost ₹3,00,000 but increase property value by ₹4,00,000.",
+    "category": "investment",
+    "choices": [
+      {
+        "text": "Do full renovation",
+        "effects": {
+          "money": -300000,
+          "stress": 3,
+          "emotion": 4,
+          "reputation": 2
+        }
+      },
+      {
+        "text": "Do partial renovation",
+        "effects": {
+          "money": -150000,
+          "stress": 2,
+          "emotion": 2,
+          "logic": 3
+        }
+      },
+      {
+        "text": "Postpone renovation",
+        "effects": {
+          "logic": 2,
+          "stress": 1,
+          "emotion": -1,
+          "energy": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Child's education expense",
+    "description": "Your child wants to join an expensive international school costing ₹2,00,000 annually. Local school costs ₹50,000.",
+    "category": "family",
+    "choices": [
+      {
+        "text": "Choose international school",
+        "effects": {
+          "money": -200000,
+          "emotion": 3,
+          "reputation": 3,
+          "stress": 3
+        }
+      },
+      {
+        "text": "Choose local school",
+        "effects": {
+          "money": -50000,
+          "logic": 4,
+          "stress": 1,
+          "emotion": -1
+        }
+      },
+      {
+        "text": "Research scholarship options",
+        "effects": {
+          "logic": 5,
+          "energy": -2,
+          "reputation": 2,
+          "karma": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Investment diversification",
+    "description": "A financial advisor suggests diversifying your portfolio by investing ₹1,00,000 in mutual funds instead of keeping in fixed deposits.",
+    "category": "investment",
+    "choices": [
+      {
+        "text": "Invest in mutual funds",
+        "effects": {
+          "money": -100000,
+          "logic": 4,
+          "stress": 2,
+          "reputation": 1
+        }
+      },
+      {
+        "text": "Keep in fixed deposits",
+        "effects": {
+          "logic": 2,
+          "stress": -1,
+          "energy": 1,
+          "emotion": 1
+        }
+      },
+      {
+        "text": "Split between both",
+        "effects": {
+          "money": -50000,
+          "logic": 5,
+          "stress": 1,
+          "reputation": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Retirement planning urgency",
+    "description": "You're 35 and haven't started retirement planning. You can start with ₹25,000 monthly SIP or wait until salary increases.",
+    "category": "financial",
+    "choices": [
+      {
+        "text": "Start SIP immediately",
+        "effects": {
+          "money": -25000,
+          "logic": 6,
+          "stress": -2,
+          "reputation": 3
+        }
+      },
+      {
+        "text": "Wait for salary increase",
+        "effects": {
+          "stress": 2,
+          "logic": -1,
+          "emotion": -1,
+          "energy": 1
+        }
+      },
+      {
+        "text": "Start with smaller amount",
+        "effects": {
+          "money": -10000,
+          "logic": 4,
+          "stress": 1,
+          "reputation": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "title": "Ethical business decision",
+    "description": "Your company asks you to hide a minor safety issue in a report. Refusing might cost you the promotion you've been working toward.",
+    "category": "career",
+    "choices": [
+      {
+        "text": "Hide the issue",
+        "effects": {
+          "money": 50000,
+          "karma": -6,
+          "stress": 5,
+          "reputation": -4
+        }
+      },
+      {
+        "text": "Report truthfully",
+        "effects": {
+          "karma": 6,
+          "reputation": 4,
+          "stress": 2,
+          "logic": 4
+        }
+      },
+      {
+        "text": "Seek guidance from mentor",
+        "effects": {
+          "logic": 3,
+          "energy": -1,
+          "reputation": 2,
+          "karma": 2
+        }
+      }
+    ]
+  }
+]

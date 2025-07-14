@@ -130,22 +130,23 @@ export class APKBuilder {
       await execAsync(`rm -rf ${tempDir}`);
       await execAsync(`mkdir -p ${tempDir}`);
 
-      // Copy only essential files for minimal Expo app
+      // Copy only necessary files (avoid any files with potential secrets)
       const filesToCopy = [
-        'client/src/App.tsx',
-        'client/src/main.tsx', 
-        'client/public/icon-512x512.png',
-        'app.json'
+        'client/',
+        'server/',
+        'shared/',
+        'tsconfig.json',
+        'tailwind.config.ts',
+        'postcss.config.js',
+        'drizzle.config.ts',
+        'app.json',
+        'eas.json',
+        '.gitignore'
       ];
-
-      // Create minimal directory structure
-      await execAsync(`mkdir -p ${tempDir}/client/src ${tempDir}/client/public`);
 
       for (const file of filesToCopy) {
         try {
-          const targetPath = path.join(tempDir, file);
-          await execAsync(`mkdir -p ${path.dirname(targetPath)}`);
-          await execAsync(`cp ${file} ${targetPath} 2>/dev/null || true`);
+          await execAsync(`cp -r ${file} ${tempDir}/ 2>/dev/null || true`);
         } catch {
           // Skip files that don't exist
         }
@@ -166,25 +167,22 @@ export class APKBuilder {
       // Skip yarn install to avoid resource issues - let Expo handle it
       console.log('Skipping local yarn install - Expo will handle dependencies in cloud build');
 
-      // Initialize git with minimal configuration
-      await execAsync(`cd ${tempDir} && git init --quiet`);
+      // Initialize git in temp directory
+      await execAsync(`cd ${tempDir} && git init`);
       await execAsync(`cd ${tempDir} && git branch -M main`);
       await execAsync(`cd ${tempDir} && git config user.email "build@wealthsprint.com"`);
       await execAsync(`cd ${tempDir} && git config user.name "Wealth Sprint Build"`);
-      await execAsync(`cd ${tempDir} && git config core.compression 0`); // Reduce memory usage
-      await execAsync(`cd ${tempDir} && git config pack.windowMemory 10m`); // Limit memory
-      await execAsync(`cd ${tempDir} && git config pack.packSizeLimit 20m`); // Small packs
 
       // Add GitHub remote with token authentication
       const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
       await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
 
-      // Stage files and commit with minimal size
-      await execAsync(`cd ${tempDir} && git add . --renormalize`);
-      await execAsync(`cd ${tempDir} && git commit -m "Mobile build" --quiet`);
+      // Stage files and commit
+      await execAsync(`cd ${tempDir} && git add .`);
+      await execAsync(`cd ${tempDir} && git commit -m "Deploy clean project for Expo build"`);
       
-      // Push with reduced memory usage
-      await execAsync(`cd ${tempDir} && git push -f origin main --quiet`, { timeout: 60000 });
+      // Push to GitHub
+      await execAsync(`cd ${tempDir} && git push -f origin main`);
       
       // Clean up temp directory
       await execAsync(`rm -rf ${tempDir}`);
@@ -447,57 +445,23 @@ export default defineConfig({
     // Create expo directory and App.js entry point
     await execAsync(`mkdir -p ${path.join(tempDir, 'expo')}`);
     
-    // Create a simple Expo-compatible App.js
-    const simpleAppContent = `import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+    const appEntryContent = `import { registerRootComponent } from 'expo';
+import App from '../client/src/App';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Wealth Sprint</Text>
-      <Text style={styles.subtitle}>Financial Game - Mobile Version</Text>
-    </View>
-  );
-}
+// registerRootComponent calls React.render() on the app component
+registerRootComponent(App);`;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-});`;
+    fs.writeFileSync(path.join(tempDir, 'expo', 'AppEntry.js'), appEntryContent);
 
-    fs.writeFileSync(path.join(tempDir, 'App.js'), simpleAppContent);
-
-    // Create .gitignore to reduce repository size
-    const gitignoreContent = `node_modules/
-.expo/
-dist/
-.nyc_output/
-.cache/
-.DS_Store
-*.log
-.env
-.env.local
-*.tgz
-*.tar.gz`;
-
-    fs.writeFileSync(path.join(tempDir, '.gitignore'), gitignoreContent);
-
-    // Create a basic metro.config.js
+    // Create a basic metro.config.js for React Native bundling
     const metroConfig = `const { getDefaultConfig } = require('expo/metro-config');
-module.exports = getDefaultConfig(__dirname);`;
+
+const config = getDefaultConfig(__dirname);
+
+// Add support for .ts and .tsx files
+config.resolver.sourceExts.push('ts', 'tsx');
+
+module.exports = config;`;
 
     fs.writeFileSync(path.join(tempDir, 'metro.config.js'), metroConfig);
   }
