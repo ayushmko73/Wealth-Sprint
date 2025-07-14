@@ -1,13 +1,13 @@
 import { Express } from 'express';
 
-interface GorkRequest {
+interface SageRequest {
   userInput: string;
   emotionalState?: string;
   financialContext?: any;
   recentDecisions?: any[];
 }
 
-interface GorkResponse {
+interface SageResponse {
   message: string;
   insights: {
     emotionalState: string;
@@ -17,22 +17,22 @@ interface GorkResponse {
   };
 }
 
-export function registerGorkRoutes(app: Express) {
-  app.post('/api/gork/analyze', async (req, res) => {
+export function registerSageRoutes(app: Express) {
+  app.post('/api/sage/analyze', async (req, res) => {
     try {
-      const { userInput, emotionalState, financialContext, recentDecisions }: GorkRequest = req.body;
+      const { userInput, emotionalState, financialContext, recentDecisions }: SageRequest = req.body;
       
-      // Validate GORK API key
-      const gorkApiKey = process.env.GORK_API;
-      if (!gorkApiKey) {
+      // Validate Sage API key
+      const sageApiKey = process.env.GORK_API;
+      if (!sageApiKey) {
         return res.status(500).json({ 
-          error: 'GORK_API not configured',
-          message: 'Please add your GORK API key to Replit secrets'
+          error: 'SAGE_API not configured',
+          message: 'Please add your Sage API key to Replit secrets'
         });
       }
 
-      // Create GORK prompt based on user context
-      const prompt = `You are GORK AI, a calm and wise financial mentor. Analyze this user situation:
+      // Create Sage prompt based on user context
+      const prompt = `You are Sage AI, a calm and wise financial mentor. Analyze this user situation:
 
 User Input: "${userInput}"
 Current Emotional State: ${emotionalState || 'Unknown'}
@@ -49,20 +49,20 @@ Respond in a calm, mentor-like tone without being judgmental.`;
 
       // For now, provide intelligent responses based on context
       // In production, you would call your AI service here
-      const responses = generateGorkResponse(userInput, emotionalState, financialContext);
+      const responses = generateSageResponse(userInput, emotionalState, financialContext);
       
       res.json(responses);
     } catch (error) {
-      console.error('GORK API error:', error);
+      console.error('Sage API error:', error);
       res.status(500).json({ 
-        error: 'GORK analysis failed',
+        error: 'Sage analysis failed',
         message: 'Unable to process request at this time'
       });
     }
   });
 }
 
-function generateGorkResponse(userInput: string, emotionalState?: string, financialContext?: any): GorkResponse {
+function generateSageResponse(userInput: string, emotionalState?: string, financialContext?: any): SageResponse {
   const responses = [
     {
       message: "I notice you're moving quickly through decisions. Sometimes our best insights come when we pause. What's driving this urgency?",
