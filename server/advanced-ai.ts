@@ -259,22 +259,19 @@ async function generateContextualResponse(context: any): Promise<AIResponse> {
   // Language-specific response patterns
   const responsePatterns = getResponsePatterns(language);
   
-  // Advanced context-aware response generation with anti-repetition
-  if (emotionalContext.primary_emotion === 'stress' && gameState.loop_status === 'Looping') {
-    response = selectUniqueResponse(responsePatterns.stress_loop, language, recentAIResponses);
+  // Use comprehensive dynamic response system for all cases to ensure full-length responses
+  response = generateDynamicResponse(userInput, gameState, language, recentContext, recentAIResponses);
+  
+  // Set suggestions based on emotional context
+  if (emotionalContext.primary_emotion === 'stress') {
     suggestions = getStressReliefSuggestions(language);
   } else if (gameState.xp_level > 20 && gameState.mood === 'tired') {
-    response = selectUniqueResponse(responsePatterns.high_xp_tired, language, recentAIResponses);
     suggestions = getBalanceSuggestions(language);
   } else if (emotionalContext.primary_emotion === 'confusion') {
-    response = selectUniqueResponse(responsePatterns.confusion, language, recentAIResponses);
     suggestions = getClaritySuggestions(language);
   } else if (userInput.toLowerCase().includes('help') || userInput.toLowerCase().includes('मदद')) {
-    response = selectUniqueResponse(responsePatterns.help_request, language, recentAIResponses);
     suggestions = getHelpSuggestions(gameState, language);
   } else {
-    // Generate dynamic contextual response
-    response = generateDynamicResponse(userInput, gameState, language, recentContext, recentAIResponses);
     suggestions = getGeneralSuggestions(gameState, language);
   }
   
@@ -565,33 +562,37 @@ function generateDefaultResponse(userInput: string, gameState: GameState, langua
     .replace('{mood}', gameState.mood);
 }
 
-// Generate dynamic response with better context awareness
+// Generate dynamic response with better context awareness and full responses
 function generateDynamicResponse(userInput: string, gameState: GameState, language: string, recentContext: string, recentAIResponses: string[]): string {
   const topic = extractMainTopic(userInput);
   const isFollowUp = recentContext.length > 0;
   
-  // Dynamic response templates with more variety
+  // Full comprehensive response templates with actionable advice
   const dynamicTemplates = {
     English: [
-      `Let me help you with ${topic}. Based on your XP of ${gameState.xp_level} and current ${gameState.mood} mood, I'd suggest...`,
-      `Interesting question about ${topic}. Since you're feeling ${gameState.mood} and at level ${gameState.xp_level}, here's my take...`,
-      `I can see you're curious about ${topic}. Given your current game situation, let me share some insights...`,
-      `That's a great point about ${topic}. Your progress shows ${gameState.xp_level} XP, so let's build on that...`,
-      `Thanks for asking about ${topic}. With your ${gameState.emotional_state} state, I think we should focus on...`
+      `Let me help you with ${topic}. Based on your XP of ${gameState.xp_level} and current ${gameState.mood} mood, I'd suggest taking a step back and analyzing your approach. Consider breaking down the problem into smaller parts, focus on what you can control right now, and remember that progress often comes in waves. Your current emotional state of ${gameState.emotional_state} shows you're engaged, which is great. What specific aspect would you like to dive deeper into?`,
+      
+      `Interesting question about ${topic}. Since you're feeling ${gameState.mood} and at level ${gameState.xp_level}, here's my take: this is actually a common challenge many people face at your stage. The key is to maintain perspective while staying action-oriented. I notice your ${gameState.emotional_state} state, which suggests you're processing a lot right now. Let's focus on creating clarity. What's the most pressing concern you have about this situation?`,
+      
+      `I can see you're curious about ${topic}. Given your current game situation, let me share some insights that might help. At XP level ${gameState.xp_level}, you're at a point where deeper understanding becomes crucial. Your ${gameState.mood} mood indicates you're ready to learn, which is perfect timing. Consider this: every expert was once a beginner, and your willingness to ask questions shows growth mindset. What specific outcome are you hoping to achieve?`,
+      
+      `That's a great point about ${topic}. Your progress shows ${gameState.xp_level} XP, so let's build on that foundation. I sense you're in a ${gameState.emotional_state} state, which often means you're processing important decisions. This is actually valuable - it shows you're thinking critically about your choices. My suggestion is to trust your instincts while gathering more information. What additional context would help you feel more confident moving forward?`,
+      
+      `Thanks for asking about ${topic}. With your ${gameState.emotional_state} state and ${gameState.mood} mood, I think we should focus on practical next steps. At ${gameState.xp_level} XP, you have enough experience to make informed decisions, but it's natural to seek validation. Remember, uncertainty often precedes breakthrough moments. The fact that you're reflecting shows wisdom. What would success look like to you in this situation?`
     ],
     Hindi: [
-      `मैं आपकी ${topic} के साथ help करूंगा। आपका XP ${gameState.xp_level} और ${gameState.mood} mood देखते हुए...`,
-      `${topic} के बारे में interesting question। आप ${gameState.mood} feel कर रहे हैं और level ${gameState.xp_level} पर हैं...`,
-      `मैं देख सकता हूं कि आप ${topic} के बारे में curious हैं। आपकी current situation देखते हुए...`,
-      `यह ${topic} के बारे में great point है। आपकी progress ${gameState.xp_level} XP shows करती है...`,
-      `${topic} के बारे में पूछने के लिए thanks। आपकी ${gameState.emotional_state} state के साथ...`
+      `मैं आपकी ${topic} के साथ help करूंगा। आपका XP ${gameState.xp_level} और ${gameState.mood} mood देखते हुए, मेरी सलाह है कि पहले situation को clearly समझें। आपकी ${gameState.emotional_state} state बताती है कि आप सोच-विचार कर रहे हैं, जो अच्छी बात है। छोटे steps में planning करें और अपने goals को realistic रखें। हर problem का solution होता है, बस patience और right approach चाहिए। आप specifically किस चीज़ के बारे में और जानना चाहते हैं?`,
+      
+      `${topic} के बारे में बहुत अच्छा question है। आप ${gameState.mood} feel कर रहे हैं और level ${gameState.xp_level} पर हैं, यह बताता है कि आप growth के लिए तैयार हैं। आपकी current ${gameState.emotional_state} state normal है इस stage में। मेरा suggest है कि अपने strengths पर focus करें और धीरे-धीरे नई skills develop करें। Remember, हर successful person ने यही journey किया है। आपको सबसे ज्यादा concern किस बात की है?`,
+      
+      `मैं देख सकता हूं कि आप ${topic} के बारे में curious हैं। आपकी current situation और ${gameState.xp_level} XP level देखते हुए, यह perfect time है नई strategies try करने का। आपका ${gameState.mood} mood positive direction में है। मेरी advice है कि short-term और long-term दोनों goals set करें। Consistency ही success की key है। क्या आप अपने specific goals के बारे में बता सकते हैं?`
     ],
     Hinglish: [
-      `Main tumhari ${topic} ke saath help karunga. Tumhara XP ${gameState.xp_level} aur ${gameState.mood} mood dekhte hue...`,
-      `${topic} ke baare mein interesting question. Tum ${gameState.mood} feel kar rahe ho aur level ${gameState.xp_level} pe ho...`,
-      `Main dekh sakta hun ki tum ${topic} ke baare mein curious ho. Tumhari current situation dekhte hue...`,
-      `Yeh ${topic} ke baare mein great point hai. Tumhari progress ${gameState.xp_level} XP show karti hai...`,
-      `${topic} ke baare mein puchne ke liye thanks. Tumhari ${gameState.emotional_state} state ke saath...`
+      `Main tumhari ${topic} ke saath help karunga. Tumhara XP ${gameState.xp_level} aur ${gameState.mood} mood dekhte hue, meri suggestion hai ki pehle situation ko properly analyze karo. Tumhari ${gameState.emotional_state} state normal hai, yeh shows ki tum seriously soch rahe ho. Strategy banao, step by step approach lo, aur patience rakho. Har challenge ek opportunity hai grow karne ki. Tum specifically kya achieve karna chahte ho?`,
+      
+      `${topic} ke baare mein interesting question. Tum ${gameState.mood} feel kar rahe ho aur level ${gameState.xp_level} pe ho, which means tumhara mindset right direction mein hai. Tumhari current ${gameState.emotional_state} state bilkul understandable hai is stage mein. Mera suggestion hai ki focus rakho aur small wins celebrate karo. Progress hamesha linear nahi hoti, ups and downs normal hain. Tumhe kya lagta hai sabse important step kya hoga?`,
+      
+      `Main dekh sakta hun ki tum ${topic} ke baare mein curious ho. Tumhari current situation aur ${gameState.xp_level} XP level perfect combination hai learning ke liye. Tumhara ${gameState.mood} mood positive side pe hai, jo bahut achha sign hai. Remember, every expert was once a beginner. Tumhara willingness to learn tumhe successful banayega. Kya tum apne main concerns share kar sakte ho?`
     ]
   };
   
@@ -600,7 +601,7 @@ function generateDynamicResponse(userInput: string, gameState: GameState, langua
   // Select template that hasn't been used recently
   const availableTemplates = templates.filter(template => 
     !recentAIResponses.some(recent => 
-      recent.toLowerCase().includes(template.toLowerCase().substring(0, 15))
+      recent.toLowerCase().includes(template.toLowerCase().substring(0, 25))
     )
   );
   

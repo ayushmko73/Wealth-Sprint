@@ -277,10 +277,11 @@ export default function SageAI({ className }: SageAIProps) {
           }}
         >
           <Card style={{ 
-            background: '#1E293B', 
+            background: 'rgba(30, 41, 59, 0.96)', 
             borderRadius: '16px',
             padding: '16px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(10px)'
           }} className="border-slate-700 h-full flex flex-col">
             <CardHeader className="pb-3 flex-shrink-0">
               <div className="flex items-center justify-between">
