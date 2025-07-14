@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialize Supabase client only if credentials are available
+export const supabase = supabaseUrl && supabaseKey 
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 // Database schemas for AI learning
 export interface ConversationEntry {
@@ -66,6 +69,11 @@ export interface AIKnowledgeBase {
 // Initialize database tables
 export async function initializeDatabase() {
   try {
+    if (!supabase) {
+      console.log('⚠️  Supabase not configured. AI features will be limited.');
+      return;
+    }
+    
     console.log('Initializing Supabase database for GORK AI...');
     
     // Test connection first
@@ -159,6 +167,11 @@ export async function initializeDatabase() {
 // Store conversation for learning
 export async function storeConversation(entry: ConversationEntry) {
   try {
+    if (!supabase) {
+      console.log('Supabase not available - conversation not stored');
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from('conversations')
       .insert([entry])
@@ -175,6 +188,8 @@ export async function storeConversation(entry: ConversationEntry) {
 // Get player profile
 export async function getPlayerProfile(playerName: string): Promise<PlayerProfile | null> {
   try {
+    if (!supabase) return null;
+    
     const { data, error } = await supabase
       .from('player_profiles')
       .select('*')
@@ -192,6 +207,8 @@ export async function getPlayerProfile(playerName: string): Promise<PlayerProfil
 // Update player profile
 export async function updatePlayerProfile(playerName: string, updates: Partial<PlayerProfile>) {
   try {
+    if (!supabase) return null;
+    
     const { data, error } = await supabase
       .from('player_profiles')
       .upsert([{
@@ -212,6 +229,8 @@ export async function updatePlayerProfile(playerName: string, updates: Partial<P
 // Get conversation history for learning
 export async function getConversationHistory(playerName: string, limit: number = 10) {
   try {
+    if (!supabase) return [];
+    
     const { data, error } = await supabase
       .from('conversations')
       .select('*')
@@ -230,6 +249,8 @@ export async function getConversationHistory(playerName: string, limit: number =
 // Store AI knowledge for learning
 export async function storeAIKnowledge(knowledge: AIKnowledgeBase) {
   try {
+    if (!supabase) return null;
+    
     const { data, error } = await supabase
       .from('ai_knowledge_base')
       .upsert([knowledge])
@@ -246,6 +267,8 @@ export async function storeAIKnowledge(knowledge: AIKnowledgeBase) {
 // Get relevant AI knowledge
 export async function getRelevantKnowledge(topic: string, language: string, limit: number = 5) {
   try {
+    if (!supabase) return [];
+    
     const { data, error } = await supabase
       .from('ai_knowledge_base')
       .select('*')
