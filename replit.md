@@ -118,6 +118,7 @@ Changelog:
 - July 09, 2025. Added background time engine with 24× speed for game progression
 - July 12, 2025. Major cleanup: restored GameDashboard UI, removed unused files and stores, fixed console errors
 - July 14, 2025. Upgraded APK automation system: Fixed deprecated expo login, added EAS CLI support, improved security with proper environment variable handling
+- July 14, 2025. Transformed Sage AI into real-time multilingual chat assistant: Added conversation storage, chat history, language support (9 languages), emotional financial guidance, compact responsive design with dark theme integration
 ```
 
 ## User Preferences
