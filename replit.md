@@ -117,6 +117,7 @@ Changelog:
 - July 07, 2025. Fixed React import issues, added PWA support, created icons and manifest
 - July 09, 2025. Added background time engine with 24× speed for game progression
 - July 12, 2025. Major cleanup: restored GameDashboard UI, removed unused files and stores, fixed console errors
+- July 14, 2025. Upgraded APK automation system: Fixed deprecated expo login, added EAS CLI support, improved security with proper environment variable handling
 ```
 
 ## User Preferences
