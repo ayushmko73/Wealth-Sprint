@@ -154,9 +154,17 @@ Respond in a calm, mentor-like tone without being judgmental.`;
 }
 
 function generateSageResponse(userInput: string, language?: string, emotionalState?: string, financialContext?: any): SageResponse {
-  // Language-specific responses
+  // Language-specific responses with much more variety
   const responses: { [key: string]: any } = {
     English: [
+      {
+        message: "I can help you build better financial habits and make smarter decisions. What specific area would you like to focus on today?",
+        insights: { emotionalState: 'Helpful', financialLoop: 'Getting Started', growthXP: 10, suggestions: ['Start with your biggest financial goal', 'Track your spending for a week', 'Learn about investment basics'] }
+      },
+      {
+        message: "Great question! Financial growth happens step by step. Let me share some insights based on your current situation.",
+        insights: { emotionalState: 'Encouraging', financialLoop: 'Learning Phase', growthXP: 15, suggestions: ['Focus on one area at a time', 'Build emergency savings first', 'Understand your risk tolerance'] }
+      },
       {
         message: "I notice you're moving quickly through decisions. Sometimes our best insights come when we pause. Take a breath. What's driving this urgency?",
         insights: { emotionalState: 'Focused', financialLoop: 'Decision Acceleration', growthXP: 12, suggestions: ['Take a 2-minute breathing break', 'Review your last 3 decisions', 'Ask: What am I avoiding?'] }
@@ -168,9 +176,25 @@ function generateSageResponse(userInput: string, language?: string, emotionalSta
       {
         message: "I'm here to guide you. Your choices show wisdom, but your emotional energy could use attention. How are you feeling about your progress?",
         insights: { emotionalState: 'Balanced', financialLoop: 'Growth Phase', growthXP: 24, suggestions: ['Celebrate small wins', 'Reconnect with your why', 'Balance logic with intuition'] }
+      },
+      {
+        message: "Money decisions can feel overwhelming sometimes. Let's break this down into smaller, manageable steps. What's your biggest concern right now?",
+        insights: { emotionalState: 'Supportive', financialLoop: 'Problem Solving', growthXP: 14, suggestions: ['List your top 3 financial priorities', 'Start with the easiest win', 'Don\'t rush big decisions'] }
+      },
+      {
+        message: "Every financial journey is unique. Tell me more about what success looks like for you?",
+        insights: { emotionalState: 'Curious', financialLoop: 'Goal Setting', growthXP: 16, suggestions: ['Define your personal success', 'Set both short and long-term goals', 'Focus on what you can control'] }
       }
     ],
     Hindi: [
+      {
+        message: "मैं आपकी financial planning में मदद कर सकता हूं। आज आप किस चीज़ पर focus करना चाहते हैं?",
+        insights: { emotionalState: 'सहायक', financialLoop: 'शुरुआत', growthXP: 10, suggestions: ['अपना सबसे बड़ा financial goal तय करें', 'एक हफ्ते तक खर्च track करें', 'investment की basics सीखें'] }
+      },
+      {
+        message: "बहुत अच्छा सवाल! Financial growth धीरे-धीरे होती है। मैं आपकी current situation के आधार पर कुछ insights share करता हूं।",
+        insights: { emotionalState: 'प्रोत्साहनकारी', financialLoop: 'सीखने का चरण', growthXP: 15, suggestions: ['एक समय में एक area पर focus करें', 'पहले emergency savings बनाएं', 'अपना risk tolerance समझें'] }
+      },
       {
         message: "मैं देख रहा हूँ कि आप जल्दी-जल्दी निर्णय ले रहे हैं। कभी-कभी जब हम रुकते हैं तो बेहतर समझ मिलती है। गहरी सांस लें। इस जल्दबाजी की वजह क्या है?",
         insights: { emotionalState: 'केंद्रित', financialLoop: 'निर्णय तेज़ी', growthXP: 12, suggestions: ['2 मिनट का ब्रेक लें', 'अपने पिछले 3 निर्णयों की समीक्षा करें', 'पूछें: मैं किससे बच रहा हूँ?'] }
@@ -182,6 +206,14 @@ function generateSageResponse(userInput: string, language?: string, emotionalSta
     ],
     Hinglish: [
       {
+        message: "Main aapki financial planning mein help kar sakta hun. Aaj aap kya focus karna chahte hain?",
+        insights: { emotionalState: 'Helpful', financialLoop: 'Getting Started', growthXP: 10, suggestions: ['Apna biggest financial goal set karo', 'Ek week spending track karo', 'Investment basics seekho'] }
+      },
+      {
+        message: "Bahut achha question! Financial growth slowly slowly hoti hai. Main aapki current situation ke basis pe kuch insights share karta hun.",
+        insights: { emotionalState: 'Encouraging', financialLoop: 'Learning Phase', growthXP: 15, suggestions: ['Ek time pe ek area pe focus karo', 'Pehle emergency savings banao', 'Apna risk tolerance samjho'] }
+      },
+      {
         message: "Main notice kar raha hun ki aap bohot fast decisions le rahe hain. Sometimes jab hum pause karte hain toh better insights milte hain. Deep breath lo. Ye urgency kya drive kar rahi hai?",
         insights: { emotionalState: 'Focused', financialLoop: 'Decision Acceleration', growthXP: 12, suggestions: ['2 minute ka breathing break lo', 'Apne last 3 decisions review karo', 'Poocho: Main kya avoid kar raha hun?'] }
       },
@@ -189,34 +221,96 @@ function generateSageResponse(userInput: string, language?: string, emotionalSta
         message: "Aap achha kar rahe hain, let's reflect karte hain together. Aapka spending pattern growth potential dikhata hai. Ready hain different approach try karne ke liye?",
         insights: { emotionalState: 'Reflective', financialLoop: 'Breaking Pattern', growthXP: 18, suggestions: ['Trigger emotion identify karo', '24-hour decision delay rakho', 'Ek business layer pe focus karo'] }
       }
-    ],
-    French: [
-      {
-        message: "Je remarque que vous prenez des décisions rapidement. Parfois nos meilleures intuitions viennent quand on fait une pause. Respirez profondément. Qu'est-ce qui motive cette urgence?",
-        insights: { emotionalState: 'Concentré', financialLoop: 'Accélération des décisions', growthXP: 12, suggestions: ['Prenez une pause de 2 minutes', 'Révisez vos 3 dernières décisions', 'Demandez-vous: Qu\'est-ce que j\'évite?'] }
-      }
-    ],
-    Spanish: [
-      {
-        message: "Noto que estás tomando decisiones rápidamente. A veces nuestras mejores ideas llegan cuando hacemos una pausa. Respira profundo. ¿Qué impulsa esta urgencia?",
-        insights: { emotionalState: 'Enfocado', financialLoop: 'Aceleración de decisiones', growthXP: 12, suggestions: ['Toma un descanso de 2 minutos', 'Revisa tus últimas 3 decisiones', 'Pregúntate: ¿Qué estoy evitando?'] }
-      }
     ]
   };
 
   // Get responses for the selected language (fallback to English)
   const languageResponses = responses[language || 'English'] || responses['English'];
   
-  // Select response based on context
-  let selectedResponse = languageResponses[0];
+  // Much smarter response selection based on user input
+  let selectedResponse = languageResponses[0]; // Default
   
-  if (userInput.toLowerCase().includes('stress') || userInput.toLowerCase().includes('worry') || 
-      userInput.toLowerCase().includes('चिंता') || userInput.toLowerCase().includes('tension')) {
-    selectedResponse = languageResponses[1] || languageResponses[0];
-  } else if (userInput.toLowerCase().includes('good') || userInput.toLowerCase().includes('progress') ||
-             userInput.toLowerCase().includes('अच्छा') || userInput.toLowerCase().includes('achha') ||
-             userInput.toLowerCase().includes('bien') || userInput.toLowerCase().includes('bueno')) {
-    selectedResponse = languageResponses[2] || languageResponses[1] || languageResponses[0];
+  // Analyze user input for better response matching
+  const input = userInput.toLowerCase();
+  
+  // Help/guidance related queries
+  if (input.includes('help') || input.includes('guide') || input.includes('assist') || 
+      input.includes('मदद') || input.includes('help kar') || input.includes('guide kar')) {
+    selectedResponse = languageResponses[0];
+  }
+  // Questions about improvement/skills/learning
+  else if (input.includes('improve') || input.includes('skill') || input.includes('learn') || 
+           input.includes('better') || input.includes('grow') || input.includes('develop') ||
+           input.includes('सुधार') || input.includes('skill') || input.includes('सीख')) {
+    selectedResponse = languageResponses[1];
+  }
+  // Stress/worry/tension related
+  else if (input.includes('stress') || input.includes('worry') || input.includes('tension') || 
+           input.includes('anxious') || input.includes('चिंता') || input.includes('परेशान')) {
+    selectedResponse = languageResponses[2] || languageResponses[0];
+  }
+  // Progress/good/positive related
+  else if (input.includes('good') || input.includes('progress') || input.includes('success') ||
+           input.includes('अच्छा') || input.includes('achha') || input.includes('progress') ||
+           input.includes('सफल')) {
+    selectedResponse = languageResponses[3] || languageResponses[1] || languageResponses[0];
+  }
+  // Money/financial concerns
+  else if (input.includes('money') || input.includes('financial') || input.includes('invest') ||
+           input.includes('save') || input.includes('earn') || input.includes('पैसा') ||
+           input.includes('निवेश') || input.includes('बचत')) {
+    selectedResponse = languageResponses[5] || languageResponses[0];
+  }
+  // Goal/future planning
+  else if (input.includes('goal') || input.includes('plan') || input.includes('future') ||
+           input.includes('target') || input.includes('लक्ष्य') || input.includes('योजना')) {
+    selectedResponse = languageResponses[6] || languageResponses[1] || languageResponses[0];
+  }
+  // Random selection for generic inputs to add variety
+  else {
+    const randomIndex = Math.floor(Math.random() * languageResponses.length);
+    selectedResponse = languageResponses[randomIndex];
+  }
+
+  return selectedResponse;
+  
+  // Help/guidance related queries
+  if (input.includes('help') || input.includes('guide') || input.includes('assist') || 
+      input.includes('मदद') || input.includes('help kar') || input.includes('guide kar')) {
+    selectedResponse = languageResponses[0];
+  }
+  // Questions about improvement/skills/learning
+  else if (input.includes('improve') || input.includes('skill') || input.includes('learn') || 
+           input.includes('better') || input.includes('grow') || input.includes('develop') ||
+           input.includes('सुधार') || input.includes('skill') || input.includes('सीख')) {
+    selectedResponse = languageResponses[1];
+  }
+  // Stress/worry/tension related
+  else if (input.includes('stress') || input.includes('worry') || input.includes('tension') || 
+           input.includes('anxious') || input.includes('चिंता') || input.includes('परेशान')) {
+    selectedResponse = languageResponses[2] || languageResponses[0];
+  }
+  // Progress/good/positive related
+  else if (input.includes('good') || input.includes('progress') || input.includes('success') ||
+           input.includes('अच्छा') || input.includes('achha') || input.includes('progress') ||
+           input.includes('सफल')) {
+    selectedResponse = languageResponses[3] || languageResponses[1] || languageResponses[0];
+  }
+  // Money/financial concerns
+  else if (input.includes('money') || input.includes('financial') || input.includes('invest') ||
+           input.includes('save') || input.includes('earn') || input.includes('पैसा') ||
+           input.includes('निवेश') || input.includes('बचत')) {
+    selectedResponse = languageResponses[5] || languageResponses[0];
+  }
+  // Goal/future planning
+  else if (input.includes('goal') || input.includes('plan') || input.includes('future') ||
+           input.includes('target') || input.includes('लक्ष्य') || input.includes('योजना')) {
+    selectedResponse = languageResponses[6] || languageResponses[1] || languageResponses[0];
+  }
+  // Random selection for generic inputs to add variety
+  else {
+    const randomIndex = Math.floor(Math.random() * languageResponses.length);
+    selectedResponse = languageResponses[randomIndex];
   }
 
   return selectedResponse;
