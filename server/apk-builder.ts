@@ -105,6 +105,13 @@ export class APKBuilder {
       };
       updateStatus(errorStatus);
       return errorStatus;
+    } finally {
+      // Clean up temp directory
+      try {
+        await execAsync(`rm -rf ./temp-deploy`);
+      } catch (cleanupError) {
+        console.log('Warning: Could not clean up temp directory');
+      }
     }
   }
 
@@ -151,7 +158,13 @@ export class APKBuilder {
 
       // Generate yarn.lock for consistent builds
       console.log('Generating yarn.lock for consistent builds...');
-      await execAsync(`cd ${tempDir} && yarn install --ignore-engines --ignore-scripts`);
+      try {
+        await execAsync(`cd ${tempDir} && timeout 60s yarn install --ignore-engines --ignore-scripts --network-timeout 30000`);
+        console.log('yarn.lock generated successfully');
+      } catch (yarnError) {
+        console.log('yarn install timed out or failed, continuing without yarn.lock...');
+        // Continue without yarn.lock - EAS will handle dependency resolution
+      }
 
       // Initialize fresh git repository
       await execAsync(`cd ${tempDir} && rm -rf .git`); // Clean any existing git
@@ -201,8 +214,6 @@ export class APKBuilder {
         console.log('GitHub push completed successfully with --set-upstream');
       }
       
-      // Clean up temp directory
-      await execAsync(`rm -rf ${tempDir}`);
     } catch (error) {
       throw new Error(`GitHub push failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
