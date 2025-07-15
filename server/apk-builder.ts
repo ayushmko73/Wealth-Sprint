@@ -300,17 +300,19 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
-      // Install latest Expo CLI first to ensure compatibility
-      console.log('Installing latest Expo CLI...');
+      // Install Expo CLI locally in temp directory for better compatibility
+      console.log('Installing Expo CLI locally...');
       try {
-        await execAsync(`cd ./temp-deploy && npm install -g @expo/cli@latest eas-cli@latest`);
+        await execAsync(`cd ./temp-deploy && npm install @expo/cli@latest eas-cli@latest --save-dev`);
+        console.log('Expo CLI installed successfully');
       } catch (installError) {
         console.log('CLI installation warning:', installError);
+        // Continue with global CLI if local install fails
       }
 
       // Check EAS CLI version first
       try {
-        const versionResult = await execAsync('npx eas --version');
+        const versionResult = await execAsync(`cd ./temp-deploy && npx eas --version`);
         console.log('EAS CLI Version:', versionResult.stdout.trim());
       } catch (versionError) {
         console.log('Could not check EAS CLI version:', versionError);
@@ -319,7 +321,7 @@ export class APKBuilder {
       // Skip EAS project initialization since project already exists
       console.log('Using existing EAS project: 10875d3a-24af-456e-a5f5-d0847f637d69');
 
-      // Verify app config can be read
+      // Verify app config can be read with locally installed CLI
       console.log('Verifying app configuration...');
       try {
         await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx expo config --json`);
@@ -328,8 +330,8 @@ export class APKBuilder {
         console.log('Config verification warning:', configError);
       }
 
-      // Build using EAS CLI with environment token from the temp directory
-      const buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json --clear-cache`;
+      // Build using EAS CLI with preview profile to avoid keystore issues
+      const buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile preview --non-interactive --json --clear-cache`;
       console.log('Starting EAS build...');
 
       const result = await execAsync(buildCmd, { timeout: 300000 }); // 5 minute timeout
@@ -358,17 +360,17 @@ export class APKBuilder {
   }
 
   private async createExpoConfig(): Promise<void> {
-    // Create proper Expo config with all required fields
+    // Create proper Expo config with all required fields for EAS build
     const expoConfig = {
       expo: {
         name: "Wealth Sprint",
-        slug: this.projectSlug,
+        slug: "wealth-sprint-mobile",
         owner: "ayushmk32",
         version: "1.0.0",
         orientation: "portrait",
         icon: "./generated-icon.png",
         userInterfaceStyle: "light",
-        platforms: ["ios", "android"],
+        platforms: ["ios", "android", "web"],
         splash: {
           image: "./generated-icon.png",
           resizeMode: "contain",
@@ -384,7 +386,8 @@ export class APKBuilder {
             foregroundImage: "./generated-icon.png",
             backgroundColor: "#ffffff"
           },
-          package: "com.wealthsprint.app"
+          package: "com.wealthsprint.app",
+          versionCode: 1
         },
         web: {
           favicon: "./generated-icon.png",
@@ -405,7 +408,7 @@ export class APKBuilder {
     fs.writeFileSync('./temp-deploy/app.json', JSON.stringify(expoConfig, null, 2));
     
     // Also create app.config.js for better compatibility
-    const appConfigJs = `export default ${JSON.stringify(expoConfig, null, 2)};`;
+    const appConfigJs = `module.exports = ${JSON.stringify(expoConfig, null, 2)};`;
     fs.writeFileSync('./temp-deploy/app.config.js', appConfigJs);
   }
 
@@ -420,7 +423,7 @@ export class APKBuilder {
     // Create a simple icon file
     fs.writeFileSync(path.join(tempDir, 'generated-icon.png'), iconSvg);
 
-    // Create mobile-compatible version with Node 20.x compatible dependencies
+    // Create mobile-compatible version with exact Expo SDK versions
     const mobilePackage = {
       name: "wealth-sprint-mobile",
       version: "1.0.0",
@@ -435,9 +438,10 @@ export class APKBuilder {
         "react-dom": "18.3.1",
         "react-native": "0.76.3",
         "react-native-web": "~0.19.12",
+        "expo-constants": "~17.0.0",
+        "expo-status-bar": "~2.0.0",
         "@expo/cli": "^0.24.0",
-        "clsx": "^2.1.1",
-        "react-native-svg": "15.8.0"
+        "clsx": "^2.1.1"
       },
       devDependencies: {
         "@babel/core": "^7.25.0",
@@ -496,16 +500,24 @@ export default defineConfig({
       build: {
         production: {
           android: {
-            buildType: "apk"
+            buildType: "apk",
+            autoIncrement: "versionCode"
           },
           node: "20.18.1",
-          distribution: "internal"
+          distribution: "internal",
+          env: {
+            NODE_ENV: "production"
+          }
         },
         preview: {
           distribution: "internal",
           node: "20.18.1",
           android: {
-            buildType: "apk"
+            buildType: "apk",
+            autoIncrement: "versionCode"
+          },
+          env: {
+            NODE_ENV: "production"
           }
         }
       },
@@ -576,6 +588,16 @@ dist/
 module.exports = getDefaultConfig(__dirname);`;
 
     fs.writeFileSync(path.join(tempDir, 'metro.config.js'), metroConfig);
+
+    // Create babel.config.js for proper Expo compilation
+    const babelConfig = `module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};`;
+
+    fs.writeFileSync(path.join(tempDir, 'babel.config.js'), babelConfig);
   }
 
   private async initializeEASProject(): Promise<void> {
