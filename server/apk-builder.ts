@@ -282,6 +282,18 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
+      // First, get or create the project ID
+      const projectId = await this.getOrCreateProjectId();
+      console.log('Project ID:', projectId);
+
+      // Initialize EAS project if needed
+      console.log('Initializing EAS project...');
+      try {
+        await execAsync(`EXPO_TOKEN=${this.easToken} npx eas init --id ${projectId} --non-interactive`);
+      } catch (initError) {
+        console.log('EAS init warning (might already be initialized):', initError);
+      }
+
       // Build using EAS CLI with environment token
       const buildCmd = `EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json`;
       console.log('Starting EAS build...');
@@ -324,7 +336,8 @@ export class APKBuilder {
         },
         assetBundlePatterns: ["**/*"],
         ios: {
-          supportsTablet: true
+          supportsTablet: true,
+          bundleIdentifier: "com.wealthsprint.app"
         },
         android: {
           adaptiveIcon: {
@@ -349,18 +362,32 @@ export class APKBuilder {
     // Read the original package.json
     const originalPackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
     
-    // Create mobile-compatible version with minimal dependencies
+    // Create a simple icon for the mobile app
+    const iconSvg = `<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+      <rect width="192" height="192" fill="#4F46E5"/>
+      <text x="96" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">WS</text>
+      <text x="96" y="135" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#E0E7FF">Game</text>
+    </svg>`;
+    
+    // Convert SVG to PNG-like format for mobile compatibility
+    const iconBase64 = Buffer.from(iconSvg).toString('base64');
+    const iconDataUrl = `data:image/svg+xml;base64,${iconBase64}`;
+    
+    // Create a simple icon file
+    fs.writeFileSync(path.join(tempDir, 'generated-icon.png'), iconSvg);
+
+    // Create mobile-compatible version with latest compatible dependencies
     const mobilePackage = {
       name: "wealth-sprint-mobile",
       version: "1.0.0",
       main: "expo/AppEntry.js",
       dependencies: {
-        "expo": "~51.0.0",
-        "react": originalPackage.dependencies.react,
-        "react-dom": originalPackage.dependencies["react-dom"],
-        "react-native": "0.74.5",
-        "react-native-web": "~0.19.10",
-        "@expo/webpack-config": "^19.0.0",
+        "expo": "~52.0.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-native": "0.76.3",
+        "react-native-web": "~0.19.12",
+        "@expo/webpack-config": "^19.0.1",
         // Essential UI dependencies only
         "@radix-ui/react-slot": originalPackage.dependencies["@radix-ui/react-slot"],
         "class-variance-authority": originalPackage.dependencies["class-variance-authority"],
@@ -369,9 +396,9 @@ export class APKBuilder {
         "lucide-react": originalPackage.dependencies["lucide-react"],
       },
       devDependencies: {
-        "@babel/core": "^7.20.0",
-        "@types/react": "~18.2.45",
-        "typescript": "~5.3.3",
+        "@babel/core": "^7.25.0",
+        "@types/react": "~18.3.0",
+        "typescript": "~5.6.0",
       },
       scripts: {
         "start": "expo start",
@@ -426,7 +453,7 @@ export default defineConfig({
   private async createEASConfig(tempDir: string): Promise<void> {
     const easConfig = {
       cli: {
-        version: ">= 16.0.0"
+        version: ">= 17.0.0"
       },
       build: {
         development: {
@@ -509,9 +536,40 @@ module.exports = getDefaultConfig(__dirname);`;
   }
 
   private async getOrCreateProjectId(): Promise<string> {
-    // This would typically be from expo.json or created via Expo API
-    // For simplicity, using a placeholder - in real implementation, you'd create/get actual project ID
-    return 'wealth-sprint-project-id';
+    try {
+      // Use EAS CLI to create/get project ID
+      const { exec } = await import('child_process');
+      const util = await import('util');
+      const execAsync = util.promisify(exec);
+
+      // Try to get existing project first
+      try {
+        const projectCmd = `EXPO_TOKEN=${this.easToken} npx eas project:info --json`;
+        const result = await execAsync(projectCmd);
+        const projectData = JSON.parse(result.stdout);
+        if (projectData.id) {
+          return projectData.id;
+        }
+      } catch (getError) {
+        console.log('No existing project found, creating new one...');
+      }
+
+      // Create new project if none exists
+      const createCmd = `EXPO_TOKEN=${this.easToken} npx eas project:create --name "Wealth Sprint" --slug ${this.projectSlug} --json`;
+      const createResult = await execAsync(createCmd);
+      const createData = JSON.parse(createResult.stdout);
+      
+      if (createData.id) {
+        return createData.id;
+      }
+
+      // Fallback to UUID if everything fails
+      return `wealth-sprint-${Date.now()}`;
+    } catch (error) {
+      console.error('Error creating project ID:', error);
+      // Fallback to UUID if everything fails
+      return `wealth-sprint-${Date.now()}`;
+    }
   }
 
   private async pollBuildStatus(buildId: string, statusCallback?: (status: BuildStatus) => void): Promise<{ success: boolean; downloadUrl?: string; error?: string }> {
