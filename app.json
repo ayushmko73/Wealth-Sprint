@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "Wealth Sprint",
@@ -7,6 +8,7 @@
     "orientation": "portrait",
     "icon": "./generated-icon.png",
     "userInterfaceStyle": "light",
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./generated-icon.png",
       "resizeMode": "contain",
@@ -24,13 +26,21 @@
         "foregroundImage": "./generated-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.wealthsprint.app"
+      "package": "com.wealthsprint.app",
+      "versionCode": 1
     },
     "web": {
-      "favicon": "./generated-icon.png"
+      "favicon": "./generated-icon.png",
+      "bundler": "metro"
     },
-    "build": {
-      "production": {}
+    "plugins": [],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": "10875d3a-24af-456e-a5f5-d0847f637d69"
+      }
     }
   }
 }
