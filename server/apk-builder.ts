@@ -149,8 +149,9 @@ export class APKBuilder {
       const filesResult = await execAsync(`ls -la ${tempDir}`);
       console.log('Files in temp directory:', filesResult.stdout);
 
-      // Skip yarn install to avoid resource issues - let Expo handle it
-      console.log('Skipping local yarn install - Expo will handle dependencies in cloud build');
+      // Generate yarn.lock for consistent builds
+      console.log('Generating yarn.lock for consistent builds...');
+      await execAsync(`cd ${tempDir} && yarn install --frozen-lockfile --ignore-scripts || yarn install --ignore-scripts`);
 
       // Initialize fresh git repository
       await execAsync(`cd ${tempDir} && rm -rf .git`); // Clean any existing git
@@ -164,6 +165,12 @@ export class APKBuilder {
       // Check what we're committing
       const statusOutput = await execAsync(`cd ${tempDir} && git status --short`);
       console.log('Files to commit:', statusOutput.stdout);
+      
+      // Ensure yarn.lock is included if it exists
+      const yarnLockExists = await execAsync(`cd ${tempDir} && ls yarn.lock 2>/dev/null || echo "not found"`);
+      if (yarnLockExists.stdout.includes('yarn.lock')) {
+        console.log('yarn.lock found and will be committed');
+      }
       
       // Check if there are any files to commit
       if (statusOutput.stdout.trim() === '') {
@@ -282,8 +289,13 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
-      // Skip the complex project initialization - let EAS handle it automatically
-      console.log('Skipping manual project initialization - EAS will handle it automatically');
+      // Initialize EAS project first
+      console.log('Initializing EAS project...');
+      try {
+        await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas init --non-interactive`);
+      } catch (initError) {
+        console.log('EAS init completed or already initialized');
+      }
 
       // Check EAS CLI version first
       try {
@@ -293,8 +305,8 @@ export class APKBuilder {
         console.log('Could not check EAS CLI version:', versionError);
       }
 
-      // Build using EAS CLI with environment token
-      const buildCmd = `EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json`;
+      // Build using EAS CLI with environment token from the temp directory
+      const buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json`;
       console.log('Starting EAS build...');
       
       const result = await execAsync(buildCmd);
@@ -375,35 +387,35 @@ export class APKBuilder {
     // Create a simple icon file
     fs.writeFileSync(path.join(tempDir, 'generated-icon.png'), iconSvg);
 
-    // Create mobile-compatible version with latest compatible dependencies
+    // Create mobile-compatible version with Node 18.x compatible dependencies
     const mobilePackage = {
       name: "wealth-sprint-mobile",
       version: "1.0.0",
       main: "expo/AppEntry.js",
       dependencies: {
-        "expo": "~52.0.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "react-native": "0.76.3",
-        "react-native-web": "~0.19.12",
-        "@expo/webpack-config": "^19.0.1",
-        // Essential UI dependencies only
-        "@radix-ui/react-slot": originalPackage.dependencies["@radix-ui/react-slot"],
-        "class-variance-authority": originalPackage.dependencies["class-variance-authority"],
-        "clsx": originalPackage.dependencies.clsx,
-        "tailwind-merge": originalPackage.dependencies["tailwind-merge"],
-        "lucide-react": originalPackage.dependencies["lucide-react"],
+        "expo": "~51.0.0",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-native": "0.74.5",
+        "react-native-web": "~0.19.6",
+        "@expo/webpack-config": "^19.0.0",
+        // Essential UI dependencies only - versions compatible with Node 18.x
+        "clsx": "^1.2.1",
+        "react-native-svg": "13.4.0"
       },
       devDependencies: {
-        "@babel/core": "^7.25.0",
-        "@types/react": "~18.3.0",
-        "typescript": "~5.6.0",
+        "@babel/core": "^7.20.0",
+        "@types/react": "~18.2.45",
+        "typescript": "~5.3.3",
       },
       scripts: {
         "start": "expo start",
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web"
+      },
+      engines: {
+        "node": "18.x"
       }
     };
 
