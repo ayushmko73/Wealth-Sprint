@@ -316,8 +316,8 @@ export class APKBuilder {
         console.log('Could not check EAS CLI version:', versionError);
       }
 
-      // Initialize EAS project first
-      await this.initializeEASProject();
+      // Skip EAS project initialization since project already exists
+      console.log('Using existing EAS project: 10875d3a-24af-456e-a5f5-d0847f637d69');
 
       // Verify app config can be read
       console.log('Verifying app configuration...');
@@ -358,7 +358,7 @@ export class APKBuilder {
   }
 
   private async createExpoConfig(): Promise<void> {
-    // Use a simpler approach - let EAS create the project automatically
+    // Create proper Expo config with all required fields
     const expoConfig = {
       expo: {
         name: "Wealth Sprint",
@@ -393,6 +393,11 @@ export class APKBuilder {
         plugins: [],
         experiments: {
           typedRoutes: false
+        },
+        extra: {
+          eas: {
+            projectId: "10875d3a-24af-456e-a5f5-d0847f637d69"
+          }
         }
       }
     };
@@ -485,7 +490,8 @@ export default defineConfig({
   private async createEASConfig(tempDir: string): Promise<void> {
     const easConfig = {
       cli: {
-        version: ">= 3.0.0"
+        version: ">= 3.0.0",
+        appVersionSource: "remote"
       },
       build: {
         production: {
