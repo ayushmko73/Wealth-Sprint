@@ -406,7 +406,7 @@ export class APKBuilder {
           typedRoutes: false
         }
       }
-    };
+    };</old_str>
 
     fs.writeFileSync('./temp-deploy/app.json', JSON.stringify(expoConfig, null, 2));
     
@@ -430,7 +430,7 @@ export class APKBuilder {
     const mobilePackage = {
       name: "wealth-sprint-mobile",
       version: "1.0.0",
-      main: "expo/AppEntry.js",
+      main: "App.js",
       license: "MIT",
       engines: {
         "node": ">=20.0.0"
@@ -502,7 +502,8 @@ export default defineConfig({
       build: {
         production: {
           android: {
-            buildType: "apk"
+            buildType: "apk",
+            gradleCommand: ":app:assembleRelease"
           },
           node: "20.15.0",
           distribution: "store"
@@ -510,11 +511,17 @@ export default defineConfig({
         development: {
           developmentClient: true,
           distribution: "internal",
-          node: "20.15.0"
+          node: "20.15.0",
+          android: {
+            buildType: "apk"
+          }
         },
         preview: {
           distribution: "internal",
-          node: "20.15.0"
+          node: "20.15.0",
+          android: {
+            buildType: "apk"
+          }
         }
       },
       submit: {
@@ -522,7 +529,7 @@ export default defineConfig({
           android: {}
         }
       }
-    };
+    };</old_str>
 
     fs.writeFileSync(path.join(tempDir, 'eas.json'), JSON.stringify(easConfig, null, 2));
   }
