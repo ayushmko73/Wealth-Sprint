@@ -130,26 +130,8 @@ export class APKBuilder {
       await execAsync(`rm -rf ${tempDir}`);
       await execAsync(`mkdir -p ${tempDir}`);
 
-      // Copy only essential files for minimal Expo app
-      const filesToCopy = [
-        'client/src/App.tsx',
-        'client/src/main.tsx', 
-        'client/public/icon-512x512.png',
-        'app.json'
-      ];
-
-      // Create minimal directory structure
-      await execAsync(`mkdir -p ${tempDir}/client/src ${tempDir}/client/public`);
-
-      for (const file of filesToCopy) {
-        try {
-          const targetPath = path.join(tempDir, file);
-          await execAsync(`mkdir -p ${path.dirname(targetPath)}`);
-          await execAsync(`cp ${file} ${targetPath} 2>/dev/null || true`);
-        } catch {
-          // Skip files that don't exist
-        }
-      }
+      // Skip copying complex files - create everything from scratch for minimal build
+      console.log('Creating minimal Expo project structure...');
 
       // Create mobile-compatible package.json (removes problematic dependencies)
       await this.createMobilePackageJson(tempDir);
@@ -163,28 +145,33 @@ export class APKBuilder {
       // Create Expo app entry point
       await this.createExpoEntry(tempDir);
 
+      // List files in temp directory for debugging
+      const filesResult = await execAsync(`ls -la ${tempDir}`);
+      console.log('Files in temp directory:', filesResult.stdout);
+
       // Skip yarn install to avoid resource issues - let Expo handle it
       console.log('Skipping local yarn install - Expo will handle dependencies in cloud build');
 
-      // Initialize git with minimal configuration
-      await execAsync(`cd ${tempDir} && git init --quiet`);
-      await execAsync(`cd ${tempDir} && git branch -M main`);
+      // Initialize fresh git repository
+      await execAsync(`cd ${tempDir} && rm -rf .git`); // Clean any existing git
+      await execAsync(`cd ${tempDir} && git init`);
       await execAsync(`cd ${tempDir} && git config user.email "build@wealthsprint.com"`);
       await execAsync(`cd ${tempDir} && git config user.name "Wealth Sprint Build"`);
-      await execAsync(`cd ${tempDir} && git config core.compression 0`); // Reduce memory usage
-      await execAsync(`cd ${tempDir} && git config pack.windowMemory 10m`); // Limit memory
-      await execAsync(`cd ${tempDir} && git config pack.packSizeLimit 20m`); // Small packs
-
-      // Add GitHub remote with token authentication
+      
+      // Add all files
+      await execAsync(`cd ${tempDir} && git add .`);
+      
+      // Check what we're committing
+      const statusOutput = await execAsync(`cd ${tempDir} && git status --short`);
+      console.log('Files to commit:', statusOutput.stdout);
+      
+      // Commit files
+      await execAsync(`cd ${tempDir} && git commit -m "Expo mobile build"`);
+      
+      // Set up remote and push
       const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
       await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
-
-      // Stage files and commit with minimal size
-      await execAsync(`cd ${tempDir} && git add . --renormalize`);
-      await execAsync(`cd ${tempDir} && git commit -m "Mobile build" --quiet`);
-      
-      // Push with reduced memory usage
-      await execAsync(`cd ${tempDir} && git push -f origin main --quiet`, { timeout: 60000 });
+      await execAsync(`cd ${tempDir} && git push -f origin main`);
       
       // Clean up temp directory
       await execAsync(`rm -rf ${tempDir}`);
