@@ -165,18 +165,37 @@ export class APKBuilder {
       const statusOutput = await execAsync(`cd ${tempDir} && git status --short`);
       console.log('Files to commit:', statusOutput.stdout);
       
+      // Check if there are any files to commit
+      if (statusOutput.stdout.trim() === '') {
+        throw new Error('No files to commit - temp directory might be empty');
+      }
+      
       // Commit files
       await execAsync(`cd ${tempDir} && git commit -m "Expo mobile build"`);
+      
+      // Create and switch to main branch explicitly
+      await execAsync(`cd ${tempDir} && git branch -M main`);
       
       // Set up remote and push
       const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
       await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
-      await execAsync(`cd ${tempDir} && git push -f origin main`);
+      
+      // Check current branch before pushing
+      const branchResult = await execAsync(`cd ${tempDir} && git branch --show-current`);
+      console.log('Current branch:', branchResult.stdout.trim());
+      
+      try {
+        await execAsync(`cd ${tempDir} && git push -f origin main`);
+        console.log('GitHub push completed successfully');
+      } catch (pushError) {
+        console.log('Push failed, trying to create branch first...');
+        // Try to push with --set-upstream flag to create the branch
+        await execAsync(`cd ${tempDir} && git push --set-upstream origin main`);
+        console.log('GitHub push completed successfully with --set-upstream');
+      }
       
       // Clean up temp directory
       await execAsync(`rm -rf ${tempDir}`);
-      
-      console.log('GitHub push completed successfully');
     } catch (error) {
       throw new Error(`GitHub push failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
