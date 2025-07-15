@@ -317,12 +317,7 @@ export class APKBuilder {
       }
 
       // Initialize EAS project first
-      console.log('Initializing EAS project...');
-      try {
-        await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas init --non-interactive --force`);
-      } catch (initError) {
-        console.log('EAS init completed or already initialized');
-      }
+      await this.initializeEASProject();
 
       // Verify app config can be read
       console.log('Verifying app configuration...');
@@ -363,8 +358,7 @@ export class APKBuilder {
   }
 
   private async createExpoConfig(): Promise<void> {
-    const projectId = await this.getOrCreateProjectId();
-    
+    // Use a simpler approach - let EAS create the project automatically
     const expoConfig = {
       expo: {
         name: "Wealth Sprint",
@@ -395,11 +389,6 @@ export class APKBuilder {
         web: {
           favicon: "./generated-icon.png",
           bundler: "metro"
-        },
-        extra: {
-          eas: {
-            projectId: projectId
-          }
         },
         plugins: [],
         experiments: {
@@ -496,29 +485,19 @@ export default defineConfig({
   private async createEASConfig(tempDir: string): Promise<void> {
     const easConfig = {
       cli: {
-        version: ">= 3.0.0",
-        appVersionSource: "remote"
+        version: ">= 3.0.0"
       },
       build: {
         production: {
           android: {
-            buildType: "apk",
-            gradleCommand: ":app:assembleRelease"
-          },
-          node: "20.15.0",
-          distribution: "store"
-        },
-        development: {
-          developmentClient: true,
-          distribution: "internal",
-          node: "20.15.0",
-          android: {
             buildType: "apk"
-          }
+          },
+          node: "20.18.1",
+          distribution: "internal"
         },
         preview: {
           distribution: "internal",
-          node: "20.15.0",
+          node: "20.18.1",
           android: {
             buildType: "apk"
           }
@@ -593,40 +572,19 @@ module.exports = getDefaultConfig(__dirname);`;
     fs.writeFileSync(path.join(tempDir, 'metro.config.js'), metroConfig);
   }
 
-  private async getOrCreateProjectId(): Promise<string> {
+  private async initializeEASProject(): Promise<void> {
     try {
-      // Use EAS CLI to create/get project ID
       const { exec } = await import('child_process');
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
-      // Try to get existing project first
-      try {
-        const projectCmd = `EXPO_TOKEN=${this.easToken} npx eas project:info --json`;
-        const result = await execAsync(projectCmd);
-        const projectData = JSON.parse(result.stdout);
-        if (projectData.id) {
-          return projectData.id;
-        }
-      } catch (getError) {
-        console.log('No existing project found, will use app config...');
-      }
-
-      // Generate a proper UUID v4 for the project ID
-      const crypto = await import('crypto');
-      const generateUUID = () => {
-        return crypto.randomUUID();
-      };
-
-      // Return a proper UUID instead of timestamp-based ID
-      const projectId = generateUUID();
-      console.log('Generated project ID:', projectId);
-      return projectId;
+      // Initialize EAS project - this will automatically create project ID
+      console.log('Initializing EAS project...');
+      await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas project:init --non-interactive`);
+      console.log('EAS project initialized successfully');
     } catch (error) {
-      console.error('Error creating project ID:', error);
-      // Fallback to crypto UUID if everything fails
-      const crypto = await import('crypto');
-      return crypto.randomUUID();
+      console.log('EAS project init warning:', error);
+      // Continue - the build command will handle project creation
     }
   }
 
