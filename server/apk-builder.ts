@@ -406,7 +406,7 @@ export class APKBuilder {
           typedRoutes: false
         }
       }
-    };</old_str>
+    };
 
     fs.writeFileSync('./temp-deploy/app.json', JSON.stringify(expoConfig, null, 2));
     
@@ -529,7 +529,7 @@ export default defineConfig({
           android: {}
         }
       }
-    };</old_str>
+    };
 
     fs.writeFileSync(path.join(tempDir, 'eas.json'), JSON.stringify(easConfig, null, 2));
   }
