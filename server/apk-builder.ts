@@ -151,7 +151,7 @@ export class APKBuilder {
 
       // Generate yarn.lock for consistent builds
       console.log('Generating yarn.lock for consistent builds...');
-      await execAsync(`cd ${tempDir} && yarn install --frozen-lockfile --ignore-scripts || yarn install --ignore-scripts`);
+      await execAsync(`cd ${tempDir} && yarn install --ignore-engines --ignore-scripts`);
 
       // Initialize fresh git repository
       await execAsync(`cd ${tempDir} && rm -rf .git`); // Clean any existing git
@@ -392,6 +392,7 @@ export class APKBuilder {
       name: "wealth-sprint-mobile",
       version: "1.0.0",
       main: "expo/AppEntry.js",
+      license: "MIT",
       dependencies: {
         "expo": "~51.0.0",
         "react": "18.2.0",
@@ -413,9 +414,6 @@ export class APKBuilder {
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web"
-      },
-      engines: {
-        "node": "18.x"
       }
     };
 
