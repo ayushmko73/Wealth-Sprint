@@ -282,16 +282,15 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
-      // First, get or create the project ID
-      const projectId = await this.getOrCreateProjectId();
-      console.log('Project ID:', projectId);
+      // Skip the complex project initialization - let EAS handle it automatically
+      console.log('Skipping manual project initialization - EAS will handle it automatically');
 
-      // Initialize EAS project if needed
-      console.log('Initializing EAS project...');
+      // Check EAS CLI version first
       try {
-        await execAsync(`EXPO_TOKEN=${this.easToken} npx eas init --id ${projectId} --non-interactive`);
-      } catch (initError) {
-        console.log('EAS init warning (might already be initialized):', initError);
+        const versionResult = await execAsync('npx eas --version');
+        console.log('EAS CLI Version:', versionResult.stdout.trim());
+      } catch (versionError) {
+        console.log('Could not check EAS CLI version:', versionError);
       }
 
       // Build using EAS CLI with environment token
@@ -453,23 +452,28 @@ export default defineConfig({
   private async createEASConfig(tempDir: string): Promise<void> {
     const easConfig = {
       cli: {
-        version: ">= 17.0.0"
+        version: ">= 16.15.0"
       },
       build: {
+        production: {
+          android: {
+            buildType: "apk"
+          },
+          node: "18.18.0",
+          distribution: "store"
+        },
         development: {
           developmentClient: true,
           distribution: "internal"
         },
         preview: {
           distribution: "internal"
-        },
-        production: {
-          node: "18.18.0", // Use compatible Node.js version
-          distribution: "store"
         }
       },
       submit: {
-        production: {}
+        production: {
+          android: {}
+        }
       }
     };
 
@@ -551,24 +555,24 @@ module.exports = getDefaultConfig(__dirname);`;
           return projectData.id;
         }
       } catch (getError) {
-        console.log('No existing project found, creating new one...');
+        console.log('No existing project found, will use app config...');
       }
 
-      // Create new project if none exists
-      const createCmd = `EXPO_TOKEN=${this.easToken} npx eas project:create --name "Wealth Sprint" --slug ${this.projectSlug} --json`;
-      const createResult = await execAsync(createCmd);
-      const createData = JSON.parse(createResult.stdout);
-      
-      if (createData.id) {
-        return createData.id;
-      }
+      // Generate a proper UUID v4 for the project ID
+      const crypto = await import('crypto');
+      const generateUUID = () => {
+        return crypto.randomUUID();
+      };
 
-      // Fallback to UUID if everything fails
-      return `wealth-sprint-${Date.now()}`;
+      // Return a proper UUID instead of timestamp-based ID
+      const projectId = generateUUID();
+      console.log('Generated project ID:', projectId);
+      return projectId;
     } catch (error) {
       console.error('Error creating project ID:', error);
-      // Fallback to UUID if everything fails
-      return `wealth-sprint-${Date.now()}`;
+      // Fallback to crypto UUID if everything fails
+      const crypto = await import('crypto');
+      return crypto.randomUUID();
     }
   }
 
