@@ -45,7 +45,7 @@ export class APKBuilder {
       updateStatus(errorStatus);
       return errorStatus;
     }
-    
+
     if (!this.githubToken) {
       const errorStatus = { 
         step: 'error' as const, 
@@ -76,7 +76,7 @@ export class APKBuilder {
       // Step 4: Poll build status
       updateStatus({ step: 'polling', message: 'Building APK...', success: false });
       const result = await this.pollBuildStatus(buildId, updateStatus);
-      
+
       if (result.success && result.downloadUrl) {
         const finalStatus = { 
           step: 'complete' as const, 
@@ -120,7 +120,7 @@ export class APKBuilder {
       if (!this.githubToken) {
         throw new Error('GitHub token not available');
       }
-      
+
       // Check if repo exists, create only if it doesn't exist
       const repoExists = await this.checkRepoExists();
       if (!repoExists) {
@@ -171,39 +171,39 @@ export class APKBuilder {
       await execAsync(`cd ${tempDir} && git init`);
       await execAsync(`cd ${tempDir} && git config user.email "build@wealthsprint.com"`);
       await execAsync(`cd ${tempDir} && git config user.name "Wealth Sprint Build"`);
-      
+
       // Add all files
       await execAsync(`cd ${tempDir} && git add .`);
-      
+
       // Check what we're committing
       const statusOutput = await execAsync(`cd ${tempDir} && git status --short`);
       console.log('Files to commit:', statusOutput.stdout);
-      
+
       // Ensure yarn.lock is included if it exists
       const yarnLockExists = await execAsync(`cd ${tempDir} && ls yarn.lock 2>/dev/null || echo "not found"`);
       if (yarnLockExists.stdout.includes('yarn.lock')) {
         console.log('yarn.lock found and will be committed');
       }
-      
+
       // Check if there are any files to commit
       if (statusOutput.stdout.trim() === '') {
         throw new Error('No files to commit - temp directory might be empty');
       }
-      
+
       // Commit files
       await execAsync(`cd ${tempDir} && git commit -m "Expo mobile build"`);
-      
+
       // Create and switch to main branch explicitly
       await execAsync(`cd ${tempDir} && git branch -M main`);
-      
+
       // Set up remote and push
       const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
       await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
-      
+
       // Check current branch before pushing
       const branchResult = await execAsync(`cd ${tempDir} && git branch --show-current`);
       console.log('Current branch:', branchResult.stdout.trim());
-      
+
       try {
         await execAsync(`cd ${tempDir} && git push -f origin main`);
         console.log('GitHub push completed successfully');
@@ -213,7 +213,7 @@ export class APKBuilder {
         await execAsync(`cd ${tempDir} && git push --set-upstream origin main`);
         console.log('GitHub push completed successfully with --set-upstream');
       }
-      
+
     } catch (error) {
       throw new Error(`GitHub push failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -319,9 +319,9 @@ export class APKBuilder {
       // Build using EAS CLI with environment token from the temp directory
       const buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile production --non-interactive --json`;
       console.log('Starting EAS build...');
-      
+
       const result = await execAsync(buildCmd);
-      
+
       let buildData;
       try {
         buildData = JSON.parse(result.stdout);
@@ -385,18 +385,18 @@ export class APKBuilder {
   private async createMobilePackageJson(tempDir: string): Promise<void> {
     // Read the original package.json
     const originalPackage = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-    
+
     // Create a simple icon for the mobile app
     const iconSvg = `<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
       <rect width="192" height="192" fill="#4F46E5"/>
       <text x="96" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">WS</text>
       <text x="96" y="135" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#E0E7FF">Game</text>
     </svg>`;
-    
+
     // Convert SVG to PNG-like format for mobile compatibility
     const iconBase64 = Buffer.from(iconSvg).toString('base64');
     const iconDataUrl = `data:image/svg+xml;base64,${iconBase64}`;
-    
+
     // Create a simple icon file
     fs.writeFileSync(path.join(tempDir, 'generated-icon.png'), iconSvg);
 
@@ -507,7 +507,7 @@ export default defineConfig({
   private async createExpoEntry(tempDir: string): Promise<void> {
     // Create expo directory and App.js entry point
     await execAsync(`mkdir -p ${path.join(tempDir, 'expo')}`);
-    
+
     // Create a simple Expo-compatible App.js
     const simpleAppContent = `import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -622,7 +622,7 @@ module.exports = getDefaultConfig(__dirname);`;
 
         const statusCmd = `EXPO_TOKEN=${this.easToken} npx eas build:status --json`;
         const result = await execAsync(statusCmd);
-        
+
         let statusData;
         try {
           statusData = JSON.parse(result.stdout);
@@ -633,7 +633,7 @@ module.exports = getDefaultConfig(__dirname);`;
 
         // Find the Android build
         const build = statusData.builds.find((b: any) => b.platform === "android");
-        
+
         if (!build) {
           return { 
             success: false, 
@@ -661,7 +661,7 @@ module.exports = getDefaultConfig(__dirname);`;
 
       } catch (error) {
         console.error(`Polling attempt ${attempts + 1} failed:`, error);
-        
+
         // Continue trying unless this is the last attempt
         if (attempts >= maxAttempts - 1) {
           return { 
@@ -669,7 +669,7 @@ module.exports = getDefaultConfig(__dirname);`;
             error: `Build status polling failed after ${maxAttempts} attempts: ${error instanceof Error ? error.message : 'Unknown error'}` 
           };
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, 15000));
         attempts++;
       }
