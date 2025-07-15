@@ -371,13 +371,15 @@ export class APKBuilder {
         web: {
           favicon: "./generated-icon.png"
         },
-        build: {
-          production: {}
+        extra: {
+          eas: {
+            projectId: await this.getOrCreateProjectId()
+          }
         }
       }
     };
 
-    fs.writeFileSync('app.json', JSON.stringify(expoConfig, null, 2));
+    fs.writeFileSync('./temp-deploy/app.json', JSON.stringify(expoConfig, null, 2));
   }
 
   private async createMobilePackageJson(tempDir: string): Promise<void> {
@@ -473,7 +475,8 @@ export default defineConfig({
   private async createEASConfig(tempDir: string): Promise<void> {
     const easConfig = {
       cli: {
-        version: ">= 16.15.0"
+        version: ">= 16.15.0",
+        appVersionSource: "remote"
       },
       build: {
         production: {
