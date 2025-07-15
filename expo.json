@@ -12,23 +12,29 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ayushmko73.wealthsprint"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./client/public/icon-512x512.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ayushmko73.wealthsprint"
+      "package": "com.ayushmko73.wealthsprint",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./client/public/favicon.ico"
+    },
+    "owner": "ayushmko73",
+    "extra": {
+      "eas": {
+        "projectId": "10875d3a-24af-456e-a5f5-d0847f637d69"
+      }
     },
     "experiments": {
       "typedRoutes": false

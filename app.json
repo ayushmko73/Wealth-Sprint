@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "Wealth Sprint",
@@ -14,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.wealthsprint.app"
