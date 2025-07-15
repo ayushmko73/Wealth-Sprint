@@ -300,41 +300,68 @@ export class APKBuilder {
       const util = await import('util');
       const execAsync = util.promisify(exec);
 
-      // Install Expo CLI locally in temp directory for better compatibility
-      console.log('Installing Expo CLI locally...');
+      // Clear any existing node_modules and package-lock.json to avoid conflicts
+      console.log('Cleaning up previous installations...');
+      await execAsync(`cd ./temp-deploy && rm -rf node_modules package-lock.json yarn.lock`);
+
+      // Install EAS CLI globally first as fallback
+      console.log('Installing EAS CLI globally...');
       try {
-        await execAsync(`cd ./temp-deploy && npm install @expo/cli@latest eas-cli@latest --save-dev`);
-        console.log('Expo CLI installed successfully');
-      } catch (installError) {
-        console.log('CLI installation warning:', installError);
-        // Continue with global CLI if local install fails
+        await execAsync(`npm install -g @expo/cli@latest eas-cli@latest`);
+        console.log('Global EAS CLI installed successfully');
+      } catch (globalInstallError) {
+        console.log('Global install warning:', globalInstallError);
       }
 
-      // Check EAS CLI version first
+      // Install locally with specific versions known to work
+      console.log('Installing Expo CLI locally with specific versions...');
       try {
-        const versionResult = await execAsync(`cd ./temp-deploy && npx eas --version`);
+        await execAsync(`cd ./temp-deploy && npm install @expo/cli@0.24.20 eas-cli@16.14.1 --save-dev --no-package-lock`);
+        console.log('Expo CLI installed successfully');
+      } catch (installError) {
+        console.log('Local CLI installation failed, will try global fallback:', installError);
+      }
+
+      // Check EAS CLI version with fallback
+      let easCommand = 'npx eas';
+      try {
+        const versionResult = await execAsync(`cd ./temp-deploy && ${easCommand} --version`);
         console.log('EAS CLI Version:', versionResult.stdout.trim());
       } catch (versionError) {
-        console.log('Could not check EAS CLI version:', versionError);
+        console.log('Local EAS CLI failed, trying global...');
+        easCommand = 'eas';
+        try {
+          const globalVersionResult = await execAsync(`${easCommand} --version`);
+          console.log('Global EAS CLI Version:', globalVersionResult.stdout.trim());
+        } catch (globalVersionError) {
+          throw new Error('Both local and global EAS CLI installation failed');
+        }
       }
 
       // Skip EAS project initialization since project already exists
       console.log('Using existing EAS project: 10875d3a-24af-456e-a5f5-d0847f637d69');
 
-      // Verify app config can be read with locally installed CLI
+      // Verify app config can be read with fallback command
       console.log('Verifying app configuration...');
       try {
-        await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx expo config --json`);
+        await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} ${easCommand === 'eas' ? 'expo' : 'npx expo'} config --json`);
         console.log('App config verified successfully');
       } catch (configError) {
         console.log('Config verification warning:', configError);
       }
 
       // Build using EAS CLI with preview profile to avoid keystore issues
-      const buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} npx eas build --platform android --profile preview --non-interactive --json --clear-cache`;
       console.log('Starting EAS build...');
-
-      const result = await execAsync(buildCmd, { timeout: 300000 }); // 5 minute timeout
+      let buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} ${easCommand} build --platform android --profile preview --non-interactive --json --clear-cache`;
+      
+      let result;
+      try {
+        result = await execAsync(buildCmd, { timeout: 300000 }); // 5 minute timeout
+      } catch (localBuildError) {
+        console.log('Local EAS build failed, trying global command...');
+        buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} eas build --platform android --profile preview --non-interactive --json --clear-cache`;
+        result = await execAsync(buildCmd, { timeout: 300000 });
+      }
 
       let buildData;
       try {
@@ -631,13 +658,20 @@ module.exports = getDefaultConfig(__dirname);`;
           });
         }
 
-        // Use EAS CLI to check build status
+        // Use EAS CLI to check build status with fallback
         const { exec } = await import('child_process');
         const util = await import('util');
         const execAsync = util.promisify(exec);
 
-        const statusCmd = `EXPO_TOKEN=${this.easToken} npx eas build:status --json`;
-        const result = await execAsync(statusCmd);
+        let statusCmd = `EXPO_TOKEN=${this.easToken} npx eas build:status --json`;
+        let result;
+        try {
+          result = await execAsync(statusCmd);
+        } catch (localStatusError) {
+          console.log('Local status check failed, trying global...');
+          statusCmd = `EXPO_TOKEN=${this.easToken} eas build:status --json`;
+          result = await execAsync(statusCmd);
+        }
 
         let statusData;
         try {
