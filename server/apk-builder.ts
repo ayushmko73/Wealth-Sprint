@@ -364,7 +364,7 @@ export class APKBuilder {
     const expoConfig = {
       expo: {
         name: "Wealth Sprint",
-        slug: "wealth-sprint-mobile",
+        slug: "wealth-sprint",
         owner: "ayushmk32",
         version: "1.0.0",
         orientation: "portrait",
@@ -425,7 +425,7 @@ export class APKBuilder {
 
     // Create mobile-compatible version with exact Expo SDK versions
     const mobilePackage = {
-      name: "wealth-sprint-mobile",
+      name: "wealth-sprint",
       version: "1.0.0",
       main: "App.js",
       license: "MIT",
