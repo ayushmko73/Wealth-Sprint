@@ -394,6 +394,7 @@ export class APKBuilder {
         slug: "wealth-sprint",
         owner: "ayushmk32",
         version: "1.0.0",
+        sdkVersion: "52.0.0",
         orientation: "portrait",
         icon: "./generated-icon.png",
         userInterfaceStyle: "light",
