@@ -106,12 +106,10 @@ export class APKBuilder {
       updateStatus(errorStatus);
       return errorStatus;
     } finally {
-      // Clean up temp directory
-      try {
-        await execAsync(`rm -rf ./temp-deploy`);
-      } catch (cleanupError) {
-        console.log('Warning: Could not clean up temp directory');
-      }
+      // Only clean up temp directory if build process is complete
+      // Note: We don't clean up here anymore to allow EAS build to access the directory
+      // The temp directory will be cleaned up by the next build process
+      console.log('Build process completed, temp directory preserved for EAS build access');
     }
   }
 
@@ -192,13 +190,16 @@ export class APKBuilder {
 
       // Commit files
       await execAsync(`cd ${tempDir} && git commit -m "Expo mobile build"`);
+      console.log('Git commit completed successfully');
 
       // Create and switch to main branch explicitly
       await execAsync(`cd ${tempDir} && git branch -M main`);
+      console.log('Main branch created successfully');
 
       // Set up remote and push
       const remoteUrl = `https://${this.githubToken}@github.com/${this.username}/${this.repoName}.git`;
       await execAsync(`cd ${tempDir} && git remote add origin ${remoteUrl}`);
+      console.log('Git remote added successfully');
 
       // Check current branch before pushing
       const branchResult = await execAsync(`cd ${tempDir} && git branch --show-current`);
@@ -213,6 +214,11 @@ export class APKBuilder {
         await execAsync(`cd ${tempDir} && git push --set-upstream origin main`);
         console.log('GitHub push completed successfully with --set-upstream');
       }
+
+      // Verify that all GitHub operations completed successfully
+      console.log('All GitHub operations completed, temp directory ready for EAS build');
+      const finalCheck = await execAsync(`cd ${tempDir} && ls -la`);
+      console.log('Final temp directory contents:', finalCheck.stdout);
 
     } catch (error) {
       throw new Error(`GitHub push failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -292,6 +298,15 @@ export class APKBuilder {
 
   private async startExpoBuild(): Promise<string> {
     try {
+      // Ensure temp-deploy directory exists
+      const tempDir = './temp-deploy';
+      try {
+        await execAsync(`ls -la ${tempDir}`);
+        console.log('temp-deploy directory exists, proceeding with build...');
+      } catch (dirError) {
+        throw new Error(`temp-deploy directory not found. GitHub push may have failed: ${dirError}`);
+      }
+
       // Create required Expo config files
       await this.createExpoConfig();
 
@@ -302,7 +317,11 @@ export class APKBuilder {
 
       // Clear any existing node_modules and package-lock.json to avoid conflicts
       console.log('Cleaning up previous installations...');
-      await execAsync(`cd ./temp-deploy && rm -rf node_modules package-lock.json yarn.lock`);
+      try {
+        await execAsync(`cd ${tempDir} && rm -rf node_modules package-lock.json yarn.lock`);
+      } catch (cleanupError) {
+        console.log('Cleanup warning (non-critical):', cleanupError);
+      }
 
       // Install EAS CLI globally first as fallback
       console.log('Installing EAS CLI globally...');
@@ -316,7 +335,7 @@ export class APKBuilder {
       // Install locally with specific versions known to work
       console.log('Installing Expo CLI locally with specific versions...');
       try {
-        await execAsync(`cd ./temp-deploy && npm install @expo/cli@0.24.20 eas-cli@16.14.1 --save-dev --no-package-lock`);
+        await execAsync(`cd ${tempDir} && npm install @expo/cli@0.24.20 eas-cli@16.14.1 --save-dev --no-package-lock`);
         console.log('Expo CLI installed successfully');
       } catch (installError) {
         console.log('Local CLI installation failed, will try global fallback:', installError);
@@ -325,7 +344,7 @@ export class APKBuilder {
       // Check EAS CLI version with fallback
       let easCommand = 'npx eas';
       try {
-        const versionResult = await execAsync(`cd ./temp-deploy && ${easCommand} --version`);
+        const versionResult = await execAsync(`cd ${tempDir} && ${easCommand} --version`);
         console.log('EAS CLI Version:', versionResult.stdout.trim());
       } catch (versionError) {
         console.log('Local EAS CLI failed, trying global...');
@@ -344,7 +363,7 @@ export class APKBuilder {
       // Verify app config can be read with fallback command
       console.log('Verifying app configuration...');
       try {
-        await execAsync(`cd ./temp-deploy && EXPO_TOKEN=${this.easToken} ${easCommand === 'eas' ? 'expo' : 'npx expo'} config --json`);
+        await execAsync(`cd ${tempDir} && EXPO_TOKEN=${this.easToken} ${easCommand === 'eas' ? 'expo' : 'npx expo'} config --json`);
         console.log('App config verified successfully');
       } catch (configError) {
         console.log('Config verification warning:', configError);
@@ -352,14 +371,14 @@ export class APKBuilder {
 
       // Build using EAS CLI with preview profile to avoid keystore issues
       console.log('Starting EAS build...');
-      let buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} ${easCommand} build --platform android --profile preview --non-interactive --json --clear-cache`;
+      let buildCmd = `cd ${tempDir} && EXPO_TOKEN=${this.easToken} ${easCommand} build --platform android --profile preview --non-interactive --json --clear-cache`;
       
       let result;
       try {
         result = await execAsync(buildCmd, { timeout: 300000 }); // 5 minute timeout
       } catch (localBuildError) {
         console.log('Local EAS build failed, trying global command...');
-        buildCmd = `cd ./temp-deploy && EXPO_TOKEN=${this.easToken} eas build --platform android --profile preview --non-interactive --json --clear-cache`;
+        buildCmd = `cd ${tempDir} && EXPO_TOKEN=${this.easToken} eas build --platform android --profile preview --non-interactive --json --clear-cache`;
         result = await execAsync(buildCmd, { timeout: 300000 });
       }
 

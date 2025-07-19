@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 3.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "production": {
+      "android": {
+        "buildType": "apk",
+        "autoIncrement": "versionCode"
+      },
+      "node": "20.18.1",
+      "distribution": "internal",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "20.18.1",
+      "android": {
+        "buildType": "apk",
+        "autoIncrement": "versionCode"
+      },
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {}
+    }
+  }
+}
