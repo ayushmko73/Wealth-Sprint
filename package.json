@@ -1,0 +1,31 @@
+{
+  "name": "wealth-sprint",
+  "version": "1.0.0",
+  "main": "App.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "expo": "~52.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.3",
+    "react-native-web": "~0.19.12",
+    "expo-constants": "~17.0.0",
+    "expo-status-bar": "~2.0.0",
+    "@expo/cli": "^0.24.0",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@types/react": "~18.3.0",
+    "typescript": "~5.3.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  }
+}
