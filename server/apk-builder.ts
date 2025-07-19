@@ -313,12 +313,12 @@ export class APKBuilder {
       // Use EAS CLI with robot token (modern approach)
       const { exec } = await import('child_process');
       const util = await import('util');
-      const execAsync = util.promisify(exec);
+      const execAsyncLocal = util.promisify(exec);
 
       // Clear any existing node_modules and package-lock.json to avoid conflicts
       console.log('Cleaning up previous installations...');
       try {
-        await execAsync(`cd ${tempDir} && rm -rf node_modules package-lock.json yarn.lock`);
+        await execAsyncLocal(`cd ${tempDir} && rm -rf node_modules package-lock.json yarn.lock`);
       } catch (cleanupError) {
         console.log('Cleanup warning (non-critical):', cleanupError);
       }
@@ -326,7 +326,7 @@ export class APKBuilder {
       // Install EAS CLI globally first as fallback
       console.log('Installing EAS CLI globally...');
       try {
-        await execAsync(`npm install -g @expo/cli@latest eas-cli@latest`);
+        await execAsyncLocal(`npm install -g @expo/cli@latest eas-cli@latest`);
         console.log('Global EAS CLI installed successfully');
       } catch (globalInstallError) {
         console.log('Global install warning:', globalInstallError);
@@ -335,7 +335,7 @@ export class APKBuilder {
       // Install locally with specific versions known to work
       console.log('Installing Expo CLI locally with specific versions...');
       try {
-        await execAsync(`cd ${tempDir} && npm install @expo/cli@0.24.20 eas-cli@16.14.1 --save-dev --no-package-lock`);
+        await execAsyncLocal(`cd ${tempDir} && npm install @expo/cli@0.24.20 eas-cli@16.14.1 --save-dev --no-package-lock`);
         console.log('Expo CLI installed successfully');
       } catch (installError) {
         console.log('Local CLI installation failed, will try global fallback:', installError);
@@ -344,13 +344,13 @@ export class APKBuilder {
       // Check EAS CLI version with fallback
       let easCommand = 'npx eas';
       try {
-        const versionResult = await execAsync(`cd ${tempDir} && ${easCommand} --version`);
+        const versionResult = await execAsyncLocal(`cd ${tempDir} && ${easCommand} --version`);
         console.log('EAS CLI Version:', versionResult.stdout.trim());
       } catch (versionError) {
         console.log('Local EAS CLI failed, trying global...');
         easCommand = 'eas';
         try {
-          const globalVersionResult = await execAsync(`${easCommand} --version`);
+          const globalVersionResult = await execAsyncLocal(`${easCommand} --version`);
           console.log('Global EAS CLI Version:', globalVersionResult.stdout.trim());
         } catch (globalVersionError) {
           throw new Error('Both local and global EAS CLI installation failed');
@@ -363,7 +363,7 @@ export class APKBuilder {
       // Verify app config can be read with fallback command
       console.log('Verifying app configuration...');
       try {
-        await execAsync(`cd ${tempDir} && EXPO_TOKEN=${this.easToken} ${easCommand === 'eas' ? 'expo' : 'npx expo'} config --json`);
+        await execAsyncLocal(`cd ${tempDir} && EXPO_TOKEN=${this.easToken} ${easCommand === 'eas' ? 'expo' : 'npx expo'} config --json`);
         console.log('App config verified successfully');
       } catch (configError) {
         console.log('Config verification warning:', configError);
@@ -375,11 +375,11 @@ export class APKBuilder {
       
       let result;
       try {
-        result = await execAsync(buildCmd, { timeout: 300000 }); // 5 minute timeout
+        result = await execAsyncLocal(buildCmd, { timeout: 300000 }); // 5 minute timeout
       } catch (localBuildError) {
         console.log('Local EAS build failed, trying global command...');
         buildCmd = `cd ${tempDir} && EXPO_TOKEN=${this.easToken} eas build --platform android --profile preview --non-interactive --json --clear-cache`;
-        result = await execAsync(buildCmd, { timeout: 300000 });
+        result = await execAsyncLocal(buildCmd, { timeout: 300000 });
       }
 
       let buildData;
