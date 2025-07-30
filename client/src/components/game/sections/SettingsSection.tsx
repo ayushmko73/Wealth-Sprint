@@ -188,32 +188,7 @@ const SettingsSection: React.FC = () => {
   };
 
   // APK Download Handler
-  const handleDownloadAPK = async () => {
-    setIsBuilding(true);
-    setBuildStatus([]);
-
-    try {
-      const response = await fetch('/api/build-apk', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) {
-        throw new Error('No response body');
-      }
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+  const handle// APK download functionality removed
 
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');

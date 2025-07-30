@@ -103,37 +103,7 @@ export default function Settings({ onClose }: SettingsProps) {
     return <Loader2 className="w-4 h-4 animate-spin text-blue-500" />;
   };
 
-  const getStepIcon = (step: string) => {
-    switch (step) {
-      case 'github_push':
-        return <Github className="w-4 h-4" />;
-      case 'expo_publish':
-      case 'expo_build':
-      case 'polling':
-        return <Smartphone className="w-4 h-4" />;
-      case 'complete':
-        return <Download className="w-4 h-4" />;
-      default:
-        return <AlertCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getStatusMessage = (status: BuildStatus) => {
-    switch (status.step) {
-      case 'github_push':
-        return status.success ? '✅ GitHub push complete' : '🔄 Pushing to GitHub...';
-      case 'expo_publish':
-        return status.success ? '✅ Project published to Expo' : '🔄 Publishing to Expo...';
-      case 'expo_build':
-        return status.success ? '🔄 Expo build started' : '🔄 Starting Expo build...';
-      case 'polling':
-        return '⏳ Building APK...';
-      case 'complete':
-        return `📦 APK Ready: ${status.downloadUrl}`;
-      case 'error':
-        return `❌ ${status.message}`;
-      default:
-        return status.message;
+  // APK build status functionality removedtus.message;
     }
   };
 
@@ -247,32 +217,7 @@ export default function Settings({ onClose }: SettingsProps) {
                         </div>
                       ))}
                       
-                      {/* Success Message */}
-                      {buildStatus.some(s => s.step === 'complete' && s.success && s.downloadUrl) && (
-                        <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded text-sm">
-                          <div className="text-green-800 font-medium">
-                            📦 APK Ready: 
-                            <a 
-                              href={buildStatus.find(s => s.step === 'complete')?.downloadUrl} 
-                              className="text-blue-600 hover:text-blue-800 underline ml-1"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {buildStatus.find(s => s.step === 'complete')?.downloadUrl}
-                            </a>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {buildStatus.some(s => s.step === 'error') && (
-                        <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-700">
-                          <strong>Error Details:</strong>
-                          <div className="mt-1 font-mono text-xs">
-                            {buildStatus.find(s => s.step === 'error')?.error || 'Unknown error occurred'}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      {/* Success Message *</div>
                   )}
                 </div>
               </div>
