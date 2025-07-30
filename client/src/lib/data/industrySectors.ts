@@ -12,7 +12,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 100,
     },
     isUnlocked: true,
-    businesses: []
+    businesses: [
+      {
+        id: 'burger_express',
+        name: 'Burger Express',
+        type: 'franchise',
+        investmentRequired: 200000,
+        monthlyRevenue: 45000,
+        monthlyExpenses: 35000,
+        monthlyProfit: 10000,
+        riskLevel: 'medium',
+        growthPotential: 'high',
+        loopChallenge: 'Speed vs Quality Loop - Racing to scale compromises food quality',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'pizza_hub',
+        name: 'Pizza Hub',
+        type: 'franchise',
+        investmentRequired: 300000,
+        monthlyRevenue: 60000,
+        monthlyExpenses: 45000,
+        monthlyProfit: 15000,
+        riskLevel: 'low',
+        growthPotential: 'medium',
+        loopChallenge: 'Quality control across multiple locations',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'logistics',
@@ -25,7 +54,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 80,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'swift_logistics',
+        name: 'Swift Logistics',
+        type: 'startup',
+        investmentRequired: 500000,
+        monthlyRevenue: 80000,
+        monthlyExpenses: 65000,
+        monthlyProfit: 15000,
+        riskLevel: 'high',
+        growthPotential: 'high',
+        loopChallenge: 'Burnout Loop - Expanding too fast leads to operational chaos',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'last_mile_delivery',
+        name: 'Last Mile Delivery',
+        type: 'service',
+        investmentRequired: 350000,
+        monthlyRevenue: 55000,
+        monthlyExpenses: 42000,
+        monthlyProfit: 13000,
+        riskLevel: 'medium',
+        growthPotential: 'high',
+        loopChallenge: 'Route optimization vs fuel costs',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'tech_startups',
@@ -38,7 +96,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 60,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'app_dev_studio',
+        name: 'App Dev Studio',
+        type: 'startup',
+        investmentRequired: 800000,
+        monthlyRevenue: 120000,
+        monthlyExpenses: 95000,
+        monthlyProfit: 25000,
+        riskLevel: 'high',
+        growthPotential: 'very_high',
+        loopChallenge: 'Shiny Object Syndrome - Losing focus chasing new features',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'web_agency',
+        name: 'Web Agency',
+        type: 'service',
+        investmentRequired: 400000,
+        monthlyRevenue: 75000,
+        monthlyExpenses: 55000,
+        monthlyProfit: 20000,
+        riskLevel: 'medium',
+        growthPotential: 'high',
+        loopChallenge: 'Client scope creep and timeline pressure',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'ai_saas',
@@ -51,7 +138,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 50,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'ai_chatbot_platform',
+        name: 'AI Chatbot Platform',
+        type: 'saas',
+        investmentRequired: 1200000,
+        monthlyRevenue: 200000,
+        monthlyExpenses: 140000,
+        monthlyProfit: 60000,
+        riskLevel: 'high',
+        growthPotential: 'very_high',
+        loopChallenge: 'Ethics vs Profit - Choosing revenue over user privacy',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'data_analytics_tool',
+        name: 'Data Analytics Tool',
+        type: 'saas',
+        investmentRequired: 900000,
+        monthlyRevenue: 150000,
+        monthlyExpenses: 110000,
+        monthlyProfit: 40000,
+        riskLevel: 'medium',
+        growthPotential: 'high',
+        loopChallenge: 'Data privacy vs insights depth',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'ecommerce',
@@ -64,7 +180,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 40,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'fashion_marketplace',
+        name: 'Fashion Marketplace',
+        type: 'ecommerce',
+        investmentRequired: 700000,
+        monthlyRevenue: 180000,
+        monthlyExpenses: 150000,
+        monthlyProfit: 30000,
+        riskLevel: 'high',
+        growthPotential: 'high',
+        loopChallenge: 'Fake Growth Loop - Inflated metrics hide real problems',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'electronics_store',
+        name: 'Electronics Store',
+        type: 'ecommerce',
+        investmentRequired: 600000,
+        monthlyRevenue: 140000,
+        monthlyExpenses: 115000,
+        monthlyProfit: 25000,
+        riskLevel: 'medium',
+        growthPotential: 'medium',
+        loopChallenge: 'Inventory management vs cash flow',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'crypto_web3',
@@ -77,7 +222,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 30,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'defi_protocol',
+        name: 'DeFi Protocol',
+        type: 'crypto',
+        investmentRequired: 1500000,
+        monthlyRevenue: 300000,
+        monthlyExpenses: 180000,
+        monthlyProfit: 120000,
+        riskLevel: 'very_high',
+        growthPotential: 'very_high',
+        loopChallenge: 'Greed Overload - Bull market mentality leads to over-risking',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'nft_marketplace',
+        name: 'NFT Marketplace',
+        type: 'crypto',
+        investmentRequired: 1000000,
+        monthlyRevenue: 220000,
+        monthlyExpenses: 160000,
+        monthlyProfit: 60000,
+        riskLevel: 'very_high',
+        growthPotential: 'high',
+        loopChallenge: 'Speculation vs real utility',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'media_empire',
@@ -90,7 +264,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 25,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'content_studio',
+        name: 'Content Studio',
+        type: 'media',
+        investmentRequired: 800000,
+        monthlyRevenue: 250000,
+        monthlyExpenses: 180000,
+        monthlyProfit: 70000,
+        riskLevel: 'high',
+        growthPotential: 'very_high',
+        loopChallenge: 'Fame Addiction - Chasing virality over meaningful content',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'podcast_network',
+        name: 'Podcast Network',
+        type: 'media',
+        investmentRequired: 600000,
+        monthlyRevenue: 180000,
+        monthlyExpenses: 130000,
+        monthlyProfit: 50000,
+        riskLevel: 'medium',
+        growthPotential: 'high',
+        loopChallenge: 'Audience retention vs content quality',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'healthcare',
@@ -103,7 +306,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 20,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'telemedicine_platform',
+        name: 'Telemedicine Platform',
+        type: 'healthtech',
+        investmentRequired: 1500000,
+        monthlyRevenue: 400000,
+        monthlyExpenses: 280000,
+        monthlyProfit: 120000,
+        riskLevel: 'medium',
+        growthPotential: 'very_high',
+        loopChallenge: 'Guilt Loop - Balancing patient care with business viability',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'medical_devices',
+        name: 'Medical Devices',
+        type: 'manufacturing',
+        investmentRequired: 2000000,
+        monthlyRevenue: 500000,
+        monthlyExpenses: 350000,
+        monthlyProfit: 150000,
+        riskLevel: 'high',
+        growthPotential: 'high',
+        loopChallenge: 'Regulatory compliance vs innovation speed',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   },
   {
     id: 'edtech',
@@ -116,7 +348,36 @@ export const industrySectors: IndustrySector[] = [
       maxLoopScore: 15,
     },
     isUnlocked: false,
-    businesses: []
+    businesses: [
+      {
+        id: 'online_learning_platform',
+        name: 'Online Learning Platform',
+        type: 'edtech',
+        investmentRequired: 1200000,
+        monthlyRevenue: 300000,
+        monthlyExpenses: 220000,
+        monthlyProfit: 80000,
+        riskLevel: 'medium',
+        growthPotential: 'very_high',
+        loopChallenge: 'Self-Worth Loop - Taking student failures personally',
+        isOwned: false,
+        ownershipPercentage: 0
+      },
+      {
+        id: 'skill_certification',
+        name: 'Skill Certification',
+        type: 'edtech',
+        investmentRequired: 800000,
+        monthlyRevenue: 200000,
+        monthlyExpenses: 140000,
+        monthlyProfit: 60000,
+        riskLevel: 'low',
+        growthPotential: 'high',
+        loopChallenge: 'Course quality vs completion rates',
+        isOwned: false,
+        ownershipPercentage: 0
+      }
+    ]
   }
 ];
 
