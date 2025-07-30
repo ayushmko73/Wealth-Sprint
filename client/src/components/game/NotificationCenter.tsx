@@ -38,18 +38,21 @@ const NotificationCenter: React.FC = () => {
 
   // Convert game events to notifications
   useEffect(() => {
-    const latestEvents = gameEvents.slice(-5); // Show last 5 events
+    const currentNotificationIds = notifications.map(n => n.id);
+    const newEvents = gameEvents.filter(event => !currentNotificationIds.includes(event.id));
     
-    const newNotifications: Notification[] = latestEvents.map(event => ({
-      id: event.id,
-      type: getNotificationType(event.type),
-      title: event.title,
-      message: event.description,
-      timestamp: new Date(event.timestamp),
-      duration: 5000, // 5 seconds
-    }));
+    if (newEvents.length > 0) {
+      const newNotifications: Notification[] = newEvents.slice(-3).map(event => ({
+        id: event.id,
+        type: getNotificationType(event.type),
+        title: event.title,
+        message: event.description,
+        timestamp: new Date(event.timestamp),
+        duration: 5000, // 5 seconds
+      }));
 
-    setNotifications(newNotifications);
+      setNotifications(prev => [...prev, ...newNotifications].slice(-5)); // Keep only last 5
+    }
   }, [gameEvents]);
 
   const getNotificationType = (eventType: string): 'success' | 'warning' | 'info' | 'financial' | 'achievement' => {
@@ -198,7 +201,7 @@ const NotificationCenter: React.FC = () => {
       {/* Toast Notifications */}
       <div className="fixed top-4 right-20 z-50 space-y-2">
         <AnimatePresence>
-          {notifications.slice(-3).map((notification) => (
+          {notifications.slice(-3).reverse().map((notification) => (
             <motion.div
               key={`toast-${notification.id}`}
               initial={{ opacity: 0, x: 100, scale: 0.8 }}
@@ -207,8 +210,9 @@ const NotificationCenter: React.FC = () => {
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 min-w-64 max-w-80"
               onAnimationComplete={() => {
                 playNotificationSound(notification.type);
-                // Auto-dismiss after duration
-                setTimeout(() => dismissNotification(notification.id), notification.duration || 5000);
+                // Auto-dismiss after duration with cleanup
+                const timeoutId = setTimeout(() => dismissNotification(notification.id), notification.duration || 5000);
+                return () => clearTimeout(timeoutId);
               }}
             >
               <div className="flex items-start gap-3">
