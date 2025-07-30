@@ -21,17 +21,7 @@ import {
   Download, 
   Upload, 
   RotateCcw, 
-  Trash2,
-  Gamepad2,
-  Zap,
-  Crown,
-  Lock,
-  Github,
-  Smartphone,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  ExternalLink
+  Trash2
 } from 'lucide-react';
 
 // APK Download component removed
@@ -74,15 +64,7 @@ const SettingsSection: React.FC = () => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [exportData, setExportData] = useState('');
   
-  // APK Build states
-  const [buildStatus, setBuildStatus] = useState<Array<{
-    step: 'github_push' | 'expo_build' | 'polling' | 'complete' | 'error';
-    message: string;
-    success: boolean;
-    downloadUrl?: string;
-    error?: string;
-  }>>([]);
-  const [isBuilding, setIsBuilding] = useState(false);
+
   
   // Check for unlockable features based on game progress
   const hasAdvancedFeatures = financialData.netWorth >= 10000000; // 1 Cr net worth
@@ -187,34 +169,7 @@ const SettingsSection: React.FC = () => {
     });
   };
 
-  // APK Download Handler - functionality removed but placeholder for future implementation
-  const handleAPKDownload = () => {
-    console.log('APK download functionality has been disabled');
-  };
 
-  const getStatusIcon = (status: any) => {
-    if (status.step === 'error') {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
-    }
-    if (status.success) {
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
-    }
-    return <Loader2 className="w-4 h-4 animate-spin text-blue-500" />;
-  };
-
-  const getStepIcon = (step: string) => {
-    switch (step) {
-      case 'github_push':
-        return <Github className="w-4 h-4" />;
-      case 'expo_build':
-      case 'polling':
-        return <Smartphone className="w-4 h-4" />;
-      case 'complete':
-        return <Download className="w-4 h-4" />;
-      default:
-        return <AlertCircle className="w-4 h-4" />;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -226,7 +181,7 @@ const SettingsSection: React.FC = () => {
       </div>
 
       <Tabs defaultValue="gameplay" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="audio" className="flex items-center gap-1">
             <Volume2 size={14} />
             Audio
@@ -242,10 +197,6 @@ const SettingsSection: React.FC = () => {
           <TabsTrigger value="profile" className="flex items-center gap-1">
             <User size={14} />
             Profile
-          </TabsTrigger>
-          <TabsTrigger value="advanced" className="flex items-center gap-1">
-            <Settings size={14} />
-            Advanced
           </TabsTrigger>
         </TabsList>
 
@@ -544,196 +495,7 @@ const SettingsSection: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Advanced Settings */}
-        <TabsContent value="advanced" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings size={20} />
-                Advanced Settings
-                <Badge className="bg-purple-500 text-white">Unlockables</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* APK Download Section */}
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <Smartphone className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <h4 className="font-medium text-blue-900">Mobile APK Download</h4>
-                    <p className="text-sm text-blue-700">Generate and download an Android APK file for your mobile device</p>
-                  </div>
-                </div>
-                
-                <Button 
-                  onClick={handleAPKDownload}
-                  disabled={isBuilding}
-                  className="w-full mb-3"
-                >
-                  {isBuilding ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Building APK...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-4 h-4 mr-2" />
-                      Download APK
-                    </>
-                  )}
-                </Button>
 
-                {/* Build Status Display */}
-                {buildStatus.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-blue-900">Build Status:</div>
-                    {buildStatus.map((status, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        {getStatusIcon(status)}
-                        {getStepIcon(status.step)}
-                        <span className={
-                          status.success 
-                            ? 'text-green-700' 
-                            : status.step === 'error' 
-                              ? 'text-red-700' 
-                              : 'text-blue-700'
-                        }>
-                          {status.message}
-                        </span>
-                        {status.downloadUrl && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="ml-auto"
-                          >
-                            <a href={status.downloadUrl} download>
-                              <Download className="w-3 h-3 mr-1" />
-                              Download APK
-                              <ExternalLink className="w-3 h-3 ml-1" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    
-                    {buildStatus.some(s => s.step === 'error') && (
-                      <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-700">
-                        <strong>Error Details:</strong>
-                        <div className="mt-1 font-mono text-xs">
-                          {buildStatus.find(s => s.step === 'error')?.error || 'Unknown error occurred'}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-4">
-                <div className={`flex items-center justify-between p-4 rounded-lg border ${hasControllerSupport ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex items-center gap-3">
-                    <Gamepad2 size={20} className={hasControllerSupport ? 'text-green-600' : 'text-gray-400'} />
-                    <div>
-                      <h4 className="font-medium">Controller Layout</h4>
-                      <p className="text-sm text-gray-600">Gamepad support for mobile devices</p>
-                    </div>
-                  </div>
-                  {hasControllerSupport ? (
-                    <Badge className="bg-green-500 text-white">Unlocked</Badge>
-                  ) : (
-                    <Badge variant="outline">Logic 80+ required</Badge>
-                  )}
-                </div>
-                
-                <div className={`flex items-center justify-between p-4 rounded-lg border ${hasControllerSupport ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex items-center gap-3">
-                    <Gamepad2 size={20} className={hasControllerSupport ? 'text-green-600' : 'text-gray-400'} />
-                    <div>
-                      <h4 className="font-medium">Controller Layout</h4>
-                      <p className="text-sm text-gray-600">Gamepad support for mobile devices</p>
-                    </div>
-                  </div>
-                  {hasControllerSupport ? (
-                    <Badge className="bg-green-500 text-white">Unlocked</Badge>
-                  ) : (
-                    <Badge variant="outline">Logic 80+ required</Badge>
-                  )}
-                </div>
-                
-                <div className={`flex items-center justify-between p-4 rounded-lg border ${hasScenarioTuner ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                  <div className="flex items-center gap-3">
-                    <Zap size={20} className={hasScenarioTuner ? 'text-green-600' : 'text-gray-400'} />
-                    <div>
-                      <h4 className="font-medium">Scenario Randomizer Tuner</h4>
-                      <p className="text-sm text-gray-600">Adjust balance of luck vs logic in scenarios</p>
-                    </div>
-                  </div>
-                  {hasScenarioTuner ? (
-                    <Badge className="bg-green-500 text-white">Unlocked</Badge>
-                  ) : (
-                    <Badge variant="outline">Play for 1 year</Badge>
-                  )}
-                </div>
-                
-                {/* Time Engine Debug Console */}
-                <div className="flex items-center justify-between p-4 rounded-lg border bg-blue-50 border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <Clock size={20} className="text-blue-600" />
-                    <div>
-                      <h4 className="font-medium">Time Engine Debug</h4>
-                      <p className="text-sm text-gray-600">View background time engine status in console</p>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleTimeEngineDebug}
-                    className="border-blue-300 hover:bg-blue-100"
-                  >
-                    Debug Console
-                  </Button>
-                </div>
-              </div>
-              
-              {hasAdvancedFeatures && (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown size={16} className="text-yellow-600" />
-                    <h4 className="font-semibold text-yellow-800">Advanced Features Unlocked!</h4>
-                  </div>
-                  <p className="text-sm text-yellow-700">
-                    Congratulations! You've unlocked advanced customization options. 
-                    Your financial success has earned you access to premium features.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-4xl mb-4">🏆</div>
-              <h3 className="font-semibold mb-2">Achievement System</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Continue playing to unlock more features and customization options.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                <div className="p-2 bg-gray-50 rounded">
-                  <div className="font-medium">Financial Milestones</div>
-                  <div className="text-gray-600">Unlock themes & features</div>
-                </div>
-                <div className="p-2 bg-gray-50 rounded">
-                  <div className="font-medium">Skill Mastery</div>
-                  <div className="text-gray-600">Advanced controls</div>
-                </div>
-                <div className="p-2 bg-gray-50 rounded">
-                  <div className="font-medium">Time Investment</div>
-                  <div className="text-gray-600">Special customizations</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Footer Quote */}

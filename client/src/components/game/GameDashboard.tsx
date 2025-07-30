@@ -83,13 +83,11 @@ const GameDashboard: React.FC = () => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
-    { id: 'stocks', label: 'Stocks', icon: TrendingUp },
     { id: 'market_ticker', label: 'Live Market', icon: Activity },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
-    { id: 'enhanced_team', label: 'Team+', icon: Users },
     { id: 'team_hiring', label: 'Elite Hiring', icon: Users },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
@@ -103,8 +101,6 @@ const GameDashboard: React.FC = () => {
     switch (activeSection) {
       case 'cashflow':
         return <CashflowSection />;
-      case 'stocks':
-        return <InvestmentTable />;
       case 'market_ticker':
         return <StockMarketTicker />;
       case 'stock_market':
@@ -115,8 +111,6 @@ const GameDashboard: React.FC = () => {
         return <RevenueOverview />;
       case 'bank':
         return <BankSection />;
-      case 'enhanced_team':
-        return <EnhancedTeamSection />;
       case 'team_hiring':
         return <div></div>; // Placeholder content, actual dashboard is shown as overlay
       case 'industry_sectors':
