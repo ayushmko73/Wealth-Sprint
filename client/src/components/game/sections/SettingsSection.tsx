@@ -34,15 +34,17 @@ const SettingsSection: React.FC = () => {
     timeEngine,
     resetGame,
   } = useWealthSprintGame();
-  
+
   const { 
-    isMuted, 
     toggleMute, 
-    backgroundMusic,
-    hitSound,
-    successSound 
+    isMuted, 
+    setVolume, 
+    volume, 
+    playBackgroundMusic, 
+    stopBackgroundMusic, 
+    isBackgroundPlaying
   } = useAudio();
-  
+
   const [localSettings, setLocalSettings] = useState({
     theme: 'light',
     soundEnabled: !isMuted,
@@ -52,20 +54,19 @@ const SettingsSection: React.FC = () => {
     autoSave: true,
     hapticFeedback: true,
   });
-  
+
   const [playerProfile, setPlayerProfile] = useState({
     avatar: '👨‍💼',
     roleTitle: 'Founder',
     tagline: 'Everything begins with one decision.',
     displayName: 'Player',
   });
-  
-  const [volumeLevel, setVolumeLevel] = useState(50);
+
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [exportData, setExportData] = useState('');
-  
 
-  
+
+
   // Check for unlockable features based on game progress
   const hasAdvancedFeatures = financialData.netWorth >= 10000000; // 1 Cr net worth
   const hasCustomThemes = financialData.netWorth >= 50000000; // 5 Cr net worth
@@ -80,19 +81,8 @@ const SettingsSection: React.FC = () => {
     setLocalSettings(prev => ({ ...prev, gameSpeed: speed }));
   };
 
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0] / 100;
-    setVolumeLevel(value[0]);
-    
-    if (backgroundMusic) {
-      backgroundMusic.volume = newVolume * 0.1; // Background music should be quieter
-    }
-    if (hitSound) {
-      hitSound.volume = newVolume * 0.3;
-    }
-    if (successSound) {
-      successSound.volume = newVolume * 0.5;
-    }
+  const handleVolumeChange = (newValue: number[]) => {
+    setVolume(newValue[0]);
   };
 
   const handleExportSave = () => {
@@ -105,10 +95,10 @@ const SettingsSection: React.FC = () => {
       exportDate: new Date().toISOString(),
       version: '4.0'
     };
-    
+
     const dataString = JSON.stringify(gameData, null, 2);
     setExportData(dataString);
-    
+
     // Create download
     const blob = new Blob([dataString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -227,23 +217,40 @@ const SettingsSection: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-medium">Volume Level</span>
-                    <span className="text-sm text-gray-600">{volumeLevel}%</span>
+                    <span className="text-sm text-gray-600">{volume}%</span>
                   </div>
                   <Slider
-                    value={[volumeLevel]}
+                    value={[volume]}
                     onValueChange={handleVolumeChange}
                     max={100}
-                    step={5}
+                    step={1}
                     className="w-full"
                   />
                 </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold">Background Music</h3>
+                    <p className="text-sm text-gray-600">Ambient music during gameplay</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
+                      disabled={isMuted}
+                    >
+                      {isBackgroundPlaying ? 'Stop' : 'Play'}
+                    </Button>
+                  </div>
+                </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -262,7 +269,7 @@ const SettingsSection: React.FC = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium">Background Music</h4>
@@ -287,7 +294,7 @@ const SettingsSection: React.FC = () => {
 
         {/* Gameplay Settings */}
         <TabsContent value="gameplay" className="space-y-4">
-          
+
           {/* Original Gameplay Settings */}
           <Card>
             <CardHeader>
@@ -319,7 +326,7 @@ const SettingsSection: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -331,7 +338,7 @@ const SettingsSection: React.FC = () => {
                     onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, autoSave: checked }))}
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium">Auto-Save</h4>
@@ -342,7 +349,7 @@ const SettingsSection: React.FC = () => {
                     onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, autoSave: checked }))}
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium">Notifications</h4>
@@ -376,7 +383,7 @@ const SettingsSection: React.FC = () => {
                   </div>
                   <Badge className="bg-green-500 text-white">Enabled</Badge>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium">Local Encryption</h4>
@@ -385,13 +392,13 @@ const SettingsSection: React.FC = () => {
                   <Badge className="bg-green-500 text-white">ON</Badge>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 {/* Save buttons removed as per user request */}
                 <div className="text-sm text-gray-600 p-4 bg-gray-50 rounded-lg">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </div>
-                
+
                 <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
                   <AlertDialogTrigger asChild>
                     <Button 
@@ -417,7 +424,7 @@ const SettingsSection: React.FC = () => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                
+
                 <Button 
                   variant="outline"
                   className="w-full"
@@ -456,7 +463,7 @@ const SettingsSection: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold mb-3">Role Title</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -472,7 +479,7 @@ const SettingsSection: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold mb-3">Signature Tagline</h3>
                 <Input
@@ -483,7 +490,7 @@ const SettingsSection: React.FC = () => {
                 />
                 <p className="text-sm text-gray-500 mt-1">{playerProfile.tagline.length}/50 characters</p>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium">Gender Neutrality</h4>
