@@ -94,7 +94,7 @@ const SettingsSection: React.FC = () => {
     setLocalSettings(prev => ({ ...prev, theme }));
   };
 
-  const handleGameSpeedChange = (speed: 'slow' | 'normal' | 'fast') => {
+  const handleGameSpeedChange = (speed: string) => {
     setLocalSettings(prev => ({ ...prev, gameSpeed: speed }));
   };
 
@@ -187,42 +187,9 @@ const SettingsSection: React.FC = () => {
     });
   };
 
-  // APK Download Handler
-  const handle// APK download functionality removed
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const status = JSON.parse(line.slice(6));
-              setBuildStatus(prev => {
-                const existingIndex = prev.findIndex(s => s.step === status.step);
-                if (existingIndex >= 0) {
-                  const newStatus = [...prev];
-                  newStatus[existingIndex] = status;
-                  return newStatus;
-                } else {
-                  return [...prev, status];
-                }
-              });
-            } catch (e) {
-              console.error('Error parsing build status:', e);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      setBuildStatus(prev => [...prev, {
-        step: 'error',
-        message: 'Build process failed',
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }]);
-    } finally {
-      setIsBuilding(false);
-    }
+  // APK Download Handler - functionality removed but placeholder for future implementation
+  const handleAPKDownload = () => {
+    console.log('APK download functionality has been disabled');
   };
 
   const getStatusIcon = (status: any) => {
@@ -599,7 +566,7 @@ const SettingsSection: React.FC = () => {
                 </div>
                 
                 <Button 
-                  onClick={handleDownloadAPK}
+                  onClick={handleAPKDownload}
                   disabled={isBuilding}
                   className="w-full mb-3"
                 >
