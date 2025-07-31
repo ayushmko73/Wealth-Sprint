@@ -55,7 +55,7 @@ import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
 import TeamHiringDashboard from './TeamHiringDashboard';
-import StockMarketTicker from './StockMarketTicker';
+
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
 
@@ -83,7 +83,6 @@ const GameDashboard: React.FC = () => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
-    { id: 'market_ticker', label: 'Live Market', icon: Activity },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
@@ -101,8 +100,6 @@ const GameDashboard: React.FC = () => {
     switch (activeSection) {
       case 'cashflow':
         return <CashflowSection />;
-      case 'market_ticker':
-        return <StockMarketTicker />;
       case 'stock_market':
         return <EnhancedStockMarket />;
       case 'bonds':
