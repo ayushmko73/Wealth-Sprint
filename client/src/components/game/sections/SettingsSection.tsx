@@ -10,6 +10,8 @@ import { Slider } from '../../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Label } from '../../ui/label';
 import { 
   Settings, 
   Palette, 
@@ -22,8 +24,10 @@ import {
   Upload, 
   RotateCcw, 
   Trash2,
-  Github
+  Github,
+  Lock
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // APK Download component removed
 
@@ -67,6 +71,8 @@ const SettingsSection: React.FC = () => {
   const [exportData, setExportData] = useState('');
   const [isGithubPushing, setIsGithubPushing] = useState(false);
   const [isGithubCleaning, setIsGithubCleaning] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [password, setPassword] = useState('');
 
 
 
@@ -160,8 +166,18 @@ const SettingsSection: React.FC = () => {
     });
   };
 
-  const handlePushToGithub = async () => {
+  const handlePushToGithub = () => {
+    setShowPasswordDialog(true);
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!password) {
+      toast.error('Please enter password');
+      return;
+    }
+
     setIsGithubPushing(true);
+    setShowPasswordDialog(false);
     
     try {
       const response = await fetch('/api/github/push-batch', {
@@ -173,7 +189,8 @@ const SettingsSection: React.FC = () => {
           repository: 'Wealth-Sprint',
           username: 'ayushmko73',
           branch: 'main',
-          commitMessage: '🚀 Complete Wealth Sprint project push from Replit'
+          commitMessage: '🚀 Complete Wealth Sprint project push from Replit',
+          password
         }),
       });
 
@@ -181,27 +198,16 @@ const SettingsSection: React.FC = () => {
 
       if (response.ok) {
         const stats = result.stats;
-        let message = `📁 GitHub Push Complete!\n\n`;
-        message += `✅ Successful: ${stats.successful} files\n`;
-        if (stats.failed > 0) {
-          message += `❌ Failed: ${stats.failed} files\n`;
-          if (stats.failedFiles && stats.failedFiles.length > 0) {
-            message += `\nFirst few failed files:\n${stats.failedFiles.slice(0, 5).join('\n')}`;
-            if (stats.failedFiles.length > 5) {
-              message += `\n... and ${stats.failedFiles.length - 5} more`;
-            }
-          }
-        }
-        message += `\n\n🔗 Repository: ${result.url}`;
-        alert(message);
+        toast.success(`✅ Successfully pushed ${stats.totalFiles} files to GitHub!`);
       } else {
-        throw new Error(result.error || 'Unknown error occurred');
+        toast.error(`❌ GitHub push failed: ${result.error}`);
       }
     } catch (error) {
       console.error('GitHub push error:', error);
-      alert('❌ Push failed, check GitHub token or internet.');
+      toast.error('❌ Failed to push to GitHub. Check your connection.');
     } finally {
       setIsGithubPushing(false);
+      setPassword('');
     }
   };
 
@@ -615,6 +621,56 @@ const SettingsSection: React.FC = () => {
           <p className="text-xs text-gray-500 mt-2">— Wealth Sprint v4.0</p>
         </CardContent>
       </Card>
+
+      {/* Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock size={20} />
+              Authentication Required
+            </DialogTitle>
+            <DialogDescription>
+              Enter the admin password to push the project to GitHub.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlePasswordSubmit();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowPasswordDialog(false);
+                setPassword('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePasswordSubmit}
+              disabled={!password || isGithubPushing}
+              className="bg-[#d4af37] hover:bg-[#b8941f]"
+            >
+              {isGithubPushing ? 'Pushing...' : 'Push to GitHub'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
