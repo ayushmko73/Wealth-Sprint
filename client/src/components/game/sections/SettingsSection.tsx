@@ -181,7 +181,19 @@ const SettingsSection: React.FC = () => {
 
       if (response.ok) {
         const stats = result.stats;
-        alert(`✅ Project pushed to GitHub successfully!\n${stats.successful}/${stats.totalFiles} files uploaded\nRepository: ${result.url}`);
+        let message = `📁 GitHub Push Complete!\n\n`;
+        message += `✅ Successful: ${stats.successful} files\n`;
+        if (stats.failed > 0) {
+          message += `❌ Failed: ${stats.failed} files\n`;
+          if (stats.failedFiles && stats.failedFiles.length > 0) {
+            message += `\nFirst few failed files:\n${stats.failedFiles.slice(0, 5).join('\n')}`;
+            if (stats.failedFiles.length > 5) {
+              message += `\n... and ${stats.failedFiles.length - 5} more`;
+            }
+          }
+        }
+        message += `\n\n🔗 Repository: ${result.url}`;
+        alert(message);
       } else {
         throw new Error(result.error || 'Unknown error occurred');
       }

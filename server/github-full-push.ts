@@ -31,22 +31,47 @@ async function getAllProjectFiles(basePath: string = '.'): Promise<GitHubFile[]>
     '.env.production.local',
     '.vscode',
     '.idea',
-    '*.log',
     'logs',
     '.DS_Store',
     'saved-chats',
     'database',
     '.expo',
-    'attached_assets'
+    'attached_assets',
+    '.cache',
+    '.local',
+    '.config',
+    '.upm',
+    'temp-deploy',
+    'yarn.lock',
+    'package-lock.json'
   ];
 
   function shouldExclude(filePath: string): boolean {
+    const normalizedPath = filePath.replace(/\\/g, '/');
+    
+    // Exclude files that start with certain patterns
+    const startPatterns = ['.local/', '.cache/', '.config/', '.upm/', 'temp-deploy/'];
+    if (startPatterns.some(pattern => normalizedPath.startsWith(pattern))) {
+      return true;
+    }
+    
+    // Exclude log files
+    if (normalizedPath.endsWith('.log') || normalizedPath.includes('/logs/')) {
+      return true;
+    }
+    
+    // Exclude binary files that we don't want
+    if (normalizedPath.endsWith('.bin') || normalizedPath.endsWith('.lock')) {
+      return true;
+    }
+    
+    // Check against main exclude patterns
     return excludePatterns.some(pattern => {
       if (pattern.includes('*')) {
         const regex = new RegExp(pattern.replace('*', '.*'));
-        return regex.test(filePath);
+        return regex.test(normalizedPath);
       }
-      return filePath.includes(pattern);
+      return normalizedPath.includes(pattern) || normalizedPath.startsWith(pattern + '/');
     });
   }
 
@@ -68,14 +93,27 @@ async function getAllProjectFiles(basePath: string = '.'): Promise<GitHubFile[]>
           readDirectory(fullPath, itemRelativePath);
         } else if (stats.isFile()) {
           try {
+            // Check file size (skip very large files)
+            if (stats.size > 1024 * 1024) { // 1MB limit
+              console.log(`Skipping large file: ${itemRelativePath} (${stats.size} bytes)`);
+              return;
+            }
+            
             const content = fs.readFileSync(fullPath, 'utf8');
+            
+            // Skip empty files
+            if (content.trim().length === 0) {
+              console.log(`Skipping empty file: ${itemRelativePath}`);
+              return;
+            }
+            
             files.push({
               path: itemRelativePath.replace(/\\/g, '/'), // Ensure forward slashes
               content,
               type: 'file'
             });
           } catch (error) {
-            console.log(`Skipping binary file: ${itemRelativePath}`);
+            console.log(`Skipping binary or invalid file: ${itemRelativePath}`);
           }
         }
       }
@@ -215,6 +253,8 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+yarn.lock
 
 # Build outputs
 dist/
@@ -236,18 +276,27 @@ build/
 .DS_Store
 
 # Logs
-logs
+logs/
 *.log
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Database
+# Database and temp files
 database/
 saved-chats/
+attached_assets/
+temp-deploy/
+
+# Replit specific
+.local/
+.cache/
+.config/
+.upm/
+*.bin
 
 # Expo
 .expo/
@@ -264,13 +313,18 @@ generated-icon.png
         type: 'file'
       });
 
-      // Upload files in batches to avoid rate limiting
-      const batchSize = 10;
+      // Upload files in smaller batches to avoid rate limiting
+      const batchSize = 5;
       let successCount = 0;
       let failCount = 0;
+      const failedFiles: string[] = [];
+
+      console.log(`Starting upload of ${projectFiles.length} files...`);
 
       for (let i = 0; i < projectFiles.length; i += batchSize) {
         const batch = projectFiles.slice(i, i + batchSize);
+        
+        console.log(`Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(projectFiles.length/batchSize)}...`);
         
         const batchPromises = batch.map(async (file) => {
           const success = await createOrUpdateFile(
@@ -280,7 +334,7 @@ generated-icon.png
             file.path,
             file.content,
             githubToken,
-            `${commitMessage} - ${file.path}`
+            `${commitMessage} - Update ${file.path}`
           );
           
           if (success) {
@@ -288,6 +342,7 @@ generated-icon.png
             console.log(`✅ Uploaded: ${file.path}`);
           } else {
             failCount++;
+            failedFiles.push(file.path);
             console.log(`❌ Failed: ${file.path}`);
           }
           
@@ -296,21 +351,24 @@ generated-icon.png
 
         await Promise.all(batchPromises);
         
-        // Rate limiting delay
+        // Rate limiting delay between batches
         if (i + batchSize < projectFiles.length) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
 
       console.log(`Upload completed: ${successCount} successful, ${failCount} failed`);
 
       res.json({
-        success: true,
-        message: `Project uploaded to GitHub successfully!`,
+        success: successCount > 0,
+        message: failCount === 0 
+          ? `All ${successCount} files uploaded successfully!` 
+          : `${successCount} files uploaded, ${failCount} failed`,
         stats: {
           totalFiles: projectFiles.length,
           successful: successCount,
-          failed: failCount
+          failed: failCount,
+          failedFiles: failedFiles.length > 0 ? failedFiles.slice(0, 10) : [] // Show first 10 failed files
         },
         url: `https://github.com/${username}/${repository}`
       });
