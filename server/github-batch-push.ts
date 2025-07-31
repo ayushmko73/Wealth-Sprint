@@ -23,9 +23,11 @@ async function getProjectFiles(): Promise<GitHubFile[]> {
   // Essential root files to include
   const rootFiles = [
     'package.json',
+    'package-lock.json',
     'tsconfig.json', 
     'replit.nix',
     '.replit',
+    '.gitignore',
     'replit.md',
     'tailwind.config.ts',
     'postcss.config.js',
@@ -56,8 +58,8 @@ async function getProjectFiles(): Promise<GitHubFile[]> {
             continue;
           }
           
-          // Skip log files and lock files
-          if (item.endsWith('.log') || item === 'package-lock.json' || item === 'yarn.lock') {
+          // Skip log files but keep important lock files
+          if (item.endsWith('.log') || item === 'yarn.lock') {
             continue;
           }
           
@@ -211,7 +213,12 @@ async function updateBranch(
 export function registerBatchGitHubRoutes(app: Express) {
   app.post('/api/github/push-batch', async (req, res) => {
     try {
-      const { repository, username, branch, commitMessage } = req.body;
+      const { repository, username, branch, commitMessage, password } = req.body;
+      
+      // Check password
+      if (password !== 'Ak@github123') {
+        return res.status(401).json({ error: 'Invalid password' });
+      }
       
       const githubToken = process.env.GITHUB_TOKEN;
       if (!githubToken) {
