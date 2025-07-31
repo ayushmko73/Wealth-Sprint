@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#f5f5dc"/>
+  <circle cx="96" cy="96" r="70" fill="#228B22" opacity="0.1"/>
+  <g transform="translate(96, 96)">
+    <circle cx="0" cy="0" r="35" fill="#2F5233" opacity="0.2"/>
+    <text x="0" y="12" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#2F5233">$</text>
+  </g>
+  <text x="96" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2F5233">WEALTH</text>
+  <text x="96" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2F5233">SPRINT</text>
+</svg>
