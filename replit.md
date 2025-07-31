@@ -128,6 +128,7 @@ Changelog:
 - July 31, 2025. Enhanced GitHub integration with repository cleanup: Added automatic .gitignore creation to prevent unwanted files, README.md generation for proper documentation, repository cleanup function to remove ghost/config files, separate cleanup button for existing repositories, and improved file management to only commit essential game data in clean structure.
 - July 31, 2025. Implemented full project GitHub push: Created complete project upload functionality that pushes entire Replit codebase to GitHub, including client, server, and configuration files, with intelligent file filtering to exclude node_modules and sensitive files, batch uploading to handle rate limits, and comprehensive progress tracking with success/failure statistics.
 - July 31, 2025. Fixed GitHub push reliability: Replaced complex file filtering with whitelist approach that specifically includes essential project directories (client/, server/, shared/, database/) and configuration files, improved upload reliability with proper rate limiting, enhanced error handling and logging, and ensured all important project files are successfully committed to GitHub repository.
+- July 31, 2025. Implemented single-commit GitHub push: Created batch upload system using GitHub Tree API to commit all project files in one atomic operation, eliminating infinite commit loops, removing ghost files from uploads, and ensuring complete project structure is uploaded in a single commit with proper file filtering.
 ```
 
 ## User Preferences
