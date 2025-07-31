@@ -32,6 +32,20 @@ html, body {
   }
 }
 
+/* Stock Ticker Animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
 /* Theme Support */
 :root {
   --primary: #d4af37;

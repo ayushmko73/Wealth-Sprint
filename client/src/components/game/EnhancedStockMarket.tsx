@@ -8,13 +8,9 @@ import {
   TrendingUp, 
   TrendingDown, 
   BarChart3,
-  Menu,
-  X,
   ShoppingCart,
   Calculator,
-  FileText,
-  Activity,
-  DollarSign
+  Activity
 } from 'lucide-react';
 
 interface Stock {
@@ -58,7 +54,6 @@ const EnhancedStockMarket: React.FC = () => {
   const [tradeTypes, setTradeTypes] = useState<Record<string, 'delivery' | 'intraday'>>({});
   const [portfolioHoldings, setPortfolioHoldings] = useState<StockHolding[]>([]);
   const [marketMode, setMarketMode] = useState<'bull' | 'bear' | 'neutral'>('neutral');
-  const [showBalanceSheet, setShowBalanceSheet] = useState(false);
   const [isLiveMode, setIsLiveMode] = useState(true);
 
   // Enhanced Indian stocks with realistic data
@@ -354,102 +349,51 @@ const EnhancedStockMarket: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Real-Time Stock Ticker */}
+      <div className="bg-gradient-to-r from-gray-900 to-black rounded-lg p-4 mb-6 overflow-hidden relative">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-green-400" />
+            <h3 className="text-white font-semibold">Real-Time Stock Ticker</h3>
+          </div>
+          <Badge className={`${isLiveMode ? 'bg-green-600' : 'bg-gray-600'} text-white animate-pulse`}>
+            {isLiveMode ? 'LIVE' : 'PAUSED'}
+          </Badge>
+        </div>
+        
+        {/* Scrolling ticker */}
+        <div className="overflow-hidden">
+          <div className="flex animate-scroll whitespace-nowrap">
+            {stocks.concat(stocks).map((stock, index) => (
+              <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-8 text-white">
+                <span className="font-bold text-blue-400 mr-2">{stock.code}</span>
+                <span className="text-white mr-2">₹{stock.price.toFixed(2)}</span>
+                <span className={`flex items-center gap-1 ${stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {stock.changePercent >= 0 ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  {stock.changePercent >= 0 ? '+' : ''}₹{stock.change.toFixed(2)} 
+                  ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[#3a3a3a]">Enhanced Stock Market</h1>
           <p className="text-gray-600">Real-time trading with Indian market charges</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={() => setShowBalanceSheet(!showBalanceSheet)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            Balance Sheet
-          </Button>
-          <Badge className={`${isLiveMode ? 'bg-green-600' : 'bg-gray-600'} text-white`}>
-            {isLiveMode ? 'LIVE' : 'PAUSED'}
-          </Badge>
         </div>
       </div>
 
 
 
-      {/* Balance Sheet Modal */}
-      {showBalanceSheet && (
-        <div className="fixed top-4 right-4 w-80 z-50 bg-white bg-opacity-0 rounded-lg shadow-lg border">
-          <div className="p-4 pb-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Balance Sheet</h3>
-              <Button 
-                onClick={() => setShowBalanceSheet(false)}
-                variant="ghost" 
-                size="sm"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-          <div className="px-4 pb-4 space-y-3">
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Cash Balance:</span>
-                <span className="font-medium">₹{financialData.bankBalance.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Stock Investments:</span>
-                <span className="font-medium">₹{financialData.investments.stocks.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Portfolio Value:</span>
-                <span className="font-medium">
-                  ₹{portfolioHoldings.reduce((total, holding) => {
-                    const stock = stocks.find(s => s.code === holding.code);
-                    return total + (stock ? stock.price * holding.quantity : 0);
-                  }, 0).toLocaleString()}
-                </span>
-              </div>
-              <div className="border-t pt-2">
-                <div className="flex justify-between font-semibold">
-                  <span>Total Assets:</span>
-                  <span>₹{(financialData.bankBalance + portfolioHoldings.reduce((total, holding) => {
-                    const stock = stocks.find(s => s.code === holding.code);
-                    return total + (stock ? stock.price * holding.quantity : 0);
-                  }, 0)).toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Portfolio Holdings */}
-            {portfolioHoldings.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Holdings:</h4>
-                {portfolioHoldings.map((holding) => {
-                  const stock = stocks.find(s => s.code === holding.code);
-                  if (!stock) return null;
-                  
-                  const currentValue = stock.price * holding.quantity;
-                  const investedValue = holding.avgPrice * holding.quantity;
-                  const pnl = currentValue - investedValue;
-                  const pnlPercent = (pnl / investedValue) * 100;
-
-                  return (
-                    <div key={holding.code} className="text-xs bg-gray-50 p-2 rounded">
-                      <div className="font-medium">{holding.code}</div>
-                      <div className="text-gray-600">{holding.quantity} shares</div>
-                      <div className={`${pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {pnl >= 0 ? '+' : ''}₹{pnl.toFixed(2)} ({pnlPercent.toFixed(1)}%)
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Stock Cards with Trading Interface */}
       <div className="space-y-4">
