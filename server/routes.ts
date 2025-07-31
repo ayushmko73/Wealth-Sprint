@@ -4,6 +4,7 @@ import { storage } from "./storage";
 // APK builder import removed
 import { registerSageRoutes } from "./gork-api";
 import { registerAdvancedAIRoutes } from "./advanced-ai";
+import { registerGitHubRoutes } from "./github-api";
 import { initializeDatabase } from "./supabase";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -21,6 +22,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register advanced AI routes
   registerAdvancedAIRoutes(app);
+
+  // Register GitHub API routes
+  registerGitHubRoutes(app);
 
   const httpServer = createServer(app);
 

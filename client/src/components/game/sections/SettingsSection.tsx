@@ -21,7 +21,8 @@ import {
   Download, 
   Upload, 
   RotateCcw, 
-  Trash2
+  Trash2,
+  Github
 } from 'lucide-react';
 
 // APK Download component removed
@@ -64,6 +65,7 @@ const SettingsSection: React.FC = () => {
 
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [exportData, setExportData] = useState('');
+  const [isGithubPushing, setIsGithubPushing] = useState(false);
 
 
 
@@ -134,12 +136,10 @@ const SettingsSection: React.FC = () => {
   const handleMusicToggle = () => {
     toggleMute();
     setLocalSettings(prev => ({ ...prev, musicEnabled: !prev.musicEnabled }));
-    if (backgroundMusic) {
-      if (localSettings.musicEnabled) {
-        backgroundMusic.pause();
-      } else {
-        backgroundMusic.play();
-      }
+    if (localSettings.musicEnabled) {
+      stopBackgroundMusic();
+    } else {
+      playBackgroundMusic();
     }
   };
 
@@ -157,6 +157,58 @@ const SettingsSection: React.FC = () => {
       daysSinceLastScenario: timeEngine.daysSinceLastScenario,
       isGameEnded: timeEngine.isGameEnded
     });
+  };
+
+  const handlePushToGithub = async () => {
+    setIsGithubPushing(true);
+    
+    try {
+      // Prepare game data for push
+      const gameData = {
+        playerStats,
+        financialData,
+        currentWeek,
+        playerProfile,
+        settings: localSettings,
+        exportDate: new Date().toISOString(),
+        version: '4.0',
+        timeEngine: {
+          currentGameDay: timeEngine.currentGameDay,
+          currentGameMonth: timeEngine.currentGameMonth,
+          currentGameYear: timeEngine.currentGameYear,
+          daysSinceLastScenario: timeEngine.daysSinceLastScenario,
+          isGameEnded: timeEngine.isGameEnded
+        }
+      };
+
+      const response = await fetch('/api/github/push', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repository: 'Wealth-Sprint',
+          username: 'ayushmko73',
+          branch: 'main',
+          filepath: 'data/save.json',
+          content: JSON.stringify(gameData, null, 2),
+          commitMessage: '🚀 Auto-push from Wealth Sprint game UI'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('✅ Game data pushed to GitHub successfully!');
+      } else {
+        throw new Error(result.error || 'Unknown error occurred');
+      }
+    } catch (error) {
+      console.error('GitHub push error:', error);
+      alert('❌ Push failed, check GitHub token or internet.');
+    } finally {
+      setIsGithubPushing(false);
+    }
   };
 
 
@@ -394,6 +446,17 @@ const SettingsSection: React.FC = () => {
               </div>
 
               <div className="space-y-3">
+                {/* GitHub Push Button */}
+                <Button 
+                  variant="outline"
+                  className="w-full text-[#d4af37] hover:text-[#b8941f] border-[#d4af37] hover:border-[#b8941f]"
+                  onClick={handlePushToGithub}
+                  disabled={isGithubPushing}
+                >
+                  <Github size={16} className="mr-2" />
+                  {isGithubPushing ? 'Pushing to GitHub...' : 'Push to GitHub'}
+                </Button>
+                
                 {/* Save buttons removed as per user request */}
                 <div className="text-sm text-gray-600 p-4 bg-gray-50 rounded-lg">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
