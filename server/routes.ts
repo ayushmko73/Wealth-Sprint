@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { registerSageRoutes } from "./gork-api";
 import { registerAdvancedAIRoutes } from "./advanced-ai";
 import { registerGitHubRoutes } from "./github-api";
+import { registerFullGitHubRoutes } from "./github-full-push";
 import { initializeDatabase } from "./supabase";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -25,6 +26,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register GitHub API routes
   registerGitHubRoutes(app);
+
+  // Register full GitHub push routes
+  registerFullGitHubRoutes(app);
 
   const httpServer = createServer(app);
 

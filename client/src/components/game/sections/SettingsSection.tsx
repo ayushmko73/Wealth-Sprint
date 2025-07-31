@@ -164,25 +164,7 @@ const SettingsSection: React.FC = () => {
     setIsGithubPushing(true);
     
     try {
-      // Prepare game data for push
-      const gameData = {
-        playerStats,
-        financialData,
-        currentWeek,
-        playerProfile,
-        settings: localSettings,
-        exportDate: new Date().toISOString(),
-        version: '4.0',
-        timeEngine: {
-          currentGameDay: timeEngine.currentGameDay,
-          currentGameMonth: timeEngine.currentGameMonth,
-          currentGameYear: timeEngine.currentGameYear,
-          daysSinceLastScenario: timeEngine.daysSinceLastScenario,
-          isGameEnded: timeEngine.isGameEnded
-        }
-      };
-
-      const response = await fetch('/api/github/push', {
+      const response = await fetch('/api/github/push-full', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,16 +173,15 @@ const SettingsSection: React.FC = () => {
           repository: 'Wealth-Sprint',
           username: 'ayushmko73',
           branch: 'main',
-          filepath: 'data/save.json',
-          content: JSON.stringify(gameData, null, 2),
-          commitMessage: '🚀 Auto-push from Wealth Sprint game UI'
+          commitMessage: '🚀 Complete Wealth Sprint project push from Replit'
         }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        alert('✅ Game data pushed to GitHub successfully!');
+        const stats = result.stats;
+        alert(`✅ Project pushed to GitHub successfully!\n${stats.successful}/${stats.totalFiles} files uploaded\nRepository: ${result.url}`);
       } else {
         throw new Error(result.error || 'Unknown error occurred');
       }
@@ -487,7 +468,7 @@ const SettingsSection: React.FC = () => {
                     disabled={isGithubPushing || isGithubCleaning}
                   >
                     <Github size={16} className="mr-2" />
-                    {isGithubPushing ? 'Pushing to GitHub...' : 'Push to GitHub'}
+                    {isGithubPushing ? 'Pushing Project...' : 'Push Full Project to GitHub'}
                   </Button>
                   
                   <Button 
