@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "wealth-sprint",
+  "builds": [
+    {
+      "src": "client/dist/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "server/api/**/*.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/dist/$1"
+    }
+  ],
+  "functions": {
+    "server/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
