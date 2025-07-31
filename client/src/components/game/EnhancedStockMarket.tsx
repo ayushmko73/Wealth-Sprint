@@ -349,12 +349,15 @@ const EnhancedStockMarket: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Future Content Space */}
+      <div className="h-12"></div>
+      
       {/* Real-Time Stock Ticker */}
-      <div className="bg-gradient-to-r from-gray-900 to-black rounded-lg p-4 mb-6 overflow-hidden relative">
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6 overflow-hidden relative">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-green-400" />
-            <h3 className="text-white font-semibold">Real-Time Stock Ticker</h3>
+            <Activity className="w-5 h-5 text-green-600" />
+            <h3 className="text-gray-800 font-semibold">Real-Time Stock Ticker</h3>
           </div>
           <Badge className={`${isLiveMode ? 'bg-green-600' : 'bg-gray-600'} text-white animate-pulse`}>
             {isLiveMode ? 'LIVE' : 'PAUSED'}
@@ -365,10 +368,10 @@ const EnhancedStockMarket: React.FC = () => {
         <div className="overflow-hidden">
           <div className="flex animate-scroll whitespace-nowrap">
             {stocks.concat(stocks).map((stock, index) => (
-              <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-8 text-white">
-                <span className="font-bold text-blue-400 mr-2">{stock.code}</span>
-                <span className="text-white mr-2">₹{stock.price.toFixed(2)}</span>
-                <span className={`flex items-center gap-1 ${stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-8 text-gray-800">
+                <span className="font-bold text-blue-600 mr-2">{stock.code}</span>
+                <span className="text-gray-800 mr-2">₹{stock.price.toFixed(2)}</span>
+                <span className={`flex items-center gap-1 ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {stock.changePercent >= 0 ? (
                     <TrendingUp className="w-3 h-3" />
                   ) : (
@@ -380,14 +383,6 @@ const EnhancedStockMarket: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-[#3a3a3a]">Enhanced Stock Market</h1>
-          <p className="text-gray-600">Real-time trading with Indian market charges</p>
         </div>
       </div>
 
