@@ -7,6 +7,7 @@ import { registerAdvancedAIRoutes } from "./advanced-ai";
 import { registerGitHubRoutes } from "./github-api";
 import { registerFullGitHubRoutes } from "./github-full-push";
 import { registerSimpleGitHubRoutes } from "./github-simple-push";
+import { registerBatchGitHubRoutes } from "./github-batch-push";
 import { initializeDatabase } from "./supabase";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -33,6 +34,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register simple GitHub push routes
   registerSimpleGitHubRoutes(app);
+
+  // Register batch GitHub push routes
+  registerBatchGitHubRoutes(app);
 
   const httpServer = createServer(app);
 

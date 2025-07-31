@@ -164,7 +164,7 @@ const SettingsSection: React.FC = () => {
     setIsGithubPushing(true);
     
     try {
-      const response = await fetch('/api/github/push-simple', {
+      const response = await fetch('/api/github/push-batch', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
