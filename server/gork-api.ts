@@ -122,6 +122,13 @@ Respond in a calm, mentor-like tone without being judgmental.`;
   // Load chat history
   app.get('/api/sage/chat-history', async (req, res) => {
     try {
+      // Ensure directory exists
+      if (!fs.existsSync(CHATS_DIR)) {
+        fs.mkdirSync(CHATS_DIR, { recursive: true });
+        res.json([]);
+        return;
+      }
+
       const files = fs.readdirSync(CHATS_DIR)
         .filter(file => file.endsWith('.json'))
         .map(file => {

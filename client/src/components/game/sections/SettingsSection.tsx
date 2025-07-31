@@ -66,6 +66,7 @@ const SettingsSection: React.FC = () => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [exportData, setExportData] = useState('');
   const [isGithubPushing, setIsGithubPushing] = useState(false);
+  const [isGithubCleaning, setIsGithubCleaning] = useState(false);
 
 
 
@@ -208,6 +209,37 @@ const SettingsSection: React.FC = () => {
       alert('❌ Push failed, check GitHub token or internet.');
     } finally {
       setIsGithubPushing(false);
+    }
+  };
+
+  const handleCleanupGithub = async () => {
+    setIsGithubCleaning(true);
+    
+    try {
+      const response = await fetch('/api/github/cleanup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repository: 'Wealth-Sprint',
+          username: 'ayushmko73',
+          branch: 'main'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('✅ Repository cleaned up successfully! Unwanted files removed.');
+      } else {
+        throw new Error(result.error || 'Unknown error occurred');
+      }
+    } catch (error) {
+      console.error('GitHub cleanup error:', error);
+      alert('❌ Cleanup failed, check GitHub token or internet.');
+    } finally {
+      setIsGithubCleaning(false);
     }
   };
 
@@ -447,15 +479,28 @@ const SettingsSection: React.FC = () => {
 
               <div className="space-y-3">
                 {/* GitHub Push Button */}
-                <Button 
-                  variant="outline"
-                  className="w-full text-[#d4af37] hover:text-[#b8941f] border-[#d4af37] hover:border-[#b8941f]"
-                  onClick={handlePushToGithub}
-                  disabled={isGithubPushing}
-                >
-                  <Github size={16} className="mr-2" />
-                  {isGithubPushing ? 'Pushing to GitHub...' : 'Push to GitHub'}
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline"
+                    className="w-full text-[#d4af37] hover:text-[#b8941f] border-[#d4af37] hover:border-[#b8941f]"
+                    onClick={handlePushToGithub}
+                    disabled={isGithubPushing || isGithubCleaning}
+                  >
+                    <Github size={16} className="mr-2" />
+                    {isGithubPushing ? 'Pushing to GitHub...' : 'Push to GitHub'}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="w-full text-orange-600 hover:text-orange-700 border-orange-300 hover:border-orange-400"
+                    onClick={handleCleanupGithub}
+                    disabled={isGithubCleaning || isGithubPushing}
+                    size="sm"
+                  >
+                    <Trash2 size={14} className="mr-2" />
+                    {isGithubCleaning ? 'Cleaning Repository...' : 'Clean Repository'}
+                  </Button>
+                </div>
                 
                 {/* Save buttons removed as per user request */}
                 <div className="text-sm text-gray-600 p-4 bg-gray-50 rounded-lg">
