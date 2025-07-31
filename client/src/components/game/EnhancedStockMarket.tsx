@@ -596,15 +596,14 @@ const EnhancedStockMarket: React.FC = () => {
                         <div className="flex gap-2">
                           <Button
                             onClick={() => handleTrade(stock.code, true)}
-                            className="bg-green-600 hover:bg-green-700 flex-1"
+                            className="bg-green-600 hover:bg-green-700 text-white flex-1 font-semibold"
                             disabled={financialData.bankBalance < (tradeValue + charges.total)}
                           >
                             Buy ₹{(tradeValue + charges.total).toLocaleString()}
                           </Button>
                           <Button
                             onClick={() => handleTrade(stock.code, false)}
-                            variant="destructive"
-                            className="flex-1"
+                            className="bg-red-600 hover:bg-red-700 text-white flex-1 font-semibold"
                             disabled={!holding || holding.quantity < quantity}
                           >
                             Sell ₹{(tradeValue - charges.total).toLocaleString()}
