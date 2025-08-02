@@ -54,31 +54,46 @@ import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
-import TeamHiringDashboard from './TeamHiringDashboard';
+import EliteHiringSection from './EliteHiringSection';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
 
 const GameDashboard: React.FC = () => {
-  const { financialData, playerStats, currentWeek, currentDay, gameStarted } = useWealthSprintGame();
+  const { financialData, playerStats, currentWeek, currentDay, gameStarted, advanceTime } = useWealthSprintGame();
   const { initializeTeam } = useTeamManagement();
   const isMobile = useIsMobile();
   
   const [activeSection, setActiveSection] = useState<string>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showHiringDashboard, setShowHiringDashboard] = useState(false);
 
   useEffect(() => {
-    // Initialize team
+    // Initialize team and audio
     initializeTeam();
+    
+    // Initialize audio automatically on game start
+    const { initializeAudio, playBackgroundMusic } = useAudio.getState();
+    initializeAudio();
+    
+    // Start background music automatically after a brief delay
+    setTimeout(() => {
+      playBackgroundMusic();
+    }, 1000);
   }, [initializeTeam]);
 
+  // Auto time progression at 24x speed - runs every 1.5 seconds (real time)
+  // This equals 24x faster than real time progression
   useEffect(() => {
-    // Show hiring dashboard when team_hiring section is selected
-    if (activeSection === 'team_hiring') {
-      setShowHiringDashboard(true);
-    }
-  }, [activeSection]);
+    const timeProgressionInterval = setInterval(() => {
+      if (gameStarted) {
+        advanceTime();
+      }
+    }, 1500); // 1.5 seconds = 24x faster than real time
+
+    return () => clearInterval(timeProgressionInterval);
+  }, [gameStarted, advanceTime]);
+
+
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -109,7 +124,7 @@ const GameDashboard: React.FC = () => {
       case 'bank':
         return <BankSection />;
       case 'team_hiring':
-        return <div></div>; // Placeholder content, actual dashboard is shown as overlay
+        return <EliteHiringSection onClose={() => setActiveSection('dashboard')} />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':
@@ -285,15 +300,7 @@ const GameDashboard: React.FC = () => {
       {/* Sound Manager */}
       <SoundManager />
       
-      {/* Team Hiring Dashboard Overlay */}
-      {showHiringDashboard && (
-        <TeamHiringDashboard 
-          onClose={() => {
-            setShowHiringDashboard(false);
-            setActiveSection('dashboard');
-          }} 
-        />
-      )}
+
       
       {/* Sage AI Assistant */}
       <SageAI />

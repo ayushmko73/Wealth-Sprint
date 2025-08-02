@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import GameDashboard from "./components/game/GameDashboard";
 import { Toaster } from "./components/ui/sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import "@fontsource/inter";
 
 const queryClient = new QueryClient();
 

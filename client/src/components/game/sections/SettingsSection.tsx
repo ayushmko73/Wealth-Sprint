@@ -52,9 +52,9 @@ const SettingsSection: React.FC = () => {
 
   const [localSettings, setLocalSettings] = useState({
     theme: 'light',
-    soundEnabled: !isMuted,
-    musicEnabled: !isMuted,
-    gameSpeed: 'normal',
+    soundEnabled: true, // Default ON
+    musicEnabled: true, // Default ON
+    gameSpeed: 'auto24x', // Default to 24x faster auto cycle
     notifications: true,
     autoSave: true,
     hapticFeedback: true,
@@ -356,19 +356,11 @@ const SettingsSection: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-medium">Background Music</h4>
-                    <p className="text-sm text-gray-600">Ambient audio during gameplay</p>
+                    <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
                   </div>
-                  <Select defaultValue="none">
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="calm">Calm Business Lo-Fi</SelectItem>
-                      <SelectItem value="focus">Focus Ambience</SelectItem>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="ceo">CEO Room Echo</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="text-sm text-gray-600 bg-[#f5f0e6] px-3 py-1 rounded">
+                    Calm Business Lo-Fi
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -389,25 +381,13 @@ const SettingsSection: React.FC = () => {
             <CardContent className="space-y-6">
               <div>
                 <h3 className="font-semibold mb-3">Auto Cycle Rate</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    { value: 'realtime', label: 'Real-time', desc: 'Ideal for immersion' },
-                    { value: 'normal', label: 'Balanced', desc: '5 sec delay for decisions' },
-                    { value: 'fast', label: 'Fast-Track Mode', desc: '2x for experienced users' },
-                    { value: 'turbo', label: 'Turbo Test Mode', desc: 'For practice' },
-                  ].map(option => (
-                    <Card 
-                      key={option.value}
-                      className={`cursor-pointer transition-all ${localSettings.gameSpeed === option.value ? 'ring-2 ring-[#d4af37]' : ''}`}
-                      onClick={() => handleGameSpeedChange(option.value)}
-                    >
-                      <CardContent className="pt-4">
-                        <h4 className="font-medium">{option.label}</h4>
-                        <p className="text-sm text-gray-600">{option.desc}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <Card className="ring-2 ring-[#d4af37] opacity-90">
+                  <CardContent className="pt-4">
+                    <h4 className="font-medium">24× Faster</h4>
+                    <p className="text-sm text-gray-600">Optimized game progression - 24x faster than real time</p>
+                    <p className="text-xs text-gray-500 mt-1">This setting cannot be changed</p>
+                  </CardContent>
+                </Card>
               </div>
 
               <div className="space-y-4">
