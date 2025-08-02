@@ -54,7 +54,7 @@ import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
-import TeamHiringDashboard from './TeamHiringDashboard';
+import EliteHiringSection from './EliteHiringSection';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
@@ -285,9 +285,9 @@ const GameDashboard: React.FC = () => {
       {/* Sound Manager */}
       <SoundManager />
       
-      {/* Team Hiring Dashboard Overlay */}
+      {/* Elite Hiring Section Overlay */}
       {showHiringDashboard && (
-        <TeamHiringDashboard 
+        <EliteHiringSection 
           onClose={() => {
             setShowHiringDashboard(false);
             setActiveSection('dashboard');
