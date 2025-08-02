@@ -241,8 +241,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('❌ GitHub batch push error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     res.status(500).json({ 
-      error: `Failed to push project to GitHub: ${error.message}` 
+      error: `Failed to push project to GitHub: ${errorMessage}` 
     });
   }
 }
