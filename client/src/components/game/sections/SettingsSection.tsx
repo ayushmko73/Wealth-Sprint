@@ -384,7 +384,7 @@ const SettingsSection: React.FC = () => {
                 <Card className="ring-2 ring-[#d4af37] opacity-90">
                   <CardContent className="pt-4">
                     <h4 className="font-medium">24× Faster</h4>
-                    <p className="text-sm text-gray-600">2.5 minutes real time = 1 in-game day (optimized for gameplay)</p>
+                    <p className="text-sm text-gray-600">1 real hour = 1 in-game day (24x faster than real time)</p>
                     <p className="text-xs text-gray-500 mt-1">This setting cannot be changed</p>
                   </CardContent>
                 </Card>

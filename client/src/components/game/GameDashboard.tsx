@@ -81,14 +81,14 @@ const GameDashboard: React.FC = () => {
     }, 1000);
   }, [initializeTeam]);
 
-  // Auto time progression at 24x speed - runs every 150 seconds (real time)
-  // This equals 2.5 minutes real time = 1 in-game day (576x faster than real time)
+  // Auto time progression at 24x speed - runs every 1 hour (real time)
+  // This equals 1 real hour = 1 in-game day (24x faster than real time)
   useEffect(() => {
     const timeProgressionInterval = setInterval(() => {
       if (gameStarted) {
         advanceTime();
       }
-    }, 150000); // 150000 ms = 2.5 minutes = 1 in-game day
+    }, 3600000); // 3600000 ms = 1 hour = 1 in-game day
 
     return () => clearInterval(timeProgressionInterval);
   }, [gameStarted, advanceTime]);
