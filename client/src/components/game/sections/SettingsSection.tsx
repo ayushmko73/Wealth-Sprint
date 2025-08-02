@@ -383,8 +383,8 @@ const SettingsSection: React.FC = () => {
                 <h3 className="font-semibold mb-3">Auto Cycle Rate</h3>
                 <Card className="ring-2 ring-[#d4af37] opacity-90">
                   <CardContent className="pt-4">
-                    <h4 className="font-medium">4× Faster</h4>
-                    <p className="text-sm text-gray-600">Optimized game progression - 4x faster than real time</p>
+                    <h4 className="font-medium">24× Faster</h4>
+                    <p className="text-sm text-gray-600">2.5 minutes real time = 1 in-game day (optimized for gameplay)</p>
                     <p className="text-xs text-gray-500 mt-1">This setting cannot be changed</p>
                   </CardContent>
                 </Card>
