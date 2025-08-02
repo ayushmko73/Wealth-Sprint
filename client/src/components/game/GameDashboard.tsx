@@ -60,18 +60,38 @@ import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
 
 const GameDashboard: React.FC = () => {
-  const { financialData, playerStats, currentWeek, currentDay, gameStarted } = useWealthSprintGame();
+  const { financialData, playerStats, currentWeek, currentDay, gameStarted, advanceTime } = useWealthSprintGame();
   const { initializeTeam } = useTeamManagement();
   const isMobile = useIsMobile();
   
   const [activeSection, setActiveSection] = useState<string>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
 
-
   useEffect(() => {
-    // Initialize team
+    // Initialize team and audio
     initializeTeam();
+    
+    // Initialize audio automatically on game start
+    const { initializeAudio, playBackgroundMusic } = useAudio.getState();
+    initializeAudio();
+    
+    // Start background music automatically after a brief delay
+    setTimeout(() => {
+      playBackgroundMusic();
+    }, 1000);
   }, [initializeTeam]);
+
+  // Auto time progression at 24x speed - runs every 1.5 seconds (real time)
+  // This equals 24x faster than real time progression
+  useEffect(() => {
+    const timeProgressionInterval = setInterval(() => {
+      if (gameStarted) {
+        advanceTime();
+      }
+    }, 1500); // 1.5 seconds = 24x faster than real time
+
+    return () => clearInterval(timeProgressionInterval);
+  }, [gameStarted, advanceTime]);
 
 
 

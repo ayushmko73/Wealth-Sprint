@@ -30,20 +30,19 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
         </button>
         
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#3a3a3a]" />
-            <span className="text-sm font-medium text-[#3a3a3a]">
-              Week {currentWeek}, Day {currentDay}
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar size={16} className="text-[#3a3a3a]" />
+              <span className="text-sm font-medium text-[#3a3a3a]">
+                Week {currentWeek}, Day {currentDay}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 bg-[#f5f0e6] px-3 py-1 rounded-lg">
+              <Clock size={14} className="text-[#d4af37]" />
+              <span className="text-xs text-gray-600">Auto 24× Speed</span>
+            </div>
           </div>
-          
-          <button 
-            onClick={advanceTime}
-            className="bg-[#d4af37] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#b8941f] transition-colors"
-          >
-            <Clock size={14} className="inline mr-1" />
-            Next Day
-          </button>
         </div>
       </div>
 
