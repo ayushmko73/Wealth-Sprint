@@ -204,7 +204,7 @@ const initialFinancialData: FinancialData = {
   teamSalaries: 0,
 };
 
-export const useWealthSprintGame = create<WealthSprintGameState>(
+export const useWealthSprintGame = create<WealthSprintGameState>()(
   subscribeWithSelector((set, get) => ({
     // Initial state
     currentWeek: 1,
@@ -1042,7 +1042,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>(
                 ...member, 
                 roleId: newRoleId, 
                 salary: newSalary,
-                currentLevel: newRole.level,
+                currentLevel: 1, // Default level for promoted employee
                 lastPromotion: new Date(),
                 loyalty: Math.min(100, member.loyalty + 15),
                 performance: Math.min(100, member.performance + 10)
@@ -1060,7 +1060,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>(
       get().addTransaction({
         type: 'team_payment',
         amount: -promotionCost,
-        description: `Promoted ${employee.name} to ${newRole.title}`,
+        description: `Promoted ${employee.name} to ${newRole.name}`,
         fromAccount: 'bank',
         toAccount: 'bank'
       });
@@ -1069,7 +1069,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>(
         id: `promotion_${Date.now()}`,
         type: 'achievement',
         title: 'Team Promotion',
-        description: `${employee.name} promoted to ${newRole.title}`,
+        description: `${employee.name} promoted to ${newRole.name}`,
         timestamp: new Date()
       });
       
