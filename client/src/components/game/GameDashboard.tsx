@@ -66,19 +66,14 @@ const GameDashboard: React.FC = () => {
   
   const [activeSection, setActiveSection] = useState<string>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showHiringDashboard, setShowHiringDashboard] = useState(false);
+
 
   useEffect(() => {
     // Initialize team
     initializeTeam();
   }, [initializeTeam]);
 
-  useEffect(() => {
-    // Show hiring dashboard when team_hiring section is selected
-    if (activeSection === 'team_hiring') {
-      setShowHiringDashboard(true);
-    }
-  }, [activeSection]);
+
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -109,7 +104,7 @@ const GameDashboard: React.FC = () => {
       case 'bank':
         return <BankSection />;
       case 'team_hiring':
-        return <div></div>; // Placeholder content, actual dashboard is shown as overlay
+        return <EliteHiringSection onClose={() => setActiveSection('dashboard')} />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':
@@ -285,15 +280,7 @@ const GameDashboard: React.FC = () => {
       {/* Sound Manager */}
       <SoundManager />
       
-      {/* Elite Hiring Section Overlay */}
-      {showHiringDashboard && (
-        <EliteHiringSection 
-          onClose={() => {
-            setShowHiringDashboard(false);
-            setActiveSection('dashboard');
-          }} 
-        />
-      )}
+
       
       {/* Sage AI Assistant */}
       <SageAI />

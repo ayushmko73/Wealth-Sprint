@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../lib/stores/useWealthSprintGame';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -8,7 +8,8 @@ import {
   Heart, 
   TrendingUp, 
   Users, 
-  X 
+  X,
+  ArrowLeft 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -88,6 +89,7 @@ interface EliteHiringSectionProps {
 
 const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
   const { financialData, updateFinancialData, playerStats, updatePlayerStats } = useWealthSprintGame();
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
@@ -137,102 +139,134 @@ const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
     toast.success(`Successfully hired ${role.name}! They will start contributing immediately.`);
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#FAF4E6] rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+  // Department Selection View
+  if (!selectedDepartment) {
+    return (
+      <div className="min-h-screen bg-[#FAF4E6] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <Users size={24} className="text-[#3a3a3a]" />
-            <h1 className="text-2xl font-bold text-[#3a3a3a]" style={{ fontFamily: 'serif' }}>
-              Elite Hiring
-            </h1>
+            {onClose && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="p-2"
+              >
+                <ArrowLeft size={20} />
+              </Button>
+            )}
           </div>
-          {onClose && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="p-2"
-            >
-              <X size={20} />
-            </Button>
-          )}
+          <h1 className="text-2xl font-bold text-[#3a3a3a] text-center flex-1" style={{ fontFamily: 'serif' }}>
+            Elite Team
+          </h1>
+          <div className="w-10"></div> {/* Spacer for centering */}
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {DEPARTMENTS.map((department, deptIndex) => (
-            <div key={department.name}>
-              {/* Department Header */}
-              <div className="flex items-center gap-3 mb-4">
-                {department.icon}
-                <h2 className="text-xl font-bold text-black">
-                  {department.name}
-                </h2>
-              </div>
-
-              {/* Roles */}
-              <div className="space-y-3">
-                {department.roles.map((role, roleIndex) => (
-                  <Card key={role.name} className="bg-[#F5F0E6] border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        {/* Left side - Role details */}
-                        <div className="flex-1">
-                          <h3 className="font-bold text-[#3a3a3a] mb-1">
-                            {role.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-2">
-                            ₹{role.salary.toLocaleString()} per month
-                          </p>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge 
-                              className={`text-xs px-2 py-1 rounded-full ${getImpactColor(role.impact)}`}
-                            >
-                              {role.impact}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {role.description}
-                          </p>
-                        </div>
-
-                        {/* Right side - Hire button */}
-                        <div className="ml-4">
-                          <Button
-                            onClick={() => handleHire(role, department.name)}
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold"
-                            disabled={financialData.bankBalance < role.salary}
-                          >
-                            Hire Now
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Department divider */}
-              {deptIndex < DEPARTMENTS.length - 1 && (
-                <div className="border-t border-gray-200 mt-6"></div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Footer with current balance */}
-        <div className="p-6 border-t border-gray-200 bg-[#F5F0E6]">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Current Balance: <span className="font-semibold text-[#3a3a3a]">₹{financialData.bankBalance.toLocaleString()}</span>
-            </p>
-            <p className="text-sm text-gray-600">
-              Monthly Expenses: <span className="font-semibold text-[#3a3a3a]">₹{financialData.monthlyExpenses.toLocaleString()}</span>
-            </p>
+        {/* Balance Info */}
+        <div className="px-4 py-2 bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">Balance: <span className="font-semibold text-[#3a3a3a]">₹{financialData.bankBalance.toLocaleString()}</span></span>
+            <span className="text-gray-600">Monthly: <span className="font-semibold text-[#3a3a3a]">₹{financialData.monthlyExpenses.toLocaleString()}</span></span>
           </div>
         </div>
+
+        {/* Horizontal Scrolling Departments */}
+        <div className="flex-1 p-4">
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {DEPARTMENTS.map((department) => (
+              <div
+                key={department.name}
+                onClick={() => setSelectedDepartment(department)}
+                className="min-w-[280px] bg-white rounded-lg shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  {department.icon}
+                  <h2 className="text-xl font-bold text-black">
+                    {department.name}
+                  </h2>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  {department.roles.length} available positions
+                </p>
+                <div className="space-y-2">
+                  {department.roles.slice(0, 2).map((role) => (
+                    <div key={role.name} className="text-sm">
+                      <div className="font-medium text-[#3a3a3a]">{role.name}</div>
+                      <div className="text-gray-500">₹{role.salary.toLocaleString()}/mo</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Roles View for Selected Department
+  return (
+    <div className="min-h-screen bg-[#FAF4E6] flex flex-col">
+      {/* Header with Back Button */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedDepartment(null)}
+            className="p-2"
+          >
+            <ArrowLeft size={20} />
+          </Button>
+          {selectedDepartment.icon}
+        </div>
+        <h1 className="text-xl font-bold text-[#3a3a3a] text-center flex-1" style={{ fontFamily: 'serif' }}>
+          {selectedDepartment.name}
+        </h1>
+        <div className="w-10"></div>
+      </div>
+
+      {/* Roles List */}
+      <div className="flex-1 p-4 space-y-4">
+        {selectedDepartment.roles.map((role) => (
+          <Card key={role.name} className="bg-[#F5F0E6] border border-gray-200 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                {/* Left side - Role details */}
+                <div className="flex-1">
+                  <h3 className="font-bold text-[#3a3a3a] mb-1">
+                    {role.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    ₹{role.salary.toLocaleString()} per month
+                  </p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge 
+                      className={`text-xs px-2 py-1 rounded-full ${getImpactColor(role.impact)}`}
+                    >
+                      {role.impact}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {role.description}
+                  </p>
+                </div>
+
+                {/* Right side - Hire button */}
+                <div className="ml-4">
+                  <Button
+                    onClick={() => handleHire(role, selectedDepartment.name)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold"
+                    disabled={financialData.bankBalance < role.salary}
+                  >
+                    Hire Now
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
