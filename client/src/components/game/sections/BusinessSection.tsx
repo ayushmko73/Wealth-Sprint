@@ -111,7 +111,14 @@ export default function BusinessSection() {
     return 'bg-orange-500';
   };
 
-  const handleSectorClick = (sectorId: string) => {
+  const handleSectorClick = (sectorId: string, event: React.MouseEvent) => {
+    // Add click animation effect
+    const target = event.currentTarget as HTMLElement;
+    target.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      target.style.transform = 'scale(1)';
+    }, 150);
+    
     // Future: Navigate to detailed sector management page
     console.log(`Navigate to detailed view for sector: ${sectorId}`);
   };
@@ -171,7 +178,7 @@ export default function BusinessSection() {
               <Card 
                 key={sectorId}
                 className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer border-l-4 ${metrics.borderColor} ${metrics.bgColor}`}
-                onClick={() => handleSectorClick(sectorId)}
+                onClick={(e) => handleSectorClick(sectorId, e)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -186,8 +193,8 @@ export default function BusinessSection() {
                         </Badge>
                       </div>
                     </div>
-                    <div className={`p-2 rounded-full ${metrics.color} hover:scale-110 hover:shadow-lg transition-all duration-200 group animate-pulse hover:animate-none`}>
-                      <ArrowRight className="h-5 w-5 text-white group-hover:translate-x-1 transition-transform duration-200" />
+                    <div className={`p-2 rounded-full ${metrics.color} hover:shadow-lg active:scale-95 transition-all duration-150 group`}>
+                      <ArrowRight className="h-5 w-5 text-white group-hover:translate-x-0.5 group-active:translate-x-1 transition-transform duration-150" />
                     </div>
                   </div>
                 </CardHeader>
