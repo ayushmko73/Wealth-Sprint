@@ -37,7 +37,8 @@ import {
   AlertTriangle,
   Star,
   Battery,
-  Activity
+  Activity,
+  Building2
 } from 'lucide-react';
 import TaskPanel from './TaskPanel';
 import WealthTracker from './WealthTracker';
@@ -53,6 +54,7 @@ import SettingsSection from './sections/SettingsSection';
 import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
+import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
 import EliteHiringSection from './EliteHiringSection';
 
@@ -97,6 +99,7 @@ const GameDashboard: React.FC = () => {
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
+    { id: 'business', label: 'Business', icon: Building2 },
     { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
@@ -113,6 +116,8 @@ const GameDashboard: React.FC = () => {
 
   const renderMainContent = () => {
     switch (activeSection) {
+      case 'business':
+        return <BusinessSection />;
       case 'cashflow':
         return <CashflowSection />;
       case 'stock_market':

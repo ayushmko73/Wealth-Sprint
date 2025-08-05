@@ -56,13 +56,6 @@ const DashboardBar: React.FC = () => {
 
   const stats = [
     {
-      icon: DollarSign,
-      label: 'Cash',
-      value: formatIndianCurrency(financialData.inHandCash),
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
-    },
-    {
       icon: Heart,
       label: 'Emotion',
       value: playerStats.emotion,

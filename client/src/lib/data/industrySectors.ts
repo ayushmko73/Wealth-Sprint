@@ -44,56 +44,14 @@ export const industrySectors: IndustrySector[] = [
     ]
   },
   {
-    id: 'logistics',
-    name: 'Logistics & Transport',
-    icon: '🚚',
-    description: 'Optimize delivery routes, fuel use, delays. Prevent burnout from overexpansion.',
-    unlockRequirements: {
-      clarityXP: 50,
-      sectorsCompleted: 1,
-      maxLoopScore: 80,
-    },
-    isUnlocked: false,
-    businesses: [
-      {
-        id: 'swift_logistics',
-        name: 'Swift Logistics',
-        type: 'startup',
-        investmentRequired: 500000,
-        monthlyRevenue: 80000,
-        monthlyExpenses: 65000,
-        monthlyProfit: 15000,
-        riskLevel: 'high',
-        growthPotential: 'high',
-        loopChallenge: 'Burnout Loop - Expanding too fast leads to operational chaos',
-        isOwned: false,
-        ownershipPercentage: 0
-      },
-      {
-        id: 'last_mile_delivery',
-        name: 'Last Mile Delivery',
-        type: 'service',
-        investmentRequired: 350000,
-        monthlyRevenue: 55000,
-        monthlyExpenses: 42000,
-        monthlyProfit: 13000,
-        riskLevel: 'medium',
-        growthPotential: 'high',
-        loopChallenge: 'Route optimization vs fuel costs',
-        isOwned: false,
-        ownershipPercentage: 0
-      }
-    ]
-  },
-  {
     id: 'tech_startups',
     name: 'Tech Startups',
     icon: '💻',
     description: 'Build product → feedback → pivot. Overcome shiny object syndrome.',
     unlockRequirements: {
-      clarityXP: 100,
-      sectorsCompleted: 2,
-      maxLoopScore: 60,
+      clarityXP: 50,
+      sectorsCompleted: 1,
+      maxLoopScore: 80,
     },
     isUnlocked: false,
     businesses: [
@@ -128,56 +86,14 @@ export const industrySectors: IndustrySector[] = [
     ]
   },
   {
-    id: 'ai_saas',
-    name: 'AI & SaaS',
-    icon: '🧠',
-    description: 'Scale APIs, trust privacy, subscriptions. Balance ethics vs profit.',
-    unlockRequirements: {
-      clarityXP: 150,
-      sectorsCompleted: 3,
-      maxLoopScore: 50,
-    },
-    isUnlocked: false,
-    businesses: [
-      {
-        id: 'ai_chatbot_platform',
-        name: 'AI Chatbot Platform',
-        type: 'saas',
-        investmentRequired: 1200000,
-        monthlyRevenue: 200000,
-        monthlyExpenses: 140000,
-        monthlyProfit: 60000,
-        riskLevel: 'high',
-        growthPotential: 'very_high',
-        loopChallenge: 'Ethics vs Profit - Choosing revenue over user privacy',
-        isOwned: false,
-        ownershipPercentage: 0
-      },
-      {
-        id: 'data_analytics_tool',
-        name: 'Data Analytics Tool',
-        type: 'saas',
-        investmentRequired: 900000,
-        monthlyRevenue: 150000,
-        monthlyExpenses: 110000,
-        monthlyProfit: 40000,
-        riskLevel: 'medium',
-        growthPotential: 'high',
-        loopChallenge: 'Data privacy vs insights depth',
-        isOwned: false,
-        ownershipPercentage: 0
-      }
-    ]
-  },
-  {
     id: 'ecommerce',
     name: 'E-commerce',
     icon: '📦',
     description: 'Marketing, fulfillment, warehousing. Navigate fake influencers and thin margins.',
     unlockRequirements: {
-      clarityXP: 200,
-      sectorsCompleted: 4,
-      maxLoopScore: 40,
+      clarityXP: 100,
+      sectorsCompleted: 2,
+      maxLoopScore: 60,
     },
     isUnlocked: false,
     businesses: [
@@ -212,98 +128,14 @@ export const industrySectors: IndustrySector[] = [
     ]
   },
   {
-    id: 'crypto_web3',
-    name: 'Crypto & Web3',
-    icon: '🪙',
-    description: 'Tokenomics, community trust, exchange plays. Resist greed overload.',
-    unlockRequirements: {
-      clarityXP: 250,
-      sectorsCompleted: 5,
-      maxLoopScore: 30,
-    },
-    isUnlocked: false,
-    businesses: [
-      {
-        id: 'defi_protocol',
-        name: 'DeFi Protocol',
-        type: 'crypto',
-        investmentRequired: 1500000,
-        monthlyRevenue: 300000,
-        monthlyExpenses: 180000,
-        monthlyProfit: 120000,
-        riskLevel: 'very_high',
-        growthPotential: 'very_high',
-        loopChallenge: 'Greed Overload - Bull market mentality leads to over-risking',
-        isOwned: false,
-        ownershipPercentage: 0
-      },
-      {
-        id: 'nft_marketplace',
-        name: 'NFT Marketplace',
-        type: 'crypto',
-        investmentRequired: 1000000,
-        monthlyRevenue: 220000,
-        monthlyExpenses: 160000,
-        monthlyProfit: 60000,
-        riskLevel: 'very_high',
-        growthPotential: 'high',
-        loopChallenge: 'Speculation vs real utility',
-        isOwned: false,
-        ownershipPercentage: 0
-      }
-    ]
-  },
-  {
-    id: 'media_empire',
-    name: 'Media Empire',
-    icon: '📺',
-    description: 'Build content, influence, ad power. Avoid fame addiction loops.',
-    unlockRequirements: {
-      clarityXP: 300,
-      sectorsCompleted: 6,
-      maxLoopScore: 25,
-    },
-    isUnlocked: false,
-    businesses: [
-      {
-        id: 'content_studio',
-        name: 'Content Studio',
-        type: 'media',
-        investmentRequired: 800000,
-        monthlyRevenue: 250000,
-        monthlyExpenses: 180000,
-        monthlyProfit: 70000,
-        riskLevel: 'high',
-        growthPotential: 'very_high',
-        loopChallenge: 'Fame Addiction - Chasing virality over meaningful content',
-        isOwned: false,
-        ownershipPercentage: 0
-      },
-      {
-        id: 'podcast_network',
-        name: 'Podcast Network',
-        type: 'media',
-        investmentRequired: 600000,
-        monthlyRevenue: 180000,
-        monthlyExpenses: 130000,
-        monthlyProfit: 50000,
-        riskLevel: 'medium',
-        growthPotential: 'high',
-        loopChallenge: 'Audience retention vs content quality',
-        isOwned: false,
-        ownershipPercentage: 0
-      }
-    ]
-  },
-  {
     id: 'healthcare',
     name: 'Healthcare',
     icon: '🏥',
     description: 'Research, trials, hospitals. Navigate guilt loop between saving lives vs profit.',
     unlockRequirements: {
-      clarityXP: 350,
-      sectorsCompleted: 7,
-      maxLoopScore: 20,
+      clarityXP: 150,
+      sectorsCompleted: 3,
+      maxLoopScore: 50,
     },
     isUnlocked: false,
     businesses: [
@@ -332,48 +164,6 @@ export const industrySectors: IndustrySector[] = [
         riskLevel: 'high',
         growthPotential: 'high',
         loopChallenge: 'Regulatory compliance vs innovation speed',
-        isOwned: false,
-        ownershipPercentage: 0
-      }
-    ]
-  },
-  {
-    id: 'edtech',
-    name: 'EdTech',
-    icon: '📚',
-    description: 'Build courses, manage dropouts. Overcome self-worth loops when students fail.',
-    unlockRequirements: {
-      clarityXP: 400,
-      sectorsCompleted: 8,
-      maxLoopScore: 15,
-    },
-    isUnlocked: false,
-    businesses: [
-      {
-        id: 'online_learning_platform',
-        name: 'Online Learning Platform',
-        type: 'edtech',
-        investmentRequired: 1200000,
-        monthlyRevenue: 300000,
-        monthlyExpenses: 220000,
-        monthlyProfit: 80000,
-        riskLevel: 'medium',
-        growthPotential: 'very_high',
-        loopChallenge: 'Self-Worth Loop - Taking student failures personally',
-        isOwned: false,
-        ownershipPercentage: 0
-      },
-      {
-        id: 'skill_certification',
-        name: 'Skill Certification',
-        type: 'edtech',
-        investmentRequired: 800000,
-        monthlyRevenue: 200000,
-        monthlyExpenses: 140000,
-        monthlyProfit: 60000,
-        riskLevel: 'low',
-        growthPotential: 'high',
-        loopChallenge: 'Course quality vs completion rates',
         isOwned: false,
         ownershipPercentage: 0
       }

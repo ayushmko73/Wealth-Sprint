@@ -36,22 +36,28 @@ const NotificationCenter: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Convert game events to notifications
+  // Convert game events to notifications - DISABLED to prevent auto-popups
   useEffect(() => {
+    // Notifications disabled to prevent distracting auto-popups
+    // Only keep critical financial alerts
     const currentNotificationIds = notifications.map(n => n.id);
-    const newEvents = gameEvents.filter(event => !currentNotificationIds.includes(event.id));
+    const newEvents = gameEvents.filter(event => 
+      !currentNotificationIds.includes(event.id) && 
+      event.type === 'achievement' && // Only show achievements, not routine events
+      event.title.includes('Financial Independence') // Only FI milestones
+    );
     
     if (newEvents.length > 0) {
-      const newNotifications: Notification[] = newEvents.slice(-3).map(event => ({
+      const newNotifications: Notification[] = newEvents.slice(-1).map(event => ({
         id: event.id,
         type: getNotificationType(event.type),
         title: event.title,
         message: event.description,
         timestamp: new Date(event.timestamp),
-        duration: 5000, // 5 seconds
+        duration: 8000, // 8 seconds for important milestones only
       }));
 
-      setNotifications(prev => [...prev, ...newNotifications].slice(-5)); // Keep only last 5
+      setNotifications(prev => [...prev, ...newNotifications].slice(-2)); // Keep only last 2
     }
   }, [gameEvents]);
 
