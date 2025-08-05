@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { industrySectors } from '@/lib/data/industrySectors';
+import FastFoodChainsPage from '../sectors/FastFoodChainsPage';
 
 export default function BusinessSection() {
   const { 
@@ -24,6 +25,13 @@ export default function BusinessSection() {
     playerStats,
     financialData
   } = useWealthSprintGame();
+  
+  const [selectedSector, setSelectedSector] = useState<string | null>(null);
+
+  // Handle sector-specific page navigation
+  if (selectedSector === 'fast_food') {
+    return <FastFoodChainsPage onBack={() => setSelectedSector(null)} />;
+  }
 
   // Generate business metrics for purchased sectors
   const getBusinessMetrics = (sectorId: string) => {
@@ -119,8 +127,9 @@ export default function BusinessSection() {
       target.style.transform = 'scale(1)';
     }, 150);
     
-    // Future: Navigate to detailed sector management page
+    // Navigate to detailed sector management page
     console.log(`Navigate to detailed view for sector: ${sectorId}`);
+    setSelectedSector(sectorId);
   };
 
   return (
