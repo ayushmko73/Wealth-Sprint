@@ -31,22 +31,34 @@ export default function BusinessSection() {
       'fast_food': {
         progressRate: 15,
         revenueMultiplier: 5000,
-        satisfactionBase: 75
+        satisfactionBase: 75,
+        color: 'bg-red-500',
+        bgColor: 'bg-red-50',
+        borderColor: 'border-red-200'
       },
       'tech_startups': {
         progressRate: 8,
         revenueMultiplier: 12000,
-        satisfactionBase: 65
+        satisfactionBase: 65,
+        color: 'bg-blue-500',
+        bgColor: 'bg-blue-50',
+        borderColor: 'border-blue-200'
       },
       'ecommerce': {
         progressRate: 12,
         revenueMultiplier: 8000,
-        satisfactionBase: 70
+        satisfactionBase: 70,
+        color: 'bg-purple-500',
+        bgColor: 'bg-purple-50',
+        borderColor: 'border-purple-200'
       },
       'healthcare': {
         progressRate: 6,
         revenueMultiplier: 15000,
-        satisfactionBase: 80
+        satisfactionBase: 80,
+        color: 'bg-green-500',
+        bgColor: 'bg-green-50',
+        borderColor: 'border-green-200'
       }
     };
 
@@ -71,7 +83,10 @@ export default function BusinessSection() {
     return {
       progress: Math.round(progress),
       monthlyRevenue: revenue,
-      customerSatisfaction: Math.round(satisfaction)
+      customerSatisfaction: Math.round(satisfaction),
+      color: metrics.color,
+      bgColor: metrics.bgColor,
+      borderColor: metrics.borderColor
     };
   };
 
@@ -113,11 +128,11 @@ export default function BusinessSection() {
           Manage your active business sectors and track their performance
         </p>
         <div className="flex justify-center gap-4 text-sm">
-          <Badge variant="outline" className="flex items-center gap-2">
+          <Badge className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
             <Building2 className="h-4 w-4" />
             {purchasedSectors.length} Active Sectors
           </Badge>
-          <Badge variant="outline" className="flex items-center gap-2">
+          <Badge className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
             <DollarSign className="h-4 w-4" />
             Total Revenue: ₹{purchasedSectors.reduce((total, sectorId) => {
               const metrics = getBusinessMetrics(sectorId);
@@ -155,13 +170,15 @@ export default function BusinessSection() {
             return (
               <Card 
                 key={sectorId}
-                className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer border-l-4 border-l-blue-500 bg-gradient-to-br from-white to-blue-50"
+                className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer border-l-4 ${metrics.borderColor} ${metrics.bgColor}`}
                 onClick={() => handleSectorClick(sectorId)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl">{sector.icon}</div>
+                      <div className={`p-3 rounded-full ${metrics.bgColor} ${metrics.borderColor} border-2 flex items-center justify-center`}>
+                        <span className="text-2xl">{sector.icon}</span>
+                      </div>
                       <div>
                         <CardTitle className="text-lg">{sector.name}</CardTitle>
                         <Badge variant="secondary" className="mt-1">
@@ -169,7 +186,9 @@ export default function BusinessSection() {
                         </Badge>
                       </div>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-gray-400" />
+                    <div className={`p-2 rounded-full ${metrics.color} hover:scale-110 hover:shadow-lg transition-all duration-200 group animate-pulse hover:animate-none`}>
+                      <ArrowRight className="h-5 w-5 text-white group-hover:translate-x-1 transition-transform duration-200" />
+                    </div>
                   </div>
                 </CardHeader>
 
@@ -180,13 +199,12 @@ export default function BusinessSection() {
                       <span className="font-medium">Progress</span>
                       <span className="font-bold">{metrics.progress}%</span>
                     </div>
-                    <Progress 
-                      value={metrics.progress} 
-                      className="h-3"
-                      style={{
-                        background: `linear-gradient(to right, ${getProgressColor(metrics.progress)} 0%, ${getProgressColor(metrics.progress)} ${metrics.progress}%, #e5e7eb ${metrics.progress}%, #e5e7eb 100%)`
-                      }}
-                    />
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className={`h-3 rounded-full ${metrics.color} transition-all duration-300`}
+                        style={{ width: `${metrics.progress}%` }}
+                      ></div>
+                    </div>
                   </div>
 
                   {/* Monthly Revenue */}
