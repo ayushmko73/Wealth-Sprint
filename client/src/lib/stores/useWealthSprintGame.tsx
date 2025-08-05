@@ -109,6 +109,7 @@ interface WealthSprintGameState {
   financialData: FinancialData;
   gameEvents: GameEvent[];
   teamMembers: TeamMember[];
+  purchasedSectors: string[]; // Track purchased sector IDs
   
   // Actions
   updatePlayerStats: (updates: Partial<PlayerStats>) => void;
@@ -161,6 +162,9 @@ interface WealthSprintGameState {
   gainClarityXP: (amount: number, reason: string) => void;
   increaseLoopScore: (amount: number, reason: string) => void;
   setFounderTrait: (trait: 'visionary' | 'empathic' | 'capitalist' | 'manipulator' | 'reflective') => void;
+  
+  // Sector management functions
+  purchaseSector: (sectorId: string) => boolean;
 }
 
 // Initial state values
@@ -238,6 +242,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     financialData: { ...initialFinancialData },
     gameEvents: [],
     teamMembers: [],
+    purchasedSectors: [],
 
     // Actions
     updatePlayerStats: (updates: Partial<PlayerStats>) => {
@@ -1380,6 +1385,52 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         timestamp: new Date()
       });
     },
+
+    // Sector management functions
+    purchaseSector: (sectorId: string) => {
+      const state = get();
+      const investmentAmount = 200000; // ₹2 lakhs
+
+      // Check if sector is already purchased
+      if (state.purchasedSectors.includes(sectorId)) {
+        return false;
+      }
+
+      // Check if sufficient funds
+      if (state.financialData.bankBalance < investmentAmount) {
+        get().addGameEvent({
+          id: `insufficient_funds_${sectorId}_${Date.now()}`,
+          type: 'warning',
+          title: '🚨 Insufficient Balance',
+          description: `You need ₹${investmentAmount.toLocaleString()} to purchase this sector. Current balance: ₹${state.financialData.bankBalance.toLocaleString()}`,
+          timestamp: new Date()
+        });
+        return false;
+      }
+
+      // Purchase the sector
+      set((state) => ({
+        purchasedSectors: [...state.purchasedSectors, sectorId],
+        financialData: {
+          ...state.financialData,
+          bankBalance: state.financialData.bankBalance - investmentAmount
+        }
+      }));
+
+      // Add success notification
+      get().addGameEvent({
+        id: `sector_purchased_${sectorId}_${Date.now()}`,
+        type: 'achievement',
+        title: '🎯 Sector Purchased!',
+        description: `Successfully purchased new sector! Investment: ₹${investmentAmount.toLocaleString()}`,
+        timestamp: new Date()
+      });
+
+      // Gain some clarity XP for strategic expansion
+      get().gainClarityXP(25, `Strategic sector purchase`);
+
+      return true;
+    },
   }))
 );
 
@@ -1431,6 +1482,7 @@ if (typeof window !== 'undefined') {
         playerStats: state.playerStats,
         financialData: state.financialData,
         gameEvents: state.gameEvents.slice(0, 20), // Save only recent events
+        purchasedSectors: state.purchasedSectors,
       }));
     }
   );
