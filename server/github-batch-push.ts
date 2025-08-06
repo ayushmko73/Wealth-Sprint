@@ -215,10 +215,7 @@ export function registerBatchGitHubRoutes(app: Express) {
     try {
       const { repository, username, branch, commitMessage, password } = req.body;
       
-      // Check password
-      if (password !== 'Ak@github123') {
-        return res.status(401).json({ error: 'Invalid password' });
-      }
+      // Password check removed as per user request
       
       const githubToken = process.env.GITHUB_TOKEN;
       if (!githubToken) {

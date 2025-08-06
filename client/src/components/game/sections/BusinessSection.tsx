@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { industrySectors } from '@/lib/data/industrySectors';
-import FastFoodChainsPage from '../sectors/FastFoodChainsPage';
+import FastFoodChainsPageNew from '../sectors/FastFoodChainsPageNew';
 
 export default function BusinessSection() {
   const { 
@@ -30,7 +30,7 @@ export default function BusinessSection() {
 
   // Handle sector-specific page navigation
   if (selectedSector === 'fast_food') {
-    return <FastFoodChainsPage onBack={() => setSelectedSector(null)} />;
+    return <FastFoodChainsPageNew onBack={() => setSelectedSector(null)} />;
   }
 
   // Generate business metrics for purchased sectors

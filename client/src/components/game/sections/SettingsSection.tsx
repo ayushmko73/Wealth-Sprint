@@ -25,7 +25,6 @@ import {
   RotateCcw, 
   Trash2,
   Github,
-  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -70,9 +69,8 @@ const SettingsSection: React.FC = () => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [exportData, setExportData] = useState('');
   const [isGithubPushing, setIsGithubPushing] = useState(false);
-  const [isGithubCleaning, setIsGithubCleaning] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [password, setPassword] = useState('');
+  // Clean repository functionality removed as per user request
+  // Password dialog removed as per user request
 
 
 
@@ -166,18 +164,8 @@ const SettingsSection: React.FC = () => {
     });
   };
 
-  const handlePushToGithub = () => {
-    setShowPasswordDialog(true);
-  };
-
-  const handlePasswordSubmit = async () => {
-    if (!password) {
-      toast.error('Please enter password');
-      return;
-    }
-
+  const handlePushToGithub = async () => {
     setIsGithubPushing(true);
-    setShowPasswordDialog(false);
     
     try {
       const response = await fetch('/api/github/push-batch', {
@@ -189,8 +177,7 @@ const SettingsSection: React.FC = () => {
           repository: 'Wealth-Sprint',
           username: 'ayushmko73',
           branch: 'main',
-          commitMessage: '🚀 Complete Wealth Sprint project push from Replit',
-          password
+          commitMessage: '🚀 Complete Wealth Sprint project push from Replit'
         }),
       });
 
@@ -207,40 +194,10 @@ const SettingsSection: React.FC = () => {
       toast.error('❌ Failed to push to GitHub. Check your connection.');
     } finally {
       setIsGithubPushing(false);
-      setPassword('');
     }
   };
 
-  const handleCleanupGithub = async () => {
-    setIsGithubCleaning(true);
-    
-    try {
-      const response = await fetch('/api/github/cleanup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repository: 'Wealth-Sprint',
-          username: 'ayushmko73',
-          branch: 'main'
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('✅ Repository cleaned up successfully! Unwanted files removed.');
-      } else {
-        throw new Error(result.error || 'Unknown error occurred');
-      }
-    } catch (error) {
-      console.error('GitHub cleanup error:', error);
-      alert('❌ Cleanup failed, check GitHub token or internet.');
-    } finally {
-      setIsGithubCleaning(false);
-    }
-  };
+  // Removed unused authentication and cleanup functions
 
 
 
@@ -463,21 +420,10 @@ const SettingsSection: React.FC = () => {
                     variant="outline"
                     className="w-full text-[#d4af37] hover:text-[#b8941f] border-[#d4af37] hover:border-[#b8941f]"
                     onClick={handlePushToGithub}
-                    disabled={isGithubPushing || isGithubCleaning}
+                    disabled={isGithubPushing}
                   >
                     <Github size={16} className="mr-2" />
                     {isGithubPushing ? 'Pushing Project...' : 'Push Full Project to GitHub'}
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className="w-full text-orange-600 hover:text-orange-700 border-orange-300 hover:border-orange-400"
-                    onClick={handleCleanupGithub}
-                    disabled={isGithubCleaning || isGithubPushing}
-                    size="sm"
-                  >
-                    <Trash2 size={14} className="mr-2" />
-                    {isGithubCleaning ? 'Cleaning Repository...' : 'Clean Repository'}
                   </Button>
                 </div>
                 
