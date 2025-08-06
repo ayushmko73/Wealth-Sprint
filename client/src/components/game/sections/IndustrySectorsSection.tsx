@@ -26,36 +26,26 @@ export default function IndustrySectorsSection() {
     purchaseSector
   } = useWealthSprintGame();
 
-  // Calculate unlocked sectors based on player progress
-  const unlockedSectors = getUnlockedSectors(
-    playerStats.clarityXP, 
-    purchasedSectors.length, // Track completed sectors
-    playerStats.loopScore
-  );
+  // All sectors are now unlocked and available for purchase with money
+  const unlockedSectors = industrySectors;
 
   const handleSectorPurchase = (sectorId: string) => {
     const sector = industrySectors.find(s => s.id === sectorId);
     if (!sector) return;
 
-    const isUnlocked = unlockedSectors.some(s => s.id === sectorId);
-    if (!isUnlocked) return;
-
     // Check if already purchased
     if (purchasedSectors.includes(sectorId)) return;
+
+    // Check if player has enough money (₹2L = 200,000)
+    if (financialData.bankBalance < 200000) return;
 
     // Simple one-click purchase
     purchaseSector(sectorId);
   };
 
   const getUnlockRequirementsText = (sector: any) => {
-    const missing = [];
-    if (playerStats.clarityXP < sector.unlockRequirements.clarityXP) {
-      missing.push(`${sector.unlockRequirements.clarityXP} Clarity XP`);
-    }
-    if (playerStats.loopScore > sector.unlockRequirements.maxLoopScore) {
-      missing.push(`Max ${sector.unlockRequirements.maxLoopScore} Loop Score`);
-    }
-    return missing.join(', ');
+    // Since all sectors are now unlockable with money only, return simple text
+    return `Only ₹2L needed`;
   };
 
   return (
@@ -67,10 +57,6 @@ export default function IndustrySectorsSection() {
           Build your empire across multiple sectors. Each sector costs ₹2L to purchase.
         </p>
         <div className="flex justify-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Star className="h-4 w-4 text-yellow-500" />
-            <span>Clarity XP: {playerStats.clarityXP}</span>
-          </div>
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-green-500" />
             <span>Bank Balance: ₹{(financialData.bankBalance / 100000).toFixed(1)}L</span>
@@ -135,9 +121,7 @@ export default function IndustrySectorsSection() {
                   className={`relative overflow-hidden transition-all duration-300 ${
                     isPurchased 
                       ? 'opacity-50 bg-gray-100' 
-                      : isUnlocked 
-                        ? 'hover:shadow-xl hover:scale-105 border-green-200 bg-gradient-to-br from-white to-green-50' 
-                        : 'border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 opacity-75'
+                      : 'hover:shadow-xl hover:scale-105 border-green-200 bg-gradient-to-br from-white to-green-50'
                   }`}
                 >
                   {/* Status Badge */}
@@ -147,15 +131,10 @@ export default function IndustrySectorsSection() {
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Owned
                       </Badge>
-                    ) : isUnlocked ? (
+                    ) : (
                       <Badge className="bg-blue-100 text-blue-800">
                         <Unlock className="h-3 w-3 mr-1" />
                         Available
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary">
-                        <Lock className="h-3 w-3 mr-1" />
-                        Locked
                       </Badge>
                     )}
                   </div>
@@ -193,15 +172,24 @@ export default function IndustrySectorsSection() {
                           Buy for ₹2L
                         </Button>
                       ) : (
-                        <div className="text-center">
-                          <p className="text-xs text-gray-500 mb-2">
-                            Requires: {getUnlockRequirementsText(sector)}
-                          </p>
-                          <Button variant="outline" size="sm" disabled className="w-full">
-                            <Lock className="h-4 w-4 mr-2" />
-                            Locked
-                          </Button>
-                        </div>
+                        <Button 
+                          className="w-full" 
+                          size="sm"
+                          onClick={() => handleSectorPurchase(sector.id)}
+                          disabled={financialData.bankBalance < 200000}
+                        >
+                          {financialData.bankBalance < 200000 ? (
+                            <>
+                              <Lock className="h-4 w-4 mr-2" />
+                              Need ₹2L
+                            </>
+                          ) : (
+                            <>
+                              <Briefcase className="h-4 w-4 mr-2" />
+                              Buy for ₹2L
+                            </>
+                          )}
+                        </Button>
                       )}
                     </div>
                   </CardContent>
