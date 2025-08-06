@@ -133,17 +133,17 @@ export default function BusinessSection() {
   };
 
   return (
-    <div className="space-y-6 p-4 max-w-7xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4 max-w-7xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+      <div className="text-center mb-4 sm:mb-8">
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2 sm:gap-3">
           <Building2 className="h-8 w-8 text-blue-600" />
           Business Portfolio
         </h1>
         <p className="text-gray-600 mb-4">
           Manage your active business sectors and track their performance
         </p>
-        <div className="flex justify-center gap-4 text-sm">
+        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
           <Badge className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
             <Building2 className="h-4 w-4" />
             {purchasedSectors.length} Active Sectors
@@ -176,7 +176,7 @@ export default function BusinessSection() {
 
       {/* Business Sectors Grid */}
       {purchasedSectors.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
           {purchasedSectors.map((sectorId) => {
             const sector = industrySectors.find(s => s.id === sectorId);
             const metrics = getBusinessMetrics(sectorId);
