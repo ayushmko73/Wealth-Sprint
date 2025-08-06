@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -17,10 +17,7 @@ import {
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { industrySectors } from '@/lib/data/industrySectors';
-import FastFoodChainsPage from '../sectors/FastFoodChainsPage';
-import HealthcarePage from '../sectors/HealthcarePage';
-import EcommercePage from '../sectors/EcommercePage';
-import TechStartupPage from '../sectors/TechStartupPage';
+import FastFoodChainsPageNew from '../sectors/FastFoodChainsPageNew';
 
 export default function BusinessSection() {
   const { 
@@ -30,146 +27,11 @@ export default function BusinessSection() {
   } = useWealthSprintGame();
   
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
-  const [, forceUpdate] = useState({});
-
-  // Force re-render every 5 seconds to reflect fast food changes
-  React.useEffect(() => {
-    const updateInterval = setInterval(() => {
-      forceUpdate({});
-    }, 5000);
-    return () => clearInterval(updateInterval);
-  }, []);
 
   // Handle sector-specific page navigation
   if (selectedSector === 'fast_food') {
-    return <FastFoodChainsPage onBack={() => setSelectedSector(null)} />;
+    return <FastFoodChainsPageNew onBack={() => setSelectedSector(null)} />;
   }
-  if (selectedSector === 'healthcare') {
-    return <HealthcarePage onBack={() => setSelectedSector(null)} />;
-  }
-  if (selectedSector === 'ecommerce') {
-    return <EcommercePage onBack={() => setSelectedSector(null)} />;
-  }
-  if (selectedSector === 'tech_startups') {
-    return <TechStartupPage onBack={() => setSelectedSector(null)} />;
-  }
-
-  // Get actual Fast Food Chain revenue from saved cities data
-  const getFastFoodRevenue = () => {
-    try {
-      const saved = localStorage.getItem('fastFoodCities');
-      if (saved) {
-        const cities = JSON.parse(saved);
-        const expandedCities = cities.filter((city: any) => city.expanded);
-        
-        if (expandedCities.length === 0) return 0;
-        
-        // Calculate quality-adjusted revenue for each expanded city
-        let totalRevenue = 0;
-        expandedCities.forEach((city: any) => {
-          let adjustedRevenue = city.monthlyRevenue;
-          if (city.quality < 50) {
-            adjustedRevenue *= 0.8; // 20% reduction for poor quality
-          } else if (city.quality > 70) {
-            adjustedRevenue *= 1.2; // 20% increase for high quality
-          }
-          totalRevenue += adjustedRevenue; // Show gross revenue, not net profit
-        });
-        
-        return Math.max(0, Math.round(totalRevenue));
-      }
-    } catch (error) {
-      console.warn('Failed to load fast food revenue:', error);
-    }
-    return 20000; // Default fallback revenue
-  };
-
-  // Get actual Healthcare revenue from saved facilities data
-  const getHealthcareRevenue = () => {
-    try {
-      const saved = localStorage.getItem('healthcareFacilities');
-      if (saved) {
-        const facilities = JSON.parse(saved);
-        const establishedFacilities = facilities.filter((facility: any) => facility.established);
-        
-        if (establishedFacilities.length === 0) return 0;
-        
-        let totalRevenue = 0;
-        establishedFacilities.forEach((facility: any) => {
-          let adjustedRevenue = facility.monthlyRevenue;
-          if (facility.qualityOfCare < 60) {
-            adjustedRevenue *= 0.7;
-          } else if (facility.qualityOfCare > 85) {
-            adjustedRevenue *= 1.3;
-          }
-          totalRevenue += adjustedRevenue;
-        });
-        
-        return Math.max(0, Math.round(totalRevenue));
-      }
-    } catch (error) {
-      console.warn('Failed to load healthcare revenue:', error);
-    }
-    return 30000;
-  };
-
-  // Get actual E-commerce revenue from saved channels data
-  const getEcommerceRevenue = () => {
-    try {
-      const saved = localStorage.getItem('ecommerceChannels');
-      if (saved) {
-        const channels = JSON.parse(saved);
-        const activeChannels = channels.filter((channel: any) => channel.active);
-        
-        if (activeChannels.length === 0) return 0;
-        
-        let totalRevenue = 0;
-        activeChannels.forEach((channel: any) => {
-          let adjustedRevenue = channel.monthlyRevenue;
-          if (channel.competitionLevel > 80) {
-            adjustedRevenue *= 0.85;
-          } else if (channel.competitionLevel < 50) {
-            adjustedRevenue *= 1.2;
-          }
-          totalRevenue += adjustedRevenue;
-        });
-        
-        return Math.max(0, Math.round(totalRevenue));
-      }
-    } catch (error) {
-      console.warn('Failed to load ecommerce revenue:', error);
-    }
-    return 25000;
-  };
-
-  // Get actual Tech Startup revenue from saved products data
-  const getTechStartupRevenue = () => {
-    try {
-      const saved = localStorage.getItem('techStartupProducts');
-      if (saved) {
-        const products = JSON.parse(saved);
-        const launchedProducts = products.filter((product: any) => product.launched);
-        
-        if (launchedProducts.length === 0) return 0;
-        
-        let totalRevenue = 0;
-        launchedProducts.forEach((product: any) => {
-          let adjustedRevenue = product.monthlyRevenue;
-          if (product.marketFit < 50) {
-            adjustedRevenue *= 0.6;
-          } else if (product.marketFit > 80) {
-            adjustedRevenue *= 1.4;
-          }
-          totalRevenue += adjustedRevenue;
-        });
-        
-        return Math.max(0, Math.round(totalRevenue));
-      }
-    } catch (error) {
-      console.warn('Failed to load tech startup revenue:', error);
-    }
-    return 40000;
-  };
 
   // Generate business metrics for purchased sectors
   const getBusinessMetrics = (sectorId: string) => {
@@ -210,67 +72,6 @@ export default function BusinessSection() {
 
     const metrics = baseMetrics[sectorId as keyof typeof baseMetrics];
     if (!metrics) return null;
-
-    // Get actual revenue for each sector
-    if (sectorId === 'fast_food') {
-      const actualRevenue = getFastFoodRevenue();
-      const expandedCities = JSON.parse(localStorage.getItem('fastFoodCities') || '[]').filter((city: any) => city.expanded);
-      const progress = Math.min(100, (expandedCities.length / 5) * 100);
-      
-      return {
-        progress: Math.round(progress),
-        monthlyRevenue: actualRevenue,
-        customerSatisfaction: 75 + Math.floor(Math.random() * 15),
-        color: metrics.color,
-        bgColor: metrics.bgColor,
-        borderColor: metrics.borderColor
-      };
-    }
-
-    if (sectorId === 'healthcare') {
-      const actualRevenue = getHealthcareRevenue();
-      const establishedFacilities = JSON.parse(localStorage.getItem('healthcareFacilities') || '[]').filter((facility: any) => facility.established);
-      const progress = Math.min(100, (establishedFacilities.length / 5) * 100);
-      
-      return {
-        progress: Math.round(progress),
-        monthlyRevenue: actualRevenue,
-        customerSatisfaction: 80 + Math.floor(Math.random() * 15),
-        color: metrics.color,
-        bgColor: metrics.bgColor,
-        borderColor: metrics.borderColor
-      };
-    }
-
-    if (sectorId === 'ecommerce') {
-      const actualRevenue = getEcommerceRevenue();
-      const activeChannels = JSON.parse(localStorage.getItem('ecommerceChannels') || '[]').filter((channel: any) => channel.active);
-      const progress = Math.min(100, (activeChannels.length / 5) * 100);
-      
-      return {
-        progress: Math.round(progress),
-        monthlyRevenue: actualRevenue,
-        customerSatisfaction: 70 + Math.floor(Math.random() * 20),
-        color: metrics.color,
-        bgColor: metrics.bgColor,
-        borderColor: metrics.borderColor
-      };
-    }
-
-    if (sectorId === 'tech_startups') {
-      const actualRevenue = getTechStartupRevenue();
-      const launchedProducts = JSON.parse(localStorage.getItem('techStartupProducts') || '[]').filter((product: any) => product.launched);
-      const progress = Math.min(100, (launchedProducts.length / 5) * 100);
-      
-      return {
-        progress: Math.round(progress),
-        monthlyRevenue: actualRevenue,
-        customerSatisfaction: 65 + Math.floor(Math.random() * 25),
-        color: metrics.color,
-        bgColor: metrics.bgColor,
-        borderColor: metrics.borderColor
-      };
-    }
 
     // Calculate progress based on how long sector has been owned (simulate time)
     const daysSinceOwned = Math.floor(Math.random() * 30) + 1;
