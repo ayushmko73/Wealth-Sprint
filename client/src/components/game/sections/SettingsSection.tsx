@@ -548,7 +548,55 @@ const SettingsSection: React.FC = () => {
         </CardContent>
       </Card>
 
-
+      {/* Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock size={20} />
+              Authentication Required
+            </DialogTitle>
+            <DialogDescription>
+              Enter the admin password to push the project to GitHub.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlePasswordSubmit();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowPasswordDialog(false);
+                setPassword('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePasswordSubmit}
+              disabled={!password || isGithubPushing}
+              className="bg-[#d4af37] hover:bg-[#b8941f]"
+            >
+              {isGithubPushing ? 'Pushing...' : 'Push to GitHub'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

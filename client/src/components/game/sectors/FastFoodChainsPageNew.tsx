@@ -307,9 +307,9 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-2 sm:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+      <div className="flex items-center gap-4 mb-6">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -319,21 +319,21 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
           <ArrowLeft className="h-4 w-4" />
           Back to Business
         </Button>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-2 sm:p-3 rounded-full bg-red-500 text-white">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-full bg-red-500 text-white">
             🍟
           </div>
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-900">{brandName}</h1>
-            <p className="text-sm sm:text-base text-gray-600">Build your food empire across India</p>
+            <h1 className="text-2xl font-bold text-gray-900">{brandName}</h1>
+            <p className="text-gray-600">Build your food empire across India</p>
           </div>
         </div>
       </div>
 
       {/* Bank Balance Display */}
-      <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+      <Card className="mb-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <DollarSign className="h-6 w-6 text-green-600" />
               <div>
@@ -349,14 +349,14 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
       </Card>
 
       {/* Key Metrics Dashboard */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-2 sm:p-4">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-xs sm:text-sm text-green-700">Monthly Revenue</p>
-                <p className="text-sm sm:text-lg font-bold text-green-800">₹{finalRevenue.toLocaleString()}</p>
+                <p className="text-sm text-green-700">Monthly Revenue</p>
+                <p className="text-lg font-bold text-green-800">₹{finalRevenue.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -401,7 +401,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-white text-xs sm:text-sm">
+        <TabsList className="grid w-full grid-cols-4 bg-white">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="cities">Cities</TabsTrigger>
           <TabsTrigger value="operations">Operations</TabsTrigger>
@@ -410,7 +410,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             {/* Active Cities */}
             <Card>
               <CardHeader>
@@ -469,7 +469,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cities.map((city) => (
                   <Card key={city.id} className={`${city.unlocked ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
                     <CardHeader>
@@ -533,7 +533,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
         {/* Operations Tab */}
         <TabsContent value="operations" className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Menu Section */}
             <Card>
               <CardHeader>
@@ -637,7 +637,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
         {/* Brand Tab */}
         <TabsContent value="brand" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             {/* Brand Customization */}
             <Card>
               <CardHeader>

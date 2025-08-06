@@ -59,14 +59,14 @@ export default function IndustrySectorsSection() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4 max-w-7xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg">
+    <div className="space-y-6 p-4 max-w-7xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg">
       {/* Header */}
-      <div className="text-center mb-4 sm:mb-8">
-        <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2">Industry Sectors</h1>
-        <p className="text-sm sm:text-base text-gray-600 mb-4">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Industry Sectors</h1>
+        <p className="text-gray-600 mb-4">
           Build your empire across multiple sectors. Each sector costs ₹2L to purchase.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
+        <div className="flex justify-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <Star className="h-4 w-4 text-yellow-500" />
             <span>Clarity XP: {playerStats.clarityXP}</span>
@@ -88,7 +88,7 @@ export default function IndustrySectorsSection() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {purchasedSectors.map((sectorId) => {
                 const sector = industrySectors.find(s => s.id === sectorId);
                 if (!sector) return null;
@@ -124,7 +124,7 @@ export default function IndustrySectorsSection() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {industrySectors.map((sector, index) => {
               const isUnlocked = unlockedSectors.some(s => s.id === sector.id);
               const isPurchased = purchasedSectors.includes(sector.id);

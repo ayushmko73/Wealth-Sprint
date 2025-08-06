@@ -217,8 +217,8 @@ const GameDashboard: React.FC = () => {
 
       {/* Enhanced Stats Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm gap-2 sm:gap-0">
-          <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <DollarSign size={16} className="text-green-600" />
               <span className="text-gray-600">{formatIndianCurrency(financialData.bankBalance)}</span>
@@ -236,7 +236,7 @@ const GameDashboard: React.FC = () => {
               <span className="text-gray-600">{playerStats.karma}</span>
             </div>
           </div>
-          <div className="text-left sm:text-right">
+          <div className="text-right">
             <div className="text-xs text-gray-500">FI Progress</div>
             <div className={`font-semibold ${financialData.sideIncome >= financialData.monthlyExpenses ? 'text-green-600' : 'text-gray-600'}`}>
               {Math.round((financialData.sideIncome / financialData.monthlyExpenses) * 100)}%
