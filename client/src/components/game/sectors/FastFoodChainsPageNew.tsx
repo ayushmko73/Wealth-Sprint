@@ -317,7 +317,6 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
           className="flex items-center gap-2 hover:bg-orange-100"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Business
         </Button>
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-full bg-red-500 text-white">
