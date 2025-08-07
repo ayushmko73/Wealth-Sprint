@@ -31,12 +31,12 @@ export interface Bond {
 
 export interface Transaction {
   id: string;
-  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment';
+  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations';
   amount: number;
   description: string;
   timestamp: Date;
-  fromAccount: 'bank' | 'wallet';
-  toAccount: 'bank' | 'wallet';
+  fromAccount: 'bank' | 'wallet' | 'business';
+  toAccount: 'bank' | 'wallet' | 'business';
 }
 
 export interface FinancialData {
@@ -110,6 +110,14 @@ interface WealthSprintGameState {
   gameEvents: GameEvent[];
   teamMembers: TeamMember[];
   purchasedSectors: string[]; // Track purchased sector IDs
+
+  // Fast food chains persistent state
+  fastFoodChains?: {
+    cities: any[];
+    menuTypes: any[];
+    pricingStrategies: any[];
+    logisticsModels: any[];
+  };
   
   // Actions
   updatePlayerStats: (updates: Partial<PlayerStats>) => void;
@@ -165,6 +173,7 @@ interface WealthSprintGameState {
   
   // Sector management functions
   purchaseSector: (sectorId: string) => boolean;
+  setFastFoodState: (state: any) => void;
 }
 
 // Initial state values
@@ -1417,6 +1426,15 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         }
       }));
 
+      // Add transaction record to banking system
+      get().addTransaction({
+        type: 'sector_purchase',
+        amount: -investmentAmount,
+        description: `Purchased ${sectorId} business sector`,
+        fromAccount: 'bank',
+        toAccount: 'business'
+      });
+
       // Add success notification
       get().addGameEvent({
         id: `sector_purchased_${sectorId}_${Date.now()}`,
@@ -1430,6 +1448,13 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       get().gainClarityXP(25, `Strategic sector purchase`);
 
       return true;
+    },
+
+    // Fast food chains state management
+    setFastFoodState: (state: any) => {
+      set((prevState) => ({
+        fastFoodChains: state
+      }));
     },
   }))
 );
@@ -1483,6 +1508,7 @@ if (typeof window !== 'undefined') {
         financialData: state.financialData,
         gameEvents: state.gameEvents.slice(0, 20), // Save only recent events
         purchasedSectors: state.purchasedSectors,
+        fastFoodChains: state.fastFoodChains,
       }));
     }
   );

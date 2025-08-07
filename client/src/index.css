@@ -17,7 +17,7 @@ html, body {
 .mobile-scroll {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: calc(100vh - 200px);
+  flex: 1;
 }
 
 /* Fix for mobile viewport */
