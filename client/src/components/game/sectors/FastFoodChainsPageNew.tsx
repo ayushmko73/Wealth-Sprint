@@ -88,124 +88,132 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
   const [brandName, setBrandName] = useState('My Fast Food Chain');
   const [customerSatisfaction] = useState(78);
   
-  // Cities for expansion
-  const [cities, setCities] = useState<City[]>([
-    {
-      id: 'ranikhet',
-      name: 'Ranikhet',
-      cost: 250000,
-      population: '50K',
-      customerBoost: 15,
-      deliveryTime: '25 min',
-      unlocked: false
-    },
-    {
-      id: 'jaipur',
-      name: 'Jaipur',
-      cost: 500000,
-      population: '3.5M',
-      customerBoost: 35,
-      deliveryTime: '35 min',
-      unlocked: false
-    },
-    {
-      id: 'delhi',
-      name: 'Delhi',
-      cost: 1000000,
-      population: '32M',
-      customerBoost: 75,
-      deliveryTime: '45 min',
-      unlocked: false
-    },
-    {
-      id: 'mumbai',
-      name: 'Mumbai',
-      cost: 1200000,
-      population: '20M',
-      customerBoost: 85,
-      deliveryTime: '40 min',
-      unlocked: false
-    },
-    {
-      id: 'bangalore',
-      name: 'Bangalore',
-      cost: 800000,
-      population: '13M',
-      customerBoost: 65,
-      deliveryTime: '30 min',
-      unlocked: false
-    }
-  ]);
+  // Cities for expansion - Load from persistent state if available
+  const [cities, setCities] = useState<City[]>(
+    fastFoodChains?.cities || [
+      {
+        id: 'ranikhet',
+        name: 'Ranikhet',
+        cost: 250000,
+        population: '50K',
+        customerBoost: 15,
+        deliveryTime: '25 min',
+        unlocked: false
+      },
+      {
+        id: 'jaipur',
+        name: 'Jaipur',
+        cost: 500000,
+        population: '3.5M',
+        customerBoost: 35,
+        deliveryTime: '35 min',
+        unlocked: false
+      },
+      {
+        id: 'delhi',
+        name: 'Delhi',
+        cost: 1000000,
+        population: '32M',
+        customerBoost: 75,
+        deliveryTime: '45 min',
+        unlocked: false
+      },
+      {
+        id: 'mumbai',
+        name: 'Mumbai',
+        cost: 1200000,
+        population: '20M',
+        customerBoost: 85,
+        deliveryTime: '40 min',
+        unlocked: false
+      },
+      {
+        id: 'bangalore',
+        name: 'Bangalore',
+        cost: 800000,
+        population: '13M',
+        customerBoost: 65,
+        deliveryTime: '30 min',
+        unlocked: false
+      }
+    ]
+  );
 
-  // Menu options
-  const [menuTypes, setMenuTypes] = useState<MenuType[]>([
-    {
-      id: 'standard',
-      name: 'Standard Menu',
-      description: 'Classic items with affordable pricing',
-      cost: 50000,
-      revenueBoost: 20,
-      active: false
-    },
-    {
-      id: 'premium',
-      name: 'Premium Menu',
-      description: 'Gourmet, international, or high-margin items',
-      cost: 150000,
-      revenueBoost: 45,
-      active: false
-    },
-    {
-      id: 'local',
-      name: 'Local Tastes',
-      description: 'Custom dishes based on selected cities',
-      cost: 100000,
-      revenueBoost: 30,
-      active: false
-    }
-  ]);
+  // Menu options - Load from persistent state if available
+  const [menuTypes, setMenuTypes] = useState<MenuType[]>(
+    fastFoodChains?.menuTypes || [
+      {
+        id: 'standard',
+        name: 'Standard Menu',
+        description: 'Classic items with affordable pricing',
+        cost: 50000,
+        revenueBoost: 20,
+        active: false
+      },
+      {
+        id: 'premium',
+        name: 'Premium Menu',
+        description: 'Gourmet, international, or high-margin items',
+        cost: 150000,
+        revenueBoost: 45,
+        active: false
+      },
+      {
+        id: 'local',
+        name: 'Local Tastes',
+        description: 'Custom dishes based on selected cities',
+        cost: 100000,
+        revenueBoost: 30,
+        active: false
+      }
+    ]
+  );
 
-  // Pricing strategies
-  const [pricingStrategies, setPricingStrategies] = useState<PricingStrategy[]>([
-    {
-      id: 'high_margin',
-      name: 'High Margin',
-      description: 'Lower customer footfall, higher per-item profit',
-      cost: 75000,
-      customerFootfall: 'Low',
-      profitMargin: 'High (45%)',
-      active: false
-    },
-    {
-      id: 'volume_based',
-      name: 'Volume Based',
-      description: 'Lower price, higher footfall and brand expansion',
-      cost: 60000,
-      customerFootfall: 'High',
-      profitMargin: 'Medium (25%)',
-      active: false
-    }
-  ]);
+  // Pricing strategies - Load from persistent state if available
+  const [pricingStrategies, setPricingStrategies] = useState<PricingStrategy[]>(
+    fastFoodChains?.pricingStrategies || [
+      {
+        id: 'high_margin',
+        name: 'High Margin',
+        description: 'Lower customer footfall, higher per-item profit',
+        cost: 75000,
+        customerFootfall: 'Low',
+        profitMargin: 'High (45%)',
+        active: false
+      },
+      {
+        id: 'volume_based',
+        name: 'Volume Based',
+        description: 'Lower price, higher footfall and brand expansion',
+        cost: 60000,
+        customerFootfall: 'High',
+        profitMargin: 'Medium (25%)',
+        active: false
+      }
+    ]
+  );
 
-  // Logistics models
-  const [logisticsModels, setLogisticsModels] = useState<LogisticsModel[]>([
-    {
-      id: 'quick_commerce',
-      name: 'Quick Commerce',
-      description: 'Own bikes/scooters for ultra-fast 30-minute delivery',
-      cost: 200000,
-      deliveryTime: '30 min',
-      active: false
-    },
-    {
-      id: 'franchise',
-      name: 'Franchise',
-      description: 'Independent stores paying licensing fees',
-      cost: 500000,
-      deliveryTime: '35 min',
-      active: false
-    }
-  ]);
+  // Logistics models - Load from persistent state if available
+  const [logisticsModels, setLogisticsModels] = useState<LogisticsModel[]>(
+    fastFoodChains?.logisticsModels || [
+      {
+        id: 'quick_commerce',
+        name: 'Quick Commerce',
+        description: 'Own bikes/scooters for ultra-fast 30-minute delivery',
+        cost: 200000,
+        deliveryTime: '30 min',
+        active: false
+      },
+      {
+        id: 'franchise',
+        name: 'Franchise',
+        description: 'Independent stores paying licensing fees',
+        cost: 500000,
+        deliveryTime: '35 min',
+        active: false
+      }
+    ]
+  );
 
   // Event cards
   const [eventCards] = useState<EventCard[]>([

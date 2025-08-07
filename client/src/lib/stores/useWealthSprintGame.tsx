@@ -1508,6 +1508,7 @@ if (typeof window !== 'undefined') {
         financialData: state.financialData,
         gameEvents: state.gameEvents.slice(0, 20), // Save only recent events
         purchasedSectors: state.purchasedSectors,
+        fastFoodChains: state.fastFoodChains,
       }));
     }
   );
