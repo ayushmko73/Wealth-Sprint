@@ -6,6 +6,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  background-color: white !important;
 }
 
 /* Safe area support for mobile devices */
@@ -52,7 +53,7 @@ html, body {
   --primary-foreground: white;
   --secondary: #f5f0e6;
   --secondary-foreground: #3a3a3a;
-  --background: #f5f0e6;
+  --background: white;
   --foreground: #3a3a3a;
   --card: white;
   --card-foreground: #3a3a3a;
