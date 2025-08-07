@@ -110,6 +110,14 @@ interface WealthSprintGameState {
   gameEvents: GameEvent[];
   teamMembers: TeamMember[];
   purchasedSectors: string[]; // Track purchased sector IDs
+
+  // Fast food chains persistent state
+  fastFoodChains?: {
+    cities: any[];
+    menuTypes: any[];
+    pricingStrategies: any[];
+    logisticsModels: any[];
+  };
   
   // Actions
   updatePlayerStats: (updates: Partial<PlayerStats>) => void;
@@ -165,6 +173,7 @@ interface WealthSprintGameState {
   
   // Sector management functions
   purchaseSector: (sectorId: string) => boolean;
+  setFastFoodState: (state: any) => void;
 }
 
 // Initial state values
@@ -1439,6 +1448,13 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       get().gainClarityXP(25, `Strategic sector purchase`);
 
       return true;
+    },
+
+    // Fast food chains state management
+    setFastFoodState: (state: any) => {
+      set((prevState) => ({
+        fastFoodChains: state
+      }));
     },
   }))
 );

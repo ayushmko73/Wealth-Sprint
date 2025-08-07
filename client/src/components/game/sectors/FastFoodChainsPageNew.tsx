@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -82,7 +82,7 @@ interface EventCard {
 }
 
 const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) => {
-  const { financialData, spendFromWallet } = useWealthSprintGame();
+  const { financialData, spendFromWallet, fastFoodChains, setFastFoodState } = useWealthSprintGame();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [brandName, setBrandName] = useState('My Fast Food Chain');
@@ -226,6 +226,18 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
       active: false
     }
   ]);
+
+  // Save state to store whenever local state changes
+  useEffect(() => {
+    if (setFastFoodState) {
+      setFastFoodState({
+        cities,
+        menuTypes,
+        pricingStrategies,
+        logisticsModels
+      });
+    }
+  }, [cities, menuTypes, pricingStrategies, logisticsModels, setFastFoodState]);
 
   // Calculate current metrics
   const activeCities = cities.filter(c => c.unlocked);
@@ -555,7 +567,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                         </div>
                         {city.unlocked ? (
                           <Badge className="bg-green-500 text-white">
-                            💚 Active
+                            Active
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="border-cyan-300 text-cyan-700">Available</Badge>
@@ -634,7 +646,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                       <p className="font-medium">{menu.name}</p>
                       {menu.active && (
                         <Badge className="bg-green-500 text-white">
-                          💚 Active
+                          Active
                         </Badge>
                       )}
                     </div>
@@ -660,10 +672,10 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
             </Card>
 
             {/* Pricing Strategy */}
-            <Card className="border-blue-200 bg-blue-50/30">
+            <Card className="border-teal-200 bg-teal-50/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
+                  <DollarSign className="h-5 w-5 text-teal-600" />
                   Pricing Strategy
                 </CardTitle>
               </CardHeader>
@@ -672,19 +684,19 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                   <div key={strategy.id} className={`p-3 rounded-lg border transition-all duration-200 ${
                     strategy.active 
                       ? 'border-green-400 bg-green-100 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50'
                   }`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{strategy.name}</p>
                       {strategy.active && (
                         <Badge className="bg-green-500 text-white">
-                          💚 Active
+                          Active
                         </Badge>
                       )}
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{strategy.description}</p>
                     <div className="text-sm space-y-1">
-                      <p>Footfall: <span className="font-medium text-blue-600">{strategy.customerFootfall}</span></p>
+                      <p>Footfall: <span className="font-medium text-teal-600">{strategy.customerFootfall}</span></p>
                       <p>Margin: <span className="font-medium text-green-600">{strategy.profitMargin}</span></p>
                     </div>
                     {!strategy.active && (
@@ -693,7 +705,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                         disabled={financialData.bankBalance < strategy.cost}
                         className={`w-full mt-2 ${
                           financialData.bankBalance >= strategy.cost 
-                            ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                            ? 'bg-teal-500 hover:bg-teal-600 text-white' 
                             : 'bg-gray-300 text-gray-500'
                         }`}
                         size="sm"
@@ -725,7 +737,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                       <p className="font-medium">{model.name}</p>
                       {model.active && (
                         <Badge className="bg-green-500 text-white">
-                          💚 Active
+                          Active
                         </Badge>
                       )}
                     </div>

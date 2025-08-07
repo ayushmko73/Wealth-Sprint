@@ -282,15 +282,11 @@ const GameDashboard: React.FC = () => {
         </div>
       </div>
 
-
-      
       {/* Notification Center */}
       <NotificationCenter />
       
       {/* Sound Manager */}
       <SoundManager />
-      
-
       
       {/* Sage AI Assistant */}
       <SageAI />
