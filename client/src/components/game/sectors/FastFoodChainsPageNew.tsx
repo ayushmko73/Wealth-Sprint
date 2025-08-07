@@ -249,14 +249,27 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(city.cost)) return;
 
-    if (spendFromWallet(city.cost, `Expansion to ${city.name}`)) {
-      setCities(prev => 
-        prev.map(c => 
-          c.id === cityId ? { ...c, unlocked: true } : c
-        )
-      );
-      toast.success(`🏪 Successfully expanded to ${city.name}!`);
-    }
+    // Deduct from bank balance and add transaction record
+    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    
+    updateFinancialData({
+      bankBalance: financialData.bankBalance - city.cost
+    });
+
+    addTransaction({
+      type: 'business_operations',
+      amount: -city.cost,
+      description: `City expansion to ${city.name}`,
+      fromAccount: 'bank',
+      toAccount: 'business'
+    });
+
+    setCities(prev => 
+      prev.map(c => 
+        c.id === cityId ? { ...c, unlocked: true } : c
+      )
+    );
+    toast.success(`🏪 Successfully expanded to ${city.name}!`);
   };
 
   // Activate menu type
@@ -266,14 +279,27 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(menu.cost)) return;
 
-    if (spendFromWallet(menu.cost, `${menu.name} activation`)) {
-      setMenuTypes(prev => 
-        prev.map(m => 
-          m.id === menuId ? { ...m, active: true } : m
-        )
-      );
-      toast.success(`🍽️ ${menu.name} activated!`);
-    }
+    // Deduct from bank balance and add transaction record
+    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    
+    updateFinancialData({
+      bankBalance: financialData.bankBalance - menu.cost
+    });
+
+    addTransaction({
+      type: 'business_operations',
+      amount: -menu.cost,
+      description: `Activated ${menu.name} for Fast Food Chain`,
+      fromAccount: 'bank',
+      toAccount: 'business'
+    });
+
+    setMenuTypes(prev => 
+      prev.map(m => 
+        m.id === menuId ? { ...m, active: true } : m
+      )
+    );
+    toast.success(`🍽️ ${menu.name} activated!`);
   };
 
   // Activate pricing strategy
@@ -283,12 +309,25 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(strategy.cost)) return;
 
-    if (spendFromWallet(strategy.cost, `${strategy.name} pricing strategy`)) {
-      setPricingStrategies(prev => 
-        prev.map(s => ({ ...s, active: s.id === strategyId }))
-      );
-      toast.success(`💰 ${strategy.name} pricing strategy activated!`);
-    }
+    // Deduct from bank balance and add transaction record
+    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    
+    updateFinancialData({
+      bankBalance: financialData.bankBalance - strategy.cost
+    });
+
+    addTransaction({
+      type: 'business_operations',
+      amount: -strategy.cost,
+      description: `Activated ${strategy.name} pricing strategy`,
+      fromAccount: 'bank',
+      toAccount: 'business'
+    });
+
+    setPricingStrategies(prev => 
+      prev.map(s => ({ ...s, active: s.id === strategyId }))
+    );
+    toast.success(`💰 ${strategy.name} pricing strategy activated!`);
   };
 
   // Activate logistics model
@@ -298,12 +337,25 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(model.cost)) return;
 
-    if (spendFromWallet(model.cost, `${model.name} logistics`)) {
-      setLogisticsModels(prev => 
-        prev.map(m => ({ ...m, active: m.id === modelId }))
-      );
-      toast.success(`🚚 ${model.name} logistics activated!`);
-    }
+    // Deduct from bank balance and add transaction record
+    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    
+    updateFinancialData({
+      bankBalance: financialData.bankBalance - model.cost
+    });
+
+    addTransaction({
+      type: 'business_operations',
+      amount: -model.cost,
+      description: `Activated ${model.name} logistics model`,
+      fromAccount: 'bank',
+      toAccount: 'business'
+    });
+
+    setLogisticsModels(prev => 
+      prev.map(m => ({ ...m, active: m.id === modelId }))
+    );
+    toast.success(`🚚 ${model.name} logistics activated!`);
   };
 
   return (
@@ -401,10 +453,30 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4 bg-white">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="cities">Cities</TabsTrigger>
-          <TabsTrigger value="operations">Operations</TabsTrigger>
-          <TabsTrigger value="brand">Brand</TabsTrigger>
+          <TabsTrigger 
+            value="overview" 
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="cities" 
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+          >
+            Cities
+          </TabsTrigger>
+          <TabsTrigger 
+            value="operations" 
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+          >
+            Operations
+          </TabsTrigger>
+          <TabsTrigger 
+            value="brand" 
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+          >
+            Brand
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -508,11 +580,15 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                         <Button 
                           onClick={() => expandToCity(city.id)}
                           disabled={financialData.bankBalance < city.cost}
-                          className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300"
+                          className={`w-full ${
+                            financialData.bankBalance >= city.cost 
+                              ? 'bg-red-500 hover:bg-red-600 text-white' 
+                              : 'bg-gray-300 text-gray-500'
+                          }`}
                         >
                           {financialData.bankBalance < city.cost ? (
                             <>
-                              <AlertTriangle className="h-4 w-4 mr-2" />
+                              <AlertTriangle className="h-4 w-4 mr-2 text-gray-500" />
                               Insufficient Funds
                             </>
                           ) : (
@@ -534,19 +610,27 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
         <TabsContent value="operations" className="space-y-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Menu Section */}
-            <Card>
+            <Card className="border-orange-200 bg-orange-50/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ChefHat className="h-5 w-5" />
+                  <ChefHat className="h-5 w-5 text-orange-600" />
                   Menu
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {menuTypes.map((menu) => (
-                  <div key={menu.id} className={`p-3 rounded-lg border ${menu.active ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div key={menu.id} className={`p-3 rounded-lg border transition-all duration-200 ${
+                    menu.active 
+                      ? 'border-green-400 bg-green-100 shadow-md' 
+                      : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50'
+                  }`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{menu.name}</p>
-                      {menu.active && <Badge className="bg-green-100 text-green-800">Active</Badge>}
+                      {menu.active && (
+                        <Badge className="bg-green-500 text-white">
+                          💚 Active
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{menu.description}</p>
                     <p className="text-sm font-medium text-green-600">Revenue +{menu.revenueBoost}%</p>
@@ -554,7 +638,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                       <Button 
                         onClick={() => activateMenuType(menu.id)}
                         disabled={financialData.bankBalance < menu.cost}
-                        className="w-full mt-2"
+                        className={`w-full mt-2 ${
+                          financialData.bankBalance >= menu.cost 
+                            ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+                            : 'bg-gray-300 text-gray-500'
+                        }`}
                         size="sm"
                       >
                         Activate - ₹{menu.cost.toLocaleString()}
@@ -566,30 +654,42 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
             </Card>
 
             {/* Pricing Strategy */}
-            <Card>
+            <Card className="border-blue-200 bg-blue-50/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
+                  <DollarSign className="h-5 w-5 text-blue-600" />
                   Pricing Strategy
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {pricingStrategies.map((strategy) => (
-                  <div key={strategy.id} className={`p-3 rounded-lg border ${strategy.active ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div key={strategy.id} className={`p-3 rounded-lg border transition-all duration-200 ${
+                    strategy.active 
+                      ? 'border-green-400 bg-green-100 shadow-md' 
+                      : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50'
+                  }`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{strategy.name}</p>
-                      {strategy.active && <Badge className="bg-green-100 text-green-800">Active</Badge>}
+                      {strategy.active && (
+                        <Badge className="bg-green-500 text-white">
+                          💚 Active
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{strategy.description}</p>
                     <div className="text-sm space-y-1">
-                      <p>Footfall: <span className="font-medium">{strategy.customerFootfall}</span></p>
-                      <p>Margin: <span className="font-medium">{strategy.profitMargin}</span></p>
+                      <p>Footfall: <span className="font-medium text-blue-600">{strategy.customerFootfall}</span></p>
+                      <p>Margin: <span className="font-medium text-green-600">{strategy.profitMargin}</span></p>
                     </div>
                     {!strategy.active && (
                       <Button 
                         onClick={() => activatePricingStrategy(strategy.id)}
                         disabled={financialData.bankBalance < strategy.cost}
-                        className="w-full mt-2"
+                        className={`w-full mt-2 ${
+                          financialData.bankBalance >= strategy.cost 
+                            ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                            : 'bg-gray-300 text-gray-500'
+                        }`}
                         size="sm"
                       >
                         Activate - ₹{strategy.cost.toLocaleString()}
@@ -601,27 +701,39 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
             </Card>
 
             {/* Logistics */}
-            <Card>
+            <Card className="border-purple-200 bg-purple-50/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5" />
+                  <Truck className="h-5 w-5 text-purple-600" />
                   Logistics & Business
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {logisticsModels.map((model) => (
-                  <div key={model.id} className={`p-3 rounded-lg border ${model.active ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <div key={model.id} className={`p-3 rounded-lg border transition-all duration-200 ${
+                    model.active 
+                      ? 'border-green-400 bg-green-100 shadow-md' 
+                      : 'border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50'
+                  }`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{model.name}</p>
-                      {model.active && <Badge className="bg-green-100 text-green-800">Active</Badge>}
+                      {model.active && (
+                        <Badge className="bg-green-500 text-white">
+                          💚 Active
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{model.description}</p>
-                    <p className="text-sm">Delivery: <span className="font-medium">{model.deliveryTime}</span></p>
+                    <p className="text-sm">Delivery: <span className="font-medium text-purple-600">{model.deliveryTime}</span></p>
                     {!model.active && (
                       <Button 
                         onClick={() => activateLogisticsModel(model.id)}
                         disabled={financialData.bankBalance < model.cost}
-                        className="w-full mt-2"
+                        className={`w-full mt-2 ${
+                          financialData.bankBalance >= model.cost 
+                            ? 'bg-purple-500 hover:bg-purple-600 text-white' 
+                            : 'bg-gray-300 text-gray-500'
+                        }`}
                         size="sm"
                       >
                         Activate - ₹{model.cost.toLocaleString()}

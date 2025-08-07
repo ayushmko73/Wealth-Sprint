@@ -31,12 +31,12 @@ export interface Bond {
 
 export interface Transaction {
   id: string;
-  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment';
+  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations';
   amount: number;
   description: string;
   timestamp: Date;
-  fromAccount: 'bank' | 'wallet';
-  toAccount: 'bank' | 'wallet';
+  fromAccount: 'bank' | 'wallet' | 'business';
+  toAccount: 'bank' | 'wallet' | 'business';
 }
 
 export interface FinancialData {
@@ -1416,6 +1416,15 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           bankBalance: state.financialData.bankBalance - investmentAmount
         }
       }));
+
+      // Add transaction record to banking system
+      get().addTransaction({
+        type: 'sector_purchase',
+        amount: -investmentAmount,
+        description: `Purchased ${sectorId} business sector`,
+        fromAccount: 'bank',
+        toAccount: 'business'
+      });
 
       // Add success notification
       get().addGameEvent({

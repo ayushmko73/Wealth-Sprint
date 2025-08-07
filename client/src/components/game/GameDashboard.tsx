@@ -260,7 +260,11 @@ const GameDashboard: React.FC = () => {
                     setActiveSection(item.id);
                     setMenuOpen(false);
                   }}
-                  className="flex flex-col items-center gap-1 h-auto py-2"
+                  className={`flex flex-col items-center gap-1 h-auto py-2 ${
+                    activeSection === item.id 
+                      ? 'bg-green-500 text-white hover:bg-green-600' 
+                      : 'hover:bg-green-100 hover:text-green-700'
+                  }`}
                 >
                   <Icon size={16} />
                   <span className="text-xs">{item.label}</span>
@@ -289,7 +293,11 @@ const GameDashboard: React.FC = () => {
                 variant={activeSection === item.id ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setActiveSection(item.id)}
-                className="flex flex-col items-center gap-1 h-auto py-2 px-3"
+                className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${
+                  activeSection === item.id 
+                    ? 'bg-green-500 text-white hover:bg-green-600' 
+                    : 'hover:bg-green-100 hover:text-green-700'
+                }`}
               >
                 <Icon size={16} />
                 <span className="text-xs">{item.label}</span>
