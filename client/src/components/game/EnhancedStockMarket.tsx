@@ -349,19 +349,22 @@ const EnhancedStockMarket: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Future Content Space */}
-      <div className="h-12"></div>
+      {/* Live Stock Market Header - moved to top left */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <BarChart3 className="w-5 h-5" />
+          <h2 className="text-xl font-semibold">Live Stock Market</h2>
+        </div>
+        <Badge className={`${isLiveMode ? 'bg-green-600' : 'bg-gray-600'} text-white animate-pulse`}>
+          {isLiveMode ? 'LIVE' : 'PAUSED'}
+        </Badge>
+      </div>
       
       {/* Real-Time Stock Ticker */}
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-6 overflow-hidden relative">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-green-600" />
-            <h3 className="text-gray-800 font-semibold">Real-Time Stock Ticker</h3>
-          </div>
-          <Badge className={`${isLiveMode ? 'bg-green-600' : 'bg-gray-600'} text-white animate-pulse`}>
-            {isLiveMode ? 'LIVE' : 'PAUSED'}
-          </Badge>
+        <div className="flex items-center gap-2 mb-2">
+          <Activity className="w-5 h-5 text-green-600" />
+          <h3 className="text-gray-800 font-semibold">Real-Time Stock Ticker</h3>
         </div>
         
         {/* Scrolling ticker */}
@@ -392,11 +395,6 @@ const EnhancedStockMarket: React.FC = () => {
 
       {/* Stock Cards with Trading Interface */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5" />
-          <h2 className="text-xl font-semibold">Live Stock Market</h2>
-        </div>
-        
         {stocks.map((stock) => {
           const TrendIcon = getTrendIcon(stock.trend);
           const holding = portfolioHoldings.find(h => h.code === stock.code);
@@ -407,32 +405,28 @@ const EnhancedStockMarket: React.FC = () => {
           const charges = calculateTradingCharges(tradeValue, tradeType === 'delivery', true);
           
           return (
-            <Card key={stock.code} className={`${stock.changePercent >= 0 ? 'bg-blue-50' : 'bg-red-50'} border-l-4 ${stock.changePercent >= 0 ? 'border-l-blue-500' : 'border-l-red-500'}`}>
+            <Card 
+              key={stock.code} 
+              className={`cursor-pointer transition-all hover:shadow-md ${stock.changePercent >= 0 ? 'bg-blue-50 hover:bg-blue-100' : 'bg-red-50 hover:bg-red-100'} border-l-4 ${stock.changePercent >= 0 ? 'border-l-blue-500' : 'border-l-red-500'}`}
+              onClick={() => setExpandedStock(isExpanded ? null : stock.code)}
+            >
               <CardContent className="p-4">
                 {/* Stock Info Header */}
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div>
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="flex-1">
                       <h3 className="font-bold text-lg">{stock.name} ({stock.code})</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
                         <span>{stock.sector}</span>
-                        {holding && (
-                          <Badge variant="secondary" className="text-xs">
-                            Holding: {holding.quantity} shares
+                        <div className="flex items-center gap-2">
+                          <span>Quantity:</span>
+                          <Badge variant="secondary" className="text-xs font-semibold">
+                            {holding ? `${holding.quantity} shares` : '0 shares'}
                           </Badge>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setExpandedStock(isExpanded ? null : stock.code)}
-                    className="flex items-center gap-2"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    Trade
-                  </Button>
                 </div>
 
                 {/* Price Info Row */}
