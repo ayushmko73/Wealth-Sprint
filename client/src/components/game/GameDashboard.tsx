@@ -191,7 +191,7 @@ const GameDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-[#f5f0e6] flex flex-col">
+    <div className="h-screen bg-white flex flex-col">
       {/* Mobile Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ const GameDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto mobile-scroll">
-        <div className="p-4">
+        <div className="p-4 pb-0">
           {renderMainContent()}
         </div>
       </div>

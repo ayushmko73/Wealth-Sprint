@@ -392,10 +392,6 @@ const EnhancedStockMarket: React.FC = () => {
 
       {/* Stock Cards with Trading Interface */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5" />
-          <h2 className="text-xl font-semibold">Live Stock Market</h2>
-        </div>
         
         {stocks.map((stock) => {
           const TrendIcon = getTrendIcon(stock.trend);
@@ -407,7 +403,11 @@ const EnhancedStockMarket: React.FC = () => {
           const charges = calculateTradingCharges(tradeValue, tradeType === 'delivery', true);
           
           return (
-            <Card key={stock.code} className={`${stock.changePercent >= 0 ? 'bg-blue-50' : 'bg-red-50'} border-l-4 ${stock.changePercent >= 0 ? 'border-l-blue-500' : 'border-l-red-500'}`}>
+            <Card 
+              key={stock.code} 
+              className={`${stock.changePercent >= 0 ? 'bg-blue-50' : 'bg-red-50'} border-l-4 ${stock.changePercent >= 0 ? 'border-l-blue-500' : 'border-l-red-500'} cursor-pointer hover:shadow-md transition-shadow`}
+              onClick={() => setExpandedStock(isExpanded ? null : stock.code)}
+            >
               <CardContent className="p-4">
                 {/* Stock Info Header */}
                 <div className="flex items-center justify-between mb-3">
@@ -418,21 +418,13 @@ const EnhancedStockMarket: React.FC = () => {
                         <span>{stock.sector}</span>
                         {holding && (
                           <Badge variant="secondary" className="text-xs">
-                            Holding: {holding.quantity} shares
+                            Qty: {holding.quantity} shares
                           </Badge>
                         )}
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setExpandedStock(isExpanded ? null : stock.code)}
-                    className="flex items-center gap-2"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    Trade
-                  </Button>
+
                 </div>
 
                 {/* Price Info Row */}
