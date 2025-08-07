@@ -277,35 +277,12 @@ const GameDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto mobile-scroll">
-        <div className="p-4 pb-20">
+        <div className="p-4">
           {renderMainContent()}
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 safe-area-pb">
-        <div className="flex items-center justify-around">
-          {navigationItems.slice(0, 5).map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={activeSection === item.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setActiveSection(item.id)}
-                className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${
-                  activeSection === item.id 
-                    ? 'bg-green-500 text-white hover:bg-green-600' 
-                    : 'hover:bg-green-100 hover:text-green-700'
-                }`}
-              >
-                <Icon size={16} />
-                <span className="text-xs">{item.label}</span>
-              </Button>
-            );
-          })}
-        </div>
-      </div>
+
       
       {/* Notification Center */}
       <NotificationCenter />

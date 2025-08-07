@@ -532,27 +532,33 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
         {/* Cities Tab (Replace Business Models) */}
         <TabsContent value="cities" className="space-y-4">
-          <Card>
+          <Card className="border-cyan-200 bg-cyan-50/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
+                <MapPin className="h-5 w-5 text-cyan-600" />
                 Expand to New Cities
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cities.map((city) => (
-                  <Card key={city.id} className={`${city.unlocked ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                  <Card key={city.id} className={`transition-all duration-200 ${
+                    city.unlocked 
+                      ? 'border-green-400 bg-green-100 shadow-md order-first' 
+                      : 'border-gray-200 bg-white hover:border-cyan-300 hover:bg-cyan-50'
+                  }`}>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
+                          <MapPin className={`h-4 w-4 ${city.unlocked ? 'text-green-600' : 'text-cyan-600'}`} />
                           {city.name}
                         </div>
                         {city.unlocked ? (
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                          <Badge className="bg-green-500 text-white">
+                            💚 Active
+                          </Badge>
                         ) : (
-                          <Badge variant="outline">Available</Badge>
+                          <Badge variant="outline" className="border-cyan-300 text-cyan-700">Available</Badge>
                         )}
                       </CardTitle>
                     </CardHeader>
@@ -560,11 +566,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span>Population:</span>
-                          <span className="font-medium">{city.population}</span>
+                          <span className="font-medium text-cyan-700">{city.population}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Expansion Cost:</span>
-                          <span className="font-medium">₹{city.cost.toLocaleString()}</span>
+                          <span className="font-medium text-red-600">₹{city.cost.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Revenue Boost:</span>
@@ -572,7 +578,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                         </div>
                         <div className="flex justify-between">
                           <span>Delivery Time:</span>
-                          <span className="font-medium">{city.deliveryTime}</span>
+                          <span className="font-medium text-blue-600">{city.deliveryTime}</span>
                         </div>
                       </div>
 
