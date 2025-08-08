@@ -116,26 +116,25 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-white border border-gray-200 rounded-2xl mb-3"
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-[#F5F5DC] border border-[#E6E6D4] rounded-2xl mb-3"
                   >
                     {/* Left Impact Indicator Strip */}
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
-                      style={{ backgroundColor: impactColor }}
+                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-[#D2B48C]"
                     ></div>
                     
                     
                     <div className="p-4 pl-6 pr-16">
                       {/* Header Section */}
                       <div className="flex items-start gap-3 mb-3">
-                        <div className="p-2 bg-blue-100 rounded-full mt-1">
-                          <User size={16} className="text-blue-600" />
+                        <div className="p-2 bg-[#E6E6D4] rounded-full mt-1">
+                          <User size={16} className="text-[#8B7355]" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-800 mb-1">
+                          <h3 className="font-bold text-lg text-[#5D4E37] mb-1">
                             {member.name}
                           </h3>
-                          <p className="text-sm text-blue-600 mb-2">
+                          <p className="text-sm text-[#8B7355] mb-2">
                             {member.role}
                           </p>
                         </div>
