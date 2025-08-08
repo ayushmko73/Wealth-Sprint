@@ -10,8 +10,10 @@ import { formatIndianCurrency } from '../../../lib/utils';
 
 const StrategyHubSection: React.FC = () => {
   const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent } = useWealthSprintGame();
-  const { teamMembers } = useTeamManagement();
+  const { teamMembers, removeTeamMember } = useTeamManagement();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
+  const [fireModalOpen, setFireModalOpen] = useState(false);
+  const [memberToFire, setMemberToFire] = useState<any>(null);
   
   const availableScenarios = getTeamScenarios(teamMembers);
   const [pendingDecisions, setPendingDecisions] = useState<TeamScenario[]>(availableScenarios.slice(0, 3));
@@ -84,8 +86,58 @@ const StrategyHubSection: React.FC = () => {
     }
   };
 
+  const handleFireConfirm = () => {
+    if (memberToFire) {
+      removeTeamMember(memberToFire.id);
+      addGameEvent(`${memberToFire.name} has been removed from the team`, 'team');
+      setFireModalOpen(false);
+      setMemberToFire(null);
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {/* Fire Confirmation Modal */}
+      {fireModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => {
+            setFireModalOpen(false);
+            setMemberToFire(null);
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              animation: 'fadeInScale 0.3s ease-out',
+            }}
+          >
+            <h3 className="text-lg font-bold text-[#222222] mb-2">Remove Team Member</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to remove <strong>{memberToFire?.name}</strong> from your team?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setFireModalOpen(false);
+                  setMemberToFire(null);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleFireConfirm}
+                className="px-4 py-2 bg-[#F44336] text-white rounded-md hover:bg-[#d32f2f] transition-colors"
+              >
+                Yes, Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#3a3a3a]">Strategy Hub</h1>
         <div className="flex items-center gap-4">
@@ -105,34 +157,138 @@ const StrategyHubSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           {teamMembers.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teamMembers.map(member => (
-                <div key={member.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-blue-100 rounded-full">
-                      <User size={16} className="text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-[#3a3a3a]">{member.name}</div>
-                      <div className="text-sm text-blue-700 font-medium">{member.role}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {teamMembers.map(member => {
+                const impact = member.stats?.impact === 3 ? 'High' : member.stats?.impact === 2 ? 'Medium' : 'Low';
+                const loyalty = member.stats?.loyalty || 75;
+                const impactColor = impact === 'High' ? '#4CAF50' : impact === 'Medium' ? '#FFC107' : '#F44336';
+                const performanceColor = loyalty >= 80 ? '#2E7D32' : loyalty >= 50 ? '#5E35B1' : '#C62828';
+                
+                return (
+                  <div 
+                    key={member.id} 
+                    className="relative group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    style={{
+                      background: 'linear-gradient(to right, #fdfaf3, #f6f1e7)',
+                      borderRadius: '10px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+                      e.currentTarget.style.background = 'linear-gradient(to right, #fefbf6, #f7f2e8)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                      e.currentTarget.style.background = 'linear-gradient(to right, #fdfaf3, #f6f1e7)';
+                    }}
+                  >
+                    {/* Left Impact Indicator Strip */}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-lg"
+                      style={{ backgroundColor: impactColor }}
+                    ></div>
+                    
+                    {/* Fire Button */}
+                    <button 
+                      className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-600 hover:text-red-700 transition-colors duration-200 group/fire"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMemberToFire(member);
+                        setFireModalOpen(true);
+                      }}
+                      title="Remove team member"
+                    >
+                      🔥
+                    </button>
+                    
+                    <div className="p-5 pl-7">
+                      {/* Header Section */}
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="p-2.5 bg-blue-100 rounded-full">
+                          <User size={18} className="text-blue-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-[#222222] leading-tight mb-1">
+                            {member.name}
+                          </h3>
+                          <p className="text-sm font-medium text-[#3E4A89] mb-1">
+                            {member.role}
+                          </p>
+                          <p className="text-xs text-[#568C84] uppercase tracking-wide font-medium">
+                            Department
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Performance Ring and Stats */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-gray-600">Performance:</span>
+                            <div className="flex items-center gap-1">
+                              <div className="relative w-6 h-6">
+                                <svg className="w-6 h-6 transform -rotate-90" viewBox="0 0 24 24">
+                                  <circle 
+                                    cx="12" cy="12" r="10" 
+                                    stroke="#E5E7EB" strokeWidth="2" 
+                                    fill="none"
+                                  />
+                                  <circle 
+                                    cx="12" cy="12" r="10" 
+                                    stroke={performanceColor} strokeWidth="2" 
+                                    fill="none"
+                                    strokeDasharray={`${loyalty * 0.628} 62.8`}
+                                    className="transition-all duration-1000 ease-out"
+                                  />
+                                </svg>
+                              </div>
+                              <span 
+                                className="text-sm font-bold"
+                                style={{ color: performanceColor }}
+                              >
+                                {loyalty}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[#009688]">💰</span>
+                            <span className="text-xs text-[#009688] font-medium">Salary:</span>
+                          </div>
+                          <span className="text-sm font-bold text-[#009688]">
+                            ₹{member.salary?.toLocaleString() || 'N/A'}/mo
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[#3F51B5]">⭐</span>
+                            <span className="text-xs text-[#3F51B5] font-medium">Experience:</span>
+                          </div>
+                          <span className="text-sm font-medium text-[#3F51B5]">
+                            2-5 years
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span>📊</span>
+                            <span className="text-xs text-gray-600 font-medium">Impact:</span>
+                          </div>
+                          <span 
+                            className="text-sm font-bold px-2 py-1 rounded text-white text-xs"
+                            style={{ backgroundColor: impactColor }}
+                          >
+                            {impact}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Impact:</span>
-                      <span className="text-xs font-medium text-blue-800">{member.stats?.impact || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Salary:</span>
-                      <span className="text-xs font-bold text-green-700">₹{member.salary?.toLocaleString() || 'N/A'}/mo</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Loyalty:</span>
-                      <span className="text-xs font-medium text-purple-700">{member.stats?.loyalty || 'N/A'}%</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-8">
