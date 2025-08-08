@@ -340,9 +340,6 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h3 className="font-semibold text-[#3a3a3a]">{candidate.name}</h3>
-                        <Badge className={`${getImpactColor(candidate.impact)} text-white text-xs px-2 py-1`}>
-                          {candidate.impact} Impact
-                        </Badge>
                       </div>
                       
                       <p className="text-sm text-gray-600 mb-1">{candidate.age} • {candidate.education}</p>
