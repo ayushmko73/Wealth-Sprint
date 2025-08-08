@@ -56,7 +56,7 @@ import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
-import EliteHiringSection from './EliteHiringSection';
+import SimpleTeamHiring from './SimpleTeamHiring';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
@@ -105,7 +105,7 @@ const GameDashboard: React.FC = () => {
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
-    { id: 'team_hiring', label: 'Elite Hiring', icon: Users },
+    { id: 'team_hiring', label: 'Hire Team', icon: Users },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
@@ -129,7 +129,7 @@ const GameDashboard: React.FC = () => {
       case 'bank':
         return <BankSection />;
       case 'team_hiring':
-        return <EliteHiringSection onClose={() => setActiveSection('dashboard')} />;
+        return <SimpleTeamHiring onClose={() => setActiveSection('dashboard')} />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':
@@ -160,8 +160,8 @@ const GameDashboard: React.FC = () => {
   // Check for financial independence
   if (financialData.sideIncome >= financialData.monthlyExpenses) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#d4af37] to-[#F5F5DC] flex items-center justify-center p-4">
-        <div className="text-center p-4 md:p-8 bg-[#F5F5DC] rounded-lg shadow-2xl max-w-2xl w-full">
+      <div className="min-h-screen bg-gradient-to-br from-[#d4af37] to-[#f0ead6] flex items-center justify-center p-4">
+        <div className="text-center p-4 md:p-8 bg-[#f0ead6] rounded-lg shadow-2xl max-w-2xl w-full">
           <h1 className="text-2xl md:text-4xl font-bold text-[#3a3a3a] mb-4">
             🎉 Game Over – You have achieved Financial Independence!
           </h1>
@@ -191,7 +191,7 @@ const GameDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-[#F5F5DC] flex flex-col">
+    <div className="h-screen bg-[#f5f0e6] flex flex-col">
       {/* Mobile Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
