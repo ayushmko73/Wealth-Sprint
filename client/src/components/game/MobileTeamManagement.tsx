@@ -29,16 +29,15 @@ import { TeamMember } from '@/lib/types/GameTypes';
 import { toast } from 'sonner';
 import { formatIndianCurrency } from '@/lib/utils';
 
-// Core role definitions with vibrant colors
+// Core role definitions with warm beige theme colors
 const CORE_ROLES = [
   {
     id: 'financial_advisor',
     name: 'Financial Advisor',
     department: 'Financial',
     emoji: '💰',
-    color: 'from-yellow-400 to-orange-500',
-    bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
-    borderColor: 'border-yellow-400',
+    color: '#f5e8c3', // Muted gold
+    iconColor: '#5E5A6F', // Muted slate
     description: 'Manages investment strategies and financial planning',
     baseSalary: 120000
   },
@@ -47,9 +46,8 @@ const CORE_ROLES = [
     name: 'Risk Analyst', 
     department: 'Risk',
     emoji: '🛡️',
-    color: 'from-red-400 to-pink-500',
-    bgColor: 'bg-gradient-to-br from-red-50 to-pink-50',
-    borderColor: 'border-red-400',
+    color: '#fce3e3', // Muted coral
+    iconColor: '#5E5A6F',
     description: 'Analyzes and mitigates business risks',
     baseSalary: 110000
   },
@@ -58,9 +56,8 @@ const CORE_ROLES = [
     name: 'Marketing Director',
     department: 'Marketing', 
     emoji: '📈',
-    color: 'from-blue-400 to-cyan-500',
-    bgColor: 'bg-gradient-to-br from-blue-50 to-cyan-50',
-    borderColor: 'border-blue-400',
+    color: '#e8f2f5', // Soft blue-gray
+    iconColor: '#5E5A6F',
     description: 'Drives brand growth and customer acquisition',
     baseSalary: 130000
   },
@@ -69,9 +66,8 @@ const CORE_ROLES = [
     name: 'Sales Manager',
     department: 'Sales',
     emoji: '🎯',
-    color: 'from-green-400 to-emerald-500',
-    bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
-    borderColor: 'border-green-400',
+    color: '#e8f5e8', // Soft green
+    iconColor: '#5E5A6F',
     description: 'Leads sales team and revenue generation',
     baseSalary: 115000
   },
@@ -80,9 +76,8 @@ const CORE_ROLES = [
     name: 'Operations Manager',
     department: 'Operations',
     emoji: '⚙️',
-    color: 'from-purple-400 to-violet-500',
-    bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
-    borderColor: 'border-purple-400',
+    color: '#f0e8f5', // Soft purple
+    iconColor: '#5E5A6F',
     description: 'Optimizes business operations and processes',
     baseSalary: 125000
   },
@@ -91,24 +86,22 @@ const CORE_ROLES = [
     name: 'Chief Executive Officer',
     department: 'Executive',
     emoji: '👑',
-    color: 'from-amber-400 to-yellow-500',
-    bgColor: 'bg-gradient-to-br from-amber-50 to-yellow-50',
-    borderColor: 'border-amber-400',
+    color: '#f5e8c3', // Muted gold
+    iconColor: '#5E5A6F',
     description: 'Strategic leadership and overall business direction',
     baseSalary: 200000
   }
 ];
 
-// Additional department roles with vibrant colors
+// Additional department roles with warm beige theme colors
 const ADDITIONAL_ROLES = [
   {
     id: 'hr_manager',
     name: 'HR Manager',
     department: 'Human Resources',
     emoji: '👥',
-    color: 'from-orange-400 to-red-500',
-    bgColor: 'bg-gradient-to-br from-orange-50 to-red-50',
-    borderColor: 'border-orange-400',
+    color: '#f0e8d5', // Warm peach
+    iconColor: '#5E5A6F',
     description: 'Manages talent acquisition and employee relations',
     baseSalary: 95000
   },
@@ -117,9 +110,8 @@ const ADDITIONAL_ROLES = [
     name: 'HR Specialist',
     department: 'Human Resources',
     emoji: '🤝',
-    color: 'from-orange-300 to-red-400',
-    bgColor: 'bg-gradient-to-br from-orange-50 to-red-50',
-    borderColor: 'border-orange-300',
+    color: '#f0e8d5', // Warm peach
+    iconColor: '#5E5A6F',
     description: 'Handles recruitment and employee development',
     baseSalary: 75000
   },
@@ -128,9 +120,8 @@ const ADDITIONAL_ROLES = [
     name: 'Product Lead',
     department: 'Technician',
     emoji: '🔧',
-    color: 'from-slate-400 to-gray-600',
-    bgColor: 'bg-gradient-to-br from-slate-50 to-gray-50',
-    borderColor: 'border-slate-400',
+    color: '#e8ebe8', // Soft gray-green
+    iconColor: '#5E5A6F',
     description: 'Oversees product development and technical innovation',
     baseSalary: 140000
   },
@@ -139,9 +130,8 @@ const ADDITIONAL_ROLES = [
     name: 'Tech Analyst',
     department: 'Technician',
     emoji: '💻',
-    color: 'from-indigo-400 to-blue-600',
-    bgColor: 'bg-gradient-to-br from-indigo-50 to-blue-50',
-    borderColor: 'border-indigo-400',
+    color: '#e8ebe8', // Soft gray-green
+    iconColor: '#5E5A6F',
     description: 'Analyzes technical requirements and solutions',
     baseSalary: 105000
   },
@@ -150,9 +140,8 @@ const ADDITIONAL_ROLES = [
     name: 'Systems Engineer',
     department: 'Technician',
     emoji: '🖥️',
-    color: 'from-gray-400 to-slate-600',
-    bgColor: 'bg-gradient-to-br from-gray-50 to-slate-50',
-    borderColor: 'border-gray-400',
+    color: '#e8ebe8', // Soft gray-green
+    iconColor: '#5E5A6F',
     description: 'Maintains and optimizes technical infrastructure',
     baseSalary: 120000
   }
@@ -174,10 +163,10 @@ const NAME_POOLS = {
 
 // Business sectors for assignment
 const BUSINESS_SECTORS = [
-  { id: 'fast_food', name: 'Fast Food', icon: '🍔', color: 'from-red-400 to-orange-500' },
-  { id: 'tech_startup', name: 'Tech Startup', icon: '💻', color: 'from-blue-400 to-purple-500' },
-  { id: 'ecommerce', name: 'E-commerce', icon: '🛒', color: 'from-green-400 to-blue-500' },
-  { id: 'healthcare', name: 'Health-Care', icon: '🏥', color: 'from-teal-400 to-green-500' }
+  { id: 'fast_food', name: 'Fast Food', icon: '🍔' },
+  { id: 'tech_startup', name: 'Tech Startup', icon: '💻' },
+  { id: 'ecommerce', name: 'E-commerce', icon: '🛒' },
+  { id: 'healthcare', name: 'Health-Care', icon: '🏥' }
 ];
 
 interface MobileTeamManagementProps {
@@ -392,34 +381,47 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
   const getSeniorityBadgeColor = (seniority: string) => {
     switch (seniority) {
-      case 'Junior': return 'bg-gradient-to-r from-gray-400 to-gray-500 text-white';
-      case 'Mid': return 'bg-gradient-to-r from-blue-400 to-blue-500 text-white';
-      case 'Senior': return 'bg-gradient-to-r from-purple-400 to-purple-500 text-white';
-      case 'VP': return 'bg-gradient-to-r from-orange-400 to-orange-500 text-white';
-      case 'CEO': return 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white';
-      default: return 'bg-gradient-to-r from-gray-400 to-gray-500 text-white';
+      case 'Junior': return 'bg-stone-400 text-white';
+      case 'Mid': return 'bg-blue-400 text-white';
+      case 'Senior': return 'bg-purple-400 text-white';
+      case 'VP': return 'bg-orange-400 text-white';
+      case 'CEO': return 'bg-amber-500 text-white';
+      default: return 'bg-stone-400 text-white';
     }
   };
 
   const getStatusBorderColor = (status: string) => {
     switch (status) {
-      case 'Promoted': return 'border-green-400 shadow-lg shadow-green-100 ring-2 ring-green-200';
-      case 'Demoted': return 'border-red-400 shadow-lg shadow-red-100 ring-2 ring-red-200';
-      default: return 'border-gray-200 shadow-md';
+      case 'Promoted': return 'border-green-300 shadow-sm';
+      case 'Demoted': return 'border-red-300 shadow-sm';
+      default: return 'border-stone-200 shadow-sm';
+    }
+  };
+
+  const getProgressColor = (type: string, value: number) => {
+    switch (type) {
+      case 'loyalty':
+        return value >= 80 ? '#B4D3A1' : value >= 50 ? '#F2C078' : '#F8AFA6';
+      case 'energy':
+        return value >= 80 ? '#B4D3A1' : value >= 50 ? '#F2C078' : '#F8AFA6';
+      case 'impact':
+        return value >= 80 ? '#B4D3A1' : value >= 50 ? '#F2C078' : '#F8AFA6';
+      default:
+        return '#F2C078';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-4">
+    <div className="min-h-screen bg-gradient-to-r from-[#fcf8f3] to-[#f8f3eb] p-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
       {/* Mobile Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-[#5E5A6F] rounded-xl shadow-sm">
             <Users className="text-white" size={24} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-800">Team Management</h1>
-            <p className="text-sm text-gray-600">{filteredMembers.length} employees</p>
+            <h1 className="text-xl font-bold text-[#3E3C38]">Team Management</h1>
+            <p className="text-sm text-[#888174]">{filteredMembers.length} employees</p>
           </div>
         </div>
         
@@ -428,11 +430,11 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
             size="sm"
-            className="bg-white/80"
+            className="bg-[#fffdf7] border-[#e5ddd1] text-[#5E5A6F] hover:bg-[#faf7f2] shadow-sm"
           >
             <Filter size={16} />
           </Button>
-          <Button onClick={onClose} variant="outline" size="sm" className="bg-white/80">
+          <Button onClick={onClose} variant="outline" size="sm" className="bg-[#fffdf7] border-[#e5ddd1] text-[#5E5A6F] hover:bg-[#faf7f2] shadow-sm">
             <X size={16} />
           </Button>
         </div>
@@ -440,12 +442,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
       {/* Filters Panel */}
       {showFilters && (
-        <div className="mb-4 p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-white/50 shadow-lg">
+        <div className="mb-6 p-4 bg-[#fffdf7] rounded-xl border border-[#e5ddd1] shadow-sm">
           <div className="grid grid-cols-1 gap-3">
             <div>
-              <Label className="text-sm font-medium text-gray-700">Department</Label>
+              <Label className="text-sm font-medium text-[#3E3C38]">Department</Label>
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-white/90">
+                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -463,9 +465,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700">Business Sector</Label>
+              <Label className="text-sm font-medium text-[#3E3C38]">Business Sector</Label>
               <Select value={selectedSector} onValueChange={setSelectedSector}>
-                <SelectTrigger className="bg-white/90">
+                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -480,9 +482,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700">Status</Label>
+              <Label className="text-sm font-medium text-[#3E3C38]">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="bg-white/90">
+                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -498,17 +500,29 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-2 mb-4">
-        <Button onClick={promoteAll} size="sm" className="flex-1 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white shadow-lg">
-          <ArrowUp size={16} className="mr-1" />
+      <div className="flex gap-3 mb-6">
+        <Button 
+          onClick={promoteAll} 
+          size="sm" 
+          className="flex-1 bg-[#cfe7cd] hover:bg-[#b8ddb4] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+        >
+          <ArrowUp size={16} className="mr-2" />
           Promote All
         </Button>
-        <Button onClick={demoteAll} size="sm" variant="outline" className="flex-1 border-red-300 text-red-600 hover:bg-red-50">
-          <ArrowDown size={16} className="mr-1" />
+        <Button 
+          onClick={demoteAll} 
+          size="sm" 
+          className="flex-1 bg-[#f7c2c2] hover:bg-[#f4b0b0] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+        >
+          <ArrowDown size={16} className="mr-2" />
           Demote All
         </Button>
-        <Button onClick={() => setShowAddRoleDialog(true)} size="sm" className="bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 text-white shadow-lg">
-          <Plus size={16} />
+        <Button 
+          onClick={() => setShowAddRoleDialog(true)} 
+          size="sm" 
+          className="bg-[#5E5A6F] hover:bg-[#524e61] text-white shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+        >
+          <Plus size={18} />
         </Button>
       </div>
 
@@ -519,102 +533,123 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className={`cursor-pointer hover:scale-[1.02] transition-all duration-300 ${getStatusBorderColor(member.status)} ${role?.bgColor || 'bg-white'}`}
+              className={`cursor-pointer hover:scale-[1.01] hover:shadow-md transition-all duration-300 bg-[#fffdf7] ${getStatusBorderColor(member.status)} rounded-xl border`}
+              style={{
+                backgroundColor: role?.color || '#fffdf7',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+              }}
               onClick={() => setShowEmployeeDetail(member)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${role?.color} flex items-center justify-center text-white text-lg shadow-lg`}>
+                    <div 
+                      className="w-14 h-14 rounded-full flex items-center justify-center text-lg shadow-sm"
+                      style={{ backgroundColor: role?.iconColor || '#5E5A6F', color: 'white' }}
+                    >
                       {role?.emoji || '👤'}
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-800">{member.name}</h3>
-                      <p className="text-sm text-gray-600">{member.role}</p>
+                      <h3 className="font-bold text-[#3E3C38] text-lg">{member.name}</h3>
+                      <p className="text-sm text-[#888174] font-medium">{member.role}</p>
                       {member.assignedSector && (
                         <div className="flex items-center gap-1 mt-1">
-                          <Building size={12} className="text-blue-500" />
-                          <span className="text-xs text-blue-600 font-medium">{member.assignedSector}</span>
+                          <Building size={12} style={{ color: role?.iconColor || '#5E5A6F' }} />
+                          <span className="text-xs font-medium" style={{ color: role?.iconColor || '#5E5A6F' }}>{member.assignedSector}</span>
                         </div>
                       )}
                     </div>
                   </div>
                   
                   {member.isCEO && (
-                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
+                    <Badge className="bg-amber-500 text-white shadow-sm rounded-lg px-2 py-1">
                       <Crown size={12} className="mr-1" />
                       CEO
                     </Badge>
                   )}
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Badge className={getSeniorityBadgeColor(member.seniority)}>
+                    <Badge className={`${getSeniorityBadgeColor(member.seniority)} rounded-lg px-3 py-1 text-xs font-medium`}>
                       {member.seniority}
                     </Badge>
                     {member.status !== 'Neutral' && (
                       <Badge 
-                        className={
+                        className={`rounded-lg px-2 py-1 text-xs font-medium ${
                           member.status === 'Promoted' 
-                            ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-lg' 
-                            : 'bg-gradient-to-r from-red-400 to-red-500 text-white shadow-lg'
-                        }
+                            ? 'bg-[#B4D3A1] text-[#3E3C38]' 
+                            : 'bg-[#F8AFA6] text-[#3E3C38]'
+                        }`}
                       >
                         {member.status === 'Promoted' ? '🌟' : '⚠️'} {member.status}
                       </Badge>
                     )}
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1">
-                      <DollarSign size={14} className="text-green-500" />
-                      <span className="text-gray-600">Salary:</span>
+                  <div className="flex items-center justify-between text-sm bg-white/50 rounded-lg p-2">
+                    <div className="flex items-center gap-2">
+                      <DollarSign size={14} style={{ color: role?.iconColor || '#5E5A6F' }} />
+                      <span className="text-[#888174] font-medium">Salary:</span>
                     </div>
-                    <span className="font-semibold text-green-600">{formatIndianCurrency(member.salary)}</span>
+                    <span className="font-bold text-[#3E3C38]">{formatIndianCurrency(member.salary)}</span>
                   </div>
                   
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-2 text-xs">
+                  {/* Stats with Progress Circles */}
+                  <div className="grid grid-cols-3 gap-3 text-xs">
                     <div className="text-center">
-                      <Heart size={12} className="text-red-400 mx-auto mb-1" />
-                      <div className="text-gray-600">Loyalty</div>
-                      <div className="font-semibold">{member.stats.loyalty}%</div>
+                      <div 
+                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                        style={{ backgroundColor: getProgressColor('loyalty', member.stats.loyalty) }}
+                      >
+                        <Heart size={14} />
+                      </div>
+                      <div className="text-[#888174] font-medium">Loyalty</div>
+                      <div className="font-bold text-[#3E3C38]">{member.stats.loyalty}%</div>
                     </div>
                     <div className="text-center">
-                      <Zap size={12} className="text-yellow-400 mx-auto mb-1" />
-                      <div className="text-gray-600">Energy</div>
-                      <div className="font-semibold">{member.stats.energy}%</div>
+                      <div 
+                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                        style={{ backgroundColor: getProgressColor('energy', member.stats.energy) }}
+                      >
+                        <Zap size={14} />
+                      </div>
+                      <div className="text-[#888174] font-medium">Energy</div>
+                      <div className="font-bold text-[#3E3C38]">{member.stats.energy}%</div>
                     </div>
                     <div className="text-center">
-                      <Star size={12} className="text-purple-400 mx-auto mb-1" />
-                      <div className="text-gray-600">Impact</div>
-                      <div className="font-semibold">{member.stats.impact}%</div>
+                      <div 
+                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                        style={{ backgroundColor: getProgressColor('impact', member.stats.impact) }}
+                      >
+                        <Star size={14} />
+                      </div>
+                      <div className="text-[#888174] font-medium">Impact</div>
+                      <div className="font-bold text-[#3E3C38]">{member.stats.impact}%</div>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-3 pt-2">
                     <Button 
                       size="sm" 
-                      className="flex-1 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white shadow-md"
+                      className="flex-1 bg-[#cfe7cd] hover:bg-[#b8ddb4] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02] font-medium"
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePromote(member);
                       }}
                     >
-                      <ArrowUp size={12} className="mr-1" />
+                      <ArrowUp size={14} className="mr-2" />
                       Promote
                     </Button>
                     <Button 
                       size="sm" 
-                      variant="outline" 
-                      className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                      className="flex-1 bg-[#f7c2c2] hover:bg-[#f4b0b0] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02] font-medium"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDemote(member);
                       }}
                     >
-                      <ArrowDown size={12} className="mr-1" />
+                      <ArrowDown size={14} className="mr-2" />
                       Demote
                     </Button>
                   </div>
@@ -628,15 +663,20 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       {/* Employee Detail Modal */}
       {showEmployeeDetail && (
         <Dialog open={!!showEmployeeDetail} onOpenChange={() => setShowEmployeeDetail(null)}>
-          <DialogContent className="max-w-md mx-4">
+          <DialogContent className="max-w-md mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3">
-                <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.color} flex items-center justify-center text-white text-2xl shadow-lg`}>
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl shadow-sm"
+                  style={{ 
+                    backgroundColor: ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.iconColor || '#5E5A6F' 
+                  }}
+                >
                   {ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.emoji || '👤'}
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">{showEmployeeDetail.name}</h2>
-                  <p className="text-gray-600">{showEmployeeDetail.role}</p>
+                  <h2 className="text-lg font-bold text-[#3E3C38]">{showEmployeeDetail.name}</h2>
+                  <p className="text-[#888174]">{showEmployeeDetail.role}</p>
                 </div>
               </DialogTitle>
             </DialogHeader>
@@ -645,28 +685,28 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
               {/* Basic Info */}
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <Label className="text-xs font-medium text-gray-500">Department</Label>
-                  <p className="font-semibold">{showEmployeeDetail.department}</p>
+                  <Label className="text-xs font-medium text-[#888174]">Department</Label>
+                  <p className="font-semibold text-[#3E3C38]">{showEmployeeDetail.department}</p>
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-gray-500">Seniority</Label>
-                  <Badge className={getSeniorityBadgeColor(showEmployeeDetail.seniority)}>
+                  <Label className="text-xs font-medium text-[#888174]">Seniority</Label>
+                  <Badge className={`${getSeniorityBadgeColor(showEmployeeDetail.seniority)} rounded-lg px-2 py-1`}>
                     {showEmployeeDetail.seniority}
                   </Badge>
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-gray-500">Salary</Label>
-                  <p className="font-semibold text-green-600">{formatIndianCurrency(showEmployeeDetail.salary)}</p>
+                  <Label className="text-xs font-medium text-[#888174]">Salary</Label>
+                  <p className="font-semibold text-[#3E3C38]">{formatIndianCurrency(showEmployeeDetail.salary)}</p>
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-gray-500">Join Date</Label>
-                  <p className="font-semibold">{showEmployeeDetail.joinDate.toLocaleDateString()}</p>
+                  <Label className="text-xs font-medium text-[#888174]">Join Date</Label>
+                  <p className="font-semibold text-[#3E3C38]">{showEmployeeDetail.joinDate.toLocaleDateString()}</p>
                 </div>
               </div>
 
               {/* Assign Sector */}
               <div>
-                <Label className="text-sm font-medium text-gray-700">Assigned Sector</Label>
+                <Label className="text-sm font-medium text-[#3E3C38]">Assigned Sector</Label>
                 <Select 
                   value={showEmployeeDetail.assignedSector || 'none'} 
                   onValueChange={(value) => {
@@ -679,7 +719,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     });
                   }}
                 >
-                  <SelectTrigger className="bg-white/90">
+                  <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
                     <SelectValue placeholder="Select sector" />
                   </SelectTrigger>
                   <SelectContent>
@@ -695,10 +735,10 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
               {/* Skills */}
               <div>
-                <Label className="text-sm font-medium text-gray-700">Skills</Label>
+                <Label className="text-sm font-medium text-[#3E3C38]">Skills</Label>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {showEmployeeDetail.skills.map((skill, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">{skill}</Badge>
+                    <Badge key={index} variant="outline" className="text-xs border-[#e5ddd1] text-[#3E3C38]">{skill}</Badge>
                   ))}
                 </div>
               </div>
@@ -710,7 +750,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <Dialog open={!!showConfirmDialog} onOpenChange={() => setShowConfirmDialog(null)}>
-          <DialogContent className="max-w-sm mx-4">
+          <DialogContent className="max-w-sm mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
               <DialogTitle className="text-center">
                 {showConfirmDialog.type === 'promote' ? '🎉 Promote Employee?' : '⚠️ Demote Employee?'}
@@ -718,25 +758,34 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </DialogHeader>
             
             <div className="text-center space-y-3">
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${ALL_ROLES.find(r => r.name === showConfirmDialog.employee.role)?.color} flex items-center justify-center text-white text-2xl shadow-lg mx-auto`}>
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl shadow-sm mx-auto"
+                style={{ 
+                  backgroundColor: ALL_ROLES.find(r => r.name === showConfirmDialog.employee.role)?.iconColor || '#5E5A6F' 
+                }}
+              >
                 {ALL_ROLES.find(r => r.name === showConfirmDialog.employee.role)?.emoji || '👤'}
               </div>
-              <p className="text-gray-600">
+              <p className="text-[#888174]">
                 {showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'} {showConfirmDialog.employee.name}?
               </p>
             </div>
             
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowConfirmDialog(null)} className="flex-1">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowConfirmDialog(null)} 
+                className="flex-1 border-[#e5ddd1] text-[#3E3C38] hover:bg-[#faf7f2]"
+              >
                 Cancel
               </Button>
               <Button 
                 onClick={showConfirmDialog.type === 'promote' ? confirmPromotion : confirmDemotion}
                 className={`flex-1 ${
                   showConfirmDialog.type === 'promote' 
-                    ? 'bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600' 
-                    : 'bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600'
-                } text-white shadow-lg`}
+                    ? 'bg-[#cfe7cd] hover:bg-[#b8ddb4]' 
+                    : 'bg-[#f7c2c2] hover:bg-[#f4b0b0]'
+                } text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]`}
               >
                 {showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'}
               </Button>
@@ -748,9 +797,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       {/* Add Role Dialog */}
       {showAddRoleDialog && (
         <Dialog open={showAddRoleDialog} onOpenChange={setShowAddRoleDialog}>
-          <DialogContent className="max-w-md mx-4">
+          <DialogContent className="max-w-md mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
-              <DialogTitle>Add New Team Member</DialogTitle>
+              <DialogTitle className="text-[#3E3C38]">Add New Team Member</DialogTitle>
             </DialogHeader>
             
             <div className="grid grid-cols-2 gap-3">
@@ -759,7 +808,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 return (
                   <Card 
                     key={role.id}
-                    className={`cursor-pointer hover:scale-105 transition-all ${role.bgColor} ${role.borderColor} border-2 ${existing ? 'opacity-50' : ''}`}
+                    className={`cursor-pointer hover:scale-105 transition-all border-2 ${existing ? 'opacity-50' : ''}`}
+                    style={{ 
+                      backgroundColor: role.color,
+                      borderColor: role.iconColor,
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+                    }}
                     onClick={() => {
                       if (!existing) {
                         const randomName = NAME_POOLS[role.department as keyof typeof NAME_POOLS][
@@ -809,16 +863,19 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     }}
                   >
                     <CardContent className="p-3 text-center">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${role.color} flex items-center justify-center text-white text-lg shadow-lg mx-auto mb-2`}>
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-sm mx-auto mb-2"
+                        style={{ backgroundColor: role.iconColor }}
+                      >
                         {role.emoji}
                       </div>
-                      <h3 className="font-semibold text-sm">{role.name}</h3>
-                      <p className="text-xs text-gray-600">{role.department}</p>
-                      <p className="text-xs text-green-600 mt-1 font-medium">
+                      <h3 className="font-semibold text-sm text-[#3E3C38]">{role.name}</h3>
+                      <p className="text-xs text-[#888174]">{role.department}</p>
+                      <p className="text-xs mt-1 font-medium text-[#3E3C38]">
                         {formatIndianCurrency(role.baseSalary)}
                       </p>
                       {existing && (
-                        <Badge className="mt-2 bg-gray-500 text-white">Already Hired</Badge>
+                        <Badge className="mt-2 bg-[#5E5A6F] text-white">Already Hired</Badge>
                       )}
                     </CardContent>
                   </Card>
