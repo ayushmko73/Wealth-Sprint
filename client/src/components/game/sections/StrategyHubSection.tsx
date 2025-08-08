@@ -190,7 +190,7 @@ const StrategyHubSection: React.FC = () => {
                       }}
                       title="Remove team member"
                     >
-                      🔥
+                      Fire
                     </button>
                     
                     <div className="p-4 pl-6">
