@@ -4,7 +4,7 @@ import { useTeamManagement } from '../../../lib/stores/useTeamManagement';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle, User } from 'lucide-react';
+import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle, User, Trash2, X } from 'lucide-react';
 import { getTeamScenarios, TeamScenario } from '../../../lib/data/teamScenarios';
 import { formatIndianCurrency } from '../../../lib/utils';
 
@@ -167,22 +167,23 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md"
+                    className="relative group cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-gray-200 rounded-xl bg-white"
                     style={{
-                      background: 'linear-gradient(to right, #fdfaf3, #f6f1e7)',
-                      borderRadius: '8px',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
                     }}
                   >
                     {/* Left Impact Indicator Strip */}
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-lg"
-                      style={{ backgroundColor: impactColor }}
+                      className="absolute left-0 top-0 bottom-0 w-2 rounded-l-xl"
+                      style={{ 
+                        background: `linear-gradient(180deg, ${impactColor} 0%, ${impactColor}80 100%)`,
+                        boxShadow: `inset 0 0 0 1px ${impactColor}40`
+                      }}
                     ></div>
                     
                     {/* Fire Button */}
                     <button 
-                      className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-600 hover:text-red-700 transition-colors duration-200 group/fire"
+                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2 rounded-lg bg-red-50 hover:bg-red-500 border border-red-200 hover:border-red-500 flex items-center justify-center text-red-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md group/fire min-w-[36px] min-h-[36px]"
                       onClick={(e) => {
                         e.stopPropagation();
                         setMemberToFire(member);
@@ -190,54 +191,53 @@ const StrategyHubSection: React.FC = () => {
                       }}
                       title="Remove team member"
                     >
-                      Fire
+                      <Trash2 size={14} className="group-hover/fire:animate-pulse" />
                     </button>
                     
-                    <div className="p-4 pl-6">
+                    <div className="p-4 sm:p-5 pl-5 sm:pl-6">
                       {/* Header Section */}
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="p-2 bg-blue-100 rounded-full">
-                          <User size={16} className="text-blue-600" />
+                      <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                        <div className="relative">
+                          <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm">
+                            <User size={18} className="text-blue-600 sm:w-5 sm:h-5" />
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-base text-[#222222] leading-tight mb-1">
+                        <div className="flex-1 min-w-0 pr-10 sm:pr-12">
+                          <h3 className="font-bold text-base sm:text-lg text-gray-800 leading-tight mb-1 truncate">
                             {member.name}
                           </h3>
-                          <p className="text-sm text-[#3E4A89] mb-1">
+                          <p className="text-xs sm:text-sm font-medium text-blue-600 mb-1">
                             {member.role}
                           </p>
-                          <p className="text-xs text-[#568C84] uppercase tracking-wide">
-                            Department
+                          <p className="text-xs text-gray-500 uppercase tracking-wider font-medium bg-gray-50 px-2 py-1 rounded-full inline-block">
+                            {member.department || 'DEPARTMENT'}
                           </p>
                         </div>
                       </div>
                       
-                      {/* Performance Only */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Performance:</span>
-                        <div className="flex items-center gap-2">
-                          <div className="relative w-5 h-5">
-                            <svg className="w-5 h-5 transform -rotate-90" viewBox="0 0 24 24">
-                              <circle 
-                                cx="12" cy="12" r="10" 
-                                stroke="#E5E7EB" strokeWidth="3" 
-                                fill="none"
-                              />
-                              <circle 
-                                cx="12" cy="12" r="10" 
-                                stroke={performanceColor} strokeWidth="3" 
-                                fill="none"
-                                strokeDasharray={`${loyalty * 0.628} 62.8`}
-                                className="transition-all duration-1000 ease-out"
-                              />
-                            </svg>
-                          </div>
+                      {/* Performance Section */}
+                      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-700">Performance:</span>
                           <span 
-                            className="text-sm font-bold"
-                            style={{ color: performanceColor }}
+                            className="text-base sm:text-lg font-bold px-2 py-1 rounded-md"
+                            style={{ 
+                              color: performanceColor,
+                              backgroundColor: `${performanceColor}15`
+                            }}
                           >
                             {loyalty}%
                           </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-1000 ease-out"
+                            style={{ 
+                              width: `${loyalty}%`,
+                              backgroundColor: performanceColor,
+                              boxShadow: `0 0 8px ${performanceColor}40`
+                            }}
+                          ></div>
                         </div>
                       </div>
                     </div>
