@@ -6,7 +6,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background-color: #75746E !important;
+  background-color: #F5F5DC !important;
 }
 
 /* Safe area support for mobile devices */
@@ -53,9 +53,9 @@ html, body {
   --primary-foreground: #f5f3f0;
   --secondary: #8a8982;
   --secondary-foreground: #2c2a27;
-  --background: #75746E;
+  --background: #F5F5DC;
   --foreground: #2c2a27;
-  --card: #7e7d77;
+  --card: #F5F5DC;
   --card-foreground: #2c2a27;
   --border: #6b6a64;
   --muted: #878681;
@@ -68,10 +68,10 @@ html, body {
   --primary-foreground: white;
   --secondary: #1f2937;
   --secondary-foreground: #f9fafb;
-  --background: #111827;
-  --foreground: #f9fafb;
-  --card: #1f2937;
-  --card-foreground: #f9fafb;
+  --background: #F5F5DC;
+  --foreground: #2c2a27;
+  --card: #F5F5DC;
+  --card-foreground: #2c2a27;
   --border: #374151;
   --muted: #374151;
   --muted-foreground: #9ca3af;
