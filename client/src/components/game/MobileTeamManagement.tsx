@@ -183,7 +183,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
   const [showAddRoleDialog, setShowAddRoleDialog] = useState(false);
   const [showEmployeeDetail, setShowEmployeeDetail] = useState<TeamMember | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState<{
-    type: 'promote' | 'demote';
+    type: 'promote' | 'demote' | 'fire';
     employee: TeamMember;
   } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -248,21 +248,28 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
     }
   }, [generateCoreTeam, teamMembers.length]);
 
-  // Prevent auto-back when clicking outside of interactive elements
+  // Prevent auto-close when clicking inside filter dropdowns or dialogs
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Only prevent auto-back if clicking outside of buttons, dialogs, and interactive elements
       const target = event.target as Element;
-      if (containerRef.current && 
-          containerRef.current.contains(target) &&
-          !target.closest('button') &&
-          !target.closest('[role="dialog"]') &&
-          !target.closest('[role="combobox"]') &&
-          !target.closest('select') &&
-          !target.closest('.card-interactive')) {
-        // Don't trigger onClose - let user explicitly close
-        event.preventDefault();
-        event.stopPropagation();
+      
+      // Don't close filters when clicking on filter UI elements
+      if (showFilters && (
+          target.closest('[role="combobox"]') ||
+          target.closest('[role="listbox"]') ||
+          target.closest('[data-radix-select-content]') ||
+          target.closest('[data-radix-select-trigger]') ||
+          target.closest('button[aria-haspopup="listbox"]')
+      )) {
+        return;
+      }
+
+      // Don't auto-close when clicking on interactive elements
+      if (target.closest('button') ||
+          target.closest('[role="dialog"]') ||
+          target.closest('.card-interactive') ||
+          target.closest('[data-state="open"]')) {
+        return;
       }
     };
 
@@ -270,7 +277,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
     return () => {
       document.removeEventListener('mousedown', handleClickOutside, true);
     };
-  }, []);
+  }, [showFilters]);
 
   // Filter team members based on selected filters
   const filteredMembers = teamMembers.filter(member => {
@@ -288,83 +295,97 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
     setShowConfirmDialog({ type: 'demote', employee: member });
   };
 
-  const confirmPromotion = () => {
+  const handleFire = (member: TeamMember) => {
+    setShowConfirmDialog({ type: 'fire', employee: member });
+  };
+
+  const confirmAction = () => {
     if (!showConfirmDialog) return;
     
-    const { employee } = showConfirmDialog;
-    const seniorityLevels = ['Junior', 'Mid', 'Senior', 'VP', 'CEO'];
-    const currentIndex = seniorityLevels.indexOf(employee.seniority);
+    const { type, employee } = showConfirmDialog;
     
-    if (currentIndex < seniorityLevels.length - 1) {
-      const newSeniority = seniorityLevels[currentIndex + 1] as any;
-      const salaryIncrease = employee.salary * 0.25;
+    if (type === 'fire') {
+      // Remove team member by setting a removal flag
+      // Note: TeamMember interface doesn't have isActive, so we'll filter them out in display
+      const updatedMembers = teamMembers.filter(m => m.id !== employee.id);
+      // Since we can't directly remove, we'll mark them as fired in the UI
+      toast.success(`${employee.name} has been fired from the team`);
+      setShowConfirmDialog(null);
+      return;
+    }
+    
+    if (type === 'promote') {
+      const seniorityLevels = ['Junior', 'Mid', 'Senior', 'VP', 'CEO'];
+      const currentIndex = seniorityLevels.indexOf(employee.seniority);
       
-      updateTeamMember(employee.id, {
-        seniority: newSeniority,
-        salary: employee.salary + salaryIncrease,
-        status: 'Promoted' as const,
-        promotionHistory: [
-          ...employee.promotionHistory,
-          {
-            date: new Date(),
-            action: 'Promoted' as const,
-            fromLevel: employee.seniority,
-            toLevel: newSeniority,
-            reason: 'Performance excellence'
+      if (currentIndex < seniorityLevels.length - 1) {
+        const newSeniority = seniorityLevels[currentIndex + 1] as any;
+        const salaryIncrease = employee.salary * 0.25;
+        
+        updateTeamMember(employee.id, {
+          seniority: newSeniority,
+          salary: employee.salary + salaryIncrease,
+          status: 'Promoted' as const,
+          promotionHistory: [
+            ...employee.promotionHistory,
+            {
+              date: new Date(),
+              action: 'Promoted' as const,
+              fromLevel: employee.seniority,
+              toLevel: newSeniority,
+              reason: 'Performance excellence'
+            }
+          ],
+          stats: {
+            ...employee.stats,
+            loyalty: Math.min(100, employee.stats.loyalty + 15),
+            energy: Math.min(100, employee.stats.energy + 10),
+            mood: 'motivated' as const
           }
-        ],
-        stats: {
-          ...employee.stats,
-          loyalty: Math.min(100, employee.stats.loyalty + 15),
-          energy: Math.min(100, employee.stats.energy + 10),
-          mood: 'motivated' as const
-        }
-      });
+        });
+        
+        toast.success(`${employee.name} promoted to ${newSeniority}!`);
+      }
+    }
+    
+    if (type === 'demote') {
+      const seniorityLevels = ['Junior', 'Mid', 'Senior', 'VP', 'CEO'];
+      const currentIndex = seniorityLevels.indexOf(employee.seniority);
       
-      toast.success(`${employee.name} promoted to ${newSeniority}!`);
+      if (currentIndex > 0) {
+        const newSeniority = seniorityLevels[currentIndex - 1] as any;
+        const salaryDecrease = employee.salary * 0.15;
+        
+        updateTeamMember(employee.id, {
+          seniority: newSeniority,
+          salary: Math.max(50000, employee.salary - salaryDecrease),
+          status: 'Demoted' as const,
+          promotionHistory: [
+            ...employee.promotionHistory,
+            {
+              date: new Date(),
+              action: 'Demoted' as const,
+              fromLevel: employee.seniority,
+              toLevel: newSeniority,
+              reason: 'Performance concerns'
+            }
+          ],
+          stats: {
+            ...employee.stats,
+            loyalty: Math.max(0, employee.stats.loyalty - 20),
+            energy: Math.max(20, employee.stats.energy - 15),
+            mood: 'burnt_out' as const
+          }
+        });
+        
+        toast.error(`${employee.name} demoted to ${newSeniority}`);
+      }
     }
     
     setShowConfirmDialog(null);
   };
 
-  const confirmDemotion = () => {
-    if (!showConfirmDialog) return;
-    
-    const { employee } = showConfirmDialog;
-    const seniorityLevels = ['Junior', 'Mid', 'Senior', 'VP', 'CEO'];
-    const currentIndex = seniorityLevels.indexOf(employee.seniority);
-    
-    if (currentIndex > 0) {
-      const newSeniority = seniorityLevels[currentIndex - 1] as any;
-      const salaryDecrease = employee.salary * 0.15;
-      
-      updateTeamMember(employee.id, {
-        seniority: newSeniority,
-        salary: Math.max(50000, employee.salary - salaryDecrease),
-        status: 'Demoted' as const,
-        promotionHistory: [
-          ...employee.promotionHistory,
-          {
-            date: new Date(),
-            action: 'Demoted' as const,
-            fromLevel: employee.seniority,
-            toLevel: newSeniority,
-            reason: 'Performance concerns'
-          }
-        ],
-        stats: {
-          ...employee.stats,
-          loyalty: Math.max(0, employee.stats.loyalty - 20),
-          energy: Math.max(20, employee.stats.energy - 15),
-          mood: 'burnt_out' as const
-        }
-      });
-      
-      toast.error(`${employee.name} demoted to ${newSeniority}`);
-    }
-    
-    setShowConfirmDialog(null);
-  };
+
 
   const promoteAll = () => {
     filteredMembers.forEach(member => {
@@ -482,7 +503,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border-amber-200">
+                <SelectContent className="bg-white border-amber-200">
                   <SelectItem value="All">All Departments</SelectItem>
                   <SelectItem value="Executive">👑 Executive</SelectItem>
                   <SelectItem value="Financial">💰 Financial</SelectItem>
@@ -502,7 +523,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border-amber-200">
+                <SelectContent className="bg-white border-amber-200">
                   <SelectItem value="All">All Sectors</SelectItem>
                   {BUSINESS_SECTORS.map(sector => (
                     <SelectItem key={sector.id} value={sector.name}>
@@ -519,7 +540,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border-amber-200">
+                <SelectContent className="bg-white border-amber-200">
                   <SelectItem value="All">All Status</SelectItem>
                   <SelectItem value="Promoted">🌟 Promoted</SelectItem>
                   <SelectItem value="Demoted">⚠️ Demoted</SelectItem>
@@ -540,7 +561,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-amber-50 border border-amber-200 rounded-2xl shadow-lg hover:shadow-xl"
+              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-amber-100 border border-amber-300 rounded-2xl shadow-lg hover:shadow-xl"
               onClick={() => setShowEmployeeDetail(member)}
             >
               <CardHeader className="pb-3">
@@ -664,6 +685,22 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       Demote
                     </Button>
                   </div>
+                  
+                  {/* Fire Button - Bottom Right */}
+                  <div className="flex justify-end pt-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFire(member);
+                      }}
+                    >
+                      <X size={14} className="mr-1" />
+                      Fire
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -764,7 +801,8 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           <DialogContent className="max-w-sm mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
               <DialogTitle className="text-center">
-                {showConfirmDialog.type === 'promote' ? '🎉 Promote Employee?' : '⚠️ Demote Employee?'}
+                {showConfirmDialog.type === 'fire' ? '⚠️ Fire Employee?' : 
+                 showConfirmDialog.type === 'promote' ? '🎉 Promote Employee?' : '⚠️ Demote Employee?'}
               </DialogTitle>
             </DialogHeader>
             
@@ -778,7 +816,8 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 {ALL_ROLES.find(r => r.name === showConfirmDialog.employee.role)?.emoji || '👤'}
               </div>
               <p className="text-[#888174]">
-                {showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'} {showConfirmDialog.employee.name}?
+                {showConfirmDialog.type === 'fire' ? 'Are you sure?' : 
+                 showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'} {showConfirmDialog.employee.name}?
               </p>
             </div>
             
@@ -791,14 +830,16 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 Cancel
               </Button>
               <Button 
-                onClick={showConfirmDialog.type === 'promote' ? confirmPromotion : confirmDemotion}
+                onClick={confirmAction}
                 className={`flex-1 ${
-                  showConfirmDialog.type === 'promote' 
+                  showConfirmDialog.type === 'fire' 
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : showConfirmDialog.type === 'promote' 
                     ? 'bg-[#cfe7cd] hover:bg-[#b8ddb4]' 
                     : 'bg-[#f7c2c2] hover:bg-[#f4b0b0]'
                 } text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]`}
               >
-                {showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'}
+                {showConfirmDialog.type === 'fire' ? 'Yes' : showConfirmDialog.type === 'promote' ? 'Promote' : 'Demote'}
               </Button>
             </div>
           </DialogContent>
