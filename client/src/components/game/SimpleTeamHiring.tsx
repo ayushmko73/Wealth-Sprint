@@ -201,7 +201,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
   // If no department is selected, show department selection
   if (!selectedDepartment) {
     return (
-      <div className="min-h-screen bg-[#F5F5DC] p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-4">
         {/* Header */}
         <div className="flex items-center mb-6">
           <Button
@@ -289,7 +289,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
   if (!department) return null;
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-4">
       {/* Header */}
       <div className="flex items-center mb-6">
         <Button
