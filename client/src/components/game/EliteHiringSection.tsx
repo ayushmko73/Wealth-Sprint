@@ -232,7 +232,15 @@ const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
       <>
         {/* Background Overlay */}
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-[#FAF4E6] rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] overflow-y-auto">
+          <div className="bg-[#FAF4E6] rounded-lg shadow-2xl w-full max-w-md max-h-[80vh] overflow-y-auto relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedCandidate(null)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
+            >
+              <X size={20} className="text-gray-600" />
+            </button>
+            
             {/* Resume Header */}
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-2xl font-bold text-[#3a3a3a] text-center" style={{ fontFamily: 'serif' }}>
@@ -418,23 +426,33 @@ const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
               <div
                 key={role.name}
                 onClick={() => handleRoleClick(role)}
-                className="border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-sm transition-shadow bg-[#FAF4E6]"
+                className="border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-xl hover:border-indigo-300 transition-all duration-300 bg-gradient-to-br from-white to-blue-50 hover:scale-105"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users size={16} className="text-gray-600" />
-                      <h3 className="font-bold text-[#3a3a3a]">
-                        {candidateInfo?.name || 'Loading...'}
-                      </h3>
-                      <Badge className={`text-xs ${getImpactColor(role.impact)}`}>
-                        {role.impact} Risk
-                      </Badge>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-blue-100 rounded-full">
+                        <Users size={18} className="text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-[#3a3a3a] text-lg">
+                          {candidateInfo?.name || 'Loading...'}
+                        </h3>
+                        <Badge className={`text-xs ${getImpactColor(role.impact)} font-medium`}>
+                          {role.impact} Impact
+                        </Badge>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-700 mb-1">{role.description}</p>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Salary: ₹{role.salary.toLocaleString()}/mo</span>
-                      <span>Experience: {role.experienceYears} years</span>
+                    <p className="text-sm text-gray-700 mb-3 leading-relaxed">{role.description}</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                        <span className="text-green-600">💰</span>
+                        <span className="font-medium text-green-800">₹{role.salary.toLocaleString()}/mo</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg">
+                        <span className="text-purple-600">⭐</span>
+                        <span className="font-medium text-purple-800">{role.experienceYears} years exp</span>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -6,6 +6,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  background-color: #F5F5DC !important;
 }
 
 /* Safe area support for mobile devices */
@@ -46,19 +47,19 @@ html, body {
   animation: scroll 30s linear infinite;
 }
 
-/* Theme Support */
+/* Theme Support - Old Minimalist */
 :root {
-  --primary: #d4af37;
-  --primary-foreground: white;
-  --secondary: #f5f0e6;
-  --secondary-foreground: #3a3a3a;
-  --background: #f5f0e6;
-  --foreground: #3a3a3a;
-  --card: white;
-  --card-foreground: #3a3a3a;
-  --border: #e5e7eb;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --primary: #8b7355;
+  --primary-foreground: #f5f3f0;
+  --secondary: #8a8982;
+  --secondary-foreground: #2c2a27;
+  --background: #F5F5DC;
+  --foreground: #2c2a27;
+  --card: #F5F5DC;
+  --card-foreground: #2c2a27;
+  --border: #6b6a64;
+  --muted: #878681;
+  --muted-foreground: #4a4844;
 }
 
 /* Dark Theme */
@@ -67,10 +68,10 @@ html, body {
   --primary-foreground: white;
   --secondary: #1f2937;
   --secondary-foreground: #f9fafb;
-  --background: #111827;
-  --foreground: #f9fafb;
-  --card: #1f2937;
-  --card-foreground: #f9fafb;
+  --background: #F5F5DC;
+  --foreground: #2c2a27;
+  --card: #F5F5DC;
+  --card-foreground: #2c2a27;
   --border: #374151;
   --muted: #374151;
   --muted-foreground: #9ca3af;
@@ -157,6 +158,18 @@ html, body {
 
 .money-down {
   animation: money-decrease 0.6s ease-in-out;
+}
+
+/* Team card animations */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @layer base {

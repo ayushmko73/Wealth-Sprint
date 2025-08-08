@@ -36,118 +36,11 @@ interface TeamManagementState {
   // Hiring system
   generateJobApplicant: () => void;
   hireCandidateDirectly: (applicantId: string) => boolean;
-  fireMember: (memberId: string) => void;
   promoteTeamMember: (memberId: string) => void;
   giveBonusToMember: (memberId: string, amount: number) => void;
 }
 
-const initialTeamMembers: TeamMember[] = [
-  {
-    id: "cto_1",
-    name: "Arjun Mehta",
-    role: "Chief Technology Officer",
-    avatar: "👨‍💻",
-    stats: {
-      loyalty: 85,
-      impact: 92,
-      energy: 70,
-      mood: "motivated",
-    },
-    salary: 180000,
-    joinDate: new Date("2023-01-15"),
-    skills: ["React", "Node.js", "System Design", "Team Leadership"],
-    achievements: ["Led migration to microservices", "Reduced server costs by 40%"],
-    personality: {
-      type: "INTJ-A",
-      motivationTriggers: ["Technical challenges", "Equity participation", "Recognition"],
-      weakSpots: ["Micromanagement", "Unrealistic deadlines"],
-    },
-  },
-  {
-    id: "cmo_1",
-    name: "Priya Sharma",
-    role: "Chief Marketing Officer",
-    avatar: "👩‍💼",
-    stats: {
-      loyalty: 78,
-      impact: 88,
-      energy: 85,
-      mood: "motivated",
-    },
-    salary: 150000,
-    joinDate: new Date("2023-03-10"),
-    skills: ["Digital Marketing", "Brand Strategy", "Analytics", "Content Creation"],
-    achievements: ["Increased user acquisition by 300%", "Built brand presence"],
-    personality: {
-      type: "ENFP-T",
-      motivationTriggers: ["Creative freedom", "Public recognition", "Team bonding"],
-      weakSpots: ["Routine tasks", "Micromanagement"],
-    },
-  },
-  {
-    id: "cfo_1",
-    name: "Rajesh Kumar",
-    role: "Chief Financial Officer",
-    avatar: "👨‍💼",
-    stats: {
-      loyalty: 90,
-      impact: 85,
-      energy: 75,
-      mood: "neutral",
-    },
-    salary: 160000,
-    joinDate: new Date("2023-02-20"),
-    skills: ["Financial Planning", "Fundraising", "Risk Management", "Compliance"],
-    achievements: ["Secured Series A funding", "Improved cash flow by 150%"],
-    personality: {
-      type: "ISTJ-A",
-      motivationTriggers: ["Clear objectives", "Process improvement", "Stability"],
-      weakSpots: ["Rapid changes", "Ambiguous goals"],
-    },
-  },
-  {
-    id: "lead_dev_1",
-    name: "Sneha Patel",
-    role: "Lead Developer",
-    avatar: "👩‍💻",
-    stats: {
-      loyalty: 82,
-      impact: 90,
-      energy: 65,
-      mood: "neutral",
-    },
-    salary: 120000,
-    joinDate: new Date("2023-04-05"),
-    skills: ["Python", "Machine Learning", "Database Design", "API Development"],
-    achievements: ["Built recommendation engine", "Optimized database performance"],
-    personality: {
-      type: "INTP-T",
-      motivationTriggers: ["Technical challenges", "Learning opportunities", "Autonomy"],
-      weakSpots: ["Too many meetings", "Unrealistic timelines"],
-    },
-  },
-  {
-    id: "hr_1",
-    name: "Amit Singh",
-    role: "Head of Human Resources",
-    avatar: "👨‍🎓",
-    stats: {
-      loyalty: 88,
-      impact: 75,
-      energy: 80,
-      mood: "motivated",
-    },
-    salary: 100000,
-    joinDate: new Date("2023-05-12"),
-    skills: ["Talent Acquisition", "Employee Relations", "Performance Management", "Culture Building"],
-    achievements: ["Reduced employee turnover by 60%", "Implemented performance system"],
-    personality: {
-      type: "ESFJ-A",
-      motivationTriggers: ["Team harmony", "Employee development", "Recognition"],
-      weakSpots: ["Conflict situations", "Layoffs"],
-    },
-  },
-];
+const initialTeamMembers: TeamMember[] = [];
 
 // Job roles data
 const jobRoles = [
@@ -436,6 +329,15 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
           motivationTriggers: ["Growth opportunities", "Recognition", "Team collaboration"],
           weakSpots: ["Micromanagement", "Unrealistic expectations"],
         },
+        emotionalTrait: "Balanced",
+        loopVulnerability: "none",
+        clarityContribution: 40 + Math.floor(Math.random() * 30),
+        hiddenDynamics: {
+          trustWithFounder: 80,
+          creativeFulfillment: 70,
+          burnoutRisk: 20,
+          isHidingStruggles: false
+        },
       };
       
       set(state => ({
@@ -450,21 +352,6 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
     return false;
   },
 
-  fireMember: (memberId: string) => {
-    const state = get();
-    const member = state.teamMembers.find(m => m.id === memberId);
-    
-    if (member) {
-      set(state => ({
-        teamMembers: state.teamMembers.filter(m => m.id !== memberId),
-      }));
-      
-      get().calculateTeamSynergy();
-      get().calculateBurnoutRisk();
-      return true;
-    }
-    return false;
-  },
 
   promoteTeamMember: (memberId: string) => {
     const state = get();

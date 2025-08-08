@@ -247,11 +247,16 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     }
   }, [cities, menuTypes, pricingStrategies, logisticsModels, setFastFoodState]);
 
-  // Calculate current metrics
+  // Calculate current metrics using centralized business data
   const activeCities = cities.filter(c => c.unlocked);
+  const { calculateBusinessRevenue } = useWealthSprintGame.getState();
+  
+  // Get real revenue from centralized business system
+  const finalRevenue = financialData.businessRevenue;
+  
+  // For local display calculations (if needed)
   const totalRevenue = activeCities.reduce((sum, city) => sum + (city.customerBoost * 1000), 0);
   const activeMenuBoost = menuTypes.filter(m => m.active).reduce((sum, m) => sum + m.revenueBoost, 0);
-  const finalRevenue = totalRevenue + (totalRevenue * activeMenuBoost / 100);
 
   // Check sufficient funds function
   const checkFunds = (amount: number): boolean => {
@@ -269,27 +274,31 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(city.cost)) return;
 
-    // Deduct from bank balance and add transaction record
-    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    // Use centralized business investment function
+    const { investInBusinessSector } = useWealthSprintGame.getState();
     
-    updateFinancialData({
-      bankBalance: financialData.bankBalance - city.cost
-    });
-
-    addTransaction({
-      type: 'business_operations',
-      amount: -city.cost,
-      description: `City expansion to ${city.name}`,
-      fromAccount: 'bank',
-      toAccount: 'business'
-    });
-
-    setCities(prev => 
-      prev.map(c => 
-        c.id === cityId ? { ...c, unlocked: true } : c
-      )
-    );
-    toast.success(`🏪 Successfully expanded to ${city.name}!`);
+    const success = investInBusinessSector('fast_food', 'Fast Food Chains', `City expansion to ${city.name}`, city.cost);
+    
+    if (success) {
+      // Update sector data to track this city
+      const state = useWealthSprintGame.getState();
+      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
+      if (sectorIndex >= 0) {
+        const updatedSectors = [...state.financialData.businessSectors];
+        updatedSectors[sectorIndex] = {
+          ...updatedSectors[sectorIndex],
+          activeCities: [...updatedSectors[sectorIndex].activeCities, cityId]
+        };
+        state.updateFinancialData({ businessSectors: updatedSectors });
+      }
+      
+      setCities(prev => 
+        prev.map(c => 
+          c.id === cityId ? { ...c, unlocked: true } : c
+        )
+      );
+      toast.success(`🏪 Successfully expanded to ${city.name}!`);
+    }
   };
 
   // Activate menu type
@@ -299,27 +308,31 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(menu.cost)) return;
 
-    // Deduct from bank balance and add transaction record
-    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    // Use centralized business investment function
+    const { investInBusinessSector } = useWealthSprintGame.getState();
     
-    updateFinancialData({
-      bankBalance: financialData.bankBalance - menu.cost
-    });
-
-    addTransaction({
-      type: 'business_operations',
-      amount: -menu.cost,
-      description: `Activated ${menu.name} for Fast Food Chain`,
-      fromAccount: 'bank',
-      toAccount: 'business'
-    });
-
-    setMenuTypes(prev => 
-      prev.map(m => 
-        m.id === menuId ? { ...m, active: true } : m
-      )
-    );
-    toast.success(`🍽️ ${menu.name} activated!`);
+    const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${menu.name}`, menu.cost);
+    
+    if (success) {
+      // Update sector data to track this menu type
+      const state = useWealthSprintGame.getState();
+      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
+      if (sectorIndex >= 0) {
+        const updatedSectors = [...state.financialData.businessSectors];
+        updatedSectors[sectorIndex] = {
+          ...updatedSectors[sectorIndex],
+          activeMenuTypes: [...updatedSectors[sectorIndex].activeMenuTypes, menuId]
+        };
+        state.updateFinancialData({ businessSectors: updatedSectors });
+      }
+      
+      setMenuTypes(prev => 
+        prev.map(m => 
+          m.id === menuId ? { ...m, active: true } : m
+        )
+      );
+      toast.success(`🍽️ ${menu.name} activated!`);
+    }
   };
 
   // Activate pricing strategy
@@ -329,25 +342,29 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(strategy.cost)) return;
 
-    // Deduct from bank balance and add transaction record
-    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    // Use centralized business investment function
+    const { investInBusinessSector } = useWealthSprintGame.getState();
     
-    updateFinancialData({
-      bankBalance: financialData.bankBalance - strategy.cost
-    });
-
-    addTransaction({
-      type: 'business_operations',
-      amount: -strategy.cost,
-      description: `Activated ${strategy.name} pricing strategy`,
-      fromAccount: 'bank',
-      toAccount: 'business'
-    });
-
-    setPricingStrategies(prev => 
-      prev.map(s => ({ ...s, active: s.id === strategyId }))
-    );
-    toast.success(`💰 ${strategy.name} pricing strategy activated!`);
+    const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${strategy.name} pricing strategy`, strategy.cost);
+    
+    if (success) {
+      // Update sector data to track this pricing strategy
+      const state = useWealthSprintGame.getState();
+      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
+      if (sectorIndex >= 0) {
+        const updatedSectors = [...state.financialData.businessSectors];
+        updatedSectors[sectorIndex] = {
+          ...updatedSectors[sectorIndex],
+          activePricingStrategies: [...updatedSectors[sectorIndex].activePricingStrategies, strategyId]
+        };
+        state.updateFinancialData({ businessSectors: updatedSectors });
+      }
+      
+      setPricingStrategies(prev => 
+        prev.map(s => ({ ...s, active: s.id === strategyId }))
+      );
+      toast.success(`💰 ${strategy.name} pricing strategy activated!`);
+    }
   };
 
   // Activate logistics model
@@ -357,25 +374,29 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(model.cost)) return;
 
-    // Deduct from bank balance and add transaction record
-    const { updateFinancialData, addTransaction, financialData } = useWealthSprintGame.getState();
+    // Use centralized business investment function
+    const { investInBusinessSector } = useWealthSprintGame.getState();
     
-    updateFinancialData({
-      bankBalance: financialData.bankBalance - model.cost
-    });
-
-    addTransaction({
-      type: 'business_operations',
-      amount: -model.cost,
-      description: `Activated ${model.name} logistics model`,
-      fromAccount: 'bank',
-      toAccount: 'business'
-    });
-
-    setLogisticsModels(prev => 
-      prev.map(m => ({ ...m, active: m.id === modelId }))
-    );
-    toast.success(`🚚 ${model.name} logistics activated!`);
+    const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${model.name} logistics model`, model.cost);
+    
+    if (success) {
+      // Update sector data to track this logistics model
+      const state = useWealthSprintGame.getState();
+      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
+      if (sectorIndex >= 0) {
+        const updatedSectors = [...state.financialData.businessSectors];
+        updatedSectors[sectorIndex] = {
+          ...updatedSectors[sectorIndex],
+          activeLogisticsModels: [...updatedSectors[sectorIndex].activeLogisticsModels, modelId]
+        };
+        state.updateFinancialData({ businessSectors: updatedSectors });
+      }
+      
+      setLogisticsModels(prev => 
+        prev.map(m => ({ ...m, active: m.id === modelId }))
+      );
+      toast.success(`🚚 ${model.name} logistics activated!`);
+    }
   };
 
   return (

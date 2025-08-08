@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
+import { useTeamManagement } from '../../../lib/stores/useTeamManagement';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle, User, Trash2, X } from 'lucide-react';
 import { getTeamScenarios, TeamScenario } from '../../../lib/data/teamScenarios';
 import { formatIndianCurrency } from '../../../lib/utils';
 
 const StrategyHubSection: React.FC = () => {
-  const { playerStats, financialData, updatePlayerStats, updateFinancialData, teamMembers, addGameEvent } = useWealthSprintGame();
+  const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent } = useWealthSprintGame();
+  const { teamMembers, removeTeamMember } = useTeamManagement();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   
   const availableScenarios = getTeamScenarios(teamMembers);
@@ -82,8 +84,9 @@ const StrategyHubSection: React.FC = () => {
     }
   };
 
+
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#3a3a3a]">Strategy Hub</h1>
         <div className="flex items-center gap-4">
@@ -98,26 +101,72 @@ const StrategyHubSection: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users size={20} />
-            Executive Team
+            Team
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {teamMembers.map(member => (
-              <div key={member.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">{member.emoji}</span>
-                  <div>
-                    <div className="font-semibold text-sm">{member.name}</div>
-                    <div className="text-xs text-gray-600">{member.role}</div>
+          {teamMembers.length > 0 ? (
+            <div className="space-y-3">
+              {teamMembers.map(member => {
+                const impact = member.stats?.impact === 3 ? 'High' : member.stats?.impact === 2 ? 'Medium' : 'Low';
+                const loyalty = member.stats?.loyalty || 75;
+                const impactColor = impact === 'High' ? '#4CAF50' : impact === 'Medium' ? '#FFC107' : '#F44336';
+                const performanceColor = loyalty >= 80 ? '#2E7D32' : loyalty >= 50 ? '#5E35B1' : '#C62828';
+                
+                return (
+                  <div 
+                    key={member.id} 
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-gradient-to-r from-[#F5F5DC] to-[#F0F0E8] border border-[#D2B48C] rounded-xl mb-3 shadow-sm"
+                  >
+                    {/* Left Impact Indicator Strip */}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
+                      style={{ backgroundColor: impactColor }}
+                    ></div>
+                    
+                    
+                    <div className="p-3 pl-5 pr-12 relative">
+                      {/* Header Section */}
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-br from-[#E6E6D4] to-[#D2B48C] rounded-full shadow-sm">
+                          <User size={14} className="text-[#6B5B47]" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base text-[#4A4037] mb-1">
+                            {member.name}
+                          </h3>
+                          <p className="text-xs text-[#8B7355] font-medium">
+                            {member.role}
+                          </p>
+                        </div>
+                        
+                        {/* Performance Indicator on Right */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1">
+                          <div 
+                            className="w-3 h-3 rounded-full border-2 shadow-sm"
+                            style={{ 
+                              backgroundColor: loyalty >= 80 ? '#4CAF50' : loyalty >= 60 ? '#FFC107' : loyalty >= 40 ? '#FF9800' : '#F44336',
+                              borderColor: loyalty >= 80 ? '#2E7D32' : loyalty >= 60 ? '#F57C00' : loyalty >= 40 ? '#E65100' : '#C62828'
+                            }}
+                            title={`Performance: ${loyalty}%`}
+                          ></div>
+                          <span className="text-xs font-medium text-[#6B5B47]">{loyalty}%</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-xs text-gray-600">
-                  Performance: {member.performance}%
-                </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-gray-400 mb-2">
+                <Users size={48} className="mx-auto mb-3" />
               </div>
-            ))}
-          </div>
+              <p className="text-gray-500 font-medium mb-2">No team members hired yet</p>
+              <p className="text-sm text-gray-400">Visit the Hire Team section to hire your first employees</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -133,7 +182,7 @@ const StrategyHubSection: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {pendingDecisions.map(decision => {
-                const requiredMember = teamMembers.find(m => m.roleId === decision.requiredRole);
+                const requiredMember = teamMembers.find(m => m.role === decision.requiredRole);
                 return (
                   <button
                     key={decision.id}
