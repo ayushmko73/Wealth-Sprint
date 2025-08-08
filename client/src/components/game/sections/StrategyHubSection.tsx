@@ -157,7 +157,7 @@ const StrategyHubSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           {teamMembers.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
               {teamMembers.map(member => {
                 const impact = member.stats?.impact === 3 ? 'High' : member.stats?.impact === 2 ? 'Medium' : 'Low';
                 const loyalty = member.stats?.loyalty || 75;
@@ -167,19 +167,11 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md"
                     style={{
                       background: 'linear-gradient(to right, #fdfaf3, #f6f1e7)',
-                      borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
-                      e.currentTarget.style.background = 'linear-gradient(to right, #fefbf6, #f7f2e8)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                      e.currentTarget.style.background = 'linear-gradient(to right, #fdfaf3, #f6f1e7)';
+                      borderRadius: '8px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                     }}
                   >
                     {/* Left Impact Indicator Strip */}
@@ -201,87 +193,50 @@ const StrategyHubSection: React.FC = () => {
                       🔥
                     </button>
                     
-                    <div className="p-5 pl-7">
+                    <div className="p-4 pl-6">
                       {/* Header Section */}
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className="p-2.5 bg-blue-100 rounded-full">
-                          <User size={18} className="text-blue-600" />
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="p-2 bg-blue-100 rounded-full">
+                          <User size={16} className="text-blue-600" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-[#222222] leading-tight mb-1">
+                          <h3 className="font-bold text-base text-[#222222] leading-tight mb-1">
                             {member.name}
                           </h3>
-                          <p className="text-sm font-medium text-[#3E4A89] mb-1">
+                          <p className="text-sm text-[#3E4A89] mb-1">
                             {member.role}
                           </p>
-                          <p className="text-xs text-[#568C84] uppercase tracking-wide font-medium">
+                          <p className="text-xs text-[#568C84] uppercase tracking-wide">
                             Department
                           </p>
                         </div>
                       </div>
                       
-                      {/* Performance Ring and Stats */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-gray-600">Performance:</span>
-                            <div className="flex items-center gap-1">
-                              <div className="relative w-6 h-6">
-                                <svg className="w-6 h-6 transform -rotate-90" viewBox="0 0 24 24">
-                                  <circle 
-                                    cx="12" cy="12" r="10" 
-                                    stroke="#E5E7EB" strokeWidth="2" 
-                                    fill="none"
-                                  />
-                                  <circle 
-                                    cx="12" cy="12" r="10" 
-                                    stroke={performanceColor} strokeWidth="2" 
-                                    fill="none"
-                                    strokeDasharray={`${loyalty * 0.628} 62.8`}
-                                    className="transition-all duration-1000 ease-out"
-                                  />
-                                </svg>
-                              </div>
-                              <span 
-                                className="text-sm font-bold"
-                                style={{ color: performanceColor }}
-                              >
-                                {loyalty}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[#009688]">💰</span>
-                            <span className="text-xs text-[#009688] font-medium">Salary:</span>
-                          </div>
-                          <span className="text-sm font-bold text-[#009688]">
-                            ₹{member.salary?.toLocaleString() || 'N/A'}/mo
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[#3F51B5]">⭐</span>
-                            <span className="text-xs text-[#3F51B5] font-medium">Experience:</span>
-                          </div>
-                          <span className="text-sm font-medium text-[#3F51B5]">
-                            2-5 years
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5">
-                            <span>📊</span>
-                            <span className="text-xs text-gray-600 font-medium">Impact:</span>
+                      {/* Performance Only */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Performance:</span>
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-5 h-5">
+                            <svg className="w-5 h-5 transform -rotate-90" viewBox="0 0 24 24">
+                              <circle 
+                                cx="12" cy="12" r="10" 
+                                stroke="#E5E7EB" strokeWidth="3" 
+                                fill="none"
+                              />
+                              <circle 
+                                cx="12" cy="12" r="10" 
+                                stroke={performanceColor} strokeWidth="3" 
+                                fill="none"
+                                strokeDasharray={`${loyalty * 0.628} 62.8`}
+                                className="transition-all duration-1000 ease-out"
+                              />
+                            </svg>
                           </div>
                           <span 
-                            className="text-sm font-bold px-2 py-1 rounded text-white text-xs"
-                            style={{ backgroundColor: impactColor }}
+                            className="text-sm font-bold"
+                            style={{ color: performanceColor }}
                           >
-                            {impact}
+                            {loyalty}%
                           </span>
                         </div>
                       </div>
