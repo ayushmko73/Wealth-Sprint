@@ -29,6 +29,7 @@ import {
   Target, 
   Settings,
   BarChart3,
+  TreePine,
   ChevronLeft,
   ChevronRight,
   Heart,
@@ -57,6 +58,7 @@ import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
 import SimpleTeamHiring from './SimpleTeamHiring';
+import SkillTreeVisualization from './SkillTreeVisualization';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
@@ -106,6 +108,7 @@ const GameDashboard: React.FC = () => {
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
     { id: 'team_hiring', label: 'Hire Team', icon: Users },
+    { id: 'skill_trees', label: 'Skill Trees', icon: TreePine },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
@@ -130,6 +133,8 @@ const GameDashboard: React.FC = () => {
         return <BankSection />;
       case 'team_hiring':
         return <SimpleTeamHiring onClose={() => setActiveSection('dashboard')} />;
+      case 'skill_trees':
+        return <SkillTreeVisualization onClose={() => setActiveSection('dashboard')} />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':
