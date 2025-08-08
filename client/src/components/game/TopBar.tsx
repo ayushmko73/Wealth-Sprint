@@ -19,7 +19,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+    <div className="border-b border-gray-200 p-4 flex items-center justify-between" style={{backgroundColor: '#75746E'}}>
       {/* Left side - Menu and Time */}
       <div className="flex items-center gap-4">
         <button 

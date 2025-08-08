@@ -92,7 +92,7 @@ const TaskPanel: React.FC = () => {
                     <Button
                       key={option.id}
                       onClick={() => handleOptionClick(scenario.id, option.id)}
-                      className="w-full text-left justify-start h-auto p-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#3a3a3a]"
+                      className="w-full text-left justify-start h-auto p-3 bg-beige border border-gray-200 hover:bg-gray-50 text-[#3a3a3a]"
                       variant="outline"
                     >
                       <div className="flex flex-col w-full">

@@ -11,7 +11,7 @@ const WealthTracker: React.FC = () => {
   const isFinanciallyIndependent = financialData.sideIncome >= financialData.monthlyExpenses;
 
   return (
-    <div className="bg-white border-t border-gray-200 p-4">
+    <div className="border-t border-gray-200 p-4" style={{backgroundColor: '#75746E'}}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-[#3a3a3a]">Wealth Sprint Tracker</h3>
         <div className="flex items-center gap-2">

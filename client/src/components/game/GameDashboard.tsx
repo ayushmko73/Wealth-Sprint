@@ -191,9 +191,9 @@ const GameDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col">
+    <div className="h-screen flex flex-col" style={{backgroundColor: '#75746E'}}>
       {/* Mobile Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between" style={{backgroundColor: '#75746E'}}>
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -216,7 +216,7 @@ const GameDashboard: React.FC = () => {
       </div>
 
       {/* Enhanced Stats Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2">
+      <div className="border-b border-gray-200 px-4 py-2" style={{backgroundColor: '#75746E'}}>
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ const GameDashboard: React.FC = () => {
 
       {/* Navigation Menu (Mobile) */}
       {menuOpen && (
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="border-b border-gray-200 px-4 py-3" style={{backgroundColor: '#75746E'}}>
           <div className="grid grid-cols-3 gap-3">
             {navigationItems.map((item) => {
               const Icon = item.icon;
