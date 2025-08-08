@@ -143,10 +143,6 @@ const StrategyHubSection: React.FC = () => {
                       
                       {/* Details Section */}
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Role:</span>
-                          <span className="font-medium text-gray-800">{member.role}</span>
-                        </div>
                       </div>
                     </div>
                   </div>
