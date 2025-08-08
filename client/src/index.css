@@ -6,7 +6,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background-color: white !important;
+  background-color: #75746E !important;
 }
 
 /* Safe area support for mobile devices */
@@ -47,19 +47,19 @@ html, body {
   animation: scroll 30s linear infinite;
 }
 
-/* Theme Support */
+/* Theme Support - Old Minimalist */
 :root {
-  --primary: #d4af37;
-  --primary-foreground: white;
-  --secondary: #f5f0e6;
-  --secondary-foreground: #3a3a3a;
-  --background: white;
-  --foreground: #3a3a3a;
-  --card: white;
-  --card-foreground: #3a3a3a;
-  --border: #e5e7eb;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --primary: #8b7355;
+  --primary-foreground: #f5f3f0;
+  --secondary: #8a8982;
+  --secondary-foreground: #2c2a27;
+  --background: #75746E;
+  --foreground: #2c2a27;
+  --card: #7e7d77;
+  --card-foreground: #2c2a27;
+  --border: #6b6a64;
+  --muted: #878681;
+  --muted-foreground: #4a4844;
 }
 
 /* Dark Theme */
