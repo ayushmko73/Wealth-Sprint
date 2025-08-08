@@ -29,6 +29,18 @@ export interface Bond {
   purchaseDate: Date;
 }
 
+export interface BusinessSectorInvestment {
+  sectorId: string;
+  sectorName: string;
+  totalInvested: number;
+  monthlyRevenue: number;
+  activeCities: string[];
+  activeMenuTypes: string[];
+  activePricingStrategies: string[];
+  activeLogisticsModels: string[];
+  lastUpdated: Date;
+}
+
 export interface Transaction {
   id: string;
   type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations';
@@ -61,6 +73,8 @@ export interface FinancialData {
   bondPortfolio: Bond[];
   transactionHistory: Transaction[];
   teamSalaries: number; // Total monthly team salaries
+  businessSectors: BusinessSectorInvestment[]; // Track business sector investments
+  businessRevenue: number; // Monthly revenue from all business sectors
 }
 
 export interface GameEvent {
@@ -153,6 +167,11 @@ interface WealthSprintGameState {
   processBondMaturity: () => void;
   addTransaction: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void;
   
+  // Business sector management functions
+  investInBusinessSector: (sectorId: string, sectorName: string, investmentType: string, amount: number) => boolean;
+  updateBusinessSectorRevenue: () => void;
+  calculateBusinessRevenue: () => number;
+  
   // Team management functions
   hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string) => boolean;
   promoteEmployee: (employeeId: string, newRoleId: string) => boolean;
@@ -215,6 +234,8 @@ const initialFinancialData: FinancialData = {
   bondPortfolio: [],
   transactionHistory: [],
   teamSalaries: 0,
+  businessSectors: [],
+  businessRevenue: 0,
 };
 
 export const useWealthSprintGame = create<WealthSprintGameState>()(
@@ -437,6 +458,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         if (newDay > 7) {
           newDay = 1;
           newWeek += 1;
+          
+          // Update business sector revenue before calculating weekly income
+          get().updateBusinessSectorRevenue();
           
           // Weekly income processing
           const weeklyIncome = (state.financialData.mainIncome + state.financialData.sideIncome) / 4;
@@ -974,6 +998,116 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           transactionHistory: [newTransaction, ...state.financialData.transactionHistory].slice(0, 100) // Keep last 100 transactions
         }
       }));
+    },
+
+    // Business sector management functions
+    investInBusinessSector: (sectorId: string, sectorName: string, investmentType: string, amount: number) => {
+      const state = get();
+      
+      if (state.financialData.bankBalance < amount) {
+        return false;
+      }
+      
+      set((state) => {
+        const existingSectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === sectorId);
+        let updatedBusinessSectors = [...state.financialData.businessSectors];
+        
+        if (existingSectorIndex >= 0) {
+          // Update existing sector
+          const existingSector = updatedBusinessSectors[existingSectorIndex];
+          updatedBusinessSectors[existingSectorIndex] = {
+            ...existingSector,
+            totalInvested: existingSector.totalInvested + amount,
+            lastUpdated: new Date()
+          };
+        } else {
+          // Create new sector entry
+          updatedBusinessSectors.push({
+            sectorId,
+            sectorName,
+            totalInvested: amount,
+            monthlyRevenue: 0,
+            activeCities: [],
+            activeMenuTypes: [],
+            activePricingStrategies: [],
+            activeLogisticsModels: [],
+            lastUpdated: new Date()
+          });
+        }
+        
+        return {
+          financialData: {
+            ...state.financialData,
+            bankBalance: state.financialData.bankBalance - amount,
+            businessSectors: updatedBusinessSectors
+          }
+        };
+      });
+      
+      // Add transaction record
+      get().addTransaction({
+        type: 'business_operations',
+        amount: -amount,
+        description: `Investment in ${sectorName} - ${investmentType}`,
+        fromAccount: 'bank',
+        toAccount: 'business'
+      });
+      
+      // Recalculate business revenue
+      get().updateBusinessSectorRevenue();
+      
+      return true;
+    },
+
+    calculateBusinessRevenue: () => {
+      const state = get();
+      let totalMonthlyRevenue = 0;
+      
+      state.financialData.businessSectors.forEach(sector => {
+        if (sector.sectorId === 'fast_food') {
+          // Calculate Fast Food Chain revenue based on active components
+          let baseRevenue = sector.activeCities.length * 15000; // ₹15k per city per month
+          
+          // Apply menu type bonuses
+          let menuBonus = 0;
+          if (sector.activeMenuTypes.includes('standard')) menuBonus += 0.2;
+          if (sector.activeMenuTypes.includes('premium')) menuBonus += 0.45;
+          if (sector.activeMenuTypes.includes('local')) menuBonus += 0.3;
+          
+          // Apply pricing strategy bonuses
+          let pricingBonus = 0;
+          if (sector.activePricingStrategies.includes('high_margin')) pricingBonus += 0.45;
+          if (sector.activePricingStrategies.includes('volume_based')) pricingBonus += 0.25;
+          
+          // Apply logistics bonuses
+          let logisticsBonus = 0;
+          if (sector.activeLogisticsModels.includes('quick_commerce')) logisticsBonus += 0.2;
+          if (sector.activeLogisticsModels.includes('franchise')) logisticsBonus += 0.4;
+          
+          const totalBonus = 1 + menuBonus + pricingBonus + logisticsBonus;
+          totalMonthlyRevenue += Math.floor(baseRevenue * totalBonus);
+        }
+        // Add other sector types here in the future
+      });
+      
+      return totalMonthlyRevenue;
+    },
+
+    updateBusinessSectorRevenue: () => {
+      const calculatedRevenue = get().calculateBusinessRevenue();
+      
+      set((state) => {
+        const newSideIncome = state.financialData.sideIncome - state.financialData.businessRevenue + calculatedRevenue;
+        
+        return {
+          financialData: {
+            ...state.financialData,
+            businessRevenue: calculatedRevenue,
+            sideIncome: newSideIncome,
+            cashflow: state.financialData.mainIncome + newSideIncome - state.financialData.monthlyExpenses
+          }
+        };
+      });
     },
     
     // Team management functions
