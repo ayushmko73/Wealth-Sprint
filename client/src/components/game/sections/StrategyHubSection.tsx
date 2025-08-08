@@ -116,32 +116,42 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-[#F5F5DC] border border-[#E6E6D4] rounded-2xl mb-3"
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-gradient-to-r from-[#F5F5DC] to-[#F0F0E8] border border-[#D2B48C] rounded-xl mb-3 shadow-sm"
                   >
                     {/* Left Impact Indicator Strip */}
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-[#D2B48C]"
+                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
+                      style={{ backgroundColor: impactColor }}
                     ></div>
                     
                     
-                    <div className="p-4 pl-6 pr-16">
+                    <div className="p-3 pl-5 pr-12 relative">
                       {/* Header Section */}
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="p-2 bg-[#E6E6D4] rounded-full mt-1">
-                          <User size={16} className="text-[#8B7355]" />
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-br from-[#E6E6D4] to-[#D2B48C] rounded-full shadow-sm">
+                          <User size={14} className="text-[#6B5B47]" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg text-[#5D4E37] mb-1">
+                          <h3 className="font-semibold text-base text-[#4A4037] mb-1">
                             {member.name}
                           </h3>
-                          <p className="text-sm text-[#8B7355] mb-2">
+                          <p className="text-xs text-[#8B7355] font-medium">
                             {member.role}
                           </p>
                         </div>
-                      </div>
-                      
-                      {/* Details Section */}
-                      <div className="space-y-2 text-sm">
+                        
+                        {/* Performance Indicator on Right */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1">
+                          <div 
+                            className="w-3 h-3 rounded-full border-2 shadow-sm"
+                            style={{ 
+                              backgroundColor: loyalty >= 80 ? '#4CAF50' : loyalty >= 60 ? '#FFC107' : loyalty >= 40 ? '#FF9800' : '#F44336',
+                              borderColor: loyalty >= 80 ? '#2E7D32' : loyalty >= 60 ? '#F57C00' : loyalty >= 40 ? '#E65100' : '#C62828'
+                            }}
+                            title={`Performance: ${loyalty}%`}
+                          ></div>
+                          <span className="text-xs font-medium text-[#6B5B47]">{loyalty}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
