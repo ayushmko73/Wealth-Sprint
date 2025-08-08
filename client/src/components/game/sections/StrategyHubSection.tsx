@@ -12,8 +12,6 @@ const StrategyHubSection: React.FC = () => {
   const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent } = useWealthSprintGame();
   const { teamMembers, removeTeamMember } = useTeamManagement();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
-  const [fireModalOpen, setFireModalOpen] = useState(false);
-  const [memberToFire, setMemberToFire] = useState<any>(null);
   
   const availableScenarios = getTeamScenarios(teamMembers);
   const [pendingDecisions, setPendingDecisions] = useState<TeamScenario[]>(availableScenarios.slice(0, 3));
@@ -86,58 +84,9 @@ const StrategyHubSection: React.FC = () => {
     }
   };
 
-  const handleFireConfirm = () => {
-    if (memberToFire) {
-      removeTeamMember(memberToFire.id);
-      addGameEvent(`${memberToFire.name} has been removed from the team`, 'team');
-      setFireModalOpen(false);
-      setMemberToFire(null);
-    }
-  };
 
   return (
     <div className="relative space-y-6">
-      {/* Fire Confirmation Modal */}
-      {fireModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-          onClick={() => {
-            setFireModalOpen(false);
-            setMemberToFire(null);
-          }}
-        >
-          <div 
-            className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              animation: 'fadeInScale 0.3s ease-out',
-            }}
-          >
-            <h3 className="text-lg font-bold text-[#222222] mb-2">Remove Team Member</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to remove <strong>{memberToFire?.name}</strong> from your team?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => {
-                  setFireModalOpen(false);
-                  setMemberToFire(null);
-                }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleFireConfirm}
-                className="px-4 py-2 bg-[#F44336] text-white rounded-md hover:bg-[#d32f2f] transition-colors"
-              >
-                Yes, Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#3a3a3a]">Strategy Hub</h1>
         <div className="flex items-center gap-4">
@@ -175,18 +124,6 @@ const StrategyHubSection: React.FC = () => {
                       style={{ backgroundColor: impactColor }}
                     ></div>
                     
-                    {/* Fire Button */}
-                    <button 
-                      className="absolute top-3 right-3 px-3 py-1 text-xs bg-red-50 hover:bg-red-500 border border-red-200 hover:border-red-500 text-red-600 hover:text-white transition-all duration-200 rounded-md font-medium"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setMemberToFire(member);
-                        setFireModalOpen(true);
-                      }}
-                      title="Remove team member"
-                    >
-                      Fire
-                    </button>
                     
                     <div className="p-4 pl-6 pr-16">
                       {/* Header Section */}
@@ -207,21 +144,8 @@ const StrategyHubSection: React.FC = () => {
                       {/* Details Section */}
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Department:</span>
-                          <span className="font-medium text-gray-800">{member.department || 'Mental Wellness'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Salary:</span>
-                          <span className="font-medium text-green-600">₹{member.salary ? `${(member.salary/1000).toFixed(1)}K/mo` : '1,000/mo'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Performance:</span>
-                          <span 
-                            className="font-bold"
-                            style={{ color: performanceColor }}
-                          >
-                            {loyalty}%
-                          </span>
+                          <span className="text-gray-600">Role:</span>
+                          <span className="font-medium text-gray-800">{member.role}</span>
                         </div>
                       </div>
                     </div>

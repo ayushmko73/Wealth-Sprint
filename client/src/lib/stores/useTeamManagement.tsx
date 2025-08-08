@@ -36,7 +36,6 @@ interface TeamManagementState {
   // Hiring system
   generateJobApplicant: () => void;
   hireCandidateDirectly: (applicantId: string) => boolean;
-  fireMember: (memberId: string) => void;
   promoteTeamMember: (memberId: string) => void;
   giveBonusToMember: (memberId: string, amount: number) => void;
 }
@@ -330,6 +329,15 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
           motivationTriggers: ["Growth opportunities", "Recognition", "Team collaboration"],
           weakSpots: ["Micromanagement", "Unrealistic expectations"],
         },
+        emotionalTrait: "Balanced",
+        loopVulnerability: "none",
+        clarityContribution: 40 + Math.floor(Math.random() * 30),
+        hiddenDynamics: {
+          trustWithFounder: 80,
+          creativeFulfillment: 70,
+          burnoutRisk: 20,
+          isHidingStruggles: false
+        },
       };
       
       set(state => ({
@@ -344,21 +352,6 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
     return false;
   },
 
-  fireMember: (memberId: string) => {
-    const state = get();
-    const member = state.teamMembers.find(m => m.id === memberId);
-    
-    if (member) {
-      set(state => ({
-        teamMembers: state.teamMembers.filter(m => m.id !== memberId),
-      }));
-      
-      get().calculateTeamSynergy();
-      get().calculateBurnoutRisk();
-      return true;
-    }
-    return false;
-  },
 
   promoteTeamMember: (memberId: string) => {
     const state = get();

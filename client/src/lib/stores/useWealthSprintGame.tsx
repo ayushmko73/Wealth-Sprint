@@ -176,7 +176,6 @@ interface WealthSprintGameState {
   hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string, roleTemplateId?: string) => boolean;
   promoteEmployee: (employeeId: string, newRoleId: string) => boolean;
   giveBonus: (employeeId: string, amount?: number) => boolean;
-  fireEmployee: (employeeId: string) => boolean;
   updateEmployeePerformance: (employeeId: string, performance: number) => void;
   processTeamSalaries: () => void;
   
@@ -1271,44 +1270,6 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       return true;
     },
     
-    fireEmployee: (employeeId: string) => {
-      const employee = get().teamMembers.find(e => e.id === employeeId);
-      if (!employee) return false;
-      
-      const severanceAmount = employee.salary * 2; // 2 months severance
-      
-      set((state) => ({
-        teamMembers: state.teamMembers.map(member => 
-          member.id === employeeId 
-            ? { ...member, isActive: false }
-            : member
-        ),
-        financialData: {
-          ...state.financialData,
-          bankBalance: state.financialData.bankBalance - severanceAmount,
-          teamSalaries: state.financialData.teamSalaries - employee.salary,
-          monthlyExpenses: state.financialData.monthlyExpenses - employee.salary
-        }
-      }));
-      
-      get().addTransaction({
-        type: 'team_payment',
-        amount: -severanceAmount,
-        description: `Severance pay for ${employee.name}`,
-        fromAccount: 'bank',
-        toAccount: 'bank'
-      });
-      
-      get().addGameEvent({
-        id: `fire_${Date.now()}`,
-        type: 'warning',
-        title: 'Employee Terminated',
-        description: `${employee.name} has been terminated with severance pay`,
-        timestamp: new Date()
-      });
-      
-      return true;
-    },
     
     updateEmployeePerformance: (employeeId: string, performance: number) => {
       set((state) => ({

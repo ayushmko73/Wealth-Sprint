@@ -63,7 +63,6 @@ export default function EnhancedTeamSection() {
     hireEmployee, 
     promoteEmployee, 
     giveBonus, 
-    fireEmployee,
     addGameEvent,
     gainClarityXP,
     increaseLoopScore
@@ -96,17 +95,29 @@ export default function EnhancedTeamSection() {
     if (!role) return;
 
     if (financialData.bankBalance < role.baseSalary * 0.1) {
-      addGameEvent(`Insufficient funds to hire ${role.name}. Need ₹${(role.baseSalary * 0.1).toLocaleString()} signing bonus.`);
+      addGameEvent({
+        id: `insufficient_funds_${Date.now()}`,
+        type: 'warning',
+        title: 'Insufficient Funds',
+        description: `Insufficient funds to hire ${role.name}. Need ₹${(role.baseSalary * 0.1).toLocaleString()} signing bonus.`,
+        timestamp: new Date()
+      });
       return;
     }
 
     const newMember = generateRandomTeamMember(roleId);
     const memberId = `team_${Date.now()}`;
     
-    hireEmployee(memberId, newMember.name, newMember.role, role.baseSalary, newMember.department);
-    gainClarityXP(5); // Hiring gives clarity XP
+    hireEmployee(memberId, newMember.name, newMember.role, role.baseSalary, role.department, role.id);
+    gainClarityXP(5, "Hired new team member"); // Hiring gives clarity XP
     setShowHireDialog(false);
-    addGameEvent(`🎉 Hired ${newMember.name} as ${role.name} for ₹${role.baseSalary.toLocaleString()}/year`);
+    addGameEvent({
+      id: `hire_success_${Date.now()}`,
+      type: 'achievement',
+      title: 'New Team Member',
+      description: `🎉 Hired ${newMember.name} as ${role.name} for ₹${role.baseSalary.toLocaleString()}/year`,
+      timestamp: new Date()
+    });
   };
 
   const RoleCard = ({ role, isUnlocked }: { role: TeamRole; isUnlocked: boolean }) => {
@@ -145,10 +156,6 @@ export default function EnhancedTeamSection() {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-white opacity-80">Salary:</span>
-              <span className="font-medium text-white">₹{role.baseSalary.toLocaleString()}</span>
-            </div>
             <div className="text-xs">
               <span className="font-medium text-white">{role.theme}</span>
             </div>
@@ -206,10 +213,6 @@ export default function EnhancedTeamSection() {
         <CardContent className="pt-0">
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <span className="text-muted-foreground">Performance:</span>
-              <Progress value={member.performance} className="h-1 mt-1" />
-            </div>
-            <div>
               <span className="text-muted-foreground">Stress:</span>
               <Progress 
                 value={member.stress} 
@@ -231,10 +234,6 @@ export default function EnhancedTeamSection() {
             </div>
           </div>
           <Separator className="my-2" />
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Salary:</span>
-            <span className="font-medium">₹{member.salary.toLocaleString()}/yr</span>
-          </div>
         </CardContent>
       </Card>
     );
@@ -397,10 +396,6 @@ export default function EnhancedTeamSection() {
                     <Badge variant="outline" style={{ borderColor: selectedRole.color, color: selectedRole.color }}>
                       {selectedRole.theme}
                     </Badge>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Base Salary</h4>
-                    <p className="text-lg font-bold">₹{selectedRole.baseSalary.toLocaleString()}</p>
                   </div>
                 </div>
 
