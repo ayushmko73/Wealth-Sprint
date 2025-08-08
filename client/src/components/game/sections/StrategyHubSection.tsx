@@ -167,7 +167,7 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-white border border-gray-200 rounded-lg mb-3"
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-white border border-gray-200 rounded-2xl mb-3"
                   >
                     {/* Left Impact Indicator Strip */}
                     <div 
