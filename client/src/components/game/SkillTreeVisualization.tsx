@@ -250,7 +250,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
 
   if (!selectedMember) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-2 sm:p-4">
         {/* Header */}
         <div className="flex items-center mb-6">
           <Button
@@ -265,15 +265,6 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
           <h1 className="text-2xl font-bold text-[#3a3a3a]">Team Skill Trees</h1>
         </div>
 
-        {/* Instructions */}
-        <div className="mb-6">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg">🌳 Interactive Skill Trees</CardTitle>
-              <p className="text-gray-600">Select a team member to view their skill progression and unlock new abilities.</p>
-            </CardHeader>
-          </Card>
-        </div>
 
         {/* Team Member Selection */}
         {teamMembers.length > 0 ? (
@@ -285,10 +276,10 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
                 className="bg-white hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setSelectedMember(member)}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-3 sm:p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
                         <User className="text-blue-600" size={20} />
                       </div>
                       <div>
@@ -299,7 +290,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-500">Impact: {member.stats?.impact || 'N/A'}</div>
-                      <div className="text-sm text-gray-500">Experience: {member.experienceYears || 'New'} years</div>
+                      <div className="text-sm text-gray-500">Experience: {(member as any).experienceYears || 'New'} years</div>
                     </div>
                   </div>
                 </CardContent>
@@ -308,7 +299,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
           </div>
         ) : (
           <Card className="bg-white">
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-4 sm:p-8 text-center">
               <h3 className="text-lg font-semibold text-gray-600 mb-2">No Team Members</h3>
               <p className="text-gray-500">Hire team members first to view their skill trees.</p>
             </CardContent>
@@ -321,7 +312,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
   const memberSkills = skillTrees[selectedMember.id] || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-2 sm:p-4">
       {/* Header */}
       <div className="flex items-center mb-6">
         <Button
@@ -352,9 +343,9 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {memberSkills.filter(skill => skill.category === 'core').map((skill) => (
-                <div key={skill.id} className={`p-3 rounded-lg border-2 ${skill.unlocked ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'}`}>
+                <div key={skill.id} className={`p-2 sm:p-3 rounded-lg border-2 ${skill.unlocked ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       {skill.icon}
@@ -396,9 +387,9 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {memberSkills.filter(skill => skill.category === 'technical').map((skill) => (
-                  <div key={skill.id} className={`p-3 rounded-lg border-2 ${skill.unlocked ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+                  <div key={skill.id} className={`p-2 sm:p-3 rounded-lg border-2 ${skill.unlocked ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         {skill.icon}
@@ -448,9 +439,9 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {memberSkills.filter(skill => skill.category === 'leadership').map((skill) => (
-                  <div key={skill.id} className={`p-3 rounded-lg border-2 ${skill.unlocked ? 'border-purple-200 bg-purple-50' : 'border-gray-200 bg-gray-50'}`}>
+                  <div key={skill.id} className={`p-2 sm:p-3 rounded-lg border-2 ${skill.unlocked ? 'border-purple-200 bg-purple-50' : 'border-gray-200 bg-gray-50'}`}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         {skill.icon}
