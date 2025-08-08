@@ -103,20 +103,43 @@ const StrategyHubSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {teamMembers.map(member => (
-              <div key={member.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">{member.emoji}</span>
-                  <div>
-                    <div className="font-semibold text-sm">{member.name}</div>
-                    <div className="text-xs text-gray-600">{member.role}</div>
+            {teamMembers.filter(member => member.isActive).length > 0 ? (
+              teamMembers.filter(member => member.isActive).map(member => (
+                <div key={member.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <Users size={16} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-[#3a3a3a]">{member.name}</div>
+                      <div className="text-sm text-blue-700 font-medium">{member.role}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Department:</span>
+                      <span className="text-xs font-medium text-blue-800">{member.department || 'Executive'}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Salary:</span>
+                      <span className="text-xs font-bold text-green-700">₹{member.salary.toLocaleString()}/mo</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Performance:</span>
+                      <span className="text-xs font-medium text-purple-700">{member.performance}%</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-xs text-gray-600">
-                  Performance: {member.performance}%
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <div className="text-gray-400 mb-2">
+                  <Users size={48} className="mx-auto mb-3" />
                 </div>
+                <p className="text-gray-500 font-medium mb-2">No team members hired yet</p>
+                <p className="text-sm text-gray-400">Visit the Elite Team section to hire your first employees</p>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>

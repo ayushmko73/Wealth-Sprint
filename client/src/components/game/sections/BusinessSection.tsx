@@ -157,7 +157,7 @@ export default function BusinessSection() {
           </Badge>
           <Badge className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
             <DollarSign className="h-4 w-4" />
-            Total Revenue: ₹{financialData.businessRevenue.toLocaleString()}/month
+            Total Revenue: ₹{(financialData.businessRevenue || 0).toLocaleString()}/month
           </Badge>
         </div>
       </div>
@@ -295,7 +295,7 @@ export default function BusinessSection() {
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">
-                  ₹{(financialData.businessRevenue / 1000).toFixed(1)}k
+                  ₹{((financialData.businessRevenue || 0) / 1000).toFixed(1)}k
                 </p>
                 <p className="text-sm text-green-800">Monthly Revenue</p>
               </div>
