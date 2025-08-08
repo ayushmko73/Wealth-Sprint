@@ -412,7 +412,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
   };
 
   return (
-    <div className="min-h-screen bg-white/10 backdrop-blur-sm p-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="min-h-screen bg-white p-4" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Clean Header inspired by Business Section */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
@@ -430,7 +430,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
             size="sm"
-            className="bg-white/70 border-gray-200 text-gray-700 hover:bg-white"
+            className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
           >
             <Filter size={16} className="mr-2" />
             Filters
@@ -440,7 +440,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
       {/* Clean Filters Panel */}
       {showFilters && (
-        <div className="mb-8 p-6 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm">
+        <div className="mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-2 block">Department</Label>
@@ -448,7 +448,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="All">All Departments</SelectItem>
                   <SelectItem value="Executive">👑 Executive</SelectItem>
                   <SelectItem value="Financial">💰 Financial</SelectItem>
@@ -468,7 +468,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="All">All Sectors</SelectItem>
                   {BUSINESS_SECTORS.map(sector => (
                     <SelectItem key={sector.id} value={sector.name}>
@@ -485,7 +485,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                 <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-gray-200">
                   <SelectItem value="All">All Status</SelectItem>
                   <SelectItem value="Promoted">🌟 Promoted</SelectItem>
                   <SelectItem value="Demoted">⚠️ Demoted</SelectItem>
@@ -506,7 +506,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className="cursor-pointer hover:scale-105 transition-all duration-300 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl"
+              className="cursor-pointer hover:scale-105 transition-all duration-300 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl"
               onClick={() => setShowEmployeeDetail(member)}
             >
               <CardHeader className="pb-3">
@@ -699,7 +699,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                   <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
                     <SelectValue placeholder="Select sector" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-gray-200">
                     <SelectItem value="none">No Assignment</SelectItem>
                     {BUSINESS_SECTORS.map(sector => (
                       <SelectItem key={sector.id} value={sector.name}>
