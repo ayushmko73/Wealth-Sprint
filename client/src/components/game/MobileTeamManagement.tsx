@@ -412,42 +412,43 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#fcf8f3] to-[#f8f3eb] p-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
-      {/* Mobile Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-[#5E5A6F] rounded-xl shadow-sm">
-            <Users className="text-white" size={24} />
+    <div className="min-h-screen bg-white/10 backdrop-blur-sm p-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+      {/* Clean Header inspired by Business Section */}
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="p-3 bg-gray-800 rounded-2xl shadow-sm">
+            <Users className="text-white" size={28} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#3E3C38]">Team Management</h1>
-            <p className="text-sm text-[#888174]">{filteredMembers.length} employees</p>
+            <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
+            <p className="text-gray-600">{filteredMembers.length} employees building your empire</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex justify-center gap-2 mb-4">
           <Button 
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
             size="sm"
-            className="bg-[#fffdf7] border-[#e5ddd1] text-[#5E5A6F] hover:bg-[#faf7f2] shadow-sm"
+            className="bg-white/70 border-gray-200 text-gray-700 hover:bg-white"
           >
-            <Filter size={16} />
+            <Filter size={16} className="mr-2" />
+            Filters
           </Button>
-          <Button onClick={onClose} variant="outline" size="sm" className="bg-[#fffdf7] border-[#e5ddd1] text-[#5E5A6F] hover:bg-[#faf7f2] shadow-sm">
+          <Button onClick={onClose} variant="outline" size="sm" className="bg-white/70 border-gray-200 text-gray-700 hover:bg-white">
             <X size={16} />
           </Button>
         </div>
       </div>
 
-      {/* Filters Panel */}
+      {/* Clean Filters Panel */}
       {showFilters && (
-        <div className="mb-6 p-4 bg-[#fffdf7] rounded-xl border border-[#e5ddd1] shadow-sm">
-          <div className="grid grid-cols-1 gap-3">
+        <div className="mb-8 p-6 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-sm font-medium text-[#3E3C38]">Department</Label>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Department</Label>
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -465,9 +466,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-[#3E3C38]">Business Sector</Label>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Business Sector</Label>
               <Select value={selectedSector} onValueChange={setSelectedSector}>
-                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -482,9 +483,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-[#3E3C38]">Status</Label>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="bg-[#fffdf7] border-[#e5ddd1] text-[#3E3C38]">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -500,86 +501,80 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex justify-center gap-4 mb-8">
         <Button 
           onClick={promoteAll} 
-          size="sm" 
-          className="flex-1 bg-[#cfe7cd] hover:bg-[#b8ddb4] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+          size="lg" 
+          className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
         >
-          <ArrowUp size={16} className="mr-2" />
+          <ArrowUp size={18} className="mr-2" />
           Promote All
         </Button>
         <Button 
           onClick={demoteAll} 
-          size="sm" 
-          className="flex-1 bg-[#f7c2c2] hover:bg-[#f4b0b0] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+          size="lg" 
+          className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
         >
-          <ArrowDown size={16} className="mr-2" />
+          <ArrowDown size={18} className="mr-2" />
           Demote All
         </Button>
         <Button 
           onClick={() => setShowAddRoleDialog(true)} 
-          size="sm" 
-          className="bg-[#5E5A6F] hover:bg-[#524e61] text-white shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02]"
+          size="lg" 
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
         >
-          <Plus size={18} />
+          <Plus size={18} className="mr-2" />
+          Add Member
         </Button>
       </div>
 
-      {/* Team Grid */}
-      <div className="grid grid-cols-1 gap-4">
+      {/* Team Grid - Clean Business Section Style */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembers.map((member) => {
           const role = ALL_ROLES.find(r => r.name === member.role);
           return (
             <Card 
               key={member.id}
-              className={`cursor-pointer hover:scale-[1.01] hover:shadow-md transition-all duration-300 bg-[#fffdf7] ${getStatusBorderColor(member.status)} rounded-xl border`}
-              style={{
-                backgroundColor: role?.color || '#fffdf7',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
-              }}
+              className="cursor-pointer hover:scale-105 transition-all duration-300 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl"
               onClick={() => setShowEmployeeDetail(member)}
             >
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-14 h-14 rounded-full flex items-center justify-center text-lg shadow-sm"
-                      style={{ backgroundColor: role?.iconColor || '#5E5A6F', color: 'white' }}
-                    >
-                      {role?.emoji || '👤'}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#3E3C38] text-lg">{member.name}</h3>
-                      <p className="text-sm text-[#888174] font-medium">{member.role}</p>
-                      {member.assignedSector && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <Building size={12} style={{ color: role?.iconColor || '#5E5A6F' }} />
-                          <span className="text-xs font-medium" style={{ color: role?.iconColor || '#5E5A6F' }}>{member.assignedSector}</span>
-                        </div>
-                      )}
-                    </div>
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-2xl shadow-lg">
+                    {role?.emoji || '👤'}
                   </div>
-                  
+                  <div className="flex-1">
+                    <CardTitle className="text-xl font-bold text-gray-900 mb-1">{member.name}</CardTitle>
+                    <p className="text-gray-600 font-medium">{member.role}</p>
+                    {member.assignedSector && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Building size={14} className="text-blue-500" />
+                        <span className="text-sm text-blue-600 font-medium">{member.assignedSector}</span>
+                      </div>
+                    )}
+                  </div>
                   {member.isCEO && (
-                    <Badge className="bg-amber-500 text-white shadow-sm rounded-lg px-2 py-1">
-                      <Crown size={12} className="mr-1" />
+                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-lg">
+                      <Crown size={14} className="mr-1" />
                       CEO
                     </Badge>
                   )}
                 </div>
+              </CardHeader>
+              
+              <CardContent className="pt-0">
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <Badge className={`${getSeniorityBadgeColor(member.seniority)} rounded-lg px-3 py-1 text-xs font-medium`}>
+                    <Badge className={`${getSeniorityBadgeColor(member.seniority)} px-3 py-1 rounded-full font-medium`}>
                       {member.seniority}
                     </Badge>
                     {member.status !== 'Neutral' && (
                       <Badge 
-                        className={`rounded-lg px-2 py-1 text-xs font-medium ${
+                        className={`px-3 py-1 rounded-full font-medium ${
                           member.status === 'Promoted' 
-                            ? 'bg-[#B4D3A1] text-[#3E3C38]' 
-                            : 'bg-[#F8AFA6] text-[#3E3C38]'
+                            ? 'bg-green-100 text-green-700 border border-green-200' 
+                            : 'bg-red-100 text-red-700 border border-red-200'
                         }`}
                       >
                         {member.status === 'Promoted' ? '🌟' : '⚠️'} {member.status}
@@ -587,69 +582,80 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     )}
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm bg-white/50 rounded-lg p-2">
-                    <div className="flex items-center gap-2">
-                      <DollarSign size={14} style={{ color: role?.iconColor || '#5E5A6F' }} />
-                      <span className="text-[#888174] font-medium">Salary:</span>
-                    </div>
-                    <span className="font-bold text-[#3E3C38]">{formatIndianCurrency(member.salary)}</span>
-                  </div>
-                  
-                  {/* Stats with Progress Circles */}
-                  <div className="grid grid-cols-3 gap-3 text-xs">
-                    <div className="text-center">
-                      <div 
-                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                        style={{ backgroundColor: getProgressColor('loyalty', member.stats.loyalty) }}
-                      >
-                        <Heart size={14} />
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign size={16} className="text-green-500" />
+                        <span className="text-gray-700 font-medium">Monthly Salary</span>
                       </div>
-                      <div className="text-[#888174] font-medium">Loyalty</div>
-                      <div className="font-bold text-[#3E3C38]">{member.stats.loyalty}%</div>
-                    </div>
-                    <div className="text-center">
-                      <div 
-                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                        style={{ backgroundColor: getProgressColor('energy', member.stats.energy) }}
-                      >
-                        <Zap size={14} />
-                      </div>
-                      <div className="text-[#888174] font-medium">Energy</div>
-                      <div className="font-bold text-[#3E3C38]">{member.stats.energy}%</div>
-                    </div>
-                    <div className="text-center">
-                      <div 
-                        className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                        style={{ backgroundColor: getProgressColor('impact', member.stats.impact) }}
-                      >
-                        <Star size={14} />
-                      </div>
-                      <div className="text-[#888174] font-medium">Impact</div>
-                      <div className="font-bold text-[#3E3C38]">{member.stats.impact}%</div>
+                      <span className="font-bold text-green-600 text-lg">{formatIndianCurrency(member.salary)}</span>
                     </div>
                   </div>
                   
-                  <div className="flex gap-3 pt-2">
+                  {/* Performance Metrics */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center mx-auto mb-3 shadow-md">
+                        <Heart size={20} className="text-red-600" />
+                      </div>
+                      <div className="text-gray-600 font-medium text-sm">Loyalty</div>
+                      <div className="font-bold text-gray-900 text-lg">{member.stats.loyalty}%</div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div 
+                          className="bg-red-500 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${member.stats.loyalty}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center mx-auto mb-3 shadow-md">
+                        <Zap size={20} className="text-yellow-600" />
+                      </div>
+                      <div className="text-gray-600 font-medium text-sm">Energy</div>
+                      <div className="font-bold text-gray-900 text-lg">{member.stats.energy}%</div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div 
+                          className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${member.stats.energy}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mx-auto mb-3 shadow-md">
+                        <Star size={20} className="text-purple-600" />
+                      </div>
+                      <div className="text-gray-600 font-medium text-sm">Impact</div>
+                      <div className="font-bold text-gray-900 text-lg">{member.stats.impact}%</div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div 
+                          className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${member.stats.impact}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 pt-4">
                     <Button 
-                      size="sm" 
-                      className="flex-1 bg-[#cfe7cd] hover:bg-[#b8ddb4] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02] font-medium"
+                      size="lg" 
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePromote(member);
                       }}
                     >
-                      <ArrowUp size={14} className="mr-2" />
+                      <ArrowUp size={16} className="mr-2" />
                       Promote
                     </Button>
                     <Button 
-                      size="sm" 
-                      className="flex-1 bg-[#f7c2c2] hover:bg-[#f4b0b0] text-[#3E3C38] border-0 shadow-sm rounded-xl transition-all duration-200 hover:scale-[1.02] font-medium"
+                      size="lg" 
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDemote(member);
                       }}
                     >
-                      <ArrowDown size={14} className="mr-2" />
+                      <ArrowDown size={16} className="mr-2" />
                       Demote
                     </Button>
                   </div>
