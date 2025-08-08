@@ -141,7 +141,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
     // Check if player has enough money
     const hiringCost = candidate.salary * 12; // Annual salary as hiring cost
     if (financialData.bankBalance < hiringCost) {
-      toast.error(`Insufficient funds! You need ${formatIndianCurrency(hiringCost)} to hire this candidate`);
+      toast.error(`Insufficient funds! You need ${formatIndianCurrency(hiringCost)} to hire ${candidate.name}`);
       return;
     }
 
@@ -153,7 +153,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
 
     addTeamMember({
       id: candidate.id,
-      name: 'Team Member',
+      name: candidate.name,
       role: 'Team Member',
       avatar: '👤',
       stats: {
@@ -182,7 +182,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
       }
     });
 
-    toast.success(`Successfully hired ${candidate.position}!`);
+    toast.success(`Successfully hired ${candidate.name}!`);
   };
 
   const getImpactColor = (impact: string) => {
@@ -255,7 +255,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
                 <div className="space-y-2">
                   {teamMembers.map((member) => (
                     <div key={member.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <span className="font-medium">{member.role}</span>
+                      <span className="font-medium">{member.name}</span>
                       <span className="text-gray-600">{formatIndianCurrency(member.salary)}/mo</span>
                     </div>
                   ))}
@@ -315,7 +315,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-semibold text-[#3a3a3a]">{candidate.position}</h3>
+                        <h3 className="font-semibold text-[#3a3a3a]">{candidate.name}</h3>
                       </div>
                       
                       <p className="text-sm text-gray-600 mb-1">{candidate.age} • {candidate.education}</p>

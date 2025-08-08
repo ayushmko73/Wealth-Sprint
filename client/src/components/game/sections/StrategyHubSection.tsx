@@ -133,10 +133,10 @@ const StrategyHubSection: React.FC = () => {
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-base text-[#4A4037] mb-1">
-                            {member.role}
+                            {member.name}
                           </h3>
                           <p className="text-xs text-[#8B7355] font-medium">
-                            Employee
+                            {member.role}
                           </p>
                         </div>
                         
