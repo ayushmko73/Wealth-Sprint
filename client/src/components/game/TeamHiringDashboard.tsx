@@ -154,11 +154,17 @@ export default function TeamHiringDashboard({ onClose }: TeamHiringDashboardProp
     setSelectedDepartment(dept);
   };
 
-  const handleHireEmployee = (role: any, department: string) => {
+  const handleHireEmployee = (role: {roleId: string, name: string, baseSalary: number, sectors: string[]}, department: string) => {
     const monthlySalary = Math.floor(role.baseSalary / 12);
     
     if (financialData.bankBalance < monthlySalary) {
-      addGameEvent(`❌ Insufficient Balance to hire ${role.name}. Need ₹${monthlySalary.toLocaleString()}/month.`);
+      addGameEvent({
+        id: `hire_failed_${Date.now()}`,
+        type: 'warning',
+        title: 'Insufficient Funds',
+        description: `❌ Insufficient Balance to hire ${role.name}. Need ₹${monthlySalary.toLocaleString()}/month.`,
+        timestamp: new Date()
+      });
       return;
     }
 
@@ -181,12 +187,19 @@ export default function TeamHiringDashboard({ onClose }: TeamHiringDashboardProp
       randomName, 
       role.name, 
       actualMonthlySalary, 
-      department
+      department,
+      role.roleId
     );
     
     const impactedSectors = role.sectors || [];
-    gainClarityXP(10);
-    addGameEvent(`🎉 Hired ${randomName} as ${role.name} for ₹${actualMonthlySalary.toLocaleString()}/month (${experience}% experience). Will boost ${impactedSectors.join(', ')} sectors.`);
+    gainClarityXP(10, 'hiring employee');
+    addGameEvent({
+      id: `hire_success_${Date.now()}`,
+      type: 'achievement',
+      title: 'New Team Member',
+      description: `🎉 Hired ${randomName} as ${role.name} for ₹${actualMonthlySalary.toLocaleString()}/month (${experience}% experience). Will boost ${impactedSectors.join(', ')} sectors.`,
+      timestamp: new Date()
+    });
   };
 
   const { currentWeek } = useWealthSprintGame();
@@ -299,7 +312,7 @@ export default function TeamHiringDashboard({ onClose }: TeamHiringDashboardProp
       {/* Main Content - Department Roles */}
       <div className="p-6 overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-          {DEPARTMENTS[selectedDepartment]?.roles.map((role, index) => {
+          {DEPARTMENTS[selectedDepartment as keyof typeof DEPARTMENTS]?.roles.map((role: {roleId: string, name: string, baseSalary: number, sectors: string[]}, index: number) => {
             // Generate consistent data using role ID as seed
             const seedValue = role.roleId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
             const experience = (seedValue % 8) + 3; // 3-10 scale
@@ -308,7 +321,7 @@ export default function TeamHiringDashboard({ onClose }: TeamHiringDashboardProp
             const impactScore = ((seedValue * 7) % 40) + 60; // 60-100 range
             const impactLevel = impactScore >= 80 ? 'High' : impactScore >= 70 ? 'Medium' : 'Low';
             const isAlreadyHired = activeTeamMembers.some(member => member.roleId === role.roleId);
-            const departmentColor = DEPARTMENTS[selectedDepartment].color;
+            const departmentColor = DEPARTMENTS[selectedDepartment as keyof typeof DEPARTMENTS].color;
 
             // Format salary in K format (₹X.XK/mo)
             const formatSalary = (amount: number): string => {

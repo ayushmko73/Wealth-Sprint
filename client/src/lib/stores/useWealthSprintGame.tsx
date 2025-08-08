@@ -173,7 +173,7 @@ interface WealthSprintGameState {
   calculateBusinessRevenue: () => number;
   
   // Team management functions
-  hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string) => boolean;
+  hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string, roleTemplateId?: string) => boolean;
   promoteEmployee: (employeeId: string, newRoleId: string) => boolean;
   giveBonus: (employeeId: string, amount?: number) => boolean;
   fireEmployee: (employeeId: string) => boolean;
@@ -1111,7 +1111,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     },
     
     // Team management functions
-    hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string) => {
+    hireEmployee: (employeeId: string, name: string, role: string, salary: number, department: string, roleTemplateId?: string) => {
       const state = get();
       const monthlySalary = salary / 12;
       
@@ -1124,7 +1124,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         id: employeeId,
         name: name,
         role: role,
-        roleId: employeeId,
+        roleId: roleTemplateId || role,
         department: department,
         color: '#3b82f6', // Default blue color
         emoji: '👤',
