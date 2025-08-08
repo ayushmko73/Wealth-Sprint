@@ -216,15 +216,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
           <h1 className="text-2xl font-bold text-[#3a3a3a]">Elite Team Hiring</h1>
         </div>
 
-        {/* Bank Balance */}
-        <div className="mb-6">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg">💰 Hire Team Members</CardTitle>
-              <p className="text-gray-600">Bank Balance: {formatIndianCurrency(financialData.bankBalance)}</p>
-            </CardHeader>
-          </Card>
-        </div>
+
 
         {/* Department Selection */}
         <div className="mb-4">
@@ -309,15 +301,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
         <h1 className="text-2xl font-bold text-[#3a3a3a]">{department.name}</h1>
       </div>
 
-      {/* Bank Balance */}
-      <div className="mb-6">
-        <Card className="bg-white">
-          <CardHeader>
-            <CardTitle className="text-lg">💰 Hire Team Members</CardTitle>
-            <p className="text-gray-600">Bank Balance: {formatIndianCurrency(financialData.bankBalance)}</p>
-          </CardHeader>
-        </Card>
-      </div>
+
 
       {/* Candidates Section */}
       <div className="mb-4">
