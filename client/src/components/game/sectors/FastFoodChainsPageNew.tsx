@@ -247,11 +247,16 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     }
   }, [cities, menuTypes, pricingStrategies, logisticsModels, setFastFoodState]);
 
-  // Calculate current metrics
+  // Calculate current metrics using centralized business data
   const activeCities = cities.filter(c => c.unlocked);
+  const { calculateBusinessRevenue } = useWealthSprintGame.getState();
+  
+  // Get real revenue from centralized business system
+  const finalRevenue = financialData.businessRevenue;
+  
+  // For local display calculations (if needed)
   const totalRevenue = activeCities.reduce((sum, city) => sum + (city.customerBoost * 1000), 0);
   const activeMenuBoost = menuTypes.filter(m => m.active).reduce((sum, m) => sum + m.revenueBoost, 0);
-  const finalRevenue = totalRevenue + (totalRevenue * activeMenuBoost / 100);
 
   // Check sufficient funds function
   const checkFunds = (amount: number): boolean => {

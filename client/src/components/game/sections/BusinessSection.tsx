@@ -33,68 +33,75 @@ export default function BusinessSection() {
     return <FastFoodChainsPageNew onBack={() => setSelectedSector(null)} />;
   }
 
-  // Generate business metrics for purchased sectors
+  // Generate business metrics for purchased sectors using real data
   const getBusinessMetrics = (sectorId: string) => {
     const baseMetrics = {
       'fast_food': {
-        progressRate: 15,
-        revenueMultiplier: 5000,
-        satisfactionBase: 75,
         color: 'bg-red-500',
         bgColor: 'bg-red-50',
         borderColor: 'border-red-200'
       },
       'tech_startups': {
-        progressRate: 8,
-        revenueMultiplier: 12000,
-        satisfactionBase: 65,
         color: 'bg-blue-500',
         bgColor: 'bg-blue-50',
         borderColor: 'border-blue-200'
       },
       'ecommerce': {
-        progressRate: 12,
-        revenueMultiplier: 8000,
-        satisfactionBase: 70,
         color: 'bg-purple-500',
         bgColor: 'bg-purple-50',
         borderColor: 'border-purple-200'
       },
       'healthcare': {
-        progressRate: 6,
-        revenueMultiplier: 15000,
-        satisfactionBase: 80,
         color: 'bg-green-500',
         bgColor: 'bg-green-50',
         borderColor: 'border-green-200'
       }
     };
 
-    const metrics = baseMetrics[sectorId as keyof typeof baseMetrics];
-    if (!metrics) return null;
+    const styleMetrics = baseMetrics[sectorId as keyof typeof baseMetrics];
+    if (!styleMetrics) return null;
 
-    // Calculate progress based on how long sector has been owned (simulate time)
-    const daysSinceOwned = Math.floor(Math.random() * 30) + 1;
-    const progress = Math.min(100, daysSinceOwned * metrics.progressRate / 10);
+    // Get real business sector data from the centralized store
+    const businessSector = financialData.businessSectors.find(s => s.sectorId === sectorId);
+    
+    if (!businessSector) {
+      // If no business sector data exists, return minimal data
+      return {
+        progress: 0,
+        monthlyRevenue: 0,
+        customerSatisfaction: 50,
+        color: styleMetrics.color,
+        bgColor: styleMetrics.bgColor,
+        borderColor: styleMetrics.borderColor
+      };
+    }
 
-    // Calculate revenue based on progress and player stats
-    const revenue = Math.floor(metrics.revenueMultiplier * (progress / 100) * (1 + playerStats.clarityXP / 200));
-
-    // Calculate satisfaction with some randomness
-    const satisfaction = Math.max(40, Math.min(100, 
-      metrics.satisfactionBase + 
-      (progress / 5) - 
-      (playerStats.loopScore / 2) + 
-      (Math.random() * 20 - 10)
-    ));
+    // Calculate real metrics from business sector data
+    let progress = 0;
+    let customerSatisfaction = 50;
+    
+    if (sectorId === 'fast_food') {
+      // Calculate progress based on number of active components
+      const totalComponents = businessSector.activeCities.length + 
+                            businessSector.activeMenuTypes.length + 
+                            businessSector.activePricingStrategies.length + 
+                            businessSector.activeLogisticsModels.length;
+      progress = Math.min(100, totalComponents * 10); // 10% per component
+      
+      // Calculate satisfaction based on investment and components
+      const baselineScore = 50;
+      const investmentBonus = Math.min(30, businessSector.totalInvested / 50000); // Max 30 points from investment
+      const componentBonus = totalComponents * 5; // 5 points per component
+      customerSatisfaction = Math.min(100, baselineScore + investmentBonus + componentBonus);
+    }
 
     return {
       progress: Math.round(progress),
-      monthlyRevenue: revenue,
-      customerSatisfaction: Math.round(satisfaction),
-      color: metrics.color,
-      bgColor: metrics.bgColor,
-      borderColor: metrics.borderColor
+      monthlyRevenue: businessSector.monthlyRevenue,
+      customerSatisfaction: Math.round(customerSatisfaction),
+      color: styleMetrics.color,
+      bgColor: styleMetrics.bgColor,
+      borderColor: styleMetrics.borderColor
     };
   };
 
@@ -150,10 +157,7 @@ export default function BusinessSection() {
           </Badge>
           <Badge className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
             <DollarSign className="h-4 w-4" />
-            Total Revenue: ₹{purchasedSectors.reduce((total, sectorId) => {
-              const metrics = getBusinessMetrics(sectorId);
-              return total + (metrics?.monthlyRevenue || 0);
-            }, 0).toLocaleString()}/month
+            Total Revenue: ₹{financialData.businessRevenue.toLocaleString()}/month
           </Badge>
         </div>
       </div>
@@ -291,10 +295,7 @@ export default function BusinessSection() {
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">
-                  ₹{(purchasedSectors.reduce((total, sectorId) => {
-                    const metrics = getBusinessMetrics(sectorId);
-                    return total + (metrics?.monthlyRevenue || 0);
-                  }, 0) / 1000).toFixed(1)}k
+                  ₹{(financialData.businessRevenue / 1000).toFixed(1)}k
                 </p>
                 <p className="text-sm text-green-800">Monthly Revenue</p>
               </div>
