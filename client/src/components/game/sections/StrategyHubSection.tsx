@@ -167,23 +167,17 @@ const StrategyHubSection: React.FC = () => {
                 return (
                   <div 
                     key={member.id} 
-                    className="relative group cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100 hover:border-gray-200 rounded-xl bg-white"
-                    style={{
-                      background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
-                    }}
+                    className="relative group cursor-pointer transition-all duration-200 hover:shadow-md bg-white border border-gray-200 rounded-lg mb-3"
                   >
                     {/* Left Impact Indicator Strip */}
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-2 rounded-l-xl"
-                      style={{ 
-                        background: `linear-gradient(180deg, ${impactColor} 0%, ${impactColor}80 100%)`,
-                        boxShadow: `inset 0 0 0 1px ${impactColor}40`
-                      }}
+                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
+                      style={{ backgroundColor: impactColor }}
                     ></div>
                     
                     {/* Fire Button */}
                     <button 
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2 rounded-lg bg-red-50 hover:bg-red-500 border border-red-200 hover:border-red-500 flex items-center justify-center text-red-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md group/fire min-w-[36px] min-h-[36px]"
+                      className="absolute top-3 right-3 px-3 py-1 text-xs bg-red-50 hover:bg-red-500 border border-red-200 hover:border-red-500 text-red-600 hover:text-white transition-all duration-200 rounded-md font-medium"
                       onClick={(e) => {
                         e.stopPropagation();
                         setMemberToFire(member);
@@ -191,53 +185,43 @@ const StrategyHubSection: React.FC = () => {
                       }}
                       title="Remove team member"
                     >
-                      <Trash2 size={14} className="group-hover/fire:animate-pulse" />
+                      Fire
                     </button>
                     
-                    <div className="p-4 sm:p-5 pl-5 sm:pl-6">
+                    <div className="p-4 pl-6 pr-16">
                       {/* Header Section */}
-                      <div className="flex items-center gap-3 sm:gap-4 mb-4">
-                        <div className="relative">
-                          <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 shadow-sm">
-                            <User size={18} className="text-blue-600 sm:w-5 sm:h-5" />
-                          </div>
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="p-2 bg-blue-100 rounded-full mt-1">
+                          <User size={16} className="text-blue-600" />
                         </div>
-                        <div className="flex-1 min-w-0 pr-10 sm:pr-12">
-                          <h3 className="font-bold text-base sm:text-lg text-gray-800 leading-tight mb-1 truncate">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg text-gray-800 mb-1">
                             {member.name}
                           </h3>
-                          <p className="text-xs sm:text-sm font-medium text-blue-600 mb-1">
+                          <p className="text-sm text-blue-600 mb-2">
                             {member.role}
-                          </p>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider font-medium bg-gray-50 px-2 py-1 rounded-full inline-block">
-                            {member.department || 'DEPARTMENT'}
                           </p>
                         </div>
                       </div>
                       
-                      {/* Performance Section */}
-                      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700">Performance:</span>
+                      {/* Details Section */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Department:</span>
+                          <span className="font-medium text-gray-800">{member.department || 'Mental Wellness'}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Salary:</span>
+                          <span className="font-medium text-green-600">₹{member.salary ? `${(member.salary/1000).toFixed(1)}K/mo` : '1,000/mo'}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Performance:</span>
                           <span 
-                            className="text-base sm:text-lg font-bold px-2 py-1 rounded-md"
-                            style={{ 
-                              color: performanceColor,
-                              backgroundColor: `${performanceColor}15`
-                            }}
+                            className="font-bold"
+                            style={{ color: performanceColor }}
                           >
                             {loyalty}%
                           </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full rounded-full transition-all duration-1000 ease-out"
-                            style={{ 
-                              width: `${loyalty}%`,
-                              backgroundColor: performanceColor,
-                              boxShadow: `0 0 8px ${performanceColor}40`
-                            }}
-                          ></div>
                         </div>
                       </div>
                     </div>
