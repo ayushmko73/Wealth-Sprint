@@ -188,7 +188,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'High': return 'bg-green-500';
-      case 'Medium': return 'bg-green-500';
+      case 'Medium': return 'bg-yellow-500';
       case 'Low': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
@@ -352,11 +352,22 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
                       
                       {/* Skills */}
                       <div className="flex flex-wrap gap-1 mb-3">
-                        {candidate.skills.map((skill, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
+                        {candidate.skills.map((skill, index) => {
+                          const colors = [
+                            'bg-blue-100 text-blue-800 border-blue-300',
+                            'bg-green-100 text-green-800 border-green-300', 
+                            'bg-purple-100 text-purple-800 border-purple-300',
+                            'bg-orange-100 text-orange-800 border-orange-300',
+                            'bg-pink-100 text-pink-800 border-pink-300',
+                            'bg-indigo-100 text-indigo-800 border-indigo-300'
+                          ];
+                          const colorClass = colors[index % colors.length];
+                          return (
+                            <Badge key={index} className={`text-xs ${colorClass}`}>
+                              {skill}
+                            </Badge>
+                          );
+                        })}
                       </div>
                       
                       <div className="flex items-center space-x-4 text-sm">

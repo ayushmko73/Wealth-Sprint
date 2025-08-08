@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
+import { useTeamManagement } from '../../../lib/stores/useTeamManagement';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle, User } from 'lucide-react';
 import { getTeamScenarios, TeamScenario } from '../../../lib/data/teamScenarios';
 import { formatIndianCurrency } from '../../../lib/utils';
 
 const StrategyHubSection: React.FC = () => {
-  const { playerStats, financialData, updatePlayerStats, updateFinancialData, teamMembers, addGameEvent } = useWealthSprintGame();
+  const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent } = useWealthSprintGame();
+  const { teamMembers } = useTeamManagement();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   
   const availableScenarios = getTeamScenarios(teamMembers);
@@ -98,17 +100,17 @@ const StrategyHubSection: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users size={20} />
-            Executive Team
+            Team
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {teamMembers.filter(member => member.isActive).length > 0 ? (
-              teamMembers.filter(member => member.isActive).map(member => (
+          {teamMembers.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamMembers.map(member => (
                 <div key={member.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-l-4 border-blue-500">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-blue-100 rounded-full">
-                      <Users size={16} className="text-blue-600" />
+                      <User size={16} className="text-blue-600" />
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-[#3a3a3a]">{member.name}</div>
@@ -117,30 +119,30 @@ const StrategyHubSection: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Department:</span>
-                      <span className="text-xs font-medium text-blue-800">{member.department || 'Executive'}</span>
+                      <span className="text-xs text-gray-600">Impact:</span>
+                      <span className="text-xs font-medium text-blue-800">{member.stats?.impact || 'N/A'}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-600">Salary:</span>
-                      <span className="text-xs font-bold text-green-700">₹{member.salary.toLocaleString()}/mo</span>
+                      <span className="text-xs font-bold text-green-700">₹{member.salary?.toLocaleString() || 'N/A'}/mo</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Performance:</span>
-                      <span className="text-xs font-medium text-purple-700">{member.performance}%</span>
+                      <span className="text-xs text-gray-600">Loyalty:</span>
+                      <span className="text-xs font-medium text-purple-700">{member.stats?.loyalty || 'N/A'}%</span>
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8">
-                <div className="text-gray-400 mb-2">
-                  <Users size={48} className="mx-auto mb-3" />
-                </div>
-                <p className="text-gray-500 font-medium mb-2">No team members hired yet</p>
-                <p className="text-sm text-gray-400">Visit the Elite Team section to hire your first employees</p>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-gray-400 mb-2">
+                <Users size={48} className="mx-auto mb-3" />
               </div>
-            )}
-          </div>
+              <p className="text-gray-500 font-medium mb-2">No team members hired yet</p>
+              <p className="text-sm text-gray-400">Visit the Hire Team section to hire your first employees</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -156,7 +158,7 @@ const StrategyHubSection: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {pendingDecisions.map(decision => {
-                const requiredMember = teamMembers.find(m => m.roleId === decision.requiredRole);
+                const requiredMember = teamMembers.find(m => m.role === decision.requiredRole);
                 return (
                   <button
                     key={decision.id}
