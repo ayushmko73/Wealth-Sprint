@@ -338,6 +338,11 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
           burnoutRisk: 20,
           isHidingStruggles: false
         },
+        department: 'Operations' as const,
+        seniority: 'Junior' as const,
+        status: 'Neutral' as const,
+        promotionHistory: [],
+        isCEO: false,
       };
       
       set(state => ({
