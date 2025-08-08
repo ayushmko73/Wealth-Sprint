@@ -204,14 +204,6 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
       <div className="min-h-screen bg-gradient-to-br from-[#f0ead6] to-[#f8f4e8] p-4">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="mr-3"
-          >
-            <ArrowLeft size={20} />
-          </Button>
           <Users className="text-[#d4af37] mr-2" size={24} />
           <h1 className="text-2xl font-bold text-[#3a3a3a]">Elite Team Hiring</h1>
         </div>
