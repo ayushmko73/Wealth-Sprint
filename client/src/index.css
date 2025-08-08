@@ -47,11 +47,6 @@ html, body {
   animation: scroll 30s linear infinite;
 }
 
-/* Custom beige background class */
-.bg-beige {
-  background-color: #75746E !important;
-}
-
 /* Theme Support - Old Minimalist */
 :root {
   --primary: #8b7355;
