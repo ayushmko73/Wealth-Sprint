@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -187,6 +187,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
     employee: TeamMember;
   } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Ref for the main container to handle click outside
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Generate initial team members for each core role if they don't exist
   const generateCoreTeam = useCallback(() => {
@@ -244,6 +247,30 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       generateCoreTeam();
     }
   }, [generateCoreTeam, teamMembers.length]);
+
+  // Prevent auto-back when clicking outside of interactive elements
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Only prevent auto-back if clicking outside of buttons, dialogs, and interactive elements
+      const target = event.target as Element;
+      if (containerRef.current && 
+          containerRef.current.contains(target) &&
+          !target.closest('button') &&
+          !target.closest('[role="dialog"]') &&
+          !target.closest('[role="combobox"]') &&
+          !target.closest('select') &&
+          !target.closest('.card-interactive')) {
+        // Don't trigger onClose - let user explicitly close
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, true);
+    };
+  }, []);
 
   // Filter team members based on selected filters
   const filteredMembers = teamMembers.filter(member => {
@@ -412,16 +439,23 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
   };
 
   return (
-    <div className="min-h-screen bg-white p-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Clean Header inspired by Business Section */}
+    <div 
+      ref={containerRef}
+      className="min-h-screen p-4" 
+      style={{ 
+        fontFamily: 'Inter, sans-serif',
+        background: 'linear-gradient(135deg, #f7f3ed 0%, #f2ede0 100%)'
+      }}
+    >
+      {/* Team Management Header with Beige Theme */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 bg-gray-800 rounded-2xl shadow-sm">
-            <Users className="text-white" size={28} />
+          <div className="p-3 bg-amber-900 rounded-2xl shadow-sm">
+            <Users className="text-amber-50" size={28} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
-            <p className="text-gray-600">{filteredMembers.length} employees building your empire</p>
+            <h1 className="text-3xl font-bold text-amber-900">Team Management</h1>
+            <p className="text-amber-700">{filteredMembers.length} employees building your empire</p>
           </div>
         </div>
         
@@ -430,7 +464,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
             size="sm"
-            className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100"
           >
             <Filter size={16} className="mr-2" />
             Filters
@@ -438,17 +472,17 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
         </div>
       </div>
 
-      {/* Clean Filters Panel */}
+      {/* Beige Filters Panel */}
       {showFilters && (
-        <div className="mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="mb-8 p-6 bg-amber-50 rounded-2xl border border-amber-200 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Department</Label>
+              <Label className="text-sm font-medium text-amber-800 mb-2 block">Department</Label>
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
+                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-amber-50 border-amber-200">
                   <SelectItem value="All">All Departments</SelectItem>
                   <SelectItem value="Executive">👑 Executive</SelectItem>
                   <SelectItem value="Financial">💰 Financial</SelectItem>
@@ -463,12 +497,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Business Sector</Label>
+              <Label className="text-sm font-medium text-amber-800 mb-2 block">Business Sector</Label>
               <Select value={selectedSector} onValueChange={setSelectedSector}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
+                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-amber-50 border-amber-200">
                   <SelectItem value="All">All Sectors</SelectItem>
                   {BUSINESS_SECTORS.map(sector => (
                     <SelectItem key={sector.id} value={sector.name}>
@@ -480,12 +514,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Status</Label>
+              <Label className="text-sm font-medium text-amber-800 mb-2 block">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-800">
+                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-amber-50 border-amber-200">
                   <SelectItem value="All">All Status</SelectItem>
                   <SelectItem value="Promoted">🌟 Promoted</SelectItem>
                   <SelectItem value="Demoted">⚠️ Demoted</SelectItem>
@@ -506,21 +540,21 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className="cursor-pointer hover:scale-105 transition-all duration-300 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl"
+              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-amber-50 border border-amber-200 rounded-2xl shadow-lg hover:shadow-xl"
               onClick={() => setShowEmployeeDetail(member)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-2xl shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-800 to-amber-900 flex items-center justify-center text-2xl shadow-lg">
                     {role?.emoji || '👤'}
                   </div>
                   <div className="flex-1">
-                    <CardTitle className="text-xl font-bold text-gray-900 mb-1">{member.name}</CardTitle>
-                    <p className="text-gray-600 font-medium">{member.role}</p>
+                    <CardTitle className="text-xl font-bold text-amber-900 mb-1">{member.name}</CardTitle>
+                    <p className="text-amber-700 font-medium">{member.role}</p>
                     {member.assignedSector && (
                       <div className="flex items-center gap-2 mt-2">
-                        <Building size={14} className="text-blue-500" />
-                        <span className="text-sm text-blue-600 font-medium">{member.assignedSector}</span>
+                        <Building size={14} className="text-amber-600" />
+                        <span className="text-sm text-amber-800 font-medium">{member.assignedSector}</span>
                       </div>
                     )}
                   </div>
@@ -553,13 +587,13 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     )}
                   </div>
                   
-                  <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="bg-amber-100 rounded-xl p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <DollarSign size={16} className="text-green-500" />
-                        <span className="text-gray-700 font-medium">Monthly Salary</span>
+                        <DollarSign size={16} className="text-amber-600" />
+                        <span className="text-amber-800 font-medium">Monthly Salary</span>
                       </div>
-                      <span className="font-bold text-green-600 text-lg">{formatIndianCurrency(member.salary)}</span>
+                      <span className="font-bold text-amber-800 text-lg">{formatIndianCurrency(member.salary)}</span>
                     </div>
                   </div>
                   
@@ -569,9 +603,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Heart size={20} className="text-red-600" />
                       </div>
-                      <div className="text-gray-600 font-medium text-sm">Loyalty</div>
-                      <div className="font-bold text-gray-900 text-lg">{member.stats.loyalty}%</div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className="text-amber-700 font-medium text-sm">Loyalty</div>
+                      <div className="font-bold text-amber-900 text-lg">{member.stats.loyalty}%</div>
+                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
                         <div 
                           className="bg-red-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.loyalty}%` }}
@@ -582,9 +616,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Zap size={20} className="text-yellow-600" />
                       </div>
-                      <div className="text-gray-600 font-medium text-sm">Energy</div>
-                      <div className="font-bold text-gray-900 text-lg">{member.stats.energy}%</div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className="text-amber-700 font-medium text-sm">Energy</div>
+                      <div className="font-bold text-amber-900 text-lg">{member.stats.energy}%</div>
+                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
                         <div 
                           className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.energy}%` }}
@@ -595,9 +629,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Star size={20} className="text-purple-600" />
                       </div>
-                      <div className="text-gray-600 font-medium text-sm">Impact</div>
-                      <div className="font-bold text-gray-900 text-lg">{member.stats.impact}%</div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className="text-amber-700 font-medium text-sm">Impact</div>
+                      <div className="font-bold text-amber-900 text-lg">{member.stats.impact}%</div>
+                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
                         <div 
                           className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.impact}%` }}
