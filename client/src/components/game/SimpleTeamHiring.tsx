@@ -188,7 +188,7 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'High': return 'bg-green-500';
-      case 'Medium': return 'bg-yellow-500';
+      case 'Medium': return 'bg-green-500';
       case 'Low': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
