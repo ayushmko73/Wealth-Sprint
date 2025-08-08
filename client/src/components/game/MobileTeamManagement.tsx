@@ -497,33 +497,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex justify-center gap-4 mb-8">
-        <Button 
-          onClick={promoteAll} 
-          size="lg" 
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
-        >
-          <ArrowUp size={18} className="mr-2" />
-          Promote All
-        </Button>
-        <Button 
-          onClick={demoteAll} 
-          size="lg" 
-          className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
-        >
-          <ArrowDown size={18} className="mr-2" />
-          Demote All
-        </Button>
-        <Button 
-          onClick={() => setShowAddRoleDialog(true)} 
-          size="lg" 
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-200 hover:scale-105"
-        >
-          <Plus size={18} className="mr-2" />
-          Add Member
-        </Button>
-      </div>
+
 
       {/* Team Grid - Clean Business Section Style */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
