@@ -425,7 +425,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           </div>
         </div>
         
-        <div className="flex justify-center gap-2 mb-4">
+        <div className="flex justify-end mb-4">
           <Button 
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
@@ -434,9 +434,6 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           >
             <Filter size={16} className="mr-2" />
             Filters
-          </Button>
-          <Button onClick={onClose} variant="outline" size="sm" className="bg-white/70 border-gray-200 text-gray-700 hover:bg-white">
-            <X size={16} />
           </Button>
         </div>
       </div>
