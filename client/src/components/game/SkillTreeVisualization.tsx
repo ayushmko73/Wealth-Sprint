@@ -283,8 +283,8 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({ onClose
                         <User className="text-blue-600" size={20} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-[#3a3a3a] text-lg">{member.name}</h3>
-                        <p className="text-gray-600 text-sm">{member.role}</p>
+                        <h3 className="font-semibold text-[#3a3a3a] text-lg">{member.role}</h3>
+                        <p className="text-gray-600 text-sm">Team Member</p>
                         <p className="text-blue-600 text-sm">{member.skills?.length || 0} skills acquired</p>
                       </div>
                     </div>

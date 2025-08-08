@@ -192,7 +192,7 @@ const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
 
   const handleHire = (candidate: Candidate, departmentName: string) => {
     if (financialData.bankBalance < candidate.role.salary) {
-      toast.error(`Insufficient funds! You need ₹${candidate.role.salary.toLocaleString()} to hire ${candidate.name}.`);
+      toast.error(`Insufficient funds! You need ₹${candidate.role.salary.toLocaleString()} to hire this candidate.`);
       return;
     }
 
@@ -223,7 +223,7 @@ const EliteHiringSection: React.FC<EliteHiringSectionProps> = ({ onClose }) => {
     }
 
     setSelectedCandidate(null);
-    toast.success(`Successfully hired ${candidate.name}! They will start contributing immediately.`);
+    toast.success(`Successfully hired ${candidate.role.name}! They will start contributing immediately.`);
   };
 
   // Resume Modal

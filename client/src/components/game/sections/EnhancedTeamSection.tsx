@@ -108,14 +108,14 @@ export default function EnhancedTeamSection() {
     const newMember = generateRandomTeamMember(roleId);
     const memberId = `team_${Date.now()}`;
     
-    hireEmployee(memberId, newMember.name, newMember.role, role.baseSalary, role.department, role.id);
+    hireEmployee(memberId, role.name, newMember.role, role.baseSalary, role.department, role.id);
     gainClarityXP(5, "Hired new team member"); // Hiring gives clarity XP
     setShowHireDialog(false);
     addGameEvent({
       id: `hire_success_${Date.now()}`,
       type: 'achievement',
       title: 'New Team Member',
-      description: `🎉 Hired ${newMember.name} as ${role.name} for ₹${role.baseSalary.toLocaleString()}/year`,
+      description: `🎉 Hired ${role.name} for ₹${role.baseSalary.toLocaleString()}/year`,
       timestamp: new Date()
     });
   };
@@ -196,7 +196,7 @@ export default function EnhancedTeamSection() {
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">{member.name}</h3>
+                <h3 className="font-semibold text-sm">{role.name}</h3>
                 <Badge 
                   variant="outline" 
                   className="text-xs"
