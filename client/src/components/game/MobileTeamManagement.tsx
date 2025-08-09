@@ -35,7 +35,7 @@ const CORE_ROLES = [
     id: 'financial_advisor',
     name: 'Financial Advisor',
     department: 'Financial',
-    emoji: '💰',
+    emoji: '🫅',
     color: '#f5e8c3', // Muted gold
     iconColor: '#5E5A6F', // Muted slate
     description: 'Manages investment strategies and financial planning',
@@ -45,7 +45,7 @@ const CORE_ROLES = [
     id: 'risk_analyst',
     name: 'Risk Analyst', 
     department: 'Risk',
-    emoji: '🛡️',
+    emoji: '🤵',
     color: '#fce3e3', // Muted coral
     iconColor: '#5E5A6F',
     description: 'Analyzes and mitigates business risks',
@@ -55,7 +55,7 @@ const CORE_ROLES = [
     id: 'marketing_director',
     name: 'Marketing Director',
     department: 'Marketing', 
-    emoji: '📈',
+    emoji: '🧑‍💻',
     color: '#e8f2f5', // Soft blue-gray
     iconColor: '#5E5A6F',
     description: 'Drives brand growth and customer acquisition',
@@ -65,7 +65,7 @@ const CORE_ROLES = [
     id: 'sales_manager',
     name: 'Sales Manager',
     department: 'Sales',
-    emoji: '🎯',
+    emoji: '🧑‍✈️',
     color: '#e8f5e8', // Soft green
     iconColor: '#5E5A6F',
     description: 'Leads sales team and revenue generation',
@@ -75,7 +75,7 @@ const CORE_ROLES = [
     id: 'operations_manager',
     name: 'Operations Manager',
     department: 'Operations',
-    emoji: '⚙️',
+    emoji: '👨‍💼',
     color: '#f0e8f5', // Soft purple
     iconColor: '#5E5A6F',
     description: 'Optimizes business operations and processes',
@@ -99,7 +99,7 @@ const ADDITIONAL_ROLES = [
     id: 'hr_manager',
     name: 'HR Manager',
     department: 'Human Resources',
-    emoji: '👥',
+    emoji: '👩‍🏫',
     color: '#f0e8d5', // Warm peach
     iconColor: '#5E5A6F',
     description: 'Manages talent acquisition and employee relations',
@@ -109,7 +109,7 @@ const ADDITIONAL_ROLES = [
     id: 'hr_specialist',
     name: 'HR Specialist',
     department: 'Human Resources',
-    emoji: '🤝',
+    emoji: '👨‍💬',
     color: '#f0e8d5', // Warm peach
     iconColor: '#5E5A6F',
     description: 'Handles recruitment and employee development',
@@ -119,7 +119,7 @@ const ADDITIONAL_ROLES = [
     id: 'product_lead',
     name: 'Product Lead',
     department: 'Technician',
-    emoji: '🔧',
+    emoji: '👩‍💼',
     color: '#e8ebe8', // Soft gray-green
     iconColor: '#5E5A6F',
     description: 'Oversees product development and technical innovation',
@@ -129,7 +129,7 @@ const ADDITIONAL_ROLES = [
     id: 'tech_analyst',
     name: 'Tech Analyst',
     department: 'Technician',
-    emoji: '💻',
+    emoji: '👨‍🔬',
     color: '#e8ebe8', // Soft gray-green
     iconColor: '#5E5A6F',
     description: 'Analyzes technical requirements and solutions',
@@ -139,7 +139,7 @@ const ADDITIONAL_ROLES = [
     id: 'systems_engineer',
     name: 'Systems Engineer',
     department: 'Technician',
-    emoji: '🖥️',
+    emoji: '🧑‍🔧',
     color: '#e8ebe8', // Soft gray-green
     iconColor: '#5E5A6F',
     description: 'Maintains and optimizes technical infrastructure',
@@ -561,21 +561,21 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-amber-100 border border-amber-300 rounded-2xl shadow-lg hover:shadow-xl"
+              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-[#faf8f3] border border-[#e8dcc6] rounded-2xl shadow-sm hover:shadow-md"
               onClick={() => setShowEmployeeDetail(member)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-800 to-amber-900 flex items-center justify-center text-2xl shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-[#f5f1e8] border-2 border-[#e8dcc6] flex items-center justify-center text-2xl shadow-sm">
                     {role?.emoji || '👤'}
                   </div>
                   <div className="flex-1">
-                    <CardTitle className="text-xl font-bold text-amber-900 mb-1">{member.name}</CardTitle>
-                    <p className="text-amber-700 font-medium">{member.role}</p>
+                    <CardTitle className="text-xl font-bold text-[#3E3C38] mb-1">{member.name}</CardTitle>
+                    <p className="text-[#888174] font-medium">{member.role}</p>
                     {member.assignedSector && (
                       <div className="flex items-center gap-2 mt-2">
-                        <Building size={14} className="text-amber-600" />
-                        <span className="text-sm text-amber-800 font-medium">{member.assignedSector}</span>
+                        <Building size={14} className="text-[#888174]" />
+                        <span className="text-sm text-[#3E3C38] font-medium">{member.assignedSector}</span>
                       </div>
                     )}
                   </div>
@@ -608,13 +608,13 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     )}
                   </div>
                   
-                  <div className="bg-amber-100 rounded-xl p-4">
+                  <div className="bg-[#f5f1e8] rounded-xl p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <DollarSign size={16} className="text-amber-600" />
-                        <span className="text-amber-800 font-medium">Monthly Salary</span>
+                        <DollarSign size={16} className="text-[#888174]" />
+                        <span className="text-[#3E3C38] font-medium">Monthly Salary</span>
                       </div>
-                      <span className="font-bold text-amber-800 text-lg">{formatIndianCurrency(member.salary)}</span>
+                      <span className="font-bold text-[#3E3C38] text-lg">{formatIndianCurrency(member.salary)}</span>
                     </div>
                   </div>
                   
@@ -624,9 +624,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Heart size={20} className="text-red-600" />
                       </div>
-                      <div className="text-amber-700 font-medium text-sm">Loyalty</div>
-                      <div className="font-bold text-amber-900 text-lg">{member.stats.loyalty}%</div>
-                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
+                      <div className="text-[#888174] font-medium text-sm">Loyalty</div>
+                      <div className="font-bold text-[#3E3C38] text-lg">{member.stats.loyalty}%</div>
+                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
                         <div 
                           className="bg-red-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.loyalty}%` }}
@@ -637,9 +637,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Zap size={20} className="text-yellow-600" />
                       </div>
-                      <div className="text-amber-700 font-medium text-sm">Energy</div>
-                      <div className="font-bold text-amber-900 text-lg">{member.stats.energy}%</div>
-                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
+                      <div className="text-[#888174] font-medium text-sm">Energy</div>
+                      <div className="font-bold text-[#3E3C38] text-lg">{member.stats.energy}%</div>
+                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
                         <div 
                           className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.energy}%` }}
@@ -650,9 +650,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Star size={20} className="text-purple-600" />
                       </div>
-                      <div className="text-amber-700 font-medium text-sm">Impact</div>
-                      <div className="font-bold text-amber-900 text-lg">{member.stats.impact}%</div>
-                      <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
+                      <div className="text-[#888174] font-medium text-sm">Impact</div>
+                      <div className="font-bold text-[#3E3C38] text-lg">{member.stats.impact}%</div>
+                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
                         <div 
                           className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.impact}%` }}
@@ -686,21 +686,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     </Button>
                   </div>
                   
-                  {/* Fire Button - Bottom Right */}
-                  <div className="flex justify-end pt-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleFire(member);
-                      }}
-                    >
-                      <X size={14} className="mr-1" />
-                      Fire
-                    </Button>
-                  </div>
+
                 </div>
               </CardContent>
             </Card>
@@ -714,12 +700,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           <DialogContent className="max-w-md mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3">
-                <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl shadow-sm"
-                  style={{ 
-                    backgroundColor: ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.iconColor || '#5E5A6F' 
-                  }}
-                >
+                <div className="w-16 h-16 rounded-2xl bg-[#f5f1e8] border-2 border-[#e8dcc6] flex items-center justify-center text-2xl shadow-sm">
                   {ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.emoji || '👤'}
                 </div>
                 <div>
@@ -789,6 +770,19 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     <Badge key={index} variant="outline" className="text-xs border-[#e5ddd1] text-[#3E3C38]">{skill}</Badge>
                   ))}
                 </div>
+              </div>
+
+              {/* Fire Button - Bottom Right */}
+              <div className="flex justify-end pt-4">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400 rounded-lg" 
+                  onClick={() => handleFire(showEmployeeDetail)}
+                >
+                  <X size={14} className="mr-1" />
+                  Fire
+                </Button>
               </div>
             </div>
           </DialogContent>
