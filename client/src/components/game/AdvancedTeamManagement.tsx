@@ -1115,15 +1115,27 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
 
                                   <p className="text-sm text-gray-600 mb-3">{skill.description}</p>
 
-                                  <div className="space-y-2">
-                                    <Progress value={(skill.level / skill.maxLevel) * 100} className="h-2" />
+                                  <div className="space-y-3">
+                                    {/* Horizontal Progress Bar */}
+                                    <div className="space-y-1">
+                                      <div className="flex justify-between text-xs text-gray-600">
+                                        <span>Progress</span>
+                                        <span>{skill.level}/{skill.maxLevel}</span>
+                                      </div>
+                                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div 
+                                          className="bg-blue-500 h-2.5 rounded-full transition-all duration-300" 
+                                          style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
+                                        ></div>
+                                      </div>
+                                    </div>
                                     
                                     {skill.unlocked && skill.level < skill.maxLevel && (
                                       <Button
                                         size="sm"
                                         onClick={() => upgradeSkill(selectedMember.id, skill.id)}
                                         disabled={!skill.cost || financialData.bankBalance < skill.cost}
-                                        className="w-full bg-green-500 hover:bg-green-600"
+                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
                                       >
                                         <Sparkles className="mr-2" size={14} />
                                         Upgrade - {formatIndianCurrency(skill.cost || 0)}
