@@ -1036,11 +1036,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                         >
                           <CardContent className="p-4">
                             <div className="flex items-center space-x-3">
-                              <Avatar>
-                                <AvatarFallback style={{ backgroundColor: role?.color }}>
-                                  {role?.emoji}
-                                </AvatarFallback>
-                              </Avatar>
+                              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                <User className="text-white" size={20} />
+                              </div>
                               <div>
                                 <h3 className="font-semibold text-lg">{member.name}</h3>
                                 <p className="text-gray-600 text-sm">{member.role}</p>
@@ -1068,11 +1066,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                       >
                         <ArrowLeft size={16} />
                       </Button>
-                      <Avatar>
-                        <AvatarFallback style={{ backgroundColor: CORE_ROLES.find(r => r.name === selectedMember.role)?.color }}>
-                          {CORE_ROLES.find(r => r.name === selectedMember.role)?.emoji}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                        <User className="text-white" size={20} />
+                      </div>
                       <div>
                         <h2 className="text-xl font-semibold">{selectedMember.name}</h2>
                         <p className="text-gray-600">{selectedMember.role} - Skill Development</p>
