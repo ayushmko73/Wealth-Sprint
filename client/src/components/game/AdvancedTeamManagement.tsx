@@ -47,7 +47,8 @@ import {
   Sparkles,
   Rocket,
   Lock,
-  Unlock
+  Unlock,
+  ChevronRight
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { useTeamManagement, JobApplicant } from '@/lib/stores/useTeamManagement';
@@ -113,6 +114,121 @@ const CORE_ROLES = [
   }
 ];
 
+// Department structure for hiring interface
+interface Candidate {
+  id: string;
+  name: string;
+  age: number;
+  impact: 'High' | 'Medium' | 'Low';
+  description: string;
+  salary: number;
+  experienceYears: number;
+  education: string;
+  position: string;
+  previousCompanies: string[];
+  skills: string[];
+}
+
+interface Department {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+  candidates: Candidate[];
+}
+
+const DEPARTMENTS: Department[] = [
+  {
+    id: 'finance',
+    name: 'Finance & Strategy',
+    icon: <DollarSign size={24} />,
+    color: '#d4af37',
+    candidates: [
+      {
+        id: 'aarav_mehta',
+        name: 'Aarav Mehta',
+        age: 34,
+        impact: 'High',
+        description: 'Improves investment returns.',
+        salary: 10000,
+        experienceYears: 6,
+        education: 'MBA in Finance from IIM',
+        position: 'Financial Advisor',
+        previousCompanies: ['HDFC Bank', 'ICICI Securities'],
+        skills: ['Portfolio Management', 'Risk Assessment', 'Financial Planning', 'Investment Strategy']
+      },
+      {
+        id: 'arjun_malhotra',
+        name: 'Arjun Malhotra',
+        age: 28,
+        impact: 'Medium',
+        description: 'Reduces losses in risky deals.',
+        salary: 8000,
+        experienceYears: 4,
+        education: 'CA with Risk Management Certification',
+        position: 'Risk Analyst',
+        previousCompanies: ['Kotak Mahindra', 'Axis Bank'],
+        skills: ['Risk Assessment', 'Data Analysis', 'Financial Modeling']
+      }
+    ]
+  },
+  {
+    id: 'marketing',
+    name: 'Sales & Marketing',
+    icon: <TrendingUp size={24} />,
+    color: '#e74c3c',
+    candidates: [
+      {
+        id: 'meera_iyer',
+        name: 'Meera Iyer',
+        age: 31,
+        impact: 'High',
+        description: 'Drives brand growth and customer acquisition.',
+        salary: 9000,
+        experienceYears: 7,
+        education: 'MBA in Marketing from XLRI',
+        position: 'Marketing Director',
+        previousCompanies: ['Unilever', 'P&G'],
+        skills: ['Brand Strategy', 'Digital Marketing', 'Customer Analytics', 'Campaign Management']
+      },
+      {
+        id: 'rohan_kapoor',
+        name: 'Rohan Kapoor',
+        age: 29,
+        impact: 'Medium',
+        description: 'Increases sales conversion rates.',
+        salary: 7500,
+        experienceYears: 5,
+        education: 'BBA with Sales Certification',
+        position: 'Sales Manager',
+        previousCompanies: ['Reliance', 'Tata Group'],
+        skills: ['Sales Strategy', 'Client Relations', 'Team Leadership']
+      }
+    ]
+  },
+  {
+    id: 'operations',
+    name: 'Operations & Technology',
+    icon: <Briefcase size={24} />,
+    color: '#3498db',
+    candidates: [
+      {
+        id: 'priya_singh',
+        name: 'Priya Singh',
+        age: 26,
+        impact: 'High',
+        description: 'Optimizes operational efficiency.',
+        salary: 8500,
+        experienceYears: 4,
+        education: 'B.Tech in Computer Science',
+        position: 'Operations Manager',
+        previousCompanies: ['Amazon', 'Flipkart'],
+        skills: ['Process Optimization', 'Project Management', 'Data Analytics']
+      }
+    ]
+  }
+];
+
 // Skill Node Interface for skill trees
 interface SkillNode {
   id: string;
@@ -150,6 +266,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
   const [showConfirmDialog, setShowConfirmDialog] = useState<{type: string, employee: TeamMember} | null>(null);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [skillTrees, setSkillTrees] = useState<Record<string, SkillNode[]>>({});
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
 
   // Generate skill tree based on team member's current skills
   const generateSkillTree = (member: TeamMember): SkillNode[] => {
@@ -410,6 +527,131 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     toast.success(`${member.name} has been removed from the team`);
   };
 
+  // Candidate hiring function from departments
+  const handleHireCandidate = (candidate: Candidate) => {
+    if (financialData.bankBalance >= candidate.salary * 12) {
+      const newTeamMember: TeamMember = {
+        id: candidate.id,
+        name: candidate.name,
+        role: candidate.position,
+        skills: candidate.skills,
+        salary: candidate.salary * 12, // Convert monthly to yearly
+        stats: {
+          loyalty: 75,
+          impact: candidate.impact === 'High' ? 90 : candidate.impact === 'Medium' ? 75 : 60,
+          energy: 85,
+          mood: 'motivated' as const
+        },
+        joinDate: new Date(),
+        personalDetails: {
+          age: candidate.age,
+          education: candidate.education,
+          previousCompanies: candidate.previousCompanies,
+          description: candidate.description
+        },
+        performance: {
+          currentStreak: 0,
+          weeklyContribution: 0,
+          monthlyBonus: 0,
+          specialistBonus: 0,
+          overallRating: candidate.impact === 'High' ? 4.5 : candidate.impact === 'Medium' ? 3.8 : 3.2
+        },
+        workHistory: {
+          weeklyReports: [],
+          goalAchievements: [],
+          missedDeadlines: 0
+        },
+        behavioralProfile: {
+          workLifeBalance: 'Balanced' as const,
+          stressManagement: 'Excellent' as const,
+          leadershipPotential: candidate.impact === 'High' ? 'High' : 'Medium',
+          innovationIndex: 75,
+          colaborationScore: 80,
+          reliabilityMetric: 85,
+          ambitionLevel: 'High' as const,
+          learningAgility: 'Fast' as const,
+          conflictResolution: 'Diplomatic' as const,
+          adaptabilityQuotient: 85,
+          riskTolerance: 'Moderate' as const,
+          workMotivation: ['Growth', 'Impact'] as const,
+          communicationStrenght: 'Excellent' as const,
+          teamIntegration: 'Quick' as const,
+          decisionMaking: 'Data-driven' as const,
+          feedbackReceptivity: 'High' as const
+        },
+        socialDynamics: {
+          friendships: [],
+          conflicts: [],
+          networkValue: 50,
+          mentoringPotential: candidate.impact === 'High' ? 'High' : 'Medium',
+          socialEvents: []
+        },
+        careerProgression: {
+          initialSalary: candidate.salary * 12,
+          growthTrajectory: 'Steady',
+          skillDevelopmentPlan: candidate.skills,
+          nextReviewDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        vulnerabilities: {
+          burnoutRisk: 'Low' as const,
+          loyaltyRisk: 'Low' as const,
+          skillObsolescence: 'Low' as const,
+          externalOfferRisk: 'Medium' as const,
+          lifeChangeRisk: 'Low' as const
+        },
+        triggerEvents: {
+          upcomingEvents: [],
+          potentialCrises: [],
+          careerMilestones: []
+        },
+        gameplayFeatures: {
+          weeklyPopupChance: 0.1,
+          specialEventUnlocks: [],
+          bonusMultiplier: 1.0,
+          loopVulnerability: 'none' as const,
+          clarityContribution: candidate.impact === 'High' ? 8 : candidate.impact === 'Medium' ? 6 : 4,
+          hiddenDynamics: {
+            trustWithFounder: 75,
+            creativeFulfillment: 80,
+            burnoutRisk: 20,
+            isHidingStruggles: false
+          }
+        },
+        department: candidate.position.includes('Finance') ? 'Financial' : 
+                   candidate.position.includes('Marketing') || candidate.position.includes('Sales') ? 'Marketing' :
+                   'Operations',
+        seniority: 'Mid' as const,
+        status: 'Neutral' as const,
+        promotionHistory: [],
+        isCEO: false,
+      };
+
+      addTeamMember(newTeamMember);
+      updateFinancialData({
+        bankBalance: financialData.bankBalance - (candidate.salary * 12),
+        monthlyExpenses: financialData.monthlyExpenses + candidate.salary
+      });
+
+      toast.success(`Successfully hired ${candidate.name}!`);
+      setSelectedDepartment(null); // Go back to department selection
+    } else {
+      toast.error('Insufficient funds to hire this candidate');
+    }
+  };
+
+  const getImpactColor = (impact: string) => {
+    switch (impact) {
+      case 'High': return 'bg-green-500';
+      case 'Medium': return 'bg-yellow-500';
+      case 'Low': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const isAlreadyHired = (candidateId: string) => {
+    return teamMembers.some(member => member.id === candidateId);
+  };
+
   const handlePromote = (member: TeamMember) => {
     setShowConfirmDialog({ type: 'promote', employee: member });
   };
@@ -639,101 +881,165 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
 
         {/* Hiring Center Tab */}
         <TabsContent value="hiring" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Available Candidates</h2>
-            <Button onClick={() => {
-              for (let i = 0; i < 5; i++) {
-                generateJobApplicant();
-              }
-            }} variant="outline">
-              <Plus className="mr-2" size={16} />
-              Generate New Candidates
-            </Button>
-          </div>
+          {!selectedDepartment ? (
+            // Department Selection View
+            <>
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-[#3a3a3a] mb-4">Select Department:</h2>
+              </div>
 
-          {jobApplicants.length === 0 ? (
-            <Card className="bg-white">
-              <CardContent className="p-8 text-center">
-                <UserPlus className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No Candidates Available</h3>
-                <p className="text-gray-500 mb-4">Generate new job candidates to start hiring</p>
-                <Button onClick={() => {
-                  for (let i = 0; i < 5; i++) {
-                    generateJobApplicant();
-                  }
-                }} className="bg-blue-500 hover:bg-blue-600">
-                  Generate Candidates
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {jobApplicants.map((applicant) => {
-                const role = CORE_ROLES.find(r => r.name === applicant.role);
-                const canAfford = financialData.bankBalance >= applicant.expectedSalary;
-                
-                return (
-                  <Card key={applicant.id} className={`bg-white ${!canAfford ? 'opacity-60' : ''}`}>
-                    <CardHeader>
+              {/* Department Cards */}
+              <div className="space-y-4">
+                {DEPARTMENTS.map((department) => (
+                  <Card 
+                    key={department.id} 
+                    className="bg-white hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => setSelectedDepartment(department.id)}
+                  >
+                    <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <Avatar>
-                            <AvatarFallback style={{ backgroundColor: role?.color }}>
-                              {role?.emoji}
-                            </AvatarFallback>
-                          </Avatar>
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: `${department.color}20`, color: department.color }}
+                          >
+                            {department.icon}
+                          </div>
                           <div>
-                            <CardTitle className="text-lg">{applicant.name}</CardTitle>
-                            <p className="text-sm text-gray-600">{applicant.role}</p>
+                            <h3 className="font-semibold text-[#3a3a3a] text-lg">{department.name}</h3>
+                            <p className="text-gray-600 text-sm">{department.candidates.length} candidates available</p>
                           </div>
                         </div>
-                        <Badge className={canAfford ? 'bg-green-500' : 'bg-red-500'}>
-                          {formatIndianCurrency(applicant.expectedSalary)}/year
-                        </Badge>
+                        <ChevronRight size={20} className="text-gray-400" />
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* Experience */}
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Experience:</span>
-                        <span className="text-sm font-medium">{applicant.experience} years</span>
-                      </div>
-
-                      {/* Skills */}
-                      <div>
-                        <span className="text-sm text-gray-600">Skills:</span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {applicant.skills.map(skill => (
-                            <Badge key={skill} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Hire Button */}
-                      <Button
-                        onClick={() => handleHire(applicant)}
-                        disabled={!canAfford}
-                        className="w-full bg-blue-500 hover:bg-blue-600"
-                      >
-                        {canAfford ? (
-                          <>
-                            <UserPlus className="mr-2" size={16} />
-                            Hire for {formatIndianCurrency(applicant.expectedSalary)}
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="mr-2" size={16} />
-                            Insufficient Funds
-                          </>
-                        )}
-                      </Button>
                     </CardContent>
                   </Card>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+
+              {/* Current Team Members */}
+              {teamMembers.length > 0 && (
+                <div className="mt-8">
+                  <Card className="bg-white">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Your Team ({teamMembers.length})</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {teamMembers.map((member) => (
+                          <div key={member.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                            <span className="font-medium">{member.name}</span>
+                            <span className="text-gray-600">{formatIndianCurrency(member.salary)}/year</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </>
+          ) : (
+            // Candidate Selection View
+            (() => {
+              const department = DEPARTMENTS.find(d => d.id === selectedDepartment);
+              if (!department) return null;
+              
+              return (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center mb-6">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedDepartment(null)}
+                      className="mr-3"
+                    >
+                      <ArrowLeft size={20} />
+                    </Button>
+                    <div 
+                      className="mr-2"
+                      style={{ color: department.color }}
+                    >
+                      {department.icon}
+                    </div>
+                    <h1 className="text-2xl font-bold text-[#3a3a3a]">{department.name}</h1>
+                  </div>
+
+                  {/* Candidates Section */}
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-[#3a3a3a] mb-4">Select Candidate:</h2>
+                  </div>
+
+                  {/* Candidate Cards */}
+                  <div className="space-y-4">
+                    {department.candidates.map((candidate) => {
+                      const alreadyHired = isAlreadyHired(candidate.id);
+                      const canAfford = financialData.bankBalance >= candidate.salary * 12;
+                      
+                      return (
+                        <Card key={candidate.id} className="bg-white">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start space-x-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                  <User className="text-blue-600" size={20} />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <h3 className="font-semibold text-[#3a3a3a]">{candidate.name}</h3>
+                                    <div className={`px-2 py-1 rounded-full text-xs text-white ${getImpactColor(candidate.impact)}`}>
+                                      {candidate.impact} Impact
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-gray-600 mb-2">{candidate.position}</p>
+                                  <p className="text-sm text-gray-700 mb-3">{candidate.description}</p>
+                                  
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <span className="text-gray-600">Experience:</span>
+                                      <span className="ml-2 font-medium">{candidate.experienceYears} years</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-600">Salary:</span>
+                                      <span className="ml-2 font-medium text-green-600">{formatIndianCurrency(candidate.salary * 12)}/year</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="mt-3">
+                                    <span className="text-sm text-gray-600">Skills:</span>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {candidate.skills.map(skill => (
+                                        <Badge key={skill} variant="outline" className="text-xs">
+                                          {skill}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                {alreadyHired ? (
+                                  <Badge className="bg-gray-500">Already Hired</Badge>
+                                ) : (
+                                  <Button
+                                    onClick={() => handleHireCandidate(candidate)}
+                                    disabled={!canAfford}
+                                    className={`${canAfford ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400'} text-white`}
+                                  >
+                                    <UserPlus className="mr-2" size={16} />
+                                    Hire for {formatIndianCurrency(candidate.salary * 12)}
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()
           )}
         </TabsContent>
 
