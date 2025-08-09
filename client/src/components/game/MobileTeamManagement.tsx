@@ -496,9 +496,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
         </div>
       </div>
 
-      {/* Overlay Filters Panel */}
+      {/* Beige Filters Panel */}
       {showFilters && (
-        <div className="fixed inset-x-4 top-32 z-50 p-6 bg-white rounded-2xl border border-gray-200 shadow-lg" data-filter-panel>
+        <div className="mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm" data-filter-panel>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-sm font-medium text-gray-800 mb-2 block">Department</Label>
@@ -552,26 +552,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
               </Select>
             </div>
           </div>
-          {/* Close button for mobile */}
-          <div className="flex justify-end mt-4">
-            <Button 
-              onClick={() => setShowFilters(false)} 
-              variant="outline" 
-              size="sm"
-              className="bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200"
-            >
-              Close
-            </Button>
-          </div>
         </div>
-      )}
-
-      {/* Backdrop overlay */}
-      {showFilters && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-20 z-40"
-          onClick={() => setShowFilters(false)}
-        />
       )}
 
 
