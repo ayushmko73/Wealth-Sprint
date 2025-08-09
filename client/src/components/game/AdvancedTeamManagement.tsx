@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { 
   Users, 
+  UserCog,
   TrendingUp, 
   Award, 
   UserPlus, 
@@ -658,20 +659,30 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Users className="text-[#d4af37] mr-2" size={24} />
+          <UserCog className="text-blue-600 mr-2" size={24} />
           <h1 className="text-2xl font-bold text-[#3a3a3a]">Team Management</h1>
         </div>
-        <Badge className="bg-blue-500 text-white">
+        <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
+          <Users className="mr-1" size={14} />
           {teamMembers.length} Team Members
         </Badge>
       </div>
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Team Overview</TabsTrigger>
-          <TabsTrigger value="hiring">Hiring Center</TabsTrigger>
-          <TabsTrigger value="skills">Skill Development</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-white shadow-md">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+            <Users className="mr-2" size={16} />
+            Team Overview
+          </TabsTrigger>
+          <TabsTrigger value="hiring" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+            <UserPlus className="mr-2" size={16} />
+            Hiring Center
+          </TabsTrigger>
+          <TabsTrigger value="skills" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+            <Star className="mr-2" size={16} />
+            Skill Development
+          </TabsTrigger>
         </TabsList>
 
         {/* Team Overview Tab */}
@@ -695,14 +706,14 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
             <>
               {/* Department Filter */}
               <div className="flex items-center gap-4">
-                <Label>Filter by Department:</Label>
+                <Label className="text-gray-700 font-medium">Filter by Department:</Label>
                 <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-48 bg-white border-2 border-blue-200 hover:border-blue-400 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {departments.map(dept => (
-                      <SelectItem key={dept} value={dept}>
+                      <SelectItem key={dept} value={dept} className="hover:bg-blue-50">
                         {dept === 'all' ? 'All Departments' : dept}
                       </SelectItem>
                     ))}
@@ -720,8 +731,8 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                              <User className="text-blue-600" size={20} />
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                              <User className="text-white" size={20} />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-1">
@@ -751,13 +762,24 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                               </div>
 
                               <div className="mt-3">
-                                <span className="text-sm text-gray-600">Skills:</span>
+                                <span className="text-sm text-gray-600 font-medium">Skills:</span>
                                 <div className="flex flex-wrap gap-1 mt-1">
-                                  {(member.skills || []).map(skill => (
-                                    <Badge key={skill} variant="outline" className="text-xs">
-                                      {skill}
-                                    </Badge>
-                                  ))}
+                                  {(member.skills || []).map((skill, index) => {
+                                    const colors = [
+                                      'bg-blue-100 text-blue-800 border-blue-300',
+                                      'bg-green-100 text-green-800 border-green-300', 
+                                      'bg-purple-100 text-purple-800 border-purple-300',
+                                      'bg-orange-100 text-orange-800 border-orange-300',
+                                      'bg-pink-100 text-pink-800 border-pink-300',
+                                      'bg-indigo-100 text-indigo-800 border-indigo-300'
+                                    ];
+                                    const colorClass = colors[index % colors.length];
+                                    return (
+                                      <Badge key={skill} className={`text-xs ${colorClass}`}>
+                                        {skill}
+                                      </Badge>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             </div>
@@ -765,30 +787,29 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                           <div className="ml-4 flex flex-col gap-2">
                             <Button
                               size="sm"
-                              variant="outline"
                               onClick={() => handlePromote(member)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white"
+                              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
                             >
-                              <UserPlus className="mr-2" size={16} />
+                              <ArrowUp className="mr-2 text-white" size={16} />
                               Promote
                             </Button>
                             <Button
                               size="sm"
-                              variant="outline"
                               onClick={() => {
                                 setSelectedMember(member);
                                 setActiveTab('skills');
                               }}
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
                             >
-                              <TreePine size={14} className="mr-1" />
+                              <TreePine className="mr-1 text-white" size={14} />
                               Skills
                             </Button>
                             <Button
                               size="sm"
-                              variant="destructive"
                               onClick={() => handleFire(member)}
+                              className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
                             >
-                              <X size={14} />
+                              <X className="text-white" size={14} />
                               Fire
                             </Button>
                           </div>
@@ -816,24 +837,31 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                 {DEPARTMENTS.map((department) => (
                   <Card 
                     key={department.id} 
-                    className="bg-white hover:shadow-md transition-shadow cursor-pointer"
+                    className="bg-white hover:shadow-lg transition-all duration-200 cursor-pointer border-2 hover:border-blue-300"
                     onClick={() => setSelectedDepartment(department.id)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: `${department.color}20`, color: department.color }}
+                            className="w-12 h-12 rounded-full flex items-center justify-center shadow-md"
+                            style={{ 
+                              background: `linear-gradient(135deg, ${department.color}20, ${department.color}40)`,
+                              color: department.color,
+                              border: `2px solid ${department.color}30`
+                            }}
                           >
                             {department.icon}
                           </div>
                           <div>
                             <h3 className="font-semibold text-[#3a3a3a] text-lg">{department.name}</h3>
-                            <p className="text-gray-600 text-sm">{department.candidates.length} candidates available</p>
+                            <p className="text-gray-600 text-sm flex items-center">
+                              <Users className="mr-1" size={14} />
+                              {department.candidates.length} candidates available
+                            </p>
                           </div>
                         </div>
-                        <ChevronRight size={20} className="text-gray-400" />
+                        <ChevronRight size={20} className="text-blue-500" />
                       </div>
                     </CardContent>
                   </Card>
@@ -904,8 +932,8 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex items-start space-x-3">
-                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                  <User className="text-blue-600" size={20} />
+                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                                  <User className="text-white" size={20} />
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-2 mb-1">
