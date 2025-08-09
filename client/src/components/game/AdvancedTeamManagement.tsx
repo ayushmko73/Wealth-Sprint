@@ -534,6 +534,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
         id: candidate.id,
         name: candidate.name,
         role: candidate.position,
+        avatar: candidate.position.includes('Finance') ? '💰' : 
+                candidate.position.includes('Marketing') || candidate.position.includes('Sales') ? '📈' :
+                '⚙️',
         skills: candidate.skills,
         salary: candidate.salary * 12, // Convert monthly to yearly
         stats: {
@@ -543,79 +546,20 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
           mood: 'motivated' as const
         },
         joinDate: new Date(),
-        personalDetails: {
-          age: candidate.age,
-          education: candidate.education,
-          previousCompanies: candidate.previousCompanies,
-          description: candidate.description
+        achievements: [],
+        personality: {
+          type: candidate.impact === 'High' ? 'High Performer' : 'Team Player',
+          motivationTriggers: ['Growth', 'Recognition'],
+          weakSpots: ['Perfectionism']
         },
-        performance: {
-          currentStreak: 0,
-          weeklyContribution: 0,
-          monthlyBonus: 0,
-          specialistBonus: 0,
-          overallRating: candidate.impact === 'High' ? 4.5 : candidate.impact === 'Medium' ? 3.8 : 3.2
-        },
-        workHistory: {
-          weeklyReports: [],
-          goalAchievements: [],
-          missedDeadlines: 0
-        },
-        behavioralProfile: {
-          workLifeBalance: 'Balanced' as const,
-          stressManagement: 'Excellent' as const,
-          leadershipPotential: candidate.impact === 'High' ? 'High' : 'Medium',
-          innovationIndex: 75,
-          colaborationScore: 80,
-          reliabilityMetric: 85,
-          ambitionLevel: 'High' as const,
-          learningAgility: 'Fast' as const,
-          conflictResolution: 'Diplomatic' as const,
-          adaptabilityQuotient: 85,
-          riskTolerance: 'Moderate' as const,
-          workMotivation: ['Growth', 'Impact'] as const,
-          communicationStrenght: 'Excellent' as const,
-          teamIntegration: 'Quick' as const,
-          decisionMaking: 'Data-driven' as const,
-          feedbackReceptivity: 'High' as const
-        },
-        socialDynamics: {
-          friendships: [],
-          conflicts: [],
-          networkValue: 50,
-          mentoringPotential: candidate.impact === 'High' ? 'High' : 'Medium',
-          socialEvents: []
-        },
-        careerProgression: {
-          initialSalary: candidate.salary * 12,
-          growthTrajectory: 'Steady',
-          skillDevelopmentPlan: candidate.skills,
-          nextReviewDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        vulnerabilities: {
-          burnoutRisk: 'Low' as const,
-          loyaltyRisk: 'Low' as const,
-          skillObsolescence: 'Low' as const,
-          externalOfferRisk: 'Medium' as const,
-          lifeChangeRisk: 'Low' as const
-        },
-        triggerEvents: {
-          upcomingEvents: [],
-          potentialCrises: [],
-          careerMilestones: []
-        },
-        gameplayFeatures: {
-          weeklyPopupChance: 0.1,
-          specialEventUnlocks: [],
-          bonusMultiplier: 1.0,
-          loopVulnerability: 'none' as const,
-          clarityContribution: candidate.impact === 'High' ? 8 : candidate.impact === 'Medium' ? 6 : 4,
-          hiddenDynamics: {
-            trustWithFounder: 75,
-            creativeFulfillment: 80,
-            burnoutRisk: 20,
-            isHidingStruggles: false
-          }
+        emotionalTrait: candidate.impact === 'High' ? 'High achiever' : 'Steady contributor',
+        loopVulnerability: 'none' as const,
+        clarityContribution: candidate.impact === 'High' ? 8 : candidate.impact === 'Medium' ? 6 : 4,
+        hiddenDynamics: {
+          trustWithFounder: 75,
+          creativeFulfillment: 80,
+          burnoutRisk: 20,
+          isHidingStruggles: false
         },
         department: candidate.position.includes('Finance') ? 'Financial' : 
                    candidate.position.includes('Marketing') || candidate.position.includes('Sales') ? 'Marketing' :
@@ -714,16 +658,8 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="mr-3"
-          >
-            <ArrowLeft size={20} />
-          </Button>
           <Users className="text-[#d4af37] mr-2" size={24} />
-          <h1 className="text-2xl font-bold text-[#3a3a3a]">Advanced Team Management</h1>
+          <h1 className="text-2xl font-bold text-[#3a3a3a]">Team Management</h1>
         </div>
         <Badge className="bg-blue-500 text-white">
           {teamMembers.length} Team Members
