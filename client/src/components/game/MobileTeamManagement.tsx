@@ -471,12 +471,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
       {/* Team Management Header with Beige Theme */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 bg-amber-900 rounded-2xl shadow-sm">
-            <Users className="text-amber-50" size={28} />
+          <div className="p-3 bg-blue-600 rounded-2xl shadow-sm">
+            <Users className="text-blue-50" size={28} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Team Management</h1>
-            <p className="text-amber-700">{filteredMembers.length} employees building your empire</p>
+            <h1 className="text-3xl font-bold text-blue-700">Team Management</h1>
+            <p className="text-blue-600">{filteredMembers.length} employees building your empire</p>
           </div>
         </div>
         
@@ -485,7 +485,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             onClick={() => setShowFilters(!showFilters)} 
             variant="outline" 
             size="sm"
-            className="bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100"
+            className="bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100"
           >
             <Filter size={16} className="mr-2" />
             Filters
@@ -495,12 +495,12 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
       {/* Beige Filters Panel */}
       {showFilters && (
-        <div className="mb-8 p-6 bg-amber-50 rounded-2xl border border-amber-200 shadow-sm">
+        <div className="mb-8 p-6 bg-blue-50 rounded-2xl border border-blue-200 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-sm font-medium text-amber-800 mb-2 block">Department</Label>
+              <Label className="text-sm font-medium text-blue-800 mb-2 block">Department</Label>
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
+                <SelectTrigger className="bg-blue-50 border-blue-200 text-blue-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-amber-200">
@@ -518,9 +518,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-amber-800 mb-2 block">Business Sector</Label>
+              <Label className="text-sm font-medium text-blue-800 mb-2 block">Business Sector</Label>
               <Select value={selectedSector} onValueChange={setSelectedSector}>
-                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
+                <SelectTrigger className="bg-blue-50 border-blue-200 text-blue-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-amber-200">
@@ -535,9 +535,9 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-amber-800 mb-2 block">Status</Label>
+              <Label className="text-sm font-medium text-blue-800 mb-2 block">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="bg-amber-50 border-amber-200 text-amber-900">
+                <SelectTrigger className="bg-blue-50 border-blue-200 text-blue-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-amber-200">
@@ -561,14 +561,11 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           return (
             <Card 
               key={member.id}
-              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-[#faf8f3] border border-[#e8dcc6] rounded-2xl shadow-sm hover:shadow-md"
+              className="card-interactive cursor-pointer hover:scale-105 transition-all duration-300 bg-[#d4b896] border border-[#c4a883] rounded-2xl shadow-sm hover:shadow-md"
               onClick={() => setShowEmployeeDetail(member)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-[#f5f1e8] border-2 border-[#e8dcc6] flex items-center justify-center text-2xl shadow-sm">
-                    {role?.emoji || '👤'}
-                  </div>
                   <div className="flex-1">
                     <CardTitle className="text-xl font-bold text-[#3E3C38] mb-1">{member.name}</CardTitle>
                     <p className="text-[#888174] font-medium">{member.role}</p>
@@ -608,7 +605,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                     )}
                   </div>
                   
-                  <div className="bg-[#f5f1e8] rounded-xl p-4">
+                  <div className="bg-[#c4a883] rounded-xl p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <DollarSign size={16} className="text-[#888174]" />
@@ -626,7 +623,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       </div>
                       <div className="text-[#888174] font-medium text-sm">Loyalty</div>
                       <div className="font-bold text-[#3E3C38] text-lg">{member.stats.loyalty}%</div>
-                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
+                      <div className="w-full bg-[#b89570] rounded-full h-2 mt-2">
                         <div 
                           className="bg-red-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.loyalty}%` }}
@@ -639,7 +636,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       </div>
                       <div className="text-[#888174] font-medium text-sm">Energy</div>
                       <div className="font-bold text-[#3E3C38] text-lg">{member.stats.energy}%</div>
-                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
+                      <div className="w-full bg-[#b89570] rounded-full h-2 mt-2">
                         <div 
                           className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.energy}%` }}
@@ -652,7 +649,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
                       </div>
                       <div className="text-[#888174] font-medium text-sm">Impact</div>
                       <div className="font-bold text-[#3E3C38] text-lg">{member.stats.impact}%</div>
-                      <div className="w-full bg-[#e8dcc6] rounded-full h-2 mt-2">
+                      <div className="w-full bg-[#b89570] rounded-full h-2 mt-2">
                         <div 
                           className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${member.stats.impact}%` }}
@@ -700,9 +697,6 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
           <DialogContent className="max-w-md mx-4 bg-[#fffdf7] border border-[#e5ddd1]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded-2xl bg-[#f5f1e8] border-2 border-[#e8dcc6] flex items-center justify-center text-2xl shadow-sm">
-                  {ALL_ROLES.find(r => r.name === showEmployeeDetail.role)?.emoji || '👤'}
-                </div>
                 <div>
                   <h2 className="text-lg font-bold text-[#3E3C38]">{showEmployeeDetail.name}</h2>
                   <p className="text-[#888174]">{showEmployeeDetail.role}</p>
