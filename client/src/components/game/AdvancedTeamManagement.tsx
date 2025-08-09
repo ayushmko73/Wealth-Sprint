@@ -967,7 +967,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                   
                                   <div className="flex items-center space-x-4 text-sm">
                                     <div className="flex items-center space-x-1">
-                                      <DollarSign size={14} className="text-green-600" />
+                                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                        <User size={10} className="text-white" />
+                                      </div>
                                       <span className="font-medium">{formatIndianCurrency(candidate.salary * 12)}/year</span>
                                     </div>
                                     <div className="flex items-center space-x-1">
