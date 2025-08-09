@@ -83,6 +83,19 @@ export interface TeamMember {
     burnoutRisk: number;
     isHidingStruggles: boolean;
   };
+  // New team management fields
+  department: 'Executive' | 'Financial' | 'Risk' | 'Marketing' | 'Sales' | 'Operations' | 'Human Resources' | 'Technician';
+  seniority: 'Junior' | 'Mid' | 'Senior' | 'VP' | 'CEO';
+  status: 'Promoted' | 'Demoted' | 'Neutral';
+  assignedSector?: string; // Fast Food, Tech Startup, E-commerce, Health-Care
+  promotionHistory: {
+    date: Date;
+    action: 'Promoted' | 'Demoted';
+    fromLevel: string;
+    toLevel: string;
+    reason?: string;
+  }[];
+  isCEO: boolean;
 }
 
 // Loop Bosses for emotional damage system

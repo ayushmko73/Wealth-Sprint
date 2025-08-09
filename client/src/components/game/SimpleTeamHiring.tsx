@@ -179,7 +179,12 @@ const SimpleTeamHiring: React.FC<SimpleTeamHiringProps> = ({ onClose }) => {
         creativeFulfillment: 80,
         burnoutRisk: 20,
         isHidingStruggles: false
-      }
+      },
+      department: 'Operations' as const,
+      seniority: 'Junior' as const,
+      status: 'Neutral' as const,
+      promotionHistory: [],
+      isCEO: false,
     });
 
     toast.success(`Successfully hired ${candidate.name}!`);
