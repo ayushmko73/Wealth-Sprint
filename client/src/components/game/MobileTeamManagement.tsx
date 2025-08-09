@@ -248,29 +248,31 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
     }
   }, [generateCoreTeam, teamMembers.length]);
 
-  // Prevent auto-close when clicking inside filter dropdowns or dialogs
+  // Close filters when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (!showFilters) return;
+      
       const target = event.target as Element;
       
-      // Don't close filters when clicking on filter UI elements
-      if (showFilters && (
+      // Don't close if clicking inside filter panel or dropdown elements
+      if (target.closest('[data-filter-panel]') ||
           target.closest('[role="combobox"]') ||
           target.closest('[role="listbox"]') ||
           target.closest('[data-radix-select-content]') ||
           target.closest('[data-radix-select-trigger]') ||
-          target.closest('button[aria-haspopup="listbox"]')
-      )) {
-        return;
-      }
-
-      // Don't auto-close when clicking on interactive elements
-      if (target.closest('button') ||
-          target.closest('[role="dialog"]') ||
-          target.closest('.card-interactive') ||
+          target.closest('button[aria-haspopup="listbox"]') ||
           target.closest('[data-state="open"]')) {
         return;
       }
+
+      // Don't close if clicking the filter button itself
+      if (target.closest('[data-filter-button]')) {
+        return;
+      }
+
+      // Close filters for any other clicks
+      setShowFilters(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside, true);
@@ -486,6 +488,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
             variant="outline" 
             size="sm"
             className="bg-white border-gray-200 text-gray-800 hover:bg-gray-50"
+            data-filter-button
           >
             <Filter size={16} className="mr-2" />
             Filters
@@ -495,7 +498,7 @@ export default function MobileTeamManagement({ onClose }: MobileTeamManagementPr
 
       {/* Beige Filters Panel */}
       {showFilters && (
-        <div className="mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="mb-8 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm" data-filter-panel>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-sm font-medium text-gray-800 mb-2 block">Department</Label>
