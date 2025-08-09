@@ -439,22 +439,23 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     const skillTree = skillTrees[memberId];
     const skill = skillTree?.find(s => s.id === skillId);
     
-    if (!member || !skill || !skill.cost) return;
-    
-    if (financialData.bankBalance < skill.cost) {
-      toast.error('Insufficient funds for skill upgrade');
-      return;
-    }
+    if (!member || !skill) return;
 
     if (skill.level >= skill.maxLevel) {
       toast.error('Skill already at maximum level');
       return;
     }
 
-    // Update financial data
-    updateFinancialData({
-      bankBalance: financialData.bankBalance - skill.cost
-    });
+    // Determine new level based on current level (1→3, 4→5)
+    let newLevel: number;
+    if (skill.level <= 1) {
+      newLevel = 3; // Jump from 1 to 3
+    } else if (skill.level === 4) {
+      newLevel = 5; // Jump from 4 to 5
+    } else {
+      toast.error('Skill upgrade not available at this level');
+      return;
+    }
 
     // Update member skills
     const updatedSkills = member.skills || [];
@@ -466,19 +467,21 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
       skills: updatedSkills,
       stats: {
         ...member.stats,
-        loyalty: Math.min(100, member.stats.loyalty + 5),
-        energy: Math.min(100, member.stats.energy + 5),
+        loyalty: Math.min(100, member.stats.loyalty + 10),
+        energy: Math.min(100, member.stats.energy + 10),
       }
     });
 
-    // Regenerate skill tree
-    const updatedMember = { ...member, skills: updatedSkills };
+    // Update skill tree with new level
     setSkillTrees(prev => ({
       ...prev,
-      [memberId]: generateSkillTree(updatedMember)
+      [memberId]: prev[memberId]?.map(s => 
+        s.id === skillId ? { ...s, level: newLevel } : s
+      ) || []
     }));
 
-    toast.success(`${skill.name} upgraded for ${member.name}!`);
+    const levelText = newLevel === 3 ? 'Level 3' : 'Level 5';
+    toast.success(`${skill.name} upgraded to ${levelText} for ${member.name}!`);
   };
 
   const handleHire = (applicant: JobApplicant) => {
@@ -1151,15 +1154,26 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                     </div>
                                     
                                     {skill.unlocked && skill.level < skill.maxLevel && (
-                                      <Button
-                                        size="sm"
-                                        onClick={() => upgradeSkill(selectedMember.id, skill.id)}
-                                        disabled={!skill.cost || financialData.bankBalance < skill.cost}
-                                        className={`w-full ${getCategoryButtonColors(category)} text-white`}
-                                      >
-                                        <Sparkles className="mr-2" size={14} />
-                                        Upgrade - {formatIndianCurrency(skill.cost || 0)}
-                                      </Button>
+                                      <>
+                                        {/* Show upgrade button only for levels 1→3 and 4→5 */}
+                                        {(skill.level <= 1 || skill.level === 4) && (
+                                          <Button
+                                            size="sm"
+                                            onClick={() => upgradeSkill(selectedMember.id, skill.id)}
+                                            className={`w-full ${getCategoryButtonColors(category)} text-white`}
+                                          >
+                                            <Sparkles className="mr-2" size={14} />
+                                            {skill.level <= 1 ? 'Upgrade to Level 3' : 'Upgrade to Level 5'}
+                                          </Button>
+                                        )}
+                                        
+                                        {/* Show automatic improvement message for intermediate levels */}
+                                        {skill.level > 1 && skill.level < 4 && (
+                                          <div className="text-xs text-gray-500 text-center p-2 bg-gray-50 rounded">
+                                            Employee will improve this skill naturally over time
+                                          </div>
+                                        )}
+                                      </>
                                     )}
 
                                     {!skill.unlocked && (
