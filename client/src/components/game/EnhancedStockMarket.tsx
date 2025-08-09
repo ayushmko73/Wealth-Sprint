@@ -468,7 +468,7 @@ const EnhancedStockMarket: React.FC = () => {
 
                 {/* Expandable Trading Section */}
                 {isExpanded && (
-                  <div className="mt-4 p-4 bg-white rounded-lg border">
+                  <div className="mt-4 p-4 bg-white rounded-lg border" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2 mb-3">
                       <ShoppingCart className="w-4 h-4" />
                       <h4 className="font-semibold">Trade {stock.code}</h4>
@@ -483,6 +483,7 @@ const EnhancedStockMarket: React.FC = () => {
                             value={tradeType} 
                             onChange={(e) => setTradeTypes(prev => ({ ...prev, [stock.code]: e.target.value as any }))}
                             className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <option value="delivery">Delivery (Hold)</option>
                             <option value="intraday">Intraday (Same Day)</option>
@@ -498,6 +499,7 @@ const EnhancedStockMarket: React.FC = () => {
                               onChange={(e) => setQuantities(prev => ({ ...prev, [stock.code]: Math.max(1, parseInt(e.target.value) || 1) }))}
                               className="flex-1"
                               min="1"
+                              onClick={(e) => e.stopPropagation()}
                             />
                             <span className="text-sm text-gray-600">shares</span>
                           </div>
@@ -528,14 +530,20 @@ const EnhancedStockMarket: React.FC = () => {
 
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => handleTrade(stock.code, true)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTrade(stock.code, true);
+                            }}
                             className="bg-green-600 hover:bg-green-700 text-white flex-1 font-semibold"
                             disabled={financialData.bankBalance < (tradeValue + charges.total)}
                           >
                             Buy ₹{(tradeValue + charges.total).toLocaleString()}
                           </Button>
                           <Button
-                            onClick={() => handleTrade(stock.code, false)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTrade(stock.code, false);
+                            }}
                             className="bg-red-600 hover:bg-red-700 text-white flex-1 font-semibold"
                             disabled={!holding || holding.quantity < quantity}
                           >
