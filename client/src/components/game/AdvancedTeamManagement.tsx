@@ -710,101 +710,88 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                 </Select>
               </div>
 
-              {/* Team Members Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Team Members List */}
+              <div className="space-y-4">
                 {filteredMembers.map((member) => {
                   const role = CORE_ROLES.find(r => r.name === member.role);
+                  
                   return (
-                    <Card key={member.id} className="bg-white hover:shadow-lg transition-shadow">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Avatar>
-                              <AvatarFallback style={{ backgroundColor: role?.color }}>
-                                {role?.emoji}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-lg">{member.name}</CardTitle>
-                              <Badge variant="secondary" className="text-xs">
-                                {member.seniority} {member.role}
-                              </Badge>
+                    <Card key={member.id} className="bg-white">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <User className="text-blue-600" size={20} />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h3 className="font-semibold text-[#3a3a3a]">{member.name}</h3>
+                                <div className={`px-2 py-1 rounded-full text-xs text-white ${
+                                  member.stats.impact >= 80 ? 'bg-green-500' : 
+                                  member.stats.impact >= 60 ? 'bg-yellow-500' : 'bg-orange-500'
+                                }`}>
+                                  {member.stats.impact >= 80 ? 'High' : 
+                                   member.stats.impact >= 60 ? 'Medium' : 'Low'} Impact
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-2">{member.seniority} {member.role}</p>
+                              <p className="text-sm text-gray-700 mb-3">{role?.description}</p>
+                              
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Experience:</span>
+                                  <span className="ml-2 font-medium">
+                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} years
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Salary:</span>
+                                  <span className="ml-2 font-medium text-green-600">{formatIndianCurrency(member.salary)}/year</span>
+                                </div>
+                              </div>
+
+                              <div className="mt-3">
+                                <span className="text-sm text-gray-600">Skills:</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {(member.skills || []).map(skill => (
+                                    <Badge key={skill} variant="outline" className="text-xs">
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {/* Stats */}
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            <span className="text-gray-600">Loyalty:</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={member.stats.loyalty} className="h-2" />
-                              <span className="text-xs">{member.stats.loyalty}%</span>
-                            </div>
+                          <div className="ml-4 flex flex-col gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handlePromote(member)}
+                              className="bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                              <UserPlus className="mr-2" size={16} />
+                              Promote
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setActiveTab('skills');
+                              }}
+                            >
+                              <TreePine size={14} className="mr-1" />
+                              Skills
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleFire(member)}
+                            >
+                              <X size={14} />
+                              Fire
+                            </Button>
                           </div>
-                          <div>
-                            <span className="text-gray-600">Energy:</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={member.stats.energy} className="h-2" />
-                              <span className="text-xs">{member.stats.energy}%</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Salary */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Salary:</span>
-                          <span className="font-medium">{formatIndianCurrency(member.salary)}/year</span>
-                        </div>
-
-                        {/* Skills */}
-                        <div>
-                          <span className="text-sm text-gray-600">Skills ({member.skills?.length || 0}):</span>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {(member.skills || []).slice(0, 3).map(skill => (
-                              <Badge key={skill} variant="outline" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                            {(member.skills?.length || 0) > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{(member.skills?.length || 0) - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-2 pt-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePromote(member)}
-                            className="flex-1"
-                          >
-                            <ArrowUp size={14} className="mr-1" />
-                            Promote
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setSelectedMember(member);
-                              setActiveTab('skills');
-                            }}
-                            className="flex-1"
-                          >
-                            <TreePine size={14} className="mr-1" />
-                            Skills
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleFire(member)}
-                          >
-                            <X size={14} />
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
