@@ -900,7 +900,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                       const canAfford = financialData.bankBalance >= candidate.salary * 12;
                       
                       return (
-                        <Card key={candidate.id} className="bg-white">
+                        <Card key={candidate.id} className="bg-gray-100">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex items-start space-x-3">
@@ -910,50 +910,56 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-2 mb-1">
                                     <h3 className="font-semibold text-[#3a3a3a]">{candidate.name}</h3>
-                                    <div className={`px-2 py-1 rounded-full text-xs text-white ${getImpactColor(candidate.impact)}`}>
-                                      {candidate.impact} Impact
-                                    </div>
                                   </div>
-                                  <p className="text-sm text-gray-600 mb-2">{candidate.position}</p>
-                                  <p className="text-sm text-gray-700 mb-3">{candidate.description}</p>
                                   
-                                  <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                      <span className="text-gray-600">Experience:</span>
-                                      <span className="ml-2 font-medium">{candidate.experienceYears} years</span>
-                                    </div>
-                                    <div>
-                                      <span className="text-gray-600">Salary:</span>
-                                      <span className="ml-2 font-medium text-green-600">{formatIndianCurrency(candidate.salary * 12)}/year</span>
-                                    </div>
-                                  </div>
-
-                                  <div className="mt-3">
-                                    <span className="text-sm text-gray-600">Skills:</span>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {candidate.skills.map(skill => (
-                                        <Badge key={skill} variant="outline" className="text-xs">
+                                  <p className="text-sm text-gray-600 mb-1">{candidate.age} • {candidate.education}</p>
+                                  <p className="text-sm font-medium text-blue-600 mb-1">Position: {candidate.position}</p>
+                                  <p className="text-sm text-gray-600 mb-2">Previous Companies: {candidate.previousCompanies.join(', ')}</p>
+                                  <p className="text-gray-600 text-sm mb-3">{candidate.description}</p>
+                                  
+                                  {/* Skills */}
+                                  <div className="flex flex-wrap gap-1 mb-3">
+                                    {candidate.skills.map((skill, index) => {
+                                      const colors = [
+                                        'bg-blue-100 text-blue-800 border-blue-300',
+                                        'bg-green-100 text-green-800 border-green-300', 
+                                        'bg-purple-100 text-purple-800 border-purple-300',
+                                        'bg-orange-100 text-orange-800 border-orange-300',
+                                        'bg-pink-100 text-pink-800 border-pink-300',
+                                        'bg-indigo-100 text-indigo-800 border-indigo-300'
+                                      ];
+                                      const colorClass = colors[index % colors.length];
+                                      return (
+                                        <Badge key={index} className={`text-xs ${colorClass}`}>
                                           {skill}
                                         </Badge>
-                                      ))}
+                                      );
+                                    })}
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-4 text-sm">
+                                    <div className="flex items-center space-x-1">
+                                      <DollarSign size={14} className="text-green-600" />
+                                      <span className="font-medium">{formatIndianCurrency(candidate.salary * 12)}/year</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Star size={14} className="text-yellow-500" />
+                                      <span>{candidate.experienceYears} years exp</span>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="ml-4">
-                                {alreadyHired ? (
-                                  <Badge className="bg-gray-500">Already Hired</Badge>
-                                ) : (
-                                  <Button
-                                    onClick={() => handleHireCandidate(candidate)}
-                                    disabled={!canAfford}
-                                    className={`${canAfford ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400'} text-white`}
-                                  >
-                                    <UserPlus className="mr-2" size={16} />
-                                    Hire for {formatIndianCurrency(candidate.salary * 12)}
-                                  </Button>
-                                )}
-                              </div>
+                              <Button
+                                onClick={() => handleHireCandidate(candidate)}
+                                disabled={alreadyHired || !canAfford}
+                                className={`${
+                                  alreadyHired 
+                                    ? 'bg-gray-400 cursor-not-allowed' 
+                                    : 'bg-green-600 hover:bg-green-700'
+                                } text-white px-4 py-2`}
+                              >
+                                {alreadyHired ? 'Hired' : 'Hire Now'}
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>
