@@ -638,6 +638,26 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     }
   };
 
+  const getCategoryProgressColor = (category: string) => {
+    switch (category) {
+      case 'core': return 'bg-blue-500';
+      case 'technical': return 'bg-green-500';
+      case 'leadership': return 'bg-purple-500';
+      case 'soft': return 'bg-orange-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getCategoryButtonColors = (category: string) => {
+    switch (category) {
+      case 'core': return 'bg-blue-500 hover:bg-blue-600';
+      case 'technical': return 'bg-green-500 hover:bg-green-600';
+      case 'leadership': return 'bg-purple-500 hover:bg-purple-600';
+      case 'soft': return 'bg-orange-500 hover:bg-orange-600';
+      default: return 'bg-gray-500 hover:bg-gray-600';
+    }
+  };
+
   const getSkillLevelColor = (level: number, maxLevel: number) => {
     const percentage = level / maxLevel;
     if (percentage >= 0.8) return 'text-green-600';
@@ -1124,7 +1144,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                       </div>
                                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                                         <div 
-                                          className="bg-blue-500 h-2.5 rounded-full transition-all duration-300" 
+                                          className={`${getCategoryProgressColor(category)} h-2.5 rounded-full transition-all duration-300`}
                                           style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
                                         ></div>
                                       </div>
@@ -1135,7 +1155,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                         size="sm"
                                         onClick={() => upgradeSkill(selectedMember.id, skill.id)}
                                         disabled={!skill.cost || financialData.bankBalance < skill.cost}
-                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                                        className={`w-full ${getCategoryButtonColors(category)} text-white`}
                                       >
                                         <Sparkles className="mr-2" size={14} />
                                         Upgrade - {formatIndianCurrency(skill.cost || 0)}
