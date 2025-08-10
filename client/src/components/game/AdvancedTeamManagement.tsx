@@ -838,7 +838,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                         Working in {SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.name}
                                       </p>
                                       <p className="text-xs text-purple-600">
-                                        Income Boost: +{Math.round((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) * 100)}%
+                                        Income Boost: +{Math.round(((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) + ((member.stats.impact || 70) / 100) * 0.15) * 100)}%
                                       </p>
                                     </div>
                                   </div>
@@ -1321,7 +1321,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                       if (!sector) return null;
                       
                       const incomeIncrease = Math.round(
-                        (sector.incomeBoost + (showSectorDialog.employee.stats.impact / 100) * 0.15) * 100
+                        (sector.incomeBoost + ((showSectorDialog.employee.stats.impact || 70) / 100) * 0.15) * 100
                       );
                       
                       return (

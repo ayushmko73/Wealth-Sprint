@@ -50,7 +50,7 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
     return {
       sector: sector,
       performance: Math.round(totalPerformance),
-      monthlyContribution: Math.round(member.salary * (sector?.incomeBoost || 0) / 12),
+      monthlyContribution: Math.round(member.salary * ((sector?.incomeBoost || 0) + ((member.stats.impact || 70) / 100) * 0.15) / 12),
       growthContribution: Math.round((basePerformance / 100) * 2.5), // Percentage contribution to company growth
       role: getSectorRole(member.assignedSector, member.role)
     };

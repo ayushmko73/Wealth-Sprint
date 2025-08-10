@@ -56,7 +56,7 @@ const SectorTeamSection: React.FC<SectorTeamSectionProps> = ({
     
     return {
       performance: Math.round(totalPerformance),
-      monthlyContribution: Math.round(member.salary * sector.incomeBoost / 12),
+      monthlyContribution: Math.round(member.salary * (sector.incomeBoost + ((member.stats.impact || 70) / 100) * 0.15) / 12),
       growthContribution: Math.round((basePerformance / 100) * 2.5),
       role: getSectorRole(sectorId, member.role)
     };
@@ -213,6 +213,9 @@ const SectorTeamSection: React.FC<SectorTeamSectionProps> = ({
                     <div className="bg-purple-50 p-3 rounded-lg">
                       <p className="text-sm font-medium text-purple-700 mb-1">Sector Role:</p>
                       <p className="text-sm text-purple-600">{performance.role}</p>
+                      <p className="text-xs text-purple-600 mt-1">
+                        Income Boost: +{Math.round((sector.incomeBoost + ((member.stats.impact || 70) / 100) * 0.15) * 100)}%
+                      </p>
                     </div>
 
                     {/* Performance Metrics */}
