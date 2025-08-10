@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { toast } from 'sonner';
-import TeamPerformanceSection from '../sections/TeamPerformanceSection';
+import SectorTeamSection from './SectorTeamSection';
 
 interface FastFoodChainsPageProps {
   onBack: () => void;
@@ -862,7 +862,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
         {/* Team Tab */}
         <TabsContent value="team" className="space-y-4">
-          <TeamPerformanceSection />
+          <SectorTeamSection sectorId="fast_food" />
         </TabsContent>
       </Tabs>
     </div>
