@@ -58,7 +58,7 @@ import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
-import SimpleTeamHiring from './SimpleTeamHiring';
+
 import AdvancedTeamManagement from './AdvancedTeamManagement';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
@@ -108,7 +108,7 @@ const GameDashboard: React.FC = () => {
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
-    { id: 'elite_team', label: 'Elite Team', icon: Users },
+
     { id: 'advanced_team', label: 'Team', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
@@ -132,8 +132,7 @@ const GameDashboard: React.FC = () => {
         return <RevenueOverview />;
       case 'bank':
         return <BankSection />;
-      case 'elite_team':
-        return <SimpleTeamHiring onClose={() => setActiveSection('dashboard')} />;
+
       case 'advanced_team':
         return <AdvancedTeamManagement onClose={() => setActiveSection('dashboard')} />;
       case 'industry_sectors':
