@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
@@ -246,10 +246,19 @@ interface SkillNode {
 
 interface AdvancedTeamManagementProps {
   onClose: () => void;
+  onNavigateToSectors?: () => void;
 }
 
-const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose }) => {
-  const { financialData, updateFinancialData, addGameEvent } = useWealthSprintGame();
+// Map industry sectors to employee assignment sectors
+const SECTOR_MAPPING = {
+  'fast_food': { name: 'Fast Food Chains', icon: '🍟', incomeBoost: 0.20, color: 'bg-red-500' },
+  'tech_startups': { name: 'Tech Startups', icon: '💻', incomeBoost: 0.30, color: 'bg-blue-500' },
+  'ecommerce': { name: 'E-commerce', icon: '📦', incomeBoost: 0.25, color: 'bg-purple-500' },
+  'healthcare': { name: 'Healthcare', icon: '🏥', incomeBoost: 0.35, color: 'bg-green-500' },
+};
+
+const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose, onNavigateToSectors }) => {
+  const { financialData, updateFinancialData, addGameEvent, purchasedSectors } = useWealthSprintGame();
   const { 
     teamMembers, 
     jobApplicants, 
@@ -265,6 +274,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [showHireDialog, setShowHireDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState<{type: string, employee: TeamMember} | null>(null);
+  const [showSectorDialog, setShowSectorDialog] = useState<{employee: TeamMember} | null>(null);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [skillTrees, setSkillTrees] = useState<Record<string, SkillNode[]>>({});
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
@@ -515,20 +525,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
   };
 
   const handleFire = (member: TeamMember) => {
-    removeTeamMember(member.id);
-    updateFinancialData({
-      monthlyExpenses: financialData.monthlyExpenses - (member.salary / 12)
-    });
-    
-    addGameEvent({
-      id: `fire_${Date.now()}`,
-      type: 'info',
-      title: '📤 Team Member Departed',
-      description: `${member.name} has left the company`,
-      impact: { duration: 1, effects: {} }
-    });
-    
-    toast.success(`${member.name} has been removed from the team`);
+    setShowConfirmDialog({ type: 'fire', employee: member });
   };
 
   // Candidate hiring function from departments
@@ -629,6 +626,66 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     }
     
     setShowConfirmDialog(null);
+  };
+
+  const confirmFiring = () => {
+    if (!showConfirmDialog) return;
+    
+    const { employee } = showConfirmDialog;
+    removeTeamMember(employee.id);
+    
+    updateFinancialData({
+      monthlyExpenses: financialData.monthlyExpenses - employee.salary
+    });
+    
+    toast.success(`${employee.name} has been released from the team`);
+    setShowConfirmDialog(null);
+  };
+
+  // Function to assign sector to employee
+  const assignSector = (employee: TeamMember, sectorId: string) => {
+    const sector = SECTOR_MAPPING[sectorId as keyof typeof SECTOR_MAPPING];
+    if (!sector) return;
+
+    // Calculate income boost based on sector and employee stats
+    const baseBoost = sector.incomeBoost;
+    const experienceMultiplier = (employee.stats.impact || 70) / 100;
+    const totalBoost = baseBoost + (experienceMultiplier * 0.15);
+
+    // Update employee with sector assignment
+    updateTeamMember(employee.id, {
+      ...employee,
+      assignedSector: sectorId
+    });
+
+    // Calculate and apply monthly income increase through main income
+    const monthlyIncrease = Math.round(employee.salary * totalBoost / 12);
+    
+    updateFinancialData({
+      mainIncome: financialData.mainIncome + monthlyIncrease
+    });
+
+    toast.success(`${employee.name} assigned to ${sector.name}. Monthly income increased by ₹${monthlyIncrease.toLocaleString()}!`);
+    setShowSectorDialog(null);
+  };
+
+  // Function to navigate to Industry Sectors section
+  const navigateToSectors = () => {
+    setShowSectorDialog(null);
+    onClose(); // Close team management
+    
+    // Use callback to navigate to sectors if provided, otherwise add notification
+    if (onNavigateToSectors) {
+      onNavigateToSectors();
+    } else {
+      addGameEvent({
+        id: `navigate_sectors_${Date.now()}`,
+        type: 'info',
+        title: '📍 Navigate to Sectors',
+        description: 'Please go to Industry Sectors section to purchase business sectors first.',
+        timestamp: new Date()
+      });
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -771,11 +828,28 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                               <p className="text-sm text-gray-600 mb-2">{member.seniority} {member.role}</p>
                               <p className="text-sm text-gray-700 mb-3">{role?.description}</p>
                               
+                              {/* Sector Status Display */}
+                              {member.assignedSector && (
+                                <div className="mb-3 p-2 bg-purple-50 border border-purple-200 rounded-lg">
+                                  <div className="flex items-center">
+                                    <div className="text-lg mr-2">{SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.icon}</div>
+                                    <div>
+                                      <p className="text-sm font-medium text-purple-700">
+                                        Working in {SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.name}
+                                      </p>
+                                      <p className="text-xs text-purple-600">
+                                        Income Boost: +{Math.round((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) * 100)}%
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              
                               <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
+                                <div className="flex items-center">
                                   <span className="text-gray-600">Experience:</span>
                                   <span className="ml-2 font-medium">
-                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} years
+                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
                                   </span>
                                 </div>
                                 <div>
@@ -811,7 +885,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                             <Button
                               size="sm"
                               onClick={() => handlePromote(member)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <ArrowUp className="mr-2 text-white" size={16} />
                               Promote
@@ -822,15 +896,23 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                 setSelectedMember(member);
                                 setActiveTab('skills');
                               }}
-                              className="bg-yellow-500 hover:bg-yellow-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <TreePine className="mr-1 text-white" size={14} />
                               Skills
                             </Button>
                             <Button
                               size="sm"
+                              onClick={() => setShowSectorDialog({ employee: member })}
+                              className="bg-purple-500 hover:bg-purple-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
+                            >
+                              <Building className="mr-1 text-white" size={14} />
+                              Sector
+                            </Button>
+                            <Button
+                              size="sm"
                               onClick={() => handleFire(member)}
-                              className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <X className="text-white" size={14} />
                               Fire
@@ -1097,9 +1179,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                         <p className="text-gray-600">{selectedMember.role} - Skill Development</p>
                       </div>
                     </div>
-                    <Badge className="bg-blue-500">
-                      Available Budget: {formatIndianCurrency(financialData.bankBalance)}
-                    </Badge>
+
                   </div>
 
                   {/* Skill Categories */}
@@ -1153,27 +1233,10 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                       </div>
                                     </div>
                                     
-                                    {skill.unlocked && skill.level < skill.maxLevel && (
-                                      <>
-                                        {/* Show upgrade button only for levels 1→3 and 4→5 */}
-                                        {(skill.level <= 1 || skill.level === 4) && (
-                                          <Button
-                                            size="sm"
-                                            onClick={() => upgradeSkill(selectedMember.id, skill.id)}
-                                            className={`w-full ${getCategoryButtonColors(category)} text-white`}
-                                          >
-                                            <Sparkles className="mr-2" size={14} />
-                                            {skill.level <= 1 ? 'Upgrade to Level 3' : 'Upgrade to Level 5'}
-                                          </Button>
-                                        )}
-                                        
-                                        {/* Show automatic improvement message for intermediate levels */}
-                                        {skill.level > 1 && skill.level < 4 && (
-                                          <div className="text-xs text-gray-500 text-center p-2 bg-gray-50 rounded">
-                                            Employee will improve this skill naturally over time
-                                          </div>
-                                        )}
-                                      </>
+                                    {skill.unlocked && (
+                                      <div className="text-xs text-gray-500 text-center p-2 bg-gray-50 rounded mt-3">
+                                        Employee will improve this skill naturally over time
+                                      </div>
                                     )}
 
                                     {!skill.unlocked && (
@@ -1200,23 +1263,104 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
       {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <Dialog open={!!showConfirmDialog} onOpenChange={() => setShowConfirmDialog(null)}>
-          <DialogContent>
+          <DialogContent className="bg-white">
             <DialogHeader>
-              <DialogTitle>Confirm {showConfirmDialog.type === 'promote' ? 'Promotion' : 'Action'}</DialogTitle>
+              <DialogTitle className="text-gray-800">
+                Confirm {showConfirmDialog.type === 'promote' ? 'Promotion' : showConfirmDialog.type === 'fire' ? 'Termination' : 'Action'}
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Please confirm your decision before proceeding with this action.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <p>
-                Are you sure you want to promote {showConfirmDialog.employee.name}? 
-                This will increase their salary by 25%.
+              <p className="text-gray-700">
+                {showConfirmDialog.type === 'promote' ? (
+                  <>Are you sure you want to promote {showConfirmDialog.employee.name}? This will increase their salary by 25%.</>
+                ) : showConfirmDialog.type === 'fire' ? (
+                  <>Are you sure you want to terminate {showConfirmDialog.employee.name}? This action cannot be undone.</>
+                ) : (
+                  <>Are you sure you want to proceed with this action?</>
+                )}
               </p>
               <div className="flex gap-2">
-                <Button onClick={confirmPromotion} className="flex-1">
-                  Confirm Promotion
+                <Button 
+                  onClick={showConfirmDialog.type === 'promote' ? confirmPromotion : confirmFiring} 
+                  className={`flex-1 ${showConfirmDialog.type === 'fire' ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+                >
+                  {showConfirmDialog.type === 'promote' ? 'Confirm Promotion' : showConfirmDialog.type === 'fire' ? 'Confirm Termination' : 'Confirm'}
                 </Button>
-                <Button variant="outline" onClick={() => setShowConfirmDialog(null)} className="flex-1">
+                <Button variant="outline" onClick={() => setShowConfirmDialog(null)} className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50">
                   Cancel
                 </Button>
               </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+      {/* Sector Assignment Dialog */}
+      {showSectorDialog && (
+        <Dialog open={!!showSectorDialog} onOpenChange={() => setShowSectorDialog(null)}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-gray-800">
+                Assign Sector - {showSectorDialog.employee.name}
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Choose a business sector to assign this employee to for enhanced performance and income generation.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              {purchasedSectors.length > 0 ? (
+                <>
+                  <p className="text-gray-700">
+                    Assign {showSectorDialog.employee.name} to one of your purchased business sectors. Different sectors provide various income boosts based on employee experience and impact.
+                  </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {purchasedSectors.map((sectorId) => {
+                      const sector = SECTOR_MAPPING[sectorId as keyof typeof SECTOR_MAPPING];
+                      if (!sector) return null;
+                      
+                      const incomeIncrease = Math.round(
+                        (sector.incomeBoost + (showSectorDialog.employee.stats.impact / 100) * 0.15) * 100
+                      );
+                      
+                      return (
+                        <Button
+                          key={sectorId}
+                          variant="outline"
+                          className="justify-start p-4 h-auto border-2 hover:border-purple-400 hover:bg-purple-50"
+                          onClick={() => assignSector(showSectorDialog.employee, sectorId)}
+                        >
+                          <div className="mr-3 text-xl">{sector.icon}</div>
+                          <div className="text-left flex-1">
+                            <div className="font-medium text-gray-800">{sector.name}</div>
+                            <div className="text-sm text-gray-600">
+                              Monthly Income Boost: +{incomeIncrease}%
+                            </div>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center space-y-4">
+                  <div className="text-6xl mb-4">🏢</div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-gray-800">No Business Sectors Yet</h3>
+                    <p className="text-gray-600 text-sm">
+                      You need to purchase business sectors first before assigning employees.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={navigateToSectors}
+                    className="bg-purple-500 hover:bg-purple-600 text-white"
+                  >
+                    <Building className="mr-2" size={16} />
+                    Go to Sectors
+                  </Button>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
