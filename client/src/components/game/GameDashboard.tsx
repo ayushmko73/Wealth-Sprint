@@ -265,8 +265,8 @@ const GameDashboard: React.FC = () => {
 
       {/* Navigation Menu (Mobile) */}
       {menuOpen && (
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white border-b border-gray-200 px-2 py-3">
+          <div className="grid grid-cols-4 gap-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -278,14 +278,14 @@ const GameDashboard: React.FC = () => {
                     setActiveSection(item.id);
                     setMenuOpen(false);
                   }}
-                  className={`flex flex-col items-center gap-1 h-auto py-2 ${
+                  className={`flex flex-col items-center gap-1 h-auto py-2 px-1 min-h-16 ${
                     activeSection === item.id 
                       ? 'bg-green-500 text-white hover:bg-green-600' 
                       : 'hover:bg-green-100 hover:text-green-700'
                   }`}
                 >
-                  <Icon size={16} />
-                  <span className="text-xs">{item.label}</span>
+                  <Icon size={14} />
+                  <span className="text-xs text-center leading-tight">{item.label}</span>
                 </Button>
               );
             })}

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { toast } from 'sonner';
+import TeamPerformanceSection from '../sections/TeamPerformanceSection';
 
 interface FastFoodChainsPageProps {
   onBack: () => void;
@@ -493,30 +494,36 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 bg-white">
+        <TabsList className="grid w-full grid-cols-5 bg-white">
           <TabsTrigger 
             value="overview" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
           >
             Overview
           </TabsTrigger>
           <TabsTrigger 
             value="cities" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
           >
             Cities
           </TabsTrigger>
           <TabsTrigger 
             value="operations" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
           >
             Operations
           </TabsTrigger>
           <TabsTrigger 
             value="brand" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white"
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
           >
             Brand
+          </TabsTrigger>
+          <TabsTrigger 
+            value="team" 
+            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
+          >
+            Team
           </TabsTrigger>
         </TabsList>
 
@@ -851,6 +858,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Team Tab */}
+        <TabsContent value="team" className="space-y-4">
+          <TeamPerformanceSection />
         </TabsContent>
       </Tabs>
     </div>
