@@ -41,6 +41,9 @@ interface TeamManagementState {
   
   // Experience progression
   increaseTeamExperience: (currentWeek: number) => void;
+  updateRoleBasedOnExperience: (memberId: string) => void;
+  getRoleFromExperience: (experience: number, baseRole: string) => string;
+  getSeniorityFromExperience: (experience: number) => 'Fresher' | 'Junior' | 'Senior' | 'Chief' | 'CEO';
 }
 
 const initialTeamMembers: TeamMember[] = [];
@@ -315,7 +318,7 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
       const newMember: TeamMember = {
         id: `member_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         name: applicant.name,
-        role: applicant.role,
+        role: get().getRoleFromExperience(applicant.experience, applicant.role),
         avatar: applicant.avatar,
         salary: applicant.expectedSalary,
         joinDate: new Date(),
@@ -343,7 +346,7 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
           isHidingStruggles: false
         },
         department: 'Operations' as const,
-        seniority: 'Junior' as const,
+        seniority: get().getSeniorityFromExperience(applicant.experience),
         status: 'Neutral' as const,
         promotionHistory: [],
         isCEO: false,
@@ -422,11 +425,54 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
     // Increase experience by 1 year every 48 weeks
     if (currentWeek % 48 === 0) {
       set(state => ({
-        teamMembers: state.teamMembers.map(member => ({
-          ...member,
-          experience: member.experience + 1
-        }))
+        teamMembers: state.teamMembers.map(member => {
+          const newExperience = member.experience + 1;
+          const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief)\s+/, '');
+          const newRole = get().getRoleFromExperience(newExperience, baseRole);
+          
+          return {
+            ...member,
+            experience: newExperience,
+            role: newRole,
+            seniority: get().getSeniorityFromExperience(newExperience)
+          };
+        })
       }));
     }
+  },
+
+  getRoleFromExperience: (experience: number, baseRole: string) => {
+    if (experience === 0) return `Fresher ${baseRole}`;
+    if (experience >= 1 && experience <= 5) return `Junior ${baseRole}`;
+    if (experience >= 6 && experience <= 10) return `Senior ${baseRole}`;
+    if (experience >= 11) return `Chief ${baseRole}`;
+    return baseRole;
+  },
+
+  getSeniorityFromExperience: (experience: number) => {
+    if (experience === 0) return 'Fresher' as const;
+    if (experience >= 1 && experience <= 5) return 'Junior' as const;
+    if (experience >= 6 && experience <= 10) return 'Senior' as const;
+    if (experience >= 11) return 'Chief' as const;
+    return 'Junior' as const;
+  },
+
+  updateRoleBasedOnExperience: (memberId: string) => {
+    set(state => {
+      const member = state.teamMembers.find(m => m.id === memberId);
+      if (!member) return state;
+
+      const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief)\s+/, '');
+      const newRole = get().getRoleFromExperience(member.experience, baseRole);
+      const newSeniority = get().getSeniorityFromExperience(member.experience);
+
+      return {
+        teamMembers: state.teamMembers.map(m => 
+          m.id === memberId 
+            ? { ...m, role: newRole, seniority: newSeniority }
+            : m
+        )
+      };
+    });
   },
 }));
