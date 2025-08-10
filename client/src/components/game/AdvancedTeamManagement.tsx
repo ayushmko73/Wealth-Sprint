@@ -811,7 +811,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                             <Button
                               size="sm"
                               onClick={() => handlePromote(member)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <ArrowUp className="mr-2 text-white" size={16} />
                               Promote
@@ -822,7 +822,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                 setSelectedMember(member);
                                 setActiveTab('skills');
                               }}
-                              className="bg-yellow-500 hover:bg-yellow-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <TreePine className="mr-1 text-white" size={14} />
                               Skills
@@ -830,7 +830,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                             <Button
                               size="sm"
                               onClick={() => handleFire(member)}
-                              className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+                              className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
                             >
                               <X className="text-white" size={14} />
                               Fire
@@ -1097,9 +1097,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                         <p className="text-gray-600">{selectedMember.role} - Skill Development</p>
                       </div>
                     </div>
-                    <Badge className="bg-blue-500">
-                      Available Budget: {formatIndianCurrency(financialData.bankBalance)}
-                    </Badge>
+
                   </div>
 
                   {/* Skill Categories */}
