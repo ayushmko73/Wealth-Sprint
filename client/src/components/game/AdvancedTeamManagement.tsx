@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
@@ -828,11 +828,28 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                               <p className="text-sm text-gray-600 mb-2">{member.seniority} {member.role}</p>
                               <p className="text-sm text-gray-700 mb-3">{role?.description}</p>
                               
+                              {/* Sector Status Display */}
+                              {member.assignedSector && (
+                                <div className="mb-3 p-2 bg-purple-50 border border-purple-200 rounded-lg">
+                                  <div className="flex items-center">
+                                    <div className="text-lg mr-2">{SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.icon}</div>
+                                    <div>
+                                      <p className="text-sm font-medium text-purple-700">
+                                        Working in {SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.name}
+                                      </p>
+                                      <p className="text-xs text-purple-600">
+                                        Income Boost: +{Math.round((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) * 100)}%
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              
                               <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
+                                <div className="flex items-center">
                                   <span className="text-gray-600">Experience:</span>
                                   <span className="ml-2 font-medium">
-                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} years
+                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
                                   </span>
                                 </div>
                                 <div>
@@ -1251,6 +1268,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
               <DialogTitle className="text-gray-800">
                 Confirm {showConfirmDialog.type === 'promote' ? 'Promotion' : showConfirmDialog.type === 'fire' ? 'Termination' : 'Action'}
               </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Please confirm your decision before proceeding with this action.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-700">
@@ -1285,6 +1305,9 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
               <DialogTitle className="text-gray-800">
                 Assign Sector - {showSectorDialog.employee.name}
               </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Choose a business sector to assign this employee to for enhanced performance and income generation.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               {purchasedSectors.length > 0 ? (
