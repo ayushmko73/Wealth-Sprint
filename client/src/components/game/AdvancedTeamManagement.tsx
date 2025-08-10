@@ -246,21 +246,19 @@ interface SkillNode {
 
 interface AdvancedTeamManagementProps {
   onClose: () => void;
+  onNavigateToSectors?: () => void;
 }
 
-// Available sectors for assignment
-const AVAILABLE_SECTORS = [
-  { id: 'financial', name: 'Financial Services', incomeBoost: 0.15, color: 'bg-green-500' },
-  { id: 'technology', name: 'Technology', incomeBoost: 0.25, color: 'bg-blue-500' },
-  { id: 'healthcare', name: 'Healthcare', incomeBoost: 0.20, color: 'bg-red-500' },
-  { id: 'retail', name: 'Retail & Consumer', incomeBoost: 0.10, color: 'bg-purple-500' },
-  { id: 'manufacturing', name: 'Manufacturing', incomeBoost: 0.18, color: 'bg-orange-500' },
-  { id: 'consulting', name: 'Consulting', incomeBoost: 0.30, color: 'bg-indigo-500' },
-  { id: 'unassigned', name: 'Unassigned', incomeBoost: 0.05, color: 'bg-gray-500' },
-];
+// Map industry sectors to employee assignment sectors
+const SECTOR_MAPPING = {
+  'fast_food': { name: 'Fast Food Chains', icon: '🍟', incomeBoost: 0.20, color: 'bg-red-500' },
+  'tech_startups': { name: 'Tech Startups', icon: '💻', incomeBoost: 0.30, color: 'bg-blue-500' },
+  'ecommerce': { name: 'E-commerce', icon: '📦', incomeBoost: 0.25, color: 'bg-purple-500' },
+  'healthcare': { name: 'Healthcare', icon: '🏥', incomeBoost: 0.35, color: 'bg-green-500' },
+};
 
-const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose }) => {
-  const { financialData, updateFinancialData, addGameEvent } = useWealthSprintGame();
+const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose, onNavigateToSectors }) => {
+  const { financialData, updateFinancialData, addGameEvent, purchasedSectors } = useWealthSprintGame();
   const { 
     teamMembers, 
     jobApplicants, 
@@ -646,7 +644,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
 
   // Function to assign sector to employee
   const assignSector = (employee: TeamMember, sectorId: string) => {
-    const sector = AVAILABLE_SECTORS.find(s => s.id === sectorId);
+    const sector = SECTOR_MAPPING[sectorId as keyof typeof SECTOR_MAPPING];
     if (!sector) return;
 
     // Calculate income boost based on sector and employee stats
@@ -657,19 +655,37 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     // Update employee with sector assignment
     updateTeamMember(employee.id, {
       ...employee,
-      sector: sectorId,
-      sectorIncomeBoost: totalBoost
+      assignedSector: sectorId
     });
 
-    // Calculate and apply monthly income increase
+    // Calculate and apply monthly income increase through main income
     const monthlyIncrease = Math.round(employee.salary * totalBoost / 12);
     
     updateFinancialData({
-      monthlyIncome: financialData.monthlyIncome + monthlyIncrease
+      mainIncome: financialData.mainIncome + monthlyIncrease
     });
 
     toast.success(`${employee.name} assigned to ${sector.name}. Monthly income increased by ₹${monthlyIncrease.toLocaleString()}!`);
     setShowSectorDialog(null);
+  };
+
+  // Function to navigate to Industry Sectors section
+  const navigateToSectors = () => {
+    setShowSectorDialog(null);
+    onClose(); // Close team management
+    
+    // Use callback to navigate to sectors if provided, otherwise add notification
+    if (onNavigateToSectors) {
+      onNavigateToSectors();
+    } else {
+      addGameEvent({
+        id: `navigate_sectors_${Date.now()}`,
+        type: 'info',
+        title: '📍 Navigate to Sectors',
+        description: 'Please go to Industry Sectors section to purchase business sectors first.',
+        timestamp: new Date()
+      });
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -1271,33 +1287,57 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-gray-700">
-                Assign {showSectorDialog.employee.name} to a business sector. Different sectors provide various income boosts based on employee experience and impact.
-              </p>
-              <div className="grid grid-cols-1 gap-3">
-                {AVAILABLE_SECTORS.map((sector) => {
-                  const incomeIncrease = Math.round(
-                    (sector.incomeBoost + (showSectorDialog.employee.stats.impact / 100) * 0.15) * 100
-                  );
-                  
-                  return (
-                    <Button
-                      key={sector.id}
-                      variant="outline"
-                      className="justify-start p-4 h-auto border-2 hover:border-purple-400 hover:bg-purple-50"
-                      onClick={() => assignSector(showSectorDialog.employee, sector.id)}
-                    >
-                      <div className={`w-4 h-4 rounded-full ${sector.color} mr-3`} />
-                      <div className="text-left flex-1">
-                        <div className="font-medium text-gray-800">{sector.name}</div>
-                        <div className="text-sm text-gray-600">
-                          Monthly Income Boost: +{incomeIncrease}%
-                        </div>
-                      </div>
-                    </Button>
-                  );
-                })}
-              </div>
+              {purchasedSectors.length > 0 ? (
+                <>
+                  <p className="text-gray-700">
+                    Assign {showSectorDialog.employee.name} to one of your purchased business sectors. Different sectors provide various income boosts based on employee experience and impact.
+                  </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {purchasedSectors.map((sectorId) => {
+                      const sector = SECTOR_MAPPING[sectorId as keyof typeof SECTOR_MAPPING];
+                      if (!sector) return null;
+                      
+                      const incomeIncrease = Math.round(
+                        (sector.incomeBoost + (showSectorDialog.employee.stats.impact / 100) * 0.15) * 100
+                      );
+                      
+                      return (
+                        <Button
+                          key={sectorId}
+                          variant="outline"
+                          className="justify-start p-4 h-auto border-2 hover:border-purple-400 hover:bg-purple-50"
+                          onClick={() => assignSector(showSectorDialog.employee, sectorId)}
+                        >
+                          <div className="mr-3 text-xl">{sector.icon}</div>
+                          <div className="text-left flex-1">
+                            <div className="font-medium text-gray-800">{sector.name}</div>
+                            <div className="text-sm text-gray-600">
+                              Monthly Income Boost: +{incomeIncrease}%
+                            </div>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center space-y-4">
+                  <div className="text-6xl mb-4">🏢</div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-gray-800">No Business Sectors Yet</h3>
+                    <p className="text-gray-600 text-sm">
+                      You need to purchase business sectors first before assigning employees.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={navigateToSectors}
+                    className="bg-purple-500 hover:bg-purple-600 text-white"
+                  >
+                    <Building className="mr-2" size={16} />
+                    Go to Sectors
+                  </Button>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>

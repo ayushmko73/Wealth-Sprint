@@ -134,7 +134,12 @@ const GameDashboard: React.FC = () => {
         return <BankSection />;
 
       case 'advanced_team':
-        return <AdvancedTeamManagement onClose={() => setActiveSection('dashboard')} />;
+        return (
+          <AdvancedTeamManagement 
+            onClose={() => setActiveSection('dashboard')}
+            onNavigateToSectors={() => setActiveSection('industry_sectors')}
+          />
+        );
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':
