@@ -265,109 +265,30 @@ const GameDashboard: React.FC = () => {
 
       {/* Navigation Menu (Mobile) */}
       {menuOpen && (
-        <div className="bg-white flex-1 overflow-y-auto">
-          {/* Main Navigation Grid */}
-          <div className="p-4">
-            <div className="grid grid-cols-3 gap-3">
-              {navigationItems.slice(0, 12).map((item) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-                return (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    onClick={() => {
-                      setActiveSection(item.id);
-                      setMenuOpen(false);
-                    }}
-                    className={`flex flex-col items-center gap-2 h-auto py-4 px-2 rounded-lg ${
-                      isActive 
-                        ? 'bg-green-500 text-white hover:bg-green-600' 
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    <Icon size={24} />
-                    <span className="text-xs text-center leading-tight font-medium">{item.label}</span>
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Golden Stats Summary Card */}
-          <div className="mx-4 mb-4 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg p-4 text-white">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <div className="flex items-center gap-1 text-sm opacity-90">
-                  <TrendingUp size={14} />
-                  <span>Net Worth</span>
-                </div>
-                <div className="text-lg font-bold">
-                  {formatIndianCurrency(financialData.bankBalance + 
-                    financialData.investments.stocks + 
-                    financialData.investments.bonds + 
-                    financialData.investments.fd + 
-                    financialData.investments.mutualFunds + 
-                    financialData.investments.realEstate)}
-                </div>
-                <div className="text-xs opacity-80">▲ Positive</div>
-              </div>
-              <div>
-                <div className="flex items-center gap-1 text-sm opacity-90">
-                  <DollarSign size={14} />
-                  <span>Monthly Income</span>
-                </div>
-                <div className="text-lg font-bold">
-                  {formatIndianCurrency(financialData.sideIncome)}
-                </div>
-                <div className="text-xs opacity-80">Main + Side</div>
-              </div>
-            </div>
-            
-            <div className="border-t border-yellow-300 pt-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Activity size={16} />
-                <span className="text-sm font-medium">FI Progress</span>
-              </div>
-              <div className="text-2xl font-bold">
-                {Math.round((financialData.sideIncome / financialData.monthlyExpenses) * 100)}%
-              </div>
-              <div className="text-xs opacity-80">In Progress</div>
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-yellow-300">
-              <div className="text-sm font-medium mb-2">Financial Independence Progress</div>
-              <div className="text-sm">
-                {formatIndianCurrency(financialData.sideIncome)} / {formatIndianCurrency(financialData.monthlyExpenses)}
-              </div>
-              <div className="text-xs opacity-80">
-                Week {currentWeek}, Day {currentDay}
-              </div>
-              <div className="text-xs opacity-80 mt-1">
-                Game Time: {Math.floor((currentWeek - 1) * 7 + currentDay)} weeks played
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Status Indicators */}
-          <div className="mx-4 mb-4">
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-orange-100 rounded-lg p-3 text-center">
-                <Heart size={20} className="text-orange-500 mx-auto mb-1" />
-                <div className="text-xs text-gray-600">Emotion</div>
-                <div className="text-sm font-semibold text-orange-600">{playerStats.emotion}</div>
-              </div>
-              <div className="bg-red-100 rounded-lg p-3 text-center">
-                <AlertTriangle size={20} className="text-red-500 mx-auto mb-1" />
-                <div className="text-xs text-gray-600">Stress</div>
-                <div className="text-sm font-semibold text-red-600">Low</div>
-              </div>
-              <div className="bg-green-100 rounded-lg p-3 text-center">
-                <Brain size={20} className="text-green-500 mx-auto mb-1" />
-                <div className="text-xs text-gray-600">Logic</div>
-                <div className="text-sm font-semibold text-green-600">{playerStats.logic}</div>
-              </div>
-            </div>
+        <div className="bg-white border-b border-gray-200 px-2 py-3">
+          <div className="grid grid-cols-4 gap-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={activeSection === item.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMenuOpen(false);
+                  }}
+                  className={`flex flex-col items-center gap-1 h-auto py-2 px-1 min-h-16 ${
+                    activeSection === item.id 
+                      ? 'bg-green-500 text-white hover:bg-green-600' 
+                      : 'hover:bg-green-100 hover:text-green-700'
+                  }`}
+                >
+                  <Icon size={14} />
+                  <span className="text-xs text-center leading-tight">{item.label}</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
       )}
