@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { TeamMember, TeamRole, teamRoles, generateRandomTeamMember, generateRandomName, calculatePromotionCost, calculateBonusAmount } from '../data/teamRoles';
+import { useTeamManagement } from './useTeamManagement';
 
 export interface PlayerStats {
   name?: string;
@@ -488,6 +489,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
               timestamp: new Date(),
             });
           }
+          
+          // Update team experience every 48 weeks 
+          useTeamManagement.getState().increaseTeamExperience(newWeek);
           
           return {
             currentWeek: newWeek,

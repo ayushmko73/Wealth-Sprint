@@ -547,6 +547,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
           mood: 'motivated' as const
         },
         joinDate: new Date(),
+        experience: candidate.experienceYears || 3, // Use candidate experience or default
         achievements: [],
         personality: {
           type: candidate.impact === 'High' ? 'High Performer' : 'Team Player',
@@ -846,11 +847,11 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                               )}
                               
                               <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="flex items-center">
+                                <div>
                                   <span className="text-gray-600">Experience:</span>
-                                  <span className="ml-2 font-medium">
-                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
-                                  </span>
+                                  <p className="font-medium">
+                                    {member.experience} year{member.experience !== 1 ? 's' : ''}
+                                  </p>
                                 </div>
                                 <div>
                                   <span className="text-gray-600">Salary:</span>

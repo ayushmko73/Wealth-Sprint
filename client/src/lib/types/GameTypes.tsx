@@ -66,6 +66,7 @@ export interface TeamMember {
   };
   salary: number;
   joinDate: Date;
+  experience: number; // Years of experience
   skills: string[];
   achievements: string[];
   personality: {

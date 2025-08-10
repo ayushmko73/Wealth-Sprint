@@ -38,6 +38,9 @@ interface TeamManagementState {
   hireCandidateDirectly: (applicantId: string) => boolean;
   promoteTeamMember: (memberId: string) => void;
   giveBonusToMember: (memberId: string, amount: number) => void;
+  
+  // Experience progression
+  increaseTeamExperience: (currentWeek: number) => void;
 }
 
 const initialTeamMembers: TeamMember[] = [];
@@ -316,6 +319,7 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
         avatar: applicant.avatar,
         salary: applicant.expectedSalary,
         joinDate: new Date(),
+        experience: applicant.experience, // Use experience from applicant
         skills: applicant.skills,
         achievements: [],
         stats: {
@@ -412,5 +416,17 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
       return true;
     }
     return false;
+  },
+
+  increaseTeamExperience: (currentWeek: number) => {
+    // Increase experience by 1 year every 48 weeks
+    if (currentWeek % 48 === 0) {
+      set(state => ({
+        teamMembers: state.teamMembers.map(member => ({
+          ...member,
+          experience: member.experience + 1
+        }))
+      }));
+    }
   },
 }));
