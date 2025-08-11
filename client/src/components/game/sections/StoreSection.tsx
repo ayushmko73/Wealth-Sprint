@@ -10,11 +10,11 @@ import {
   Smartphone, 
   Gamepad2,
   Coins,
-  Settings,
   Info,
   CheckCircle,
   Clock,
-  Star
+  Star,
+  Plus
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -220,181 +220,110 @@ const StoreSection: React.FC = () => {
   const purchasedItems = getPurchasedItems();
 
   return (
-    <div className="min-h-screen" style={{ 
-      background: 'linear-gradient(135deg, #F5F5DC 0%, #F0EAD6 50%, #EBE5D1 100%)' 
-    }}>
-      {/* Top Search Bar */}
-      <div className="p-4" style={{ 
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,244,230,0.95) 100%)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(232, 220, 198, 0.3)'
-      }}>
+    <div className="min-h-screen bg-stone-50">
+      {/* Minimal Header with Search */}
+      <div className="bg-white border-b border-stone-200 px-6 py-4">
         <div className="relative">
-          <Search size={16} className="absolute left-4 top-3.5 text-amber-600/60" />
+          <Search size={16} className="absolute left-3 top-3 text-stone-400" />
           <input
             type="text"
-            placeholder="Search luxury items..."
+            placeholder="Search items..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white/90 border border-amber-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-300 shadow-sm text-slate-700 placeholder-amber-600/60"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
-            }}
+            className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-300 focus:border-stone-300 text-stone-700 placeholder-stone-400"
           />
         </div>
       </div>
 
-      {/* Mobile Category Scrollable Horizontal Bar */}
-      <div className="px-4 py-3" style={{ 
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.70) 0%, rgba(248,244,230,0.70) 100%)'
-      }}>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      {/* Category Pills */}
+      <div className="bg-white border-b border-stone-200 px-6 py-4">
+        <div className="flex gap-2 overflow-x-auto">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? 'text-white shadow-lg' 
-                  : 'text-slate-600 border border-amber-200/60 hover:shadow-md hover:border-amber-300/60'
+                  ? 'bg-stone-800 text-white' 
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
-              style={{
-                background: selectedCategory === category 
-                  ? 'linear-gradient(135deg, #2E7D4A 0%, #22C55E 100%)'
-                  : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
-              }}
             >
               {categoryIcons[category]}
-              <span className="font-semibold text-sm">{category}</span>
+              {category}
             </button>
           ))}
         </div>
         
-        {/* Bank Balance Display - Mobile */}
-        <div className="mt-4 p-4 rounded-2xl shadow-lg" style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)',
-          border: '1px solid rgba(212, 175, 55, 0.3)'
-        }}>
-          <div className="text-sm text-amber-700/80 mb-1 font-medium">Available Balance</div>
-          <div className="text-xl font-bold" style={{ color: '#1F2937' }}>
+        {/* Balance Display */}
+        <div className="mt-4 p-4 bg-stone-50 rounded-lg border border-stone-200">
+          <div className="text-sm text-stone-500 mb-1">Available Balance</div>
+          <div className="text-xl font-semibold text-stone-800">
             {formatMoney(financialData.bankBalance)}
-          </div>
-          <div className="w-full h-1 bg-amber-200/50 rounded-full mt-2">
-            <div className="h-1 bg-gradient-to-r from-amber-400 to-emerald-500 rounded-full" style={{ width: '75%' }}></div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area - Mobile Single Column */}
-      <div className="p-4 space-y-4">
+      {/* Product Grid */}
+      <div className="p-6 space-y-4">
         {filteredItems.map((item, index) => {
           const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
           const canAfford = financialData.bankBalance >= item.price;
           
-          // Dynamic gradient colors based on category
-          const categoryGradients: Record<string, string> = {
-            'Real Estate': 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 197, 253, 0.05) 100%)',
-            'Transport': 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(134, 239, 172, 0.05) 100%)',
-            'Businesses': 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(196, 181, 253, 0.05) 100%)',
-            'Tech': 'linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, rgba(254, 215, 170, 0.05) 100%)',
-            'Lifestyle': 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(251, 207, 232, 0.05) 100%)'
-          };
-          
           return (
             <div
               key={item.id}
-              className="rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-amber-200/30"
-              style={{ 
-                background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%), ${categoryGradients[item.category] || categoryGradients['Lifestyle']}`,
-                boxShadow: '0 8px 32px rgba(212, 175, 55, 0.15)'
-              }}
+              className="bg-white rounded-lg border border-stone-200 p-4 hover:shadow-sm transition-shadow"
             >
               <div className="flex items-start gap-4">
-                {/* Product Image */}
-                <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg flex-shrink-0"
-                  style={{
-                    background: 'linear-gradient(135deg, #FEF7E0 0%, #FDF4E6 50%, #FCF1E0 100%)',
-                    boxShadow: 'inset 0 2px 8px rgba(212, 175, 55, 0.2)'
-                  }}
-                >
+                {/* Product Icon */}
+                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">
                   {item.image}
                 </div>
                 
-                {/* Content Block */}
+                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1 pr-2">
-                      <h3 className="font-serif text-lg font-bold text-slate-800 mb-1 line-clamp-1">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-stone-800 mb-1">
                         {item.name}
                       </h3>
-                      <div className="text-xs font-bold tracking-wider mb-2" style={{ color: '#7C3AED' }}>
+                      <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                         {item.subtitle}
                       </div>
                     </div>
                     
-                    {/* Price and Info Button */}
                     <div className="text-right flex-shrink-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg font-bold text-slate-800">
-                          {formatMoney(item.price)}
-                        </span>
-                        <button 
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-white shadow-md transition-all duration-200 hover:scale-110"
-                          style={{
-                            background: 'linear-gradient(135deg, #D4AF37 0%, #F59E0B 100%)'
-                          }}
-                        >
-                          <Info size={11} />
-                        </button>
+                      <div className="text-lg font-semibold text-stone-800">
+                        {formatMoney(item.price)}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Monthly Cashflow Pill */}
-                  <div 
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-3 shadow-sm"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%)',
-                      color: '#047857',
-                      border: '1px solid rgba(16, 185, 129, 0.2)'
-                    }}
-                  >
-                    <Coins size={12} />
-                    + {formatMoney(item.monthlyIncome)}
+                  {/* Monthly Income */}
+                  <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-medium mb-2">
+                    <Plus size={10} />
+                    {formatMoney(item.monthlyIncome)}/mo
                   </div>
                   
-                  <div className="text-sm text-slate-600 mb-3 line-clamp-2 leading-relaxed">
+                  <div className="text-sm text-stone-600 mb-3">
                     {item.description}
                   </div>
                   
-                  {/* Buy Button */}
+                  {/* Purchase Button */}
                   {isPurchased ? (
-                    <div 
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl w-fit shadow-sm"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%)',
-                        color: '#047857',
-                        border: '1px solid rgba(16, 185, 129, 0.3)'
-                      }}
-                    >
+                    <div className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg w-fit">
                       <CheckCircle size={14} />
-                      <span className="font-bold text-sm">Owned</span>
+                      <span className="text-sm font-medium">Owned</span>
                     </div>
                   ) : (
                     <button
                       onClick={() => handlePurchase(item)}
                       disabled={!canAfford}
-                      className={`w-full py-3.5 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         canAfford
-                          ? 'text-white'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? 'bg-stone-800 text-white hover:bg-stone-900'
+                          : 'bg-stone-200 text-stone-400 cursor-not-allowed'
                       }`}
-                      style={{
-                        background: canAfford 
-                          ? 'linear-gradient(135deg, #2E7D4A 0%, #22C55E 100%)'
-                          : undefined
-                      }}
                     >
                       {canAfford ? 'Buy now' : 'Insufficient Funds'}
                     </button>
@@ -406,76 +335,58 @@ const StoreSection: React.FC = () => {
         })}
       </div>
 
-      {/* Bottom Transaction & Inventory Panel - Mobile */}
-      <div 
-        className="p-5 mt-8 border-t"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(248,244,230,0.90) 100%)',
-          borderTop: '1px solid rgba(212, 175, 55, 0.3)'
-        }}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Recent Purchases & Inventory */}
+      <div className="bg-white border-t border-stone-200 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Recent Purchases */}
           <div>
-            <h3 className="font-serif font-bold text-lg mb-4 text-slate-800">Recent Purchases</h3>
+            <h3 className="font-semibold text-stone-800 mb-4">Recent Purchases</h3>
             <div className="space-y-3">
               {recentTransactions.length > 0 ? (
                 recentTransactions.slice(0, 3).map((transaction, index) => (
                   <div 
                     key={index} 
-                    className="rounded-xl p-4 shadow-md border border-amber-200/50"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
-                    }}
+                    className="p-3 bg-stone-50 rounded-lg border border-stone-200"
                   >
-                    <div className="text-sm font-semibold text-slate-700 truncate mb-1">
+                    <div className="text-sm font-medium text-stone-700 mb-1">
                       {transaction.description}
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="font-bold text-sm" style={{ color: '#DC2626' }}>
+                      <div className="font-semibold text-red-600">
                         {formatMoney(transaction.amount)}
                       </div>
-                      <div className="text-xs text-amber-600 flex items-center gap-1 font-medium">
-                        <Clock size={10} />
+                      <div className="text-xs text-stone-500">
                         {new Date(transaction.timestamp).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div 
-                  className="text-center py-6 rounded-xl border border-amber-200/50"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
-                  }}
-                >
-                  <div className="text-4xl mb-2">🛍️</div>
-                  <div className="text-sm text-slate-600 font-medium">No purchases yet</div>
+                <div className="text-center py-8 bg-stone-50 rounded-lg border border-stone-200">
+                  <div className="text-3xl mb-2">🛍️</div>
+                  <div className="text-sm text-stone-500">No purchases yet</div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* My Inventory */}
+          {/* Inventory */}
           <div>
-            <h4 className="font-serif font-bold text-lg mb-4 text-slate-800">My Inventory</h4>
-            <div className="grid grid-cols-6 gap-3">
+            <h4 className="font-semibold text-stone-800 mb-4">My Inventory</h4>
+            <div className="grid grid-cols-6 gap-2">
               {purchasedItems.slice(0, 12).map((item, index) => (
                 <div
                   key={index}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-lg shadow-md transition-all duration-200 hover:scale-110 border border-amber-200/50"
-                  style={{
-                    background: 'linear-gradient(135deg, #FEF7E0 0%, #FDF4E6 50%, #FCF1E0 100%)'
-                  }}
+                  className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-sm border border-stone-200"
                 >
                   {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
                 </div>
               ))}
               {purchasedItems.length === 0 && (
-                <div className="col-span-6 text-center py-6">
-                  <div className="text-4xl mb-2">📦</div>
-                  <div className="text-sm text-slate-600 font-medium">Start shopping to build your inventory</div>
+                <div className="col-span-6 text-center py-8">
+                  <div className="text-3xl mb-2">📦</div>
+                  <div className="text-sm text-stone-500">Start shopping to build your inventory</div>
                 </div>
               )}
             </div>
@@ -483,25 +394,25 @@ const StoreSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Purchase Confirmation Modal */}
+      {/* Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <div className="text-center">
-              <div className="text-6xl mb-4">{showPurchaseModal.image}</div>
-              <h3 className="font-serif text-2xl font-semibold text-[#3a3a3a] mb-2">
+              <div className="text-4xl mb-4">{showPurchaseModal.image}</div>
+              <h3 className="text-xl font-semibold text-stone-800 mb-2">
                 Confirm Purchase
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-stone-600 mb-6">
                 {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
               </p>
               
-              <div className="bg-[#F5F5DC] rounded-lg p-4 mb-6">
-                <div className="text-sm text-gray-600 mb-2">After purchase:</div>
-                <div className="font-semibold text-[#2E7D4A]">
+              <div className="bg-stone-50 rounded-lg p-4 mb-6">
+                <div className="text-sm text-stone-600 mb-2">After purchase:</div>
+                <div className="font-semibold text-stone-800">
                   Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
                 </div>
-                <div className="text-sm text-[#10B981]">
+                <div className="text-sm text-green-600">
                   Monthly income: +{formatMoney(showPurchaseModal.monthlyIncome)}
                 </div>
               </div>
@@ -509,13 +420,13 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 px-4 py-3 bg-[#2E7D4A] text-white rounded-xl hover:bg-[#236B3C] transition-colors font-semibold"
+                  className="flex-1 px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-900 transition-colors font-medium"
                 >
                   Confirm Purchase
                 </button>
