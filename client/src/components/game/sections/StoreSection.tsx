@@ -155,10 +155,10 @@ const StoreSection: React.FC = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className="flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all"
               style={{
-                backgroundColor: selectedCategory === category ? '#e8dcc6' : '#faf8f3',
-                color: '#3a3a3a',
+                backgroundColor: selectedCategory === category ? '#4F9CF9' : '#faf8f3',
+                color: selectedCategory === category ? 'white' : '#3a3a3a',
                 border: '1px solid #e8dcc6'
               }}
             >
@@ -232,7 +232,7 @@ const StoreSection: React.FC = () => {
                     {/* Action Button */}
                     {isPurchased ? (
                       <div 
-                        className="flex items-center gap-2 px-4 py-2 rounded-2xl w-fit"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg w-fit"
                         style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                       >
                         <CheckCircle size={16} />
@@ -242,11 +242,10 @@ const StoreSection: React.FC = () => {
                       <button
                         onClick={() => handlePurchase(item)}
                         disabled={!canAfford}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-medium transition-all"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all"
                         style={{
-                          backgroundColor: canAfford ? '#d4af37' : '#e8dcc6',
-                          color: canAfford ? '#3a3a3a' : '#999999',
-                          border: `1px solid ${canAfford ? '#d4af37' : '#e8dcc6'}`
+                          backgroundColor: canAfford ? '#22C55E' : '#e8dcc6',
+                          color: canAfford ? 'white' : '#999999'
                         }}
                       >
                         <ShoppingBag size={16} />
@@ -265,7 +264,7 @@ const StoreSection: React.FC = () => {
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div 
-            className="rounded-2xl p-6 max-w-sm w-full relative"
+            className="rounded-lg p-6 max-w-sm w-full relative"
             style={{ backgroundColor: '#faf8f3', border: '1px solid #e8dcc6' }}
           >
             <button
@@ -286,7 +285,7 @@ const StoreSection: React.FC = () => {
               </p>
               
               <div 
-                className="rounded-2xl p-4 mb-6"
+                className="rounded-lg p-4 mb-6"
                 style={{ backgroundColor: '#e8dcc6' }}
               >
                 <div className="text-sm mb-2" style={{ color: '#666' }}>After purchase:</div>
@@ -301,15 +300,15 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 py-3 rounded-2xl font-medium"
+                  className="flex-1 py-3 rounded-lg font-medium"
                   style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 py-3 rounded-2xl font-medium"
-                  style={{ backgroundColor: '#d4af37', color: '#3a3a3a' }}
+                  className="flex-1 py-3 rounded-lg font-medium text-white"
+                  style={{ backgroundColor: '#22C55E' }}
                 >
                   Confirm
                 </button>
