@@ -157,7 +157,7 @@ const StoreSection: React.FC = () => {
               onClick={() => setSelectedCategory(category)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl whitespace-nowrap text-sm font-medium transition-all"
               style={{
-                backgroundColor: selectedCategory === category ? '#4F9CF9' : '#faf8f3',
+                backgroundColor: selectedCategory === category ? '#4F9CF9' : '#ffffff',
                 color: selectedCategory === category ? 'white' : '#3a3a3a',
                 border: '1px solid #e8dcc6'
               }}
@@ -171,6 +171,60 @@ const StoreSection: React.FC = () => {
 
       {/* Product Cards */}
       <div className="px-4 pb-4">
+        {/* Owned Items Section */}
+        {purchasedItems.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4" style={{ color: '#3a3a3a' }}>
+              Owned Assets
+            </h2>
+            <div 
+              className="rounded-xl p-4"
+              style={{ 
+                backgroundColor: '#ffffff',
+                border: '1px solid #e8dcc6',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              }}
+            >
+              <div className="grid grid-cols-1 gap-3">
+                {purchasedItems.map((purchasedItem) => {
+                  const storeItem = storeItems.find(item => item.id === purchasedItem.storeItemId);
+                  if (!storeItem) return null;
+                  
+                  return (
+                    <div key={`owned-${purchasedItem.id}`} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
+                          style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
+                        >
+                          {storeItem.image}
+                        </div>
+                        <div>
+                          <div className="font-medium" style={{ color: '#3a3a3a' }}>
+                            {storeItem.name}
+                          </div>
+                          <div 
+                            className="text-sm px-2 py-1 rounded-full inline-block"
+                            style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
+                          >
+                            +{formatMoney(storeItem.monthlyIncome)}/month
+                          </div>
+                        </div>
+                      </div>
+                      <div 
+                        className="px-3 py-1.5 rounded-lg text-sm font-medium"
+                        style={{ backgroundColor: '#4F9CF9', color: '#ffffff' }}
+                      >
+                        Owned
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
           {filteredItems.map((item) => {
             const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
@@ -234,7 +288,7 @@ const StoreSection: React.FC = () => {
                     {isPurchased ? (
                       <div 
                         className="flex items-center gap-2 px-4 py-2 rounded-xl w-fit"
-                        style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
+                        style={{ backgroundColor: '#4F9CF9', color: '#ffffff' }}
                       >
                         <CheckCircle size={16} />
                         <span className="font-medium">Owned</span>
@@ -301,8 +355,8 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 py-3 rounded-xl font-medium"
-                  style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
+                  className="flex-1 py-3 rounded-xl font-medium text-white"
+                  style={{ backgroundColor: '#EF4444' }}
                 >
                   Cancel
                 </button>
