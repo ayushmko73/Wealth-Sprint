@@ -220,33 +220,38 @@ const StoreSection: React.FC = () => {
   const purchasedItems = getPurchasedItems();
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      {/* Minimal Header with Search */}
-      <div className="bg-white border-b border-stone-200 px-6 py-4">
+    <div className="min-h-screen" style={{ backgroundColor: '#FAF4E6' }}>
+      {/* Header with Search */}
+      <div className="px-4 py-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-3 text-stone-400" />
+          <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2" style={{ color: '#D2B48C' }} />
           <input
             type="text"
             placeholder="Search items..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-300 focus:border-stone-300 text-stone-700 placeholder-stone-400"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border-0 outline-0 text-base"
+            style={{ 
+              backgroundColor: '#FAEBD7',
+              color: '#8B4513'
+            }}
           />
         </div>
       </div>
 
       {/* Category Pills */}
-      <div className="bg-white border-b border-stone-200 px-6 py-4">
-        <div className="flex gap-2 overflow-x-auto">
+      <div className="px-4 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}>
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
-                selectedCategory === category
-                  ? 'bg-stone-800 text-white' 
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-              }`}
+              className="flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap text-sm font-medium transition-all duration-300"
+              style={{
+                backgroundColor: selectedCategory === category ? '#8B4513' : '#FAEBD7',
+                color: selectedCategory === category ? 'white' : '#8B4513',
+                border: `1px solid ${selectedCategory === category ? '#8B4513' : '#DDD'}`
+              }}
             >
               {categoryIcons[category]}
               {category}
@@ -255,16 +260,19 @@ const StoreSection: React.FC = () => {
         </div>
         
         {/* Balance Display */}
-        <div className="mt-4 p-4 bg-stone-50 rounded-lg border border-stone-200">
-          <div className="text-sm text-stone-500 mb-1">Available Balance</div>
-          <div className="text-xl font-semibold text-stone-800">
+        <div 
+          className="mt-4 p-4 rounded-2xl"
+          style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
+        >
+          <div className="text-sm mb-1" style={{ color: '#A0522D' }}>Available Balance</div>
+          <div className="text-xl font-semibold" style={{ color: '#8B4513' }}>
             {formatMoney(financialData.bankBalance)}
           </div>
         </div>
       </div>
 
-      {/* Product Grid */}
-      <div className="p-6 space-y-4">
+      {/* Product Cards */}
+      <div className="p-4 space-y-3">
         {filteredItems.map((item, index) => {
           const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
           const canAfford = financialData.bankBalance >= item.price;
@@ -272,46 +280,63 @@ const StoreSection: React.FC = () => {
           return (
             <div
               key={item.id}
-              className="bg-white rounded-lg border border-stone-200 p-4 hover:shadow-sm transition-shadow"
+              className="rounded-2xl p-4 border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: '1px solid #E5E5E5'
+              }}
             >
               <div className="flex items-start gap-4">
                 {/* Product Icon */}
-                <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">
+                <div 
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
+                  style={{ backgroundColor: '#FAEBD7' }}
+                >
                   {item.image}
                 </div>
                 
                 {/* Content */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-stone-800 mb-1">
+                      <h3 className="font-semibold mb-1" style={{ color: '#8B4513' }}>
                         {item.name}
                       </h3>
-                      <div className="text-xs font-medium text-stone-500 uppercase tracking-wide">
+                      <div className="text-xs font-medium uppercase tracking-wide" style={{ color: '#A0522D' }}>
                         {item.subtitle}
                       </div>
                     </div>
                     
-                    <div className="text-right flex-shrink-0">
-                      <div className="text-lg font-semibold text-stone-800">
-                        {formatMoney(item.price)}
-                      </div>
+                    <div className="text-lg font-semibold" style={{ color: '#8B4513' }}>
+                      {formatMoney(item.price)}
                     </div>
                   </div>
                   
                   {/* Monthly Income */}
-                  <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-medium mb-2">
+                  <div 
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium mb-3"
+                    style={{ 
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                      color: '#047857'
+                    }}
+                  >
                     <Plus size={10} />
                     {formatMoney(item.monthlyIncome)}/mo
                   </div>
                   
-                  <div className="text-sm text-stone-600 mb-3">
+                  <div className="text-sm mb-3" style={{ color: '#8B7355' }}>
                     {item.description}
                   </div>
                   
                   {/* Purchase Button */}
                   {isPurchased ? (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg w-fit">
+                    <div 
+                      className="flex items-center gap-2 px-4 py-2 rounded-2xl w-fit"
+                      style={{ 
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        color: '#047857'
+                      }}
+                    >
                       <CheckCircle size={14} />
                       <span className="text-sm font-medium">Owned</span>
                     </div>
@@ -319,11 +344,11 @@ const StoreSection: React.FC = () => {
                     <button
                       onClick={() => handlePurchase(item)}
                       disabled={!canAfford}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        canAfford
-                          ? 'bg-stone-800 text-white hover:bg-stone-900'
-                          : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                      }`}
+                      className="px-6 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300"
+                      style={{
+                        backgroundColor: canAfford ? '#8B4513' : '#D3D3D3',
+                        color: canAfford ? 'white' : '#888888'
+                      }}
                     >
                       {canAfford ? 'Buy now' : 'Insufficient Funds'}
                     </button>
@@ -336,36 +361,44 @@ const StoreSection: React.FC = () => {
       </div>
 
       {/* Recent Purchases & Inventory */}
-      <div className="bg-white border-t border-stone-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div 
+        className="p-4 border-t"
+        style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTop: '1px solid #E5E5E5' }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Recent Purchases */}
           <div>
-            <h3 className="font-semibold text-stone-800 mb-4">Recent Purchases</h3>
+            <h3 className="font-semibold mb-4" style={{ color: '#8B4513' }}>Recent Purchases</h3>
             <div className="space-y-3">
               {recentTransactions.length > 0 ? (
                 recentTransactions.slice(0, 3).map((transaction, index) => (
                   <div 
                     key={index} 
-                    className="p-3 bg-stone-50 rounded-lg border border-stone-200"
+                    className="p-3 rounded-2xl border"
+                    style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
                   >
-                    <div className="text-sm font-medium text-stone-700 mb-1">
+                    <div className="text-sm font-medium mb-1" style={{ color: '#8B4513' }}>
                       {transaction.description}
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="font-semibold text-red-600">
+                      <div className="font-semibold" style={{ color: '#DC2626' }}>
                         {formatMoney(transaction.amount)}
                       </div>
-                      <div className="text-xs text-stone-500">
+                      <div className="text-xs flex items-center gap-1" style={{ color: '#A0522D' }}>
+                        <Clock size={10} />
                         {new Date(transaction.timestamp).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 bg-stone-50 rounded-lg border border-stone-200">
+                <div 
+                  className="text-center py-6 rounded-2xl border"
+                  style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
+                >
                   <div className="text-3xl mb-2">🛍️</div>
-                  <div className="text-sm text-stone-500">No purchases yet</div>
+                  <div className="text-sm" style={{ color: '#A0522D' }}>No purchases yet</div>
                 </div>
               )}
             </div>
@@ -373,20 +406,21 @@ const StoreSection: React.FC = () => {
 
           {/* Inventory */}
           <div>
-            <h4 className="font-semibold text-stone-800 mb-4">My Inventory</h4>
+            <h4 className="font-semibold mb-4" style={{ color: '#8B4513' }}>My Inventory</h4>
             <div className="grid grid-cols-6 gap-2">
               {purchasedItems.slice(0, 12).map((item, index) => (
                 <div
                   key={index}
-                  className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center text-sm border border-stone-200"
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-sm border"
+                  style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
                 >
                   {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
                 </div>
               ))}
               {purchasedItems.length === 0 && (
-                <div className="col-span-6 text-center py-8">
+                <div className="col-span-6 text-center py-6">
                   <div className="text-3xl mb-2">📦</div>
-                  <div className="text-sm text-stone-500">Start shopping to build your inventory</div>
+                  <div className="text-sm" style={{ color: '#A0522D' }}>Start shopping to build your inventory</div>
                 </div>
               )}
             </div>
@@ -397,22 +431,25 @@ const StoreSection: React.FC = () => {
       {/* Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border" style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}>
             <div className="text-center">
               <div className="text-4xl mb-4">{showPurchaseModal.image}</div>
-              <h3 className="text-xl font-semibold text-stone-800 mb-2">
+              <h3 className="text-xl font-semibold mb-2" style={{ color: '#8B4513' }}>
                 Confirm Purchase
               </h3>
-              <p className="text-stone-600 mb-6">
+              <p className="mb-6" style={{ color: '#A0522D' }}>
                 {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
               </p>
               
-              <div className="bg-stone-50 rounded-lg p-4 mb-6">
-                <div className="text-sm text-stone-600 mb-2">After purchase:</div>
-                <div className="font-semibold text-stone-800">
+              <div 
+                className="rounded-2xl p-4 mb-6 border"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', border: '1px solid #E5E5E5' }}
+              >
+                <div className="text-sm mb-2" style={{ color: '#A0522D' }}>After purchase:</div>
+                <div className="font-semibold" style={{ color: '#8B4513' }}>
                   Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
                 </div>
-                <div className="text-sm text-green-600">
+                <div className="text-sm" style={{ color: '#047857' }}>
                   Monthly income: +{formatMoney(showPurchaseModal.monthlyIncome)}
                 </div>
               </div>
@@ -420,13 +457,15 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 px-4 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors"
+                  className="flex-1 px-4 py-3 border rounded-2xl font-medium"
+                  style={{ backgroundColor: 'white', color: '#8B4513', border: '1px solid #DDD' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-900 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 rounded-2xl font-medium text-white"
+                  style={{ backgroundColor: '#8B4513' }}
                 >
                   Confirm Purchase
                 </button>
@@ -435,6 +474,16 @@ const StoreSection: React.FC = () => {
           </div>
         </div>
       )}
+
+      <style>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
