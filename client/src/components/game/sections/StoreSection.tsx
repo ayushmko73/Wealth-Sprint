@@ -3,19 +3,14 @@ import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { useStore } from '../../../lib/stores/useStore';
 import { formatMoney } from '../../../lib/utils/formatMoney';
 import { 
-  Search, 
   Home, 
   Car, 
   Building2, 
-  Smartphone, 
-  Gamepad2,
+  Smartphone,
   ShoppingBag,
-  TrendingUp,
   CheckCircle,
   Star,
-  Plus,
   X,
-  Filter,
   Coins
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -87,7 +82,6 @@ const StoreSection: React.FC = () => {
   const { financialData, addTransaction, updateFinancialData } = useWealthSprintGame();
   const { purchaseItem, getPurchasedItems } = useStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState('');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
 
   const categories = ['All', 'Real Estate', 'Transport', 'Business', 'Tech'];
@@ -102,9 +96,7 @@ const StoreSection: React.FC = () => {
 
   const filteredItems = storeItems.filter(item => {
     const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory;
   });
 
   const handlePurchase = (item: any) => {
@@ -147,70 +139,27 @@ const StoreSection: React.FC = () => {
   };
 
   const purchasedItems = getPurchasedItems();
-  const monthlyIncome = purchasedItems.reduce((sum, item) => sum + item.passiveIncome, 0);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#faf8f3' }}>
       
-      {/* Header */}
-      <div className="p-4 border-b" style={{ backgroundColor: '#faf8f3', borderBottomColor: '#e8dcc6' }}>
-        <h1 className="text-2xl font-bold mb-4" style={{ color: '#3a3a3a' }}>
+      {/* Simple Header */}
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-6" style={{ color: '#3a3a3a' }}>
           Store
         </h1>
-        
-        <div className="relative mb-4">
-          <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#999' }} />
-          <input
-            type="text"
-            placeholder="Search items..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-2xl border-0 outline-0"
-            style={{ 
-              backgroundColor: '#ffffff',
-              color: '#3a3a3a',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}
-          />
-        </div>
 
-        {/* Balance Card */}
-        <div 
-          className="p-4 rounded-2xl"
-          style={{ 
-            backgroundColor: '#ffffff',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm mb-1" style={{ color: '#666' }}>Available Balance</div>
-              <div className="text-xl font-bold" style={{ color: '#3a3a3a' }}>
-                {formatMoney(financialData.bankBalance)}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm mb-1" style={{ color: '#666' }}>Monthly Income</div>
-              <div className="text-lg font-semibold" style={{ color: '#2E8B57' }}>
-                {formatMoney(monthlyIncome)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Category Pills */}
-      <div className="p-4" style={{ backgroundColor: '#faf8f3' }}>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {/* Category Pills */}
+        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
               className="flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap text-sm font-medium transition-all"
               style={{
-                backgroundColor: selectedCategory === category ? '#3a3a3a' : '#ffffff',
-                color: selectedCategory === category ? 'white' : '#3a3a3a',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                backgroundColor: selectedCategory === category ? '#e8dcc6' : '#faf8f3',
+                color: '#3a3a3a',
+                border: '1px solid #e8dcc6'
               }}
             >
               {categoryIcons[category]}
@@ -222,7 +171,7 @@ const StoreSection: React.FC = () => {
 
       {/* Product Cards */}
       <div className="px-4 pb-4">
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filteredItems.map((item) => {
             const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
             const canAfford = financialData.bankBalance >= item.price;
@@ -231,17 +180,17 @@ const StoreSection: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="rounded-2xl p-4 transition-all hover:shadow-md"
+                className="rounded-2xl p-4"
                 style={{ 
-                  backgroundColor: '#ffffff',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                  backgroundColor: '#faf8f3',
+                  border: '1px solid #e8dcc6'
                 }}
               >
                 <div className="flex items-center gap-4">
                   {/* Icon */}
                   <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ backgroundColor: '#faf8f3' }}
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                    style={{ backgroundColor: '#e8dcc6' }}
                   >
                     {item.image}
                   </div>
@@ -250,7 +199,7 @@ const StoreSection: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-base" style={{ color: '#3a3a3a' }}>
+                        <h3 className="font-semibold text-lg" style={{ color: '#3a3a3a' }}>
                           {item.name}
                         </h3>
                         <p className="text-sm" style={{ color: '#666' }}>
@@ -258,10 +207,10 @@ const StoreSection: React.FC = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-lg" style={{ color: '#3a3a3a' }}>
+                        <div className="font-bold text-xl" style={{ color: '#3a3a3a' }}>
                           {formatMoney(item.price)}
                         </div>
-                        <div className="text-xs" style={{ color: '#2E8B57' }}>
+                        <div className="text-sm" style={{ color: '#d4af37' }}>
                           {roi.toFixed(1)}% ROI
                         </div>
                       </div>
@@ -269,37 +218,38 @@ const StoreSection: React.FC = () => {
                     
                     {/* Monthly Income Badge */}
                     <div 
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium mb-2"
-                      style={{ backgroundColor: '#f0f8f4', color: '#2E8B57' }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium mb-3"
+                      style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                     >
-                      <Coins size={10} />
+                      <Coins size={12} />
                       {formatMoney(item.monthlyIncome)}/month
                     </div>
                     
-                    <p className="text-sm mb-3" style={{ color: '#666' }}>
+                    <p className="text-sm mb-4" style={{ color: '#666' }}>
                       {item.description}
                     </p>
                     
                     {/* Action Button */}
                     {isPurchased ? (
                       <div 
-                        className="flex items-center gap-2 px-3 py-2 rounded-2xl w-fit"
-                        style={{ backgroundColor: '#f0f8f4', color: '#2E8B57' }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-2xl w-fit"
+                        style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                       >
-                        <CheckCircle size={14} />
-                        <span className="text-sm font-medium">Owned</span>
+                        <CheckCircle size={16} />
+                        <span className="font-medium">Owned</span>
                       </div>
                     ) : (
                       <button
                         onClick={() => handlePurchase(item)}
                         disabled={!canAfford}
-                        className="flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-medium transition-all"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-medium transition-all"
                         style={{
-                          backgroundColor: canAfford ? '#3a3a3a' : '#e8dcc6',
-                          color: canAfford ? 'white' : '#999999'
+                          backgroundColor: canAfford ? '#d4af37' : '#e8dcc6',
+                          color: canAfford ? '#3a3a3a' : '#999999',
+                          border: `1px solid ${canAfford ? '#d4af37' : '#e8dcc6'}`
                         }}
                       >
-                        <ShoppingBag size={14} />
+                        <ShoppingBag size={16} />
                         {canAfford ? 'Purchase' : 'Insufficient Funds'}
                       </button>
                     )}
@@ -309,70 +259,25 @@ const StoreSection: React.FC = () => {
             );
           })}
         </div>
-
-        {/* Portfolio Overview */}
-        {purchasedItems.length > 0 && (
-          <div 
-            className="mt-6 p-4 rounded-2xl"
-            style={{ 
-              backgroundColor: '#ffffff',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}
-          >
-            <h3 className="font-semibold mb-3" style={{ color: '#3a3a3a' }}>Your Assets</h3>
-            <div className="flex items-center justify-between mb-3">
-              <span style={{ color: '#666' }}>Total Items</span>
-              <span className="font-semibold" style={{ color: '#3a3a3a' }}>
-                {purchasedItems.length}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span style={{ color: '#666' }}>Monthly Income</span>
-              <span className="font-semibold" style={{ color: '#2E8B57' }}>
-                {formatMoney(monthlyIncome)}
-              </span>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 mt-4">
-              {purchasedItems.slice(0, 8).map((item, index) => (
-                <div
-                  key={index}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-sm"
-                  style={{ backgroundColor: '#faf8f3' }}
-                >
-                  {storeItems.find(si => si.id === item.storeItemId)?.image || '📦'}
-                </div>
-              ))}
-              {purchasedItems.length > 8 && (
-                <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-medium"
-                  style={{ backgroundColor: '#e8dcc6', color: '#666' }}
-                >
-                  +{purchasedItems.length - 8}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Purchase Modal */}
       {showPurchaseModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div 
             className="rounded-2xl p-6 max-w-sm w-full relative"
-            style={{ backgroundColor: '#ffffff' }}
+            style={{ backgroundColor: '#faf8f3', border: '1px solid #e8dcc6' }}
           >
             <button
               onClick={() => setShowPurchaseModal(null)}
-              className="absolute top-4 right-4 p-1 rounded-full"
-              style={{ backgroundColor: '#f5f5f5', color: '#666' }}
+              className="absolute top-4 right-4 p-2 rounded-full"
+              style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
             >
               <X size={16} />
             </button>
             
             <div className="text-center">
-              <div className="text-4xl mb-3">{showPurchaseModal.image}</div>
+              <div className="text-5xl mb-4">{showPurchaseModal.image}</div>
               <h3 className="text-xl font-bold mb-2" style={{ color: '#3a3a3a' }}>
                 Confirm Purchase
               </h3>
@@ -381,14 +286,14 @@ const StoreSection: React.FC = () => {
               </p>
               
               <div 
-                className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: '#faf8f3' }}
+                className="rounded-2xl p-4 mb-6"
+                style={{ backgroundColor: '#e8dcc6' }}
               >
                 <div className="text-sm mb-2" style={{ color: '#666' }}>After purchase:</div>
                 <div className="font-semibold" style={{ color: '#3a3a3a' }}>
                   Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
                 </div>
-                <div className="text-sm" style={{ color: '#2E8B57' }}>
+                <div className="text-sm" style={{ color: '#3a3a3a' }}>
                   +{formatMoney(showPurchaseModal.monthlyIncome)}/month income
                 </div>
               </div>
@@ -396,15 +301,15 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 py-2 rounded-2xl font-medium"
-                  style={{ backgroundColor: '#f5f5f5', color: '#666' }}
+                  className="flex-1 py-3 rounded-2xl font-medium"
+                  style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 py-2 rounded-2xl font-medium text-white"
-                  style={{ backgroundColor: '#3a3a3a' }}
+                  className="flex-1 py-3 rounded-2xl font-medium"
+                  style={{ backgroundColor: '#d4af37', color: '#3a3a3a' }}
                 >
                   Confirm
                 </button>
