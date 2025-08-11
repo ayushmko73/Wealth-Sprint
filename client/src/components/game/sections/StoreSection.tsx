@@ -223,7 +223,7 @@ const StoreSection: React.FC = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5DC' }}>
       {/* Top Search Bar */}
       <div className="p-4 bg-white/80 backdrop-blur-sm border-b border-[#e8dcc6]">
-        <div className="relative max-w-md mx-auto">
+        <div className="relative">
           <Search size={16} className="absolute left-3 top-3 text-gray-400" />
           <input
             type="text"
@@ -235,151 +235,159 @@ const StoreSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Three Column Layout */}
-      <div className="flex h-[calc(100vh-80px)]">
+      {/* Mobile Category Scrollable Horizontal Bar */}
+      <div className="p-4 bg-white/50">
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all duration-200 ${
+                selectedCategory === category
+                  ? 'bg-[#2E7D4A] text-white shadow-md'
+                  : 'bg-white text-[#3a3a3a] border border-[#e8dcc6] hover:shadow-sm'
+              }`}
+            >
+              {categoryIcons[category]}
+              <span className="font-medium text-sm">{category}</span>
+            </button>
+          ))}
+        </div>
         
-        {/* Left Category Bar (20%) */}
-        <div className="w-1/5 p-4 border-r border-[#e8dcc6]" style={{ backgroundColor: '#e8dcc6' }}>
-          <h3 className="font-serif font-semibold text-lg mb-4 text-[#3a3a3a]">Categories</h3>
-          <div className="space-y-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-[#2E7D4A] text-white shadow-md'
-                    : 'bg-white/60 hover:bg-white text-[#3a3a3a] hover:shadow-sm'
-                }`}
-              >
-                {categoryIcons[category]}
-                <span className="font-medium">{category}</span>
-              </button>
-            ))}
-          </div>
-          
-          {/* Bank Balance Display */}
-          <div className="mt-6 p-4 bg-white/80 rounded-xl">
-            <div className="text-sm text-gray-600 mb-1">Available Balance</div>
-            <div className="text-xl font-bold text-[#2E7D4A]">
-              {formatMoney(financialData.bankBalance)}
-            </div>
+        {/* Bank Balance Display - Mobile */}
+        <div className="mt-4 p-3 bg-white border border-[#e8dcc6] rounded-xl">
+          <div className="text-xs text-gray-600 mb-1">Available Balance</div>
+          <div className="text-lg font-bold text-[#2E7D4A]">
+            {formatMoney(financialData.bankBalance)}
           </div>
         </div>
+      </div>
 
-        {/* Middle Content Area (60%) */}
-        <div className="w-3/5 overflow-y-auto p-4">
-          <div className="space-y-4">
-            {filteredItems.map((item) => {
-              const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
-              const canAfford = financialData.bankBalance >= item.price;
-              
-              return (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#e8dcc6]"
-                  style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.08)' }}
-                >
-                  <div className="flex items-center gap-6">
-                    {/* Product Image */}
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-xl flex items-center justify-center text-3xl shadow-inner">
-                      {item.image}
-                    </div>
-                    
-                    {/* Content Block */}
-                    <div className="flex-1">
-                      <h3 className="font-serif text-xl font-semibold text-[#3a3a3a] mb-1">
+      {/* Main Content Area - Mobile Single Column */}
+      <div className="p-4 space-y-4">
+        {filteredItems.map((item) => {
+          const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
+          const canAfford = financialData.bankBalance >= item.price;
+          
+          return (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#e8dcc6]"
+              style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.08)' }}
+            >
+              <div className="flex items-start gap-4">
+                {/* Product Image */}
+                <div className="w-16 h-16 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-xl flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
+                  {item.image}
+                </div>
+                
+                {/* Content Block */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1 pr-2">
+                      <h3 className="font-serif text-lg font-semibold text-[#3a3a3a] mb-1 line-clamp-1">
                         {item.name}
                       </h3>
                       <div className="text-xs text-[#6B21A8] font-semibold tracking-wider mb-2">
                         {item.subtitle}
                       </div>
-                      
-                      {/* Monthly Cashflow Pill */}
-                      <div className="inline-flex items-center gap-2 bg-[#10B981]/10 text-[#10B981] px-3 py-1 rounded-full text-sm font-medium">
-                        <Coins size={14} />
-                        + {formatMoney(item.monthlyIncome)}
-                      </div>
-                      
-                      <div className="text-sm text-gray-600 mt-2">
-                        {item.description}
-                      </div>
                     </div>
                     
-                    {/* Right Price Area */}
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-2xl font-bold text-[#3a3a3a]">
+                    {/* Price and Info Button */}
+                    <div className="text-right flex-shrink-0">
+                      <div className="flex items-center gap-1 mb-2">
+                        <span className="text-lg font-bold text-[#3a3a3a]">
                           {formatMoney(item.price)}
                         </span>
-                        <button className="w-6 h-6 bg-[#D4AF37] rounded-full flex items-center justify-center text-white hover:bg-[#B8941F] transition-colors">
-                          <Info size={12} />
+                        <button className="w-5 h-5 bg-[#D4AF37] rounded-full flex items-center justify-center text-white">
+                          <Info size={10} />
                         </button>
                       </div>
-                      
-                      {isPurchased ? (
-                        <div className="flex items-center gap-2 text-[#10B981] bg-[#10B981]/10 px-4 py-2 rounded-xl">
-                          <CheckCircle size={16} />
-                          <span className="font-medium">Owned</span>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handlePurchase(item)}
-                          disabled={!canAfford}
-                          className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                            canAfford
-                              ? 'bg-[#2E7D4A] hover:bg-[#236B3C] text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          }`}
-                        >
-                          {canAfford ? 'Buy now' : 'Insufficient Funds'}
-                        </button>
-                      )}
                     </div>
                   </div>
+                  
+                  {/* Monthly Cashflow Pill */}
+                  <div className="inline-flex items-center gap-2 bg-[#10B981]/10 text-[#10B981] px-3 py-1 rounded-full text-xs font-medium mb-2">
+                    <Coins size={12} />
+                    + {formatMoney(item.monthlyIncome)}
+                  </div>
+                  
+                  <div className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {item.description}
+                  </div>
+                  
+                  {/* Buy Button */}
+                  {isPurchased ? (
+                    <div className="flex items-center gap-2 text-[#10B981] bg-[#10B981]/10 px-4 py-2 rounded-xl w-fit">
+                      <CheckCircle size={14} />
+                      <span className="font-medium text-sm">Owned</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handlePurchase(item)}
+                      disabled={!canAfford}
+                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
+                        canAfford
+                          ? 'bg-[#2E7D4A] hover:bg-[#236B3C] text-white shadow-md'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      {canAfford ? 'Buy now' : 'Insufficient Funds'}
+                    </button>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Right Transaction & Inventory Panel (20%) */}
-        <div className="w-1/5 p-4 border-l border-[#e8dcc6] bg-white/50">
-          <h3 className="font-serif font-semibold text-lg mb-4 text-[#3a3a3a]">Recent Purchases</h3>
+      {/* Bottom Transaction & Inventory Panel - Mobile */}
+      <div className="p-4 bg-white/80 border-t border-[#e8dcc6] mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          <div className="space-y-3 mb-6">
-            {recentTransactions.length > 0 ? (
-              recentTransactions.map((transaction, index) => (
-                <div key={index} className="bg-white rounded-lg p-3 shadow-sm border border-[#e8dcc6]">
-                  <div className="text-sm font-medium text-[#3a3a3a] truncate">
-                    {transaction.description}
+          {/* Recent Purchases */}
+          <div>
+            <h3 className="font-serif font-semibold text-lg mb-3 text-[#3a3a3a]">Recent Purchases</h3>
+            <div className="space-y-2">
+              {recentTransactions.length > 0 ? (
+                recentTransactions.slice(0, 3).map((transaction, index) => (
+                  <div key={index} className="bg-white rounded-lg p-3 shadow-sm border border-[#e8dcc6]">
+                    <div className="text-sm font-medium text-[#3a3a3a] truncate">
+                      {transaction.description}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-red-600 font-semibold text-xs">
+                        {formatMoney(transaction.amount)}
+                      </div>
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <Clock size={10} />
+                        {new Date(transaction.timestamp).toLocaleDateString()}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-red-600 font-semibold text-xs">
-                    {formatMoney(transaction.amount)}
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={10} />
-                    {new Date(transaction.timestamp).toLocaleDateString()}
-                  </div>
+                ))
+              ) : (
+                <div className="text-sm text-gray-500 text-center py-4">
+                  No purchases yet
                 </div>
-              ))
-            ) : (
-              <div className="text-sm text-gray-500 text-center py-4">
-                No purchases yet
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          <h4 className="font-serif font-semibold mb-3 text-[#3a3a3a]">My Inventory</h4>
-          <div className="grid grid-cols-3 gap-2">
-            {purchasedItems.slice(0, 9).map((item, index) => (
-              <div
-                key={index}
-                className="w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-lg flex items-center justify-center text-lg shadow-sm"
-              >
-                {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
-              </div>
-            ))}
+          {/* My Inventory */}
+          <div>
+            <h4 className="font-serif font-semibold text-lg mb-3 text-[#3a3a3a]">My Inventory</h4>
+            <div className="grid grid-cols-6 gap-2">
+              {purchasedItems.slice(0, 12).map((item, index) => (
+                <div
+                  key={index}
+                  className="w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-lg flex items-center justify-center text-lg shadow-sm"
+                >
+                  {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
