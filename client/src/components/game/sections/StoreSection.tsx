@@ -220,64 +220,104 @@ const StoreSection: React.FC = () => {
   const purchasedItems = getPurchasedItems();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5DC' }}>
+    <div className="min-h-screen" style={{ 
+      background: 'linear-gradient(135deg, #F5F5DC 0%, #F0EAD6 50%, #EBE5D1 100%)' 
+    }}>
       {/* Top Search Bar */}
-      <div className="p-4 bg-white/80 backdrop-blur-sm border-b border-[#e8dcc6]">
+      <div className="p-4" style={{ 
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,244,230,0.95) 100%)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(232, 220, 198, 0.3)'
+      }}>
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-3 text-gray-400" />
+          <Search size={16} className="absolute left-4 top-3.5 text-amber-600/60" />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder="Search luxury items..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-[#e8dcc6] rounded-full focus:outline-none focus:ring-2 focus:ring-[#2E7D4A] focus:border-transparent"
+            className="w-full pl-12 pr-4 py-3 bg-white/90 border border-amber-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-300 shadow-sm text-slate-700 placeholder-amber-600/60"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
+            }}
           />
         </div>
       </div>
 
       {/* Mobile Category Scrollable Horizontal Bar */}
-      <div className="p-4 bg-white/50">
-        <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="px-4 py-3" style={{ 
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.70) 0%, rgba(248,244,230,0.70) 100%)'
+      }}>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all duration-200 ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
                 selectedCategory === category
-                  ? 'bg-[#2E7D4A] text-white shadow-md'
-                  : 'bg-white text-[#3a3a3a] border border-[#e8dcc6] hover:shadow-sm'
+                  ? 'text-white shadow-lg' 
+                  : 'text-slate-600 border border-amber-200/60 hover:shadow-md hover:border-amber-300/60'
               }`}
+              style={{
+                background: selectedCategory === category 
+                  ? 'linear-gradient(135deg, #2E7D4A 0%, #22C55E 100%)'
+                  : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
+              }}
             >
               {categoryIcons[category]}
-              <span className="font-medium text-sm">{category}</span>
+              <span className="font-semibold text-sm">{category}</span>
             </button>
           ))}
         </div>
         
         {/* Bank Balance Display - Mobile */}
-        <div className="mt-4 p-3 bg-white border border-[#e8dcc6] rounded-xl">
-          <div className="text-xs text-gray-600 mb-1">Available Balance</div>
-          <div className="text-lg font-bold text-[#2E7D4A]">
+        <div className="mt-4 p-4 rounded-2xl shadow-lg" style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)',
+          border: '1px solid rgba(212, 175, 55, 0.3)'
+        }}>
+          <div className="text-sm text-amber-700/80 mb-1 font-medium">Available Balance</div>
+          <div className="text-xl font-bold" style={{ color: '#1F2937' }}>
             {formatMoney(financialData.bankBalance)}
+          </div>
+          <div className="w-full h-1 bg-amber-200/50 rounded-full mt-2">
+            <div className="h-1 bg-gradient-to-r from-amber-400 to-emerald-500 rounded-full" style={{ width: '75%' }}></div>
           </div>
         </div>
       </div>
 
       {/* Main Content Area - Mobile Single Column */}
       <div className="p-4 space-y-4">
-        {filteredItems.map((item) => {
+        {filteredItems.map((item, index) => {
           const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
           const canAfford = financialData.bankBalance >= item.price;
+          
+          // Dynamic gradient colors based on category
+          const categoryGradients: Record<string, string> = {
+            'Real Estate': 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 197, 253, 0.05) 100%)',
+            'Transport': 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(134, 239, 172, 0.05) 100%)',
+            'Businesses': 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(196, 181, 253, 0.05) 100%)',
+            'Tech': 'linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, rgba(254, 215, 170, 0.05) 100%)',
+            'Lifestyle': 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(251, 207, 232, 0.05) 100%)'
+          };
           
           return (
             <div
               key={item.id}
-              className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#e8dcc6]"
-              style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.08)' }}
+              className="rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-amber-200/30"
+              style={{ 
+                background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%), ${categoryGradients[item.category] || categoryGradients['Lifestyle']}`,
+                boxShadow: '0 8px 32px rgba(212, 175, 55, 0.15)'
+              }}
             >
               <div className="flex items-start gap-4">
                 {/* Product Image */}
-                <div className="w-16 h-16 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-xl flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg flex-shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, #FEF7E0 0%, #FDF4E6 50%, #FCF1E0 100%)',
+                    boxShadow: 'inset 0 2px 8px rgba(212, 175, 55, 0.2)'
+                  }}
+                >
                   {item.image}
                 </div>
                 
@@ -285,52 +325,76 @@ const StoreSection: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 pr-2">
-                      <h3 className="font-serif text-lg font-semibold text-[#3a3a3a] mb-1 line-clamp-1">
+                      <h3 className="font-serif text-lg font-bold text-slate-800 mb-1 line-clamp-1">
                         {item.name}
                       </h3>
-                      <div className="text-xs text-[#6B21A8] font-semibold tracking-wider mb-2">
+                      <div className="text-xs font-bold tracking-wider mb-2" style={{ color: '#7C3AED' }}>
                         {item.subtitle}
                       </div>
                     </div>
                     
                     {/* Price and Info Button */}
                     <div className="text-right flex-shrink-0">
-                      <div className="flex items-center gap-1 mb-2">
-                        <span className="text-lg font-bold text-[#3a3a3a]">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg font-bold text-slate-800">
                           {formatMoney(item.price)}
                         </span>
-                        <button className="w-5 h-5 bg-[#D4AF37] rounded-full flex items-center justify-center text-white">
-                          <Info size={10} />
+                        <button 
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-white shadow-md transition-all duration-200 hover:scale-110"
+                          style={{
+                            background: 'linear-gradient(135deg, #D4AF37 0%, #F59E0B 100%)'
+                          }}
+                        >
+                          <Info size={11} />
                         </button>
                       </div>
                     </div>
                   </div>
                   
                   {/* Monthly Cashflow Pill */}
-                  <div className="inline-flex items-center gap-2 bg-[#10B981]/10 text-[#10B981] px-3 py-1 rounded-full text-xs font-medium mb-2">
+                  <div 
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-3 shadow-sm"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%)',
+                      color: '#047857',
+                      border: '1px solid rgba(16, 185, 129, 0.2)'
+                    }}
+                  >
                     <Coins size={12} />
                     + {formatMoney(item.monthlyIncome)}
                   </div>
                   
-                  <div className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  <div className="text-sm text-slate-600 mb-3 line-clamp-2 leading-relaxed">
                     {item.description}
                   </div>
                   
                   {/* Buy Button */}
                   {isPurchased ? (
-                    <div className="flex items-center gap-2 text-[#10B981] bg-[#10B981]/10 px-4 py-2 rounded-xl w-fit">
+                    <div 
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl w-fit shadow-sm"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%)',
+                        color: '#047857',
+                        border: '1px solid rgba(16, 185, 129, 0.3)'
+                      }}
+                    >
                       <CheckCircle size={14} />
-                      <span className="font-medium text-sm">Owned</span>
+                      <span className="font-bold text-sm">Owned</span>
                     </div>
                   ) : (
                     <button
                       onClick={() => handlePurchase(item)}
                       disabled={!canAfford}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
+                      className={`w-full py-3.5 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg ${
                         canAfford
-                          ? 'bg-[#2E7D4A] hover:bg-[#236B3C] text-white shadow-md'
+                          ? 'text-white'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
+                      style={{
+                        background: canAfford 
+                          ? 'linear-gradient(135deg, #2E7D4A 0%, #22C55E 100%)'
+                          : undefined
+                      }}
                     >
                       {canAfford ? 'Buy now' : 'Insufficient Funds'}
                     </button>
@@ -343,24 +407,36 @@ const StoreSection: React.FC = () => {
       </div>
 
       {/* Bottom Transaction & Inventory Panel - Mobile */}
-      <div className="p-4 bg-white/80 border-t border-[#e8dcc6] mt-6">
+      <div 
+        className="p-5 mt-8 border-t"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(248,244,230,0.90) 100%)',
+          borderTop: '1px solid rgba(212, 175, 55, 0.3)'
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Recent Purchases */}
           <div>
-            <h3 className="font-serif font-semibold text-lg mb-3 text-[#3a3a3a]">Recent Purchases</h3>
-            <div className="space-y-2">
+            <h3 className="font-serif font-bold text-lg mb-4 text-slate-800">Recent Purchases</h3>
+            <div className="space-y-3">
               {recentTransactions.length > 0 ? (
                 recentTransactions.slice(0, 3).map((transaction, index) => (
-                  <div key={index} className="bg-white rounded-lg p-3 shadow-sm border border-[#e8dcc6]">
-                    <div className="text-sm font-medium text-[#3a3a3a] truncate">
+                  <div 
+                    key={index} 
+                    className="rounded-xl p-4 shadow-md border border-amber-200/50"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
+                    }}
+                  >
+                    <div className="text-sm font-semibold text-slate-700 truncate mb-1">
                       {transaction.description}
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-red-600 font-semibold text-xs">
+                      <div className="font-bold text-sm" style={{ color: '#DC2626' }}>
                         {formatMoney(transaction.amount)}
                       </div>
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                      <div className="text-xs text-amber-600 flex items-center gap-1 font-medium">
                         <Clock size={10} />
                         {new Date(transaction.timestamp).toLocaleDateString()}
                       </div>
@@ -368,8 +444,14 @@ const StoreSection: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-sm text-gray-500 text-center py-4">
-                  No purchases yet
+                <div 
+                  className="text-center py-6 rounded-xl border border-amber-200/50"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,232,0.95) 100%)'
+                  }}
+                >
+                  <div className="text-4xl mb-2">🛍️</div>
+                  <div className="text-sm text-slate-600 font-medium">No purchases yet</div>
                 </div>
               )}
             </div>
@@ -377,16 +459,25 @@ const StoreSection: React.FC = () => {
 
           {/* My Inventory */}
           <div>
-            <h4 className="font-serif font-semibold text-lg mb-3 text-[#3a3a3a]">My Inventory</h4>
-            <div className="grid grid-cols-6 gap-2">
+            <h4 className="font-serif font-bold text-lg mb-4 text-slate-800">My Inventory</h4>
+            <div className="grid grid-cols-6 gap-3">
               {purchasedItems.slice(0, 12).map((item, index) => (
                 <div
                   key={index}
-                  className="w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#e8dcc6] rounded-lg flex items-center justify-center text-lg shadow-sm"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-lg shadow-md transition-all duration-200 hover:scale-110 border border-amber-200/50"
+                  style={{
+                    background: 'linear-gradient(135deg, #FEF7E0 0%, #FDF4E6 50%, #FCF1E0 100%)'
+                  }}
                 >
                   {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
                 </div>
               ))}
+              {purchasedItems.length === 0 && (
+                <div className="col-span-6 text-center py-6">
+                  <div className="text-4xl mb-2">📦</div>
+                  <div className="text-sm text-slate-600 font-medium">Start shopping to build your inventory</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
