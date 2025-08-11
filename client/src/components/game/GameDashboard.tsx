@@ -40,7 +40,8 @@ import {
   Star,
   Battery,
   Activity,
-  Building2
+  Building2,
+  ShoppingCart
 } from 'lucide-react';
 import TaskPanel from './TaskPanel';
 import WealthTracker from './WealthTracker';
@@ -58,6 +59,7 @@ import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
+import StoreSection from './sections/StoreSection';
 
 import AdvancedTeamManagement from './AdvancedTeamManagement';
 
@@ -108,6 +110,7 @@ const GameDashboard: React.FC = () => {
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
+    { id: 'store', label: 'Store', icon: ShoppingCart },
 
     { id: 'advanced_team', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
@@ -132,6 +135,8 @@ const GameDashboard: React.FC = () => {
         return <RevenueOverview />;
       case 'bank':
         return <BankSection />;
+      case 'store':
+        return <StoreSection />;
 
       case 'advanced_team':
         return (
