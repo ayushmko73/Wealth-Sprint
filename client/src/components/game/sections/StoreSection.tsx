@@ -9,16 +9,17 @@ import {
   Building2, 
   Smartphone, 
   Gamepad2,
-  Coins,
-  Info,
+  ShoppingBag,
+  TrendingUp,
   CheckCircle,
   Clock,
   Star,
-  Plus
+  Plus,
+  X,
+  Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Premium store items with the exact data you specified
 const premiumStoreItems = [
   {
     id: 'small-apartment',
@@ -28,7 +29,8 @@ const premiumStoreItems = [
     monthlyIncome: 500,
     category: 'Real Estate',
     image: '🏠',
-    description: 'Cozy starter home in prime location'
+    description: 'Cozy starter home in prime location',
+    tier: 'starter'
   },
   {
     id: 'luxury-villa',
@@ -38,7 +40,8 @@ const premiumStoreItems = [
     monthlyIncome: 5000,
     category: 'Real Estate',
     image: '🏰',
-    description: 'Exclusive villa with premium amenities'
+    description: 'Exclusive villa with premium amenities',
+    tier: 'premium'
   },
   {
     id: 'coffee-shop',
@@ -48,7 +51,8 @@ const premiumStoreItems = [
     monthlyIncome: 1200,
     category: 'Businesses',
     image: '☕',
-    description: 'Trendy coffee shop in busy district'
+    description: 'Trendy coffee shop in busy district',
+    tier: 'growth'
   },
   {
     id: 'delivery-van',
@@ -58,7 +62,8 @@ const premiumStoreItems = [
     monthlyIncome: 400,
     category: 'Transport',
     image: '🚐',
-    description: 'Reliable van for delivery services'
+    description: 'Reliable van for delivery services',
+    tier: 'starter'
   },
   {
     id: 'motorbike',
@@ -68,7 +73,8 @@ const premiumStoreItems = [
     monthlyIncome: 90,
     category: 'Transport',
     image: '🏍️',
-    description: 'Fast and efficient city transport'
+    description: 'Fast and efficient city transport',
+    tier: 'starter'
   },
   {
     id: 'laptop',
@@ -78,67 +84,8 @@ const premiumStoreItems = [
     monthlyIncome: 30,
     category: 'Tech',
     image: '💻',
-    description: 'Powerful laptop for work and gaming'
-  },
-  {
-    id: 'arcade-machine',
-    name: 'Arcade Machine',
-    subtitle: 'ENTERTAINMENT',
-    price: 5000,
-    monthlyIncome: 120,
-    category: 'Lifestyle',
-    image: '🕹️',
-    description: 'Classic arcade machine for entertainment'
-  },
-  {
-    id: 'solar-plant',
-    name: 'Solar Power Plant',
-    subtitle: 'RENEWABLE ENERGY',
-    price: 120000,
-    monthlyIncome: 2400,
-    category: 'Businesses',
-    image: '🔋',
-    description: 'Clean energy generation facility'
-  },
-  {
-    id: 'drone',
-    name: 'Drone',
-    subtitle: 'AERIAL TECH',
-    price: 2200,
-    monthlyIncome: 20,
-    category: 'Tech',
-    image: '🚁',
-    description: 'Professional drone with 4K camera'
-  },
-  {
-    id: 'fast-food-franchise',
-    name: 'Fast Food Franchise',
-    subtitle: 'RESTAURANT CHAIN',
-    price: 150000,
-    monthlyIncome: 2200,
-    category: 'Businesses',
-    image: '🍔',
-    description: 'Popular fast food franchise outlet'
-  },
-  {
-    id: 'billboard',
-    name: 'Advertisement Billboard',
-    subtitle: 'MARKETING ASSET',
-    price: 9000,
-    monthlyIncome: 300,
-    category: 'Businesses',
-    image: '📺',
-    description: 'Prime location advertising billboard'
-  },
-  {
-    id: 'art-gallery',
-    name: 'Art Gallery Collection',
-    subtitle: 'FINE ARTS',
-    price: 70000,
-    monthlyIncome: 800,
-    category: 'Lifestyle',
-    image: '🎨',
-    description: 'Curated collection of fine artworks'
+    description: 'Powerful laptop for work and gaming',
+    tier: 'starter'
   }
 ];
 
@@ -148,16 +95,16 @@ const StoreSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
-  const categories = ['All', 'Real Estate', 'Transport', 'Businesses', 'Tech', 'Lifestyle'];
+  const categories = ['All', 'Real Estate', 'Transport', 'Businesses', 'Tech'];
   
   const categoryIcons: Record<string, React.ReactNode> = {
-    'All': <Star size={18} />,
-    'Real Estate': <Home size={18} />,
-    'Transport': <Car size={18} />,
-    'Businesses': <Building2 size={18} />,
-    'Tech': <Smartphone size={18} />,
-    'Lifestyle': <Gamepad2 size={18} />
+    'All': <Star size={16} />,
+    'Real Estate': <Home size={16} />,
+    'Transport': <Car size={16} />,
+    'Businesses': <Building2 size={16} />,
+    'Tech': <Smartphone size={16} />
   };
 
   const filteredItems = premiumStoreItems.filter(item => {
@@ -200,57 +147,109 @@ const StoreSection: React.FC = () => {
       });
 
       setShowPurchaseModal(null);
-      toast.success(`Purchase successful — ${item.name}`, {
-        style: {
-          background: '#10B981',
-          color: 'white',
-          border: 'none'
-        }
-      });
+      toast.success(`Successfully purchased ${item.name}!`);
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
     }
   };
 
-  const recentTransactions = financialData.transactionHistory
-    .filter(t => t.type === 'store_purchase')
-    .slice(0, 5)
-    .reverse();
-
   const purchasedItems = getPurchasedItems();
+  const totalInvestment = purchasedItems.reduce((sum, item) => sum + item.price, 0);
+  const monthlyIncome = purchasedItems.reduce((sum, item) => sum + item.passiveIncome, 0);
+
+  const tierColors = {
+    starter: '#DEB887',
+    growth: '#CD853F', 
+    premium: '#B8860B'
+  };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF4E6' }}>
-      {/* Header with Search */}
-      <div className="px-4 py-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-        <div className="relative">
-          <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2" style={{ color: '#D2B48C' }} />
-          <input
-            type="text"
-            placeholder="Search items..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-2xl border-0 outline-0 text-base"
-            style={{ 
-              backgroundColor: '#FAEBD7',
-              color: '#8B4513'
-            }}
-          />
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F1E8' }}>
+      
+      {/* Modern Header */}
+      <div 
+        className="sticky top-0 z-10 backdrop-blur-md border-b"
+        style={{ 
+          backgroundColor: 'rgba(245, 241, 232, 0.95)',
+          borderBottomColor: '#E5D3B3'
+        }}
+      >
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold" style={{ color: '#8B4513' }}>
+              Marketplace
+            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+                className="p-2 rounded-xl transition-colors"
+                style={{ backgroundColor: '#E5D3B3', color: '#8B4513' }}
+              >
+                <Filter size={16} />
+              </button>
+            </div>
+          </div>
+          
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#A0522D' }} />
+            <input
+              type="text"
+              placeholder="Search marketplace..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-0 outline-0"
+              style={{ 
+                backgroundColor: '#FFF8DC',
+                color: '#8B4513'
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="px-4 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+      {/* Stats Cards */}
+      <div className="p-4">
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div 
+            className="p-3 rounded-xl text-center"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}
+          >
+            <div className="text-lg font-bold" style={{ color: '#8B4513' }}>
+              {formatMoney(financialData.bankBalance)}
+            </div>
+            <div className="text-xs" style={{ color: '#A0522D' }}>Available</div>
+          </div>
+          <div 
+            className="p-3 rounded-xl text-center"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}
+          >
+            <div className="text-lg font-bold" style={{ color: '#228B22' }}>
+              {formatMoney(monthlyIncome)}
+            </div>
+            <div className="text-xs" style={{ color: '#A0522D' }}>Monthly</div>
+          </div>
+          <div 
+            className="p-3 rounded-xl text-center"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}
+          >
+            <div className="text-lg font-bold" style={{ color: '#8B4513' }}>
+              {purchasedItems.length}
+            </div>
+            <div className="text-xs" style={{ color: '#A0522D' }}>Owned</div>
+          </div>
+        </div>
+
+        {/* Category Pills */}
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className="flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap text-sm font-medium transition-all duration-300"
+              className="flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all"
               style={{
-                backgroundColor: selectedCategory === category ? '#8B4513' : '#FAEBD7',
+                backgroundColor: selectedCategory === category ? '#8B4513' : 'rgba(255, 255, 255, 0.8)',
                 color: selectedCategory === category ? 'white' : '#8B4513',
-                border: `1px solid ${selectedCategory === category ? '#8B4513' : '#DDD'}`
+                border: `1px solid ${selectedCategory === category ? '#8B4513' : '#E5D3B3'}`
               }}
             >
               {categoryIcons[category]}
@@ -258,216 +257,200 @@ const StoreSection: React.FC = () => {
             </button>
           ))}
         </div>
-        
-        {/* Balance Display */}
-        <div 
-          className="mt-4 p-4 rounded-2xl"
-          style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
-        >
-          <div className="text-sm mb-1" style={{ color: '#A0522D' }}>Available Balance</div>
-          <div className="text-xl font-semibold" style={{ color: '#8B4513' }}>
-            {formatMoney(financialData.bankBalance)}
-          </div>
-        </div>
-      </div>
 
-      {/* Product Cards */}
-      <div className="p-4 space-y-3">
-        {filteredItems.map((item, index) => {
-          const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
-          const canAfford = financialData.bankBalance >= item.price;
-          
-          return (
-            <div
-              key={item.id}
-              className="rounded-2xl p-4 border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: '1px solid #E5E5E5'
-              }}
-            >
-              <div className="flex items-start gap-4">
-                {/* Product Icon */}
-                <div 
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                  style={{ backgroundColor: '#FAEBD7' }}
-                >
-                  {item.image}
-                </div>
-                
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1" style={{ color: '#8B4513' }}>
-                        {item.name}
-                      </h3>
-                      <div className="text-xs font-medium uppercase tracking-wide" style={{ color: '#A0522D' }}>
-                        {item.subtitle}
+        {/* Product Cards */}
+        <div className="space-y-3">
+          {filteredItems.map((item) => {
+            const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
+            const canAfford = financialData.bankBalance >= item.price;
+            const roi = ((item.monthlyIncome * 12) / item.price * 100);
+            
+            return (
+              <div
+                key={item.id}
+                className="rounded-xl p-4 border transition-all hover:shadow-sm"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  borderColor: '#E5D3B3'
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  {/* Icon & Tier Indicator */}
+                  <div className="relative">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                      style={{ backgroundColor: '#FFF8DC' }}
+                    >
+                      {item.image}
+                    </div>
+                    <div 
+                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white"
+                      style={{ backgroundColor: tierColors[item.tier as keyof typeof tierColors] }}
+                    />
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-1">
+                      <div>
+                        <h3 className="font-semibold text-base" style={{ color: '#8B4513' }}>
+                          {item.name}
+                        </h3>
+                        <p className="text-xs font-medium" style={{ color: '#A0522D' }}>
+                          {item.subtitle}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-lg" style={{ color: '#8B4513' }}>
+                          {formatMoney(item.price)}
+                        </div>
+                        <div className="text-xs" style={{ color: '#228B22' }}>
+                          {roi.toFixed(1)}% ROI
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="text-lg font-semibold" style={{ color: '#8B4513' }}>
-                      {formatMoney(item.price)}
-                    </div>
-                  </div>
-                  
-                  {/* Monthly Income */}
-                  <div 
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium mb-3"
-                    style={{ 
-                      backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                      color: '#047857'
-                    }}
-                  >
-                    <Plus size={10} />
-                    {formatMoney(item.monthlyIncome)}/mo
-                  </div>
-                  
-                  <div className="text-sm mb-3" style={{ color: '#8B7355' }}>
-                    {item.description}
-                  </div>
-                  
-                  {/* Purchase Button */}
-                  {isPurchased ? (
+                    {/* Income Badge */}
                     <div 
-                      className="flex items-center gap-2 px-4 py-2 rounded-2xl w-fit"
-                      style={{ 
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        color: '#047857'
-                      }}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium mb-2"
+                      style={{ backgroundColor: 'rgba(34, 139, 34, 0.1)', color: '#228B22' }}
                     >
-                      <CheckCircle size={14} />
-                      <span className="text-sm font-medium">Owned</span>
+                      <TrendingUp size={10} />
+                      {formatMoney(item.monthlyIncome)}/month
                     </div>
-                  ) : (
-                    <button
-                      onClick={() => handlePurchase(item)}
-                      disabled={!canAfford}
-                      className="px-6 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300"
-                      style={{
-                        backgroundColor: canAfford ? '#8B4513' : '#D3D3D3',
-                        color: canAfford ? 'white' : '#888888'
-                      }}
-                    >
-                      {canAfford ? 'Buy now' : 'Insufficient Funds'}
-                    </button>
-                  )}
+                    
+                    <p className="text-sm mb-3" style={{ color: '#8B7355' }}>
+                      {item.description}
+                    </p>
+                    
+                    {/* Action Button */}
+                    {isPurchased ? (
+                      <div 
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl w-fit"
+                        style={{ backgroundColor: 'rgba(34, 139, 34, 0.1)', color: '#228B22' }}
+                      >
+                        <CheckCircle size={14} />
+                        <span className="text-sm font-medium">Owned</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handlePurchase(item)}
+                        disabled={!canAfford}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: canAfford ? '#8B4513' : '#D3D3D3',
+                          color: canAfford ? 'white' : '#888888'
+                        }}
+                      >
+                        <ShoppingBag size={14} />
+                        {canAfford ? 'Purchase' : 'Insufficient Funds'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Portfolio Summary */}
+        {purchasedItems.length > 0 && (
+          <div 
+            className="mt-6 p-4 rounded-xl border"
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              borderColor: '#E5D3B3'
+            }}
+          >
+            <h3 className="font-semibold mb-3" style={{ color: '#8B4513' }}>Your Portfolio</h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <div className="text-sm" style={{ color: '#A0522D' }}>Total Investment</div>
+                <div className="font-bold text-lg" style={{ color: '#8B4513' }}>
+                  {formatMoney(totalInvestment)}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm" style={{ color: '#A0522D' }}>Monthly Income</div>
+                <div className="font-bold text-lg" style={{ color: '#228B22' }}>
+                  {formatMoney(monthlyIncome)}
                 </div>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Recent Purchases & Inventory */}
-      <div 
-        className="p-4 border-t"
-        style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderTop: '1px solid #E5E5E5' }}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Recent Purchases */}
-          <div>
-            <h3 className="font-semibold mb-4" style={{ color: '#8B4513' }}>Recent Purchases</h3>
-            <div className="space-y-3">
-              {recentTransactions.length > 0 ? (
-                recentTransactions.slice(0, 3).map((transaction, index) => (
-                  <div 
-                    key={index} 
-                    className="p-3 rounded-2xl border"
-                    style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
-                  >
-                    <div className="text-sm font-medium mb-1" style={{ color: '#8B4513' }}>
-                      {transaction.description}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="font-semibold" style={{ color: '#DC2626' }}>
-                        {formatMoney(transaction.amount)}
-                      </div>
-                      <div className="text-xs flex items-center gap-1" style={{ color: '#A0522D' }}>
-                        <Clock size={10} />
-                        {new Date(transaction.timestamp).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div 
-                  className="text-center py-6 rounded-2xl border"
-                  style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
-                >
-                  <div className="text-3xl mb-2">🛍️</div>
-                  <div className="text-sm" style={{ color: '#A0522D' }}>No purchases yet</div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Inventory */}
-          <div>
-            <h4 className="font-semibold mb-4" style={{ color: '#8B4513' }}>My Inventory</h4>
-            <div className="grid grid-cols-6 gap-2">
-              {purchasedItems.slice(0, 12).map((item, index) => (
+            <div className="flex flex-wrap gap-2">
+              {purchasedItems.slice(0, 8).map((item, index) => (
                 <div
                   key={index}
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-sm border"
-                  style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                  style={{ backgroundColor: '#FFF8DC' }}
                 >
                   {premiumStoreItems.find(si => si.id === item.storeItemId)?.image || '📦'}
                 </div>
               ))}
-              {purchasedItems.length === 0 && (
-                <div className="col-span-6 text-center py-6">
-                  <div className="text-3xl mb-2">📦</div>
-                  <div className="text-sm" style={{ color: '#A0522D' }}>Start shopping to build your inventory</div>
+              {purchasedItems.length > 8 && (
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium"
+                  style={{ backgroundColor: '#E5D3B3', color: '#8B4513' }}
+                >
+                  +{purchasedItems.length - 8}
                 </div>
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full border" style={{ backgroundColor: '#FAEBD7', border: '1px solid #DDD' }}>
+          <div 
+            className="rounded-2xl p-6 max-w-sm w-full relative"
+            style={{ backgroundColor: '#FFF8DC' }}
+          >
+            <button
+              onClick={() => setShowPurchaseModal(null)}
+              className="absolute top-4 right-4 p-1 rounded-full"
+              style={{ backgroundColor: '#E5D3B3', color: '#8B4513' }}
+            >
+              <X size={16} />
+            </button>
+            
             <div className="text-center">
-              <div className="text-4xl mb-4">{showPurchaseModal.image}</div>
-              <h3 className="text-xl font-semibold mb-2" style={{ color: '#8B4513' }}>
+              <div className="text-4xl mb-3">{showPurchaseModal.image}</div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: '#8B4513' }}>
                 Confirm Purchase
               </h3>
-              <p className="mb-6" style={{ color: '#A0522D' }}>
+              <p className="mb-4" style={{ color: '#A0522D' }}>
                 {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
               </p>
               
               <div 
-                className="rounded-2xl p-4 mb-6 border"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', border: '1px solid #E5E5E5' }}
+                className="rounded-xl p-3 mb-4"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
               >
-                <div className="text-sm mb-2" style={{ color: '#A0522D' }}>After purchase:</div>
+                <div className="text-sm mb-1" style={{ color: '#A0522D' }}>After purchase:</div>
                 <div className="font-semibold" style={{ color: '#8B4513' }}>
                   Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
                 </div>
-                <div className="text-sm" style={{ color: '#047857' }}>
-                  Monthly income: +{formatMoney(showPurchaseModal.monthlyIncome)}
+                <div className="text-sm" style={{ color: '#228B22' }}>
+                  +{formatMoney(showPurchaseModal.monthlyIncome)}/month income
                 </div>
               </div>
               
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 px-4 py-3 border rounded-2xl font-medium"
-                  style={{ backgroundColor: 'white', color: '#8B4513', border: '1px solid #DDD' }}
+                  className="flex-1 py-2 rounded-xl font-medium"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', color: '#8B4513' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 px-4 py-3 rounded-2xl font-medium text-white"
+                  className="flex-1 py-2 rounded-xl font-medium text-white"
                   style={{ backgroundColor: '#8B4513' }}
                 >
-                  Confirm Purchase
+                  Confirm
                 </button>
               </div>
             </div>
