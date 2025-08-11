@@ -155,7 +155,7 @@ const StoreSection: React.FC = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl whitespace-nowrap text-sm font-medium transition-all"
               style={{
                 backgroundColor: selectedCategory === category ? '#4F9CF9' : '#faf8f3',
                 color: selectedCategory === category ? 'white' : '#3a3a3a',
@@ -180,17 +180,18 @@ const StoreSection: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="rounded-2xl p-4"
+                className="rounded-xl p-4"
                 style={{ 
-                  backgroundColor: '#faf8f3',
-                  border: '1px solid #e8dcc6'
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e8dcc6',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                 }}
               >
                 <div className="flex items-center gap-4">
                   {/* Icon */}
                   <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ backgroundColor: '#e8dcc6' }}
+                    className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                    style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
                   >
                     {item.image}
                   </div>
@@ -219,7 +220,7 @@ const StoreSection: React.FC = () => {
                     {/* Monthly Income Badge */}
                     <div 
                       className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium mb-3"
-                      style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
+                      style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
                     >
                       <Coins size={12} />
                       {formatMoney(item.monthlyIncome)}/month
@@ -232,7 +233,7 @@ const StoreSection: React.FC = () => {
                     {/* Action Button */}
                     {isPurchased ? (
                       <div 
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg w-fit"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl w-fit"
                         style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                       >
                         <CheckCircle size={16} />
@@ -242,7 +243,7 @@ const StoreSection: React.FC = () => {
                       <button
                         onClick={() => handlePurchase(item)}
                         disabled={!canAfford}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all"
                         style={{
                           backgroundColor: canAfford ? '#22C55E' : '#e8dcc6',
                           color: canAfford ? 'white' : '#999999'
@@ -264,8 +265,8 @@ const StoreSection: React.FC = () => {
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div 
-            className="rounded-lg p-6 max-w-sm w-full relative"
-            style={{ backgroundColor: '#faf8f3', border: '1px solid #e8dcc6' }}
+            className="rounded-xl p-6 max-w-sm w-full relative"
+            style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           >
             <button
               onClick={() => setShowPurchaseModal(null)}
@@ -285,14 +286,14 @@ const StoreSection: React.FC = () => {
               </p>
               
               <div 
-                className="rounded-lg p-4 mb-6"
-                style={{ backgroundColor: '#e8dcc6' }}
+                className="rounded-xl p-4 mb-6"
+                style={{ backgroundColor: '#f8f9fa' }}
               >
                 <div className="text-sm mb-2" style={{ color: '#666' }}>After purchase:</div>
                 <div className="font-semibold" style={{ color: '#3a3a3a' }}>
                   Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
                 </div>
-                <div className="text-sm" style={{ color: '#3a3a3a' }}>
+                <div className="text-sm" style={{ color: '#9333EA' }}>
                   +{formatMoney(showPurchaseModal.monthlyIncome)}/month income
                 </div>
               </div>
@@ -300,14 +301,14 @@ const StoreSection: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 py-3 rounded-lg font-medium"
+                  className="flex-1 py-3 rounded-xl font-medium"
                   style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 py-3 rounded-lg font-medium text-white"
+                  className="flex-1 py-3 rounded-xl font-medium text-white"
                   style={{ backgroundColor: '#22C55E' }}
                 >
                   Confirm
