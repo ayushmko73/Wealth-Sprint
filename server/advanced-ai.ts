@@ -500,21 +500,21 @@ function getHelpSuggestions(gameState: GameState, language: string): string[] {
   const suggestions = {
     English: [
       "Check your financial dashboard",
+      "Review team performance",
       "Set new investment goals",
-      "Analyze market trends",
-      "Review business performance"
+      "Analyze market trends"
     ],
     Hindi: [
       "अपना financial dashboard check करें",
+      "Team performance review करें",
       "नए investment goals set करें",
-      "Market trends analyze करें",
-      "Business performance review करें"
+      "Market trends analyze करें"
     ],
     Hinglish: [
       "Apna financial dashboard check karo",
+      "Team performance review karo",
       "Naye investment goals set karo",
-      "Market trends analyze karo",
-      "Business performance review karo"
+      "Market trends analyze karo"
     ]
   };
   
@@ -661,7 +661,8 @@ async function updatePlayerLearningData(playerName: string, userInput: string, r
     game_progress: {
       total_xp: gameState.xp_level,
       current_mood: gameState.mood,
-      financial_status: gameState.financial_data
+      financial_status: gameState.financial_data,
+      team_status: gameState.team_data
     },
     ai_learning_data: {
       ...playerProfile?.ai_learning_data,

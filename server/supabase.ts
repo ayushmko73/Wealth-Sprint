@@ -42,6 +42,7 @@ export interface PlayerProfile {
     total_xp?: number;
     current_mood?: string;
     financial_status?: any;
+    team_status?: any;
   };
   ai_learning_data: {
     successful_responses?: string[];
