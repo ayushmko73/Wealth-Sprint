@@ -35,6 +35,7 @@ const NotificationCenter: React.FC = () => {
   const { playSuccess, playHit } = useAudio();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   // Convert game events to notifications - DISABLED to prevent auto-popups
   useEffect(() => {
@@ -127,10 +128,29 @@ const NotificationCenter: React.FC = () => {
   return (
     <>
       {/* Notification Bell */}
-      <div className="fixed top-4 right-4 z-50">
+      <motion.div 
+        className="fixed top-4 right-4 z-50"
+        drag
+        dragMomentum={false}
+        dragConstraints={{
+          top: -50,
+          left: -300,
+          right: 50,
+          bottom: 300
+        }}
+        initial={{ x: position.x, y: position.y }}
+        onDragEnd={(_, info) => {
+          setPosition({ x: info.offset.x, y: info.offset.y });
+        }}
+        style={{ 
+          touchAction: 'none',
+          userSelect: 'none' 
+        }}
+      >
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="relative p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          className="relative p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-move"
+          style={{ touchAction: 'manipulation' }}
         >
           <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           {notifications.length > 0 && (
@@ -139,7 +159,7 @@ const NotificationCenter: React.FC = () => {
             </span>
           )}
         </button>
-      </div>
+      </motion.div>
 
       {/* Notification Panel */}
       <AnimatePresence>

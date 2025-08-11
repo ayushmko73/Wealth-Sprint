@@ -213,7 +213,7 @@ const StoreSection: React.FC = () => {
                       </div>
                       <div 
                         className="px-3 py-1.5 rounded-lg text-sm font-medium"
-                        style={{ backgroundColor: '#4F9CF9', color: '#ffffff' }}
+                        style={{ backgroundColor: '#22C55E', color: '#ffffff' }}
                       >
                         Owned
                       </div>
@@ -265,7 +265,7 @@ const StoreSection: React.FC = () => {
                         <div className="font-bold text-xl" style={{ color: '#3a3a3a' }}>
                           {formatMoney(item.price)}
                         </div>
-                        <div className="text-sm" style={{ color: '#d4af37' }}>
+                        <div className="text-sm" style={{ color: '#22C55E' }}>
                           {roi.toFixed(1)}% ROI
                         </div>
                       </div>
@@ -287,8 +287,8 @@ const StoreSection: React.FC = () => {
                     {/* Action Button */}
                     {isPurchased ? (
                       <div 
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl w-fit"
-                        style={{ backgroundColor: '#4F9CF9', color: '#ffffff' }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg w-fit"
+                        style={{ backgroundColor: '#22C55E', color: '#ffffff' }}
                       >
                         <CheckCircle size={16} />
                         <span className="font-medium">Owned</span>
@@ -299,8 +299,8 @@ const StoreSection: React.FC = () => {
                         disabled={!canAfford}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all"
                         style={{
-                          backgroundColor: canAfford ? '#22C55E' : '#e8dcc6',
-                          color: canAfford ? 'white' : '#999999'
+                          backgroundColor: canAfford ? '#22C55E' : '#EF4444',
+                          color: 'white'
                         }}
                       >
                         <ShoppingBag size={16} />
