@@ -50,7 +50,7 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
     return {
       sector: sector,
       performance: Math.round(totalPerformance),
-      monthlyContribution: Math.round(member.salary * (sector?.incomeBoost || 0) / 12),
+      monthlyContribution: Math.round(member.salary * ((sector?.incomeBoost || 0) + ((member.stats.impact || 70) / 100) * 0.15) / 12),
       growthContribution: Math.round((basePerformance / 100) * 2.5), // Percentage contribution to company growth
       role: getSectorRole(member.assignedSector, member.role)
     };
@@ -260,9 +260,9 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div>
                             <span className="text-gray-600">Experience:</span>
-                            <span className="ml-2 font-medium">
-                              {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
-                            </span>
+                            <p className="font-medium">
+                              {member.experience} year{member.experience !== 1 ? 's' : ''}
+                            </p>
                           </div>
                           <div>
                             <span className="text-gray-600">Joined:</span>

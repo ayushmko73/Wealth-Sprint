@@ -66,6 +66,7 @@ export interface TeamMember {
   };
   salary: number;
   joinDate: Date;
+  experience: number; // Years of experience
   skills: string[];
   achievements: string[];
   personality: {
@@ -85,7 +86,7 @@ export interface TeamMember {
   };
   // New team management fields
   department: 'Executive' | 'Financial' | 'Risk' | 'Marketing' | 'Sales' | 'Operations' | 'Human Resources' | 'Technician';
-  seniority: 'Junior' | 'Mid' | 'Senior' | 'VP' | 'CEO';
+  seniority: 'Fresher' | 'Junior' | 'Senior' | 'Chief' | 'CEO';
   status: 'Promoted' | 'Demoted' | 'Neutral';
   assignedSector?: string; // Fast Food, Tech Startup, E-commerce, Health-Care
   promotionHistory: {

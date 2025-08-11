@@ -275,6 +275,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
   const [showHireDialog, setShowHireDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState<{type: string, employee: TeamMember} | null>(null);
   const [showSectorDialog, setShowSectorDialog] = useState<{employee: TeamMember} | null>(null);
+  const [showCEOConfirmDialog, setShowCEOConfirmDialog] = useState<TeamMember | null>(null);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [skillTrees, setSkillTrees] = useState<Record<string, SkillNode[]>>({});
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
@@ -403,7 +404,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     }
 
     // Leadership Skills (for senior roles)
-    const isLeader = member.seniority === 'Senior' || member.seniority === 'VP' || member.seniority === 'CEO';
+    const isLeader = member.seniority === 'Senior' || member.seniority === 'Chief' || member.seniority === 'CEO';
     skillNodes.push(
       {
         id: 'team_leadership',
@@ -547,6 +548,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
           mood: 'motivated' as const
         },
         joinDate: new Date(),
+        experience: candidate.experienceYears || 3, // Use candidate experience or default
         achievements: [],
         personality: {
           type: candidate.impact === 'High' ? 'High Performer' : 'Team Player',
@@ -565,7 +567,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
         department: candidate.position.includes('Finance') ? 'Financial' : 
                    candidate.position.includes('Marketing') || candidate.position.includes('Sales') ? 'Marketing' :
                    'Operations',
-        seniority: 'Mid' as const,
+        seniority: useTeamManagement.getState().getSeniorityFromExperience(candidate.experienceYears || 3),
         status: 'Neutral' as const,
         promotionHistory: [],
         isCEO: false,
@@ -605,15 +607,26 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     if (!showConfirmDialog) return;
     
     const { employee } = showConfirmDialog;
-    const seniorityLevels = ['Junior', 'Mid', 'Senior', 'VP', 'CEO'];
+    const seniorityLevels = ['Fresher', 'Junior', 'Senior', 'Chief', 'CEO'];
     const currentIndex = seniorityLevels.indexOf(employee.seniority);
     
     if (currentIndex < seniorityLevels.length - 1) {
       const newSeniority = seniorityLevels[currentIndex + 1] as any;
-      const salaryIncrease = employee.salary * 0.25;
+      
+      // Special handling for CEO promotion - show confirmation dialog
+      if (newSeniority === 'CEO') {
+        setShowCEOConfirmDialog(employee);
+        setShowConfirmDialog(null);
+        return;
+      }
+      
+      const salaryIncrease = employee.salary * 0.5; // Higher salary increase for non-CEO promotions
+      const baseRole = employee.role.replace(/^(Fresher|Junior|Senior|Chief)\s+/, '');
+      const newRole = `${newSeniority} ${baseRole}`;
       
       updateTeamMember(employee.id, {
         seniority: newSeniority,
+        role: newRole,
         salary: employee.salary + salaryIncrease,
         stats: {
           ...employee.stats,
@@ -626,6 +639,54 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
     }
     
     setShowConfirmDialog(null);
+  };
+
+  const confirmCEOPromotion = () => {
+    if (!showCEOConfirmDialog) return;
+    
+    const employee = showCEOConfirmDialog;
+    const salaryIncrease = employee.salary * 1.5; // 150% increase for CEO
+    
+    // Set as CEO and update all other CEOs
+    const updatedMembers = teamMembers.map(member => {
+      if (member.id === employee.id) {
+        return {
+          ...member,
+          seniority: 'CEO' as const,
+          role: 'CEO',
+          isCEO: true,
+          salary: employee.salary + salaryIncrease,
+          stats: {
+            ...member.stats,
+            loyalty: Math.min(100, member.stats.loyalty + 30),
+            impact: Math.min(100, member.stats.impact + 20),
+            energy: Math.min(100, member.stats.energy + 25),
+          }
+        };
+      } else if (member.isCEO) {
+        // Demote existing CEO
+        const baseRole = member.role.replace(/^CEO$/, 'Chief Manager');
+        return {
+          ...member,
+          seniority: 'Chief' as const,
+          role: baseRole,
+          isCEO: false,
+        };
+      }
+      return member;
+    });
+
+    // Update all team members
+    updatedMembers.forEach(member => {
+      updateTeamMember(member.id, member);
+    });
+    
+    toast.success(`${employee.name} is now the CEO! Congratulations!`, {
+      duration: 4000,
+      style: { backgroundColor: '#10b981', color: 'white' }
+    });
+    
+    setShowCEOConfirmDialog(null);
   };
 
   const confirmFiring = () => {
@@ -838,7 +899,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                                         Working in {SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.name}
                                       </p>
                                       <p className="text-xs text-purple-600">
-                                        Income Boost: +{Math.round((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) * 100)}%
+                                        Income Boost: +{Math.round(((SECTOR_MAPPING[member.assignedSector as keyof typeof SECTOR_MAPPING]?.incomeBoost || 0) + ((member.stats.impact || 70) / 100) * 0.15) * 100)}%
                                       </p>
                                     </div>
                                   </div>
@@ -846,11 +907,11 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                               )}
                               
                               <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="flex items-center">
+                                <div>
                                   <span className="text-gray-600">Experience:</span>
-                                  <span className="ml-2 font-medium">
-                                    {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
-                                  </span>
+                                  <p className="font-medium">
+                                    {member.experience} year{member.experience !== 1 ? 's' : ''}
+                                  </p>
                                 </div>
                                 <div>
                                   <span className="text-gray-600">Salary:</span>
@@ -1321,7 +1382,7 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                       if (!sector) return null;
                       
                       const incomeIncrease = Math.round(
-                        (sector.incomeBoost + (showSectorDialog.employee.stats.impact / 100) * 0.15) * 100
+                        (sector.incomeBoost + ((showSectorDialog.employee.stats.impact || 70) / 100) * 0.15) * 100
                       );
                       
                       return (
@@ -1361,6 +1422,66 @@ const AdvancedTeamManagement: React.FC<AdvancedTeamManagementProps> = ({ onClose
                   </Button>
                 </div>
               )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* CEO Confirmation Dialog */}
+      {showCEOConfirmDialog && (
+        <Dialog open={!!showCEOConfirmDialog} onOpenChange={() => setShowCEOConfirmDialog(null)}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-gray-800 flex items-center">
+                <Crown className="mr-2 text-yellow-500" size={24} />
+                Confirm CEO Promotion
+              </DialogTitle>
+              <DialogDescription className="text-gray-600">
+                This is a major decision that will affect the entire company structure.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <AlertTriangle className="text-yellow-600 mr-2" size={20} />
+                  <span className="font-semibold text-yellow-800">Important Decision</span>
+                </div>
+                <p className="text-yellow-800 text-sm">
+                  Promoting {showCEOConfirmDialog.name} to CEO will:
+                </p>
+                <ul className="list-disc list-inside text-yellow-700 text-sm mt-2 space-y-1">
+                  <li>Make them the company's Chief Executive Officer</li>
+                  <li>Increase their salary by 150%</li>
+                  <li>Demote any existing CEO to Chief level</li>
+                  <li>Grant them highest authority in the company</li>
+                </ul>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-lg font-semibold text-gray-800 mb-2">
+                  Are you sure you want to make {showCEOConfirmDialog.name} the CEO?
+                </div>
+                <p className="text-gray-600">
+                  This action will restructure your company leadership.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  onClick={confirmCEOPromotion} 
+                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  <Crown className="mr-2" size={16} />
+                  Yes, Make CEO
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowCEOConfirmDialog(null)} 
+                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

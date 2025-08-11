@@ -56,7 +56,7 @@ const SectorTeamSection: React.FC<SectorTeamSectionProps> = ({
     
     return {
       performance: Math.round(totalPerformance),
-      monthlyContribution: Math.round(member.salary * sector.incomeBoost / 12),
+      monthlyContribution: Math.round(member.salary * (sector.incomeBoost + ((member.stats.impact || 70) / 100) * 0.15) / 12),
       growthContribution: Math.round((basePerformance / 100) * 2.5),
       role: getSectorRole(sectorId, member.role)
     };
@@ -213,6 +213,9 @@ const SectorTeamSection: React.FC<SectorTeamSectionProps> = ({
                     <div className="bg-purple-50 p-3 rounded-lg">
                       <p className="text-sm font-medium text-purple-700 mb-1">Sector Role:</p>
                       <p className="text-sm text-purple-600">{performance.role}</p>
+                      <p className="text-xs text-purple-600 mt-1">
+                        Income Boost: +{Math.round((sector.incomeBoost + ((member.stats.impact || 70) / 100) * 0.15) * 100)}%
+                      </p>
                     </div>
 
                     {/* Performance Metrics */}
@@ -250,9 +253,9 @@ const SectorTeamSection: React.FC<SectorTeamSectionProps> = ({
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <span className="text-gray-600">Experience:</span>
-                        <span className="ml-2 font-medium">
-                          {Math.floor((new Date().getTime() - new Date(member.joinDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} year
-                        </span>
+                        <p className="font-medium">
+                          {member.experience} year{member.experience !== 1 ? 's' : ''}
+                        </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Joined:</span>

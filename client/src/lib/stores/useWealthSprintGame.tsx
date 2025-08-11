@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { TeamMember, TeamRole, teamRoles, generateRandomTeamMember, generateRandomName, calculatePromotionCost, calculateBonusAmount } from '../data/teamRoles';
+import { useTeamManagement } from './useTeamManagement';
 
 export interface PlayerStats {
   name?: string;
@@ -43,7 +44,7 @@ export interface BusinessSectorInvestment {
 
 export interface Transaction {
   id: string;
-  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations';
+  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations' | 'store_purchase';
   amount: number;
   description: string;
   timestamp: Date;
@@ -488,6 +489,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
               timestamp: new Date(),
             });
           }
+          
+          // Update team experience every 48 weeks 
+          useTeamManagement.getState().increaseTeamExperience(newWeek);
           
           return {
             currentWeek: newWeek,
