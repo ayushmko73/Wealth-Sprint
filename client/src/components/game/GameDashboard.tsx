@@ -60,7 +60,6 @@ import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
 
 import AdvancedTeamManagement from './AdvancedTeamManagement';
-import TeamPerformanceSection from './sections/TeamPerformanceSection';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
@@ -110,7 +109,6 @@ const GameDashboard: React.FC = () => {
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
 
-    { id: 'team_performance', label: 'Team', icon: Users },
     { id: 'advanced_team', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
@@ -135,16 +133,10 @@ const GameDashboard: React.FC = () => {
       case 'bank':
         return <BankSection />;
 
-      case 'team_performance':
-        return (
-          <TeamPerformanceSection 
-            onNavigateToTeamManagement={() => setActiveSection('advanced_team')}
-          />
-        );
       case 'advanced_team':
         return (
           <AdvancedTeamManagement 
-            onClose={() => setActiveSection('team_performance')}
+            onClose={() => setActiveSection('dashboard')}
             onNavigateToSectors={() => setActiveSection('industry_sectors')}
           />
         );

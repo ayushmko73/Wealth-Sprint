@@ -442,6 +442,10 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
   },
 
   getRoleFromExperience: (experience: number, baseRole: string) => {
+    // Check if the role already contains a seniority prefix to avoid duplication
+    const hasPrefix = /^(Fresher|Junior|Senior|Chief|CEO)\s/i.test(baseRole);
+    if (hasPrefix) return baseRole;
+    
     if (experience === 0) return `Fresher ${baseRole}`;
     if (experience >= 1 && experience <= 5) return `Junior ${baseRole}`;
     if (experience >= 6 && experience <= 10) return `Senior ${baseRole}`;
