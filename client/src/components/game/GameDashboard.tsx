@@ -109,9 +109,6 @@ const GameDashboard: React.FC = () => {
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
-
-    { id: 'team_performance', label: 'Team', icon: Users },
-    { id: 'advanced_team', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
@@ -135,19 +132,7 @@ const GameDashboard: React.FC = () => {
       case 'bank':
         return <BankSection />;
 
-      case 'team_performance':
-        return (
-          <TeamPerformanceSection 
-            onNavigateToTeamManagement={() => setActiveSection('advanced_team')}
-          />
-        );
-      case 'advanced_team':
-        return (
-          <AdvancedTeamManagement 
-            onClose={() => setActiveSection('team_performance')}
-            onNavigateToSectors={() => setActiveSection('industry_sectors')}
-          />
-        );
+
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':

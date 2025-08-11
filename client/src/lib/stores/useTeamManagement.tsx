@@ -427,7 +427,7 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
       set(state => ({
         teamMembers: state.teamMembers.map(member => {
           const newExperience = member.experience + 1;
-          const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief)\s+/, '');
+          const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief|CEO)\s+/, '');
           const newRole = get().getRoleFromExperience(newExperience, baseRole);
           
           return {
@@ -442,11 +442,14 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
   },
 
   getRoleFromExperience: (experience: number, baseRole: string) => {
-    if (experience === 0) return `Fresher ${baseRole}`;
-    if (experience >= 1 && experience <= 5) return `Junior ${baseRole}`;
-    if (experience >= 6 && experience <= 10) return `Senior ${baseRole}`;
-    if (experience >= 11) return `Chief ${baseRole}`;
-    return baseRole;
+    // Clean the base role first to remove any existing seniority prefixes
+    const cleanBaseRole = baseRole.replace(/^(Fresher|Junior|Senior|Chief|CEO)\s+/, '');
+    
+    if (experience === 0) return `Fresher ${cleanBaseRole}`;
+    if (experience >= 1 && experience <= 5) return `Junior ${cleanBaseRole}`;
+    if (experience >= 6 && experience <= 10) return `Senior ${cleanBaseRole}`;
+    if (experience >= 11) return `Chief ${cleanBaseRole}`;
+    return cleanBaseRole;
   },
 
   getSeniorityFromExperience: (experience: number) => {
@@ -462,7 +465,7 @@ export const useTeamManagement = create<TeamManagementState>((set, get) => ({
       const member = state.teamMembers.find(m => m.id === memberId);
       if (!member) return state;
 
-      const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief)\s+/, '');
+      const baseRole = member.role.replace(/^(Fresher|Junior|Senior|Chief|CEO)\s+/, '');
       const newRole = get().getRoleFromExperience(member.experience, baseRole);
       const newSeniority = get().getSeniorityFromExperience(member.experience);
 
