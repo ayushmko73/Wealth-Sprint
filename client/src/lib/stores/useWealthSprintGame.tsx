@@ -52,6 +52,35 @@ export interface Transaction {
   toAccount: 'bank' | 'wallet' | 'business';
 }
 
+export interface Asset {
+  id: string;
+  name: string;
+  category: 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment';
+  value: number;
+  purchasePrice: number;
+  purchaseDate: Date;
+  monthlyIncome: number;
+  appreciationRate?: number;
+  maintenanceCost?: number;
+  description: string;
+  icon: string;
+  storeItemId?: string; // Link to store item
+}
+
+export interface Liability {
+  id: string;
+  name: string;
+  category: 'home_loan' | 'car_loan' | 'education_loan' | 'credit_card' | 'business_debt' | 'personal_loan';
+  outstandingAmount: number;
+  originalAmount: number;
+  interestRate: number;
+  emi: number;
+  tenure: number;
+  remainingMonths: number;
+  description: string;
+  icon: string;
+}
+
 export interface FinancialData {
   bankBalance: number;
   inHandCash: number;
@@ -76,6 +105,8 @@ export interface FinancialData {
   teamSalaries: number; // Total monthly team salaries
   businessSectors: BusinessSectorInvestment[]; // Track business sector investments
   businessRevenue: number; // Monthly revenue from all business sectors
+  assets: Asset[]; // Player owned assets
+  liabilities: Liability[]; // Player liabilities
 }
 
 export interface GameEvent {
@@ -193,6 +224,19 @@ interface WealthSprintGameState {
   // Sector management functions
   purchaseSector: (sectorId: string) => boolean;
   setFastFoodState: (state: any) => void;
+  
+  // Asset and Liability management functions
+  addAsset: (asset: Omit<Asset, 'id'>) => string;
+  removeAsset: (assetId: string) => boolean;
+  updateAsset: (assetId: string, updates: Partial<Asset>) => boolean;
+  getAssets: () => Asset[];
+  getAssetsByCategory: (category: string) => Asset[];
+  addLiability: (liability: Omit<Liability, 'id'>) => string;
+  removeLiability: (liabilityId: string) => boolean;
+  updateLiability: (liabilityId: string, updates: Partial<Liability>) => boolean;
+  getLiabilities: () => Liability[];
+  updateAssetValues: () => void;
+  calculateNetWorth: () => number;
 }
 
 // Initial state values
@@ -220,7 +264,7 @@ const initialFinancialData: FinancialData = {
   sideIncome: 15000, // ₹15k side income
   monthlyExpenses: 45000, // ₹45k monthly expenses
   totalAssets: 525000,
-  totalLiabilities: 0,
+  totalLiabilities: 6900000, // Default liabilities
   cashflow: 45000, // 75k + 15k - 45k = 45k
   investments: {
     stocks: 0,
@@ -236,6 +280,62 @@ const initialFinancialData: FinancialData = {
   teamSalaries: 0,
   businessSectors: [],
   businessRevenue: 0,
+  assets: [], // Start with no assets - players buy from store
+  liabilities: [
+    // Default liabilities as per user request
+    {
+      id: 'liability_1',
+      name: 'Home Loan',
+      category: 'home_loan',
+      outstandingAmount: 5500000,
+      originalAmount: 6500000,
+      interestRate: 8.5,
+      emi: 52000,
+      tenure: 240,
+      remainingMonths: 180,
+      description: 'Housing loan for Mumbai apartment',
+      icon: '🏠',
+    },
+    {
+      id: 'liability_2',
+      name: 'Business Working Capital',
+      category: 'business_debt',
+      outstandingAmount: 800000,
+      originalAmount: 1200000,
+      interestRate: 12,
+      emi: 25000,
+      tenure: 60,
+      remainingMonths: 35,
+      description: 'Working capital for business operations',
+      icon: '🏢',
+    },
+    {
+      id: 'liability_3',
+      name: 'Credit Card Outstanding',
+      category: 'credit_card',
+      outstandingAmount: 150000,
+      originalAmount: 150000,
+      interestRate: 42,
+      emi: 15000,
+      tenure: 12,
+      remainingMonths: 12,
+      description: 'High-interest credit card debt',
+      icon: '💳',
+    },
+    {
+      id: 'liability_4',
+      name: 'Car Loan',
+      category: 'car_loan',
+      outstandingAmount: 450000,
+      originalAmount: 800000,
+      interestRate: 9.5,
+      emi: 18000,
+      tenure: 60,
+      remainingMonths: 28,
+      description: 'Personal vehicle loan',
+      icon: '🚗',
+    },
+  ],
 };
 
 export const useWealthSprintGame = create<WealthSprintGameState>()(
@@ -1554,6 +1654,204 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       set((prevState) => ({
         fastFoodChains: state
       }));
+    },
+
+    // Asset and Liability management functions
+    addAsset: (asset: Omit<Asset, 'id'>) => {
+      const assetId = `asset_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const newAsset: Asset = {
+        ...asset,
+        id: assetId,
+      };
+
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          assets: [...state.financialData.assets, newAsset],
+          totalAssets: state.financialData.totalAssets + asset.value,
+          sideIncome: state.financialData.sideIncome + asset.monthlyIncome,
+          monthlyExpenses: state.financialData.monthlyExpenses + (asset.maintenanceCost || 0),
+        }
+      }));
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return assetId;
+    },
+
+    removeAsset: (assetId: string) => {
+      const state = get();
+      const asset = state.financialData.assets.find(a => a.id === assetId);
+      if (!asset) return false;
+
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          assets: state.financialData.assets.filter(a => a.id !== assetId),
+          totalAssets: state.financialData.totalAssets - asset.value,
+          sideIncome: state.financialData.sideIncome - asset.monthlyIncome,
+          monthlyExpenses: state.financialData.monthlyExpenses - (asset.maintenanceCost || 0),
+        }
+      }));
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return true;
+    },
+
+    updateAsset: (assetId: string, updates: Partial<Asset>) => {
+      const state = get();
+      const assetIndex = state.financialData.assets.findIndex(a => a.id === assetId);
+      if (assetIndex === -1) return false;
+
+      const oldAsset = state.financialData.assets[assetIndex];
+      const updatedAsset = { ...oldAsset, ...updates };
+
+      set((state) => {
+        const newAssets = [...state.financialData.assets];
+        newAssets[assetIndex] = updatedAsset;
+
+        return {
+          financialData: {
+            ...state.financialData,
+            assets: newAssets,
+            totalAssets: state.financialData.totalAssets - oldAsset.value + updatedAsset.value,
+            sideIncome: state.financialData.sideIncome - oldAsset.monthlyIncome + updatedAsset.monthlyIncome,
+            monthlyExpenses: state.financialData.monthlyExpenses - (oldAsset.maintenanceCost || 0) + (updatedAsset.maintenanceCost || 0),
+          }
+        };
+      });
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return true;
+    },
+
+    getAssets: () => {
+      return get().financialData.assets;
+    },
+
+    getAssetsByCategory: (category: string) => {
+      return get().financialData.assets.filter(asset => asset.category === category);
+    },
+
+    addLiability: (liability: Omit<Liability, 'id'>) => {
+      const liabilityId = `liability_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const newLiability: Liability = {
+        ...liability,
+        id: liabilityId,
+      };
+
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          liabilities: [...state.financialData.liabilities, newLiability],
+          totalLiabilities: state.financialData.totalLiabilities + liability.outstandingAmount,
+          monthlyExpenses: state.financialData.monthlyExpenses + liability.emi,
+        }
+      }));
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return liabilityId;
+    },
+
+    removeLiability: (liabilityId: string) => {
+      const state = get();
+      const liability = state.financialData.liabilities.find(l => l.id === liabilityId);
+      if (!liability) return false;
+
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          liabilities: state.financialData.liabilities.filter(l => l.id !== liabilityId),
+          totalLiabilities: state.financialData.totalLiabilities - liability.outstandingAmount,
+          monthlyExpenses: state.financialData.monthlyExpenses - liability.emi,
+        }
+      }));
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return true;
+    },
+
+    updateLiability: (liabilityId: string, updates: Partial<Liability>) => {
+      const state = get();
+      const liabilityIndex = state.financialData.liabilities.findIndex(l => l.id === liabilityId);
+      if (liabilityIndex === -1) return false;
+
+      const oldLiability = state.financialData.liabilities[liabilityIndex];
+      const updatedLiability = { ...oldLiability, ...updates };
+
+      set((state) => {
+        const newLiabilities = [...state.financialData.liabilities];
+        newLiabilities[liabilityIndex] = updatedLiability;
+
+        return {
+          financialData: {
+            ...state.financialData,
+            liabilities: newLiabilities,
+            totalLiabilities: state.financialData.totalLiabilities - oldLiability.outstandingAmount + updatedLiability.outstandingAmount,
+            monthlyExpenses: state.financialData.monthlyExpenses - oldLiability.emi + updatedLiability.emi,
+          }
+        };
+      });
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+
+      return true;
+    },
+
+    getLiabilities: () => {
+      return get().financialData.liabilities;
+    },
+
+    updateAssetValues: () => {
+      const state = get();
+      const updatedAssets = state.financialData.assets.map(asset => {
+        if (asset.appreciationRate) {
+          const monthlyAppreciation = asset.appreciationRate / 12 / 100;
+          const newValue = asset.value * (1 + monthlyAppreciation);
+          return { ...asset, value: newValue };
+        }
+        return asset;
+      });
+
+      const totalAssets = updatedAssets.reduce((sum, asset) => sum + asset.value, 0);
+
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          assets: updatedAssets,
+          totalAssets: totalAssets,
+        }
+      }));
+
+      // Auto-calculate net worth
+      get().calculateNetWorth();
+    },
+
+    calculateNetWorth: () => {
+      const state = get();
+      const totalAssets = state.financialData.totalAssets + state.financialData.bankBalance + state.financialData.inHandCash;
+      const totalLiabilities = state.financialData.totalLiabilities;
+      const netWorth = totalAssets - totalLiabilities;
+
+      set((prevState) => ({
+        financialData: {
+          ...prevState.financialData,
+          netWorth: netWorth,
+          cashflow: prevState.financialData.mainIncome + prevState.financialData.sideIncome - prevState.financialData.monthlyExpenses,
+        }
+      }));
+
+      return netWorth;
     },
   }))
 );
