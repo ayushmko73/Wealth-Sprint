@@ -44,12 +44,12 @@ export interface BusinessSectorInvestment {
 
 export interface Transaction {
   id: string;
-  type: 'bond_purchase' | 'bond_maturity' | 'wallet_transfer' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations' | 'store_purchase';
+  type: 'bond_purchase' | 'bond_maturity' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations' | 'store_purchase';
   amount: number;
   description: string;
   timestamp: Date;
-  fromAccount: 'bank' | 'wallet' | 'business';
-  toAccount: 'bank' | 'wallet' | 'business';
+  fromAccount: 'bank' | 'business';
+  toAccount: 'bank' | 'business';
 }
 
 export interface Asset {
@@ -83,7 +83,6 @@ export interface Liability {
 
 export interface FinancialData {
   bankBalance: number;
-  inHandCash: number;
   netWorth: number;
   mainIncome: number;
   sideIncome: number;
@@ -183,10 +182,7 @@ interface WealthSprintGameState {
   checkBlackoutMode: () => void;
   processTurn: () => void;
   
-  // Enhanced wallet functions
-  transferToWallet: (amount: number) => boolean;
-  transferFromWallet: (amount: number) => boolean;
-  spendFromWallet: (amount: number, description: string) => boolean;
+  // Maturity functions
   maturityToBank: (amount: number, type: 'FD' | 'Bond', instrumentName: string) => void;
   
   // Investment functions
@@ -258,12 +254,11 @@ const initialPlayerStats: PlayerStats = {
 
 const initialFinancialData: FinancialData = {
   bankBalance: 500000, // ₹5 lakhs starting cash
-  inHandCash: 25000, // ₹25k in-hand cash
-  netWorth: 525000,
+  netWorth: 500000,
   mainIncome: 75000, // ₹75k monthly salary
   sideIncome: 15000, // ₹15k side income
   monthlyExpenses: 45000, // ₹45k monthly expenses
-  totalAssets: 525000,
+  totalAssets: 500000,
   totalLiabilities: 6900000, // Default liabilities
   cashflow: 45000, // 75k + 15k - 45k = 45k
   investments: {
@@ -400,61 +395,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       });
     },
     
-    // Enhanced wallet functions
-    transferToWallet: (amount: number) => {
-      const state = get();
-      if (state.financialData.bankBalance >= amount) {
-        set((state) => ({
-          financialData: {
-            ...state.financialData,
-            bankBalance: state.financialData.bankBalance - amount,
-            inHandCash: state.financialData.inHandCash + amount,
-          },
-        }));
-        return true;
-      }
-      return false;
-    },
 
-    transferFromWallet: (amount: number) => {
-      const state = get();
-      if (state.financialData.inHandCash >= amount) {
-        set((state) => ({
-          financialData: {
-            ...state.financialData,
-            inHandCash: state.financialData.inHandCash - amount,
-            bankBalance: state.financialData.bankBalance + amount,
-          },
-        }));
-        return true;
-      }
-      return false;
-    },
-    
-    spendFromWallet: (amount: number, description: string) => {
-      const state = get();
-      if (state.financialData.inHandCash >= amount) {
-        set((state) => ({
-          financialData: {
-            ...state.financialData,
-            inHandCash: state.financialData.inHandCash - amount,
-            monthlyExpenses: state.financialData.monthlyExpenses + amount,
-          },
-        }));
-        
-        // Add transaction event
-        get().addGameEvent({
-          id: `wallet_spend_${Date.now()}`,
-          type: 'financial',
-          title: 'Wallet Purchase',
-          description: `Spent ₹${amount.toLocaleString()} from wallet on ${description}`,
-          timestamp: new Date(),
-        });
-        
-        return true;
-      }
-      return false;
-    },
+
     
     maturityToBank: (amount: number, type: 'FD' | 'Bond', instrumentName: string) => {
       set((state) => ({
