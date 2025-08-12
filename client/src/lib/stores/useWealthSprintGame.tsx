@@ -185,6 +185,10 @@ interface WealthSprintGameState {
   // Maturity functions
   maturityToBank: (amount: number, type: 'FD' | 'Bond', instrumentName: string) => void;
   
+  // Credit card functions
+  chargeToCredit: (amount: number, description: string) => boolean;
+  payCreditCardBill: (amount: number) => boolean;
+  
   // Investment functions
   makeInvestment: (type: 'stocks' | 'bonds' | 'fd' | 'mutualFunds' | 'realEstate', amount: number) => boolean;
   setSavingsGoal: (goal: number) => void;
@@ -259,7 +263,7 @@ const initialFinancialData: FinancialData = {
   sideIncome: 15000, // ₹15k side income
   monthlyExpenses: 45000, // ₹45k monthly expenses
   totalAssets: 500000,
-  totalLiabilities: 6900000, // Default liabilities
+  totalLiabilities: 0, // No default liabilities
   cashflow: 45000, // 75k + 15k - 45k = 45k
   investments: {
     stocks: 0,
@@ -276,61 +280,7 @@ const initialFinancialData: FinancialData = {
   businessSectors: [],
   businessRevenue: 0,
   assets: [], // Start with no assets - players buy from store
-  liabilities: [
-    // Default liabilities as per user request
-    {
-      id: 'liability_1',
-      name: 'Home Loan',
-      category: 'home_loan',
-      outstandingAmount: 5500000,
-      originalAmount: 6500000,
-      interestRate: 8.5,
-      emi: 52000,
-      tenure: 240,
-      remainingMonths: 180,
-      description: 'Housing loan for Mumbai apartment',
-      icon: '🏠',
-    },
-    {
-      id: 'liability_2',
-      name: 'Business Working Capital',
-      category: 'business_debt',
-      outstandingAmount: 800000,
-      originalAmount: 1200000,
-      interestRate: 12,
-      emi: 25000,
-      tenure: 60,
-      remainingMonths: 35,
-      description: 'Working capital for business operations',
-      icon: '🏢',
-    },
-    {
-      id: 'liability_3',
-      name: 'Credit Card Outstanding',
-      category: 'credit_card',
-      outstandingAmount: 150000,
-      originalAmount: 150000,
-      interestRate: 42,
-      emi: 15000,
-      tenure: 12,
-      remainingMonths: 12,
-      description: 'High-interest credit card debt',
-      icon: '💳',
-    },
-    {
-      id: 'liability_4',
-      name: 'Car Loan',
-      category: 'car_loan',
-      outstandingAmount: 450000,
-      originalAmount: 800000,
-      interestRate: 9.5,
-      emi: 18000,
-      tenure: 60,
-      remainingMonths: 28,
-      description: 'Personal vehicle loan',
-      icon: '🚗',
-    },
-  ],
+  liabilities: [], // Start with no default liabilities
 };
 
 export const useWealthSprintGame = create<WealthSprintGameState>()(
@@ -384,7 +334,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         const newFinancialData = { ...state.financialData, ...updates };
         
         // Calculate net worth
-        newFinancialData.netWorth = newFinancialData.bankBalance + newFinancialData.inHandCash + newFinancialData.totalAssets - newFinancialData.totalLiabilities;
+        newFinancialData.netWorth = newFinancialData.bankBalance + newFinancialData.totalAssets - newFinancialData.totalLiabilities;
         
         // Calculate cashflow
         newFinancialData.cashflow = newFinancialData.mainIncome + newFinancialData.sideIncome - newFinancialData.monthlyExpenses;
@@ -397,6 +347,111 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     
 
 
+    // Credit card functions
+    chargeToCredit: (amount: number, description: string) => {
+      const state = get();
+      const currentCreditUsed = state.financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+      const creditLimit = 500000; // ₹5 lakh credit limit
+      
+      if (currentCreditUsed + amount > creditLimit) {
+        return false; // Credit limit exceeded
+      }
+      
+      // Find existing credit card liability or create new one
+      const existingCreditCard = state.financialData.liabilities.find(l => l.category === 'credit_card');
+      
+      if (existingCreditCard) {
+        // Update existing credit card debt
+        set((state) => ({
+          financialData: {
+            ...state.financialData,
+            liabilities: state.financialData.liabilities.map(liability =>
+              liability.category === 'credit_card'
+                ? {
+                    ...liability,
+                    outstandingAmount: liability.outstandingAmount + amount
+                  }
+                : liability
+            ),
+            totalLiabilities: state.financialData.totalLiabilities + amount
+          }
+        }));
+      } else {
+        // Create new credit card liability
+        const newCreditCard: Liability = {
+          id: `credit_card_${Date.now()}`,
+          name: 'Credit Card Outstanding',
+          category: 'credit_card',
+          outstandingAmount: amount,
+          originalAmount: amount,
+          interestRate: 3.5, // 3.5% monthly
+          emi: Math.max(amount * 0.05, 5000), // 5% minimum payment or ₹5000
+          tenure: 12,
+          remainingMonths: 12,
+          description: 'Premium Credit Card Outstanding',
+          icon: '💳'
+        };
+        
+        set((state) => ({
+          financialData: {
+            ...state.financialData,
+            liabilities: [...state.financialData.liabilities, newCreditCard],
+            totalLiabilities: state.financialData.totalLiabilities + amount
+          }
+        }));
+      }
+      
+      // Add transaction record
+      get().addTransaction({
+        type: 'store_purchase',
+        amount: -amount,
+        description: `Credit Card: ${description}`,
+        fromAccount: 'bank',
+        toAccount: 'business'
+      });
+      
+      return true;
+    },
+
+    payCreditCardBill: (amount: number) => {
+      const state = get();
+      const creditCard = state.financialData.liabilities.find(l => l.category === 'credit_card');
+      
+      if (!creditCard || amount <= 0 || amount > state.financialData.bankBalance) {
+        return false;
+      }
+      
+      const paymentAmount = Math.min(amount, creditCard.outstandingAmount);
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          bankBalance: state.financialData.bankBalance - paymentAmount,
+          liabilities: state.financialData.liabilities.map(liability =>
+            liability.category === 'credit_card'
+              ? {
+                  ...liability,
+                  outstandingAmount: liability.outstandingAmount - paymentAmount
+                }
+              : liability
+          ).filter(liability => 
+            liability.category !== 'credit_card' || liability.outstandingAmount > 0
+          ),
+          totalLiabilities: state.financialData.totalLiabilities - paymentAmount
+        }
+      }));
+      
+      // Add transaction record
+      get().addTransaction({
+        type: 'loan_deducted',
+        amount: -paymentAmount,
+        description: `Credit Card Payment`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      return true;
+    },
     
     maturityToBank: (amount: number, type: 'FD' | 'Bond', instrumentName: string) => {
       set((state) => ({
@@ -1781,7 +1836,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
 
     calculateNetWorth: () => {
       const state = get();
-      const totalAssets = state.financialData.totalAssets + state.financialData.bankBalance + state.financialData.inHandCash;
+      const totalAssets = state.financialData.totalAssets + state.financialData.bankBalance;
       const totalLiabilities = state.financialData.totalLiabilities;
       const netWorth = totalAssets - totalLiabilities;
 

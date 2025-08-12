@@ -19,7 +19,13 @@ import {
 import { toast } from 'sonner';
 
 const StoreSection: React.FC = () => {
-  const { financialData, addTransaction, updateFinancialData, addAsset } = useWealthSprintGame();
+  const { 
+    financialData, 
+    addTransaction, 
+    updateFinancialData, 
+    addAsset,
+    chargeToCredit 
+  } = useWealthSprintGame();
   const { purchaseItem, getPurchasedItems } = useStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
@@ -45,8 +51,12 @@ const StoreSection: React.FC = () => {
   });
 
   const handlePurchase = (item: any) => {
-    if (financialData.bankBalance < item.price) {
-      toast.error('Insufficient funds for this purchase');
+    const currentCreditUsed = financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+    const creditLimit = 500000; // ₹5 lakh credit limit
+    const availableCredit = creditLimit - currentCreditUsed;
+    
+    if (financialData.bankBalance < item.price && availableCredit < item.price) {
+      toast.error('Insufficient funds and credit limit exceeded');
       return;
     }
     setShowPurchaseModal(item);
@@ -54,10 +64,23 @@ const StoreSection: React.FC = () => {
 
   const confirmPurchase = (item: any) => {
     try {
-      // Update financial data - deduct from bank balance
-      updateFinancialData({
-        bankBalance: financialData.bankBalance - item.price,
-      });
+      let paymentMethod = '';
+      
+      if (financialData.bankBalance >= item.price) {
+        // Pay with bank balance
+        updateFinancialData({
+          bankBalance: financialData.bankBalance - item.price,
+        });
+        paymentMethod = 'Bank Account';
+      } else {
+        // Pay with credit card
+        const success = chargeToCredit(item.price, item.name);
+        if (!success) {
+          toast.error('Credit limit exceeded');
+          return;
+        }
+        paymentMethod = 'Credit Card';
+      }
 
       // Add to both store purchases (for inventory tracking) and assets (for financial tracking)
       purchaseItem({
@@ -95,7 +118,7 @@ const StoreSection: React.FC = () => {
       });
 
       setShowPurchaseModal(null);
-      toast.success(`Successfully purchased ${item.name}! Added to your assets.`);
+      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Added to your assets.`);
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
     }
@@ -334,16 +357,41 @@ const StoreSection: React.FC = () => {
                 {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
               </p>
               
+              {/* Payment Method Display */}
               <div 
-                className="rounded-xl p-4 mb-6"
+                className="rounded-xl p-4 mb-4"
                 style={{ backgroundColor: '#f8f9fa' }}
               >
-                <div className="text-sm mb-2" style={{ color: '#666' }}>After purchase:</div>
-                <div className="font-semibold" style={{ color: '#3a3a3a' }}>
-                  Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
-                </div>
-                <div className="text-sm" style={{ color: '#9333EA' }}>
-                  +{formatMoney(showPurchaseModal.monthlyIncome)}/month income
+                <div className="text-sm mb-2" style={{ color: '#666' }}>Payment Method:</div>
+                {financialData.bankBalance >= showPurchaseModal.price ? (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="font-semibold text-green-700">Bank Account</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="font-semibold text-blue-700">💳 Credit Card</span>
+                  </div>
+                )}
+                
+                <div className="text-sm" style={{ color: '#666' }}>After purchase:</div>
+                {financialData.bankBalance >= showPurchaseModal.price ? (
+                  <div className="font-semibold" style={{ color: '#3a3a3a' }}>
+                    Bank Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
+                  </div>
+                ) : (
+                  <div>
+                    <div className="font-semibold" style={{ color: '#3a3a3a' }}>
+                      Bank Balance: {formatMoney(financialData.bankBalance)}
+                    </div>
+                    <div className="font-semibold text-blue-700">
+                      Credit Used: {formatMoney((financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0) + showPurchaseModal.price)}
+                    </div>
+                  </div>
+                )}
+                <div className="text-sm mt-1" style={{ color: '#9333EA' }}>
+                  +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month income
                 </div>
               </div>
               
