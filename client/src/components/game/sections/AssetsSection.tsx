@@ -1,340 +1,482 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
-import { TrendingUp, TrendingDown, Home, Car, Briefcase, Smartphone, Laptop, Building } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Badge } from '../../ui/badge';
+import { Progress } from '../../ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Home, TrendingUp, Car, Briefcase, Minus, Plus, AlertTriangle } from 'lucide-react';
 
-const formatMoney = (amount: number): string => {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(1)}Cr`;
-  } else if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(1)}L`;
-  } else if (amount >= 1000) {
-    return `₹${(amount / 1000).toFixed(1)}K`;
-  } else {
-    return `₹${amount.toLocaleString()}`;
-  }
-};
+interface Asset {
+  id: string;
+  name: string;
+  category: 'real_estate' | 'stocks' | 'bonds' | 'business' | 'intellectual' | 'vehicles' | 'gold_crypto';
+  value: number;
+  purchasePrice: number;
+  purchaseDate: Date;
+  monthlyIncome: number;
+  appreciationRate: number;
+  maintenanceCost: number;
+  description: string;
+  icon: string;
+}
+
+interface Liability {
+  id: string;
+  name: string;
+  category: 'home_loan' | 'car_loan' | 'education_loan' | 'credit_card' | 'business_debt' | 'personal_loan';
+  outstandingAmount: number;
+  originalAmount: number;
+  interestRate: number;
+  emi: number;
+  tenure: number;
+  remainingMonths: number;
+  description: string;
+  icon: string;
+}
 
 const AssetsSection: React.FC = () => {
-  const { financialData, purchasedItems, storeItems } = useWealthSprintGame();
-  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'liabilities'>('overview');
+  const { financialData, updateFinancialData, playerStats, updatePlayerStats } = useWealthSprintGame();
+  const [activeTab, setActiveTab] = useState<'assets' | 'liabilities'>('assets');
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+  const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
 
-  // Convert purchased store items to assets with detailed information
-  const assets = (purchasedItems || []).map(purchasedItem => {
-    const storeItem = (storeItems || []).find(item => item.id === purchasedItem.storeItemId);
-    if (!storeItem) return null;
+  const [assets, setAssets] = useState<Asset[]>([
+    {
+      id: 'asset_1',
+      name: '2BHK Apartment in Mumbai',
+      category: 'real_estate',
+      value: 8500000,
+      purchasePrice: 7500000,
+      purchaseDate: new Date('2023-01-15'),
+      monthlyIncome: 25000,
+      appreciationRate: 8.5,
+      maintenanceCost: 3000,
+      description: 'Prime location apartment generating rental income',
+      icon: '🏠',
+    },
+    {
+      id: 'asset_2',
+      name: 'Delivery Vehicle Fleet',
+      category: 'vehicles',
+      value: 1200000,
+      purchasePrice: 1500000,
+      purchaseDate: new Date('2023-06-10'),
+      monthlyIncome: 45000,
+      appreciationRate: -10,
+      maintenanceCost: 8000,
+      description: '3 commercial vehicles for delivery business',
+      icon: '🚚',
+    },
+    {
+      id: 'asset_3',
+      name: 'Tech Startup Equity',
+      category: 'business',
+      value: 2500000,
+      purchasePrice: 1000000,
+      purchaseDate: new Date('2023-03-20'),
+      monthlyIncome: 0,
+      appreciationRate: 25,
+      maintenanceCost: 0,
+      description: '15% stake in a growing fintech startup',
+      icon: '🚀',
+    },
+    {
+      id: 'asset_4',
+      name: 'Government Bonds',
+      category: 'bonds',
+      value: 500000,
+      purchasePrice: 500000,
+      purchaseDate: new Date('2023-08-05'),
+      monthlyIncome: 3500,
+      appreciationRate: 0,
+      maintenanceCost: 0,
+      description: 'Safe government securities with fixed returns',
+      icon: '🏛️',
+    },
+    {
+      id: 'asset_5',
+      name: 'Online Course Revenue',
+      category: 'intellectual',
+      value: 150000,
+      purchasePrice: 50000,
+      purchaseDate: new Date('2023-04-12'),
+      monthlyIncome: 12000,
+      appreciationRate: 15,
+      maintenanceCost: 1000,
+      description: 'Passive income from educational content',
+      icon: '📚',
+    },
+  ]);
 
-    return {
-      id: purchasedItem.id,
-      name: storeItem.name,
-      category: storeItem.category,
-      value: storeItem.price,
-      monthlyIncome: storeItem.monthlyIncome,
-      purchaseDate: new Date(purchasedItem.purchaseDate),
-      description: storeItem.description,
-      image: storeItem.image,
-      roi: ((storeItem.monthlyIncome * 12) / storeItem.price * 100)
-    };
-  }).filter(Boolean);
-
-  // Sample liabilities data (you can replace with actual data)
-  const liabilities = [
+  const [liabilities, setLiabilities] = useState<Liability[]>([
     {
       id: 'liability_1',
       name: 'Home Loan',
-      amount: 4500000,
-      monthlyEMI: 35000,
+      category: 'home_loan',
+      outstandingAmount: 5500000,
+      originalAmount: 6500000,
       interestRate: 8.5,
+      emi: 52000,
+      tenure: 240,
       remainingMonths: 180,
-      description: 'Housing loan for property investment',
-      icon: '🏠'
+      description: 'Housing loan for Mumbai apartment',
+      icon: '🏠',
     },
     {
       id: 'liability_2',
-      name: 'Vehicle Loan',
-      amount: 800000,
-      monthlyEMI: 18000,
-      interestRate: 9.2,
-      remainingMonths: 36,
-      description: 'Auto loan for personal vehicle',
-      icon: '🚗'
-    }
-  ];
+      name: 'Business Working Capital',
+      category: 'business_debt',
+      outstandingAmount: 800000,
+      originalAmount: 1200000,
+      interestRate: 12,
+      emi: 25000,
+      tenure: 60,
+      remainingMonths: 35,
+      description: 'Working capital for business operations',
+      icon: '🏢',
+    },
+    {
+      id: 'liability_3',
+      name: 'Credit Card Outstanding',
+      category: 'credit_card',
+      outstandingAmount: 150000,
+      originalAmount: 150000,
+      interestRate: 42,
+      emi: 15000,
+      tenure: 12,
+      remainingMonths: 12,
+      description: 'High-interest credit card debt',
+      icon: '💳',
+    },
+    {
+      id: 'liability_4',
+      name: 'Car Loan',
+      category: 'car_loan',
+      outstandingAmount: 450000,
+      originalAmount: 800000,
+      interestRate: 9.5,
+      emi: 18000,
+      tenure: 60,
+      remainingMonths: 28,
+      description: 'Personal vehicle loan',
+      icon: '🚗',
+    },
+  ]);
 
-  const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount, 0);
-  const netWorth = totalAssets - totalLiabilities;
-  const totalMonthlyIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
-  const totalMonthlyEMI = liabilities.reduce((sum, liability) => sum + liability.monthlyEMI, 0);
+  const totalAssetValue = assets.reduce((sum, asset) => sum + asset.value, 0);
+  const totalLiabilityValue = liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+  const netWorth = totalAssetValue - totalLiabilityValue;
+  const monthlyAssetIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
+  const monthlyLiabilityPayment = liabilities.reduce((sum, liability) => sum + liability.emi, 0);
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'Real Estate': return <Home size={20} />;
-      case 'Transport': return <Car size={20} />;
-      case 'Tech': return <Laptop size={20} />;
-      case 'Business': return <Briefcase size={20} />;
-      default: return <Building size={20} />;
+  const handleSellAsset = (assetId: string) => {
+    const asset = assets.find(a => a.id === assetId);
+    if (asset) {
+      const saleValue = asset.value * 0.95; // 5% transaction cost
+      updateFinancialData({
+        bankBalance: financialData.bankBalance + saleValue,
+        totalAssets: financialData.totalAssets - asset.value,
+        sideIncome: financialData.sideIncome - asset.monthlyIncome,
+        monthlyExpenses: financialData.monthlyExpenses - asset.maintenanceCost,
+      });
+      setAssets(assets.filter(a => a.id !== assetId));
+      setSelectedAsset(null);
     }
   };
 
+  const handlePrepayLiability = (liabilityId: string, amount: number) => {
+    const liability = liabilities.find(l => l.id === liabilityId);
+    if (liability && financialData.bankBalance >= amount) {
+      const newOutstanding = Math.max(0, liability.outstandingAmount - amount);
+      const newEmi = newOutstanding > 0 ? liability.emi : 0;
+      
+      setLiabilities(liabilities.map(l => 
+        l.id === liabilityId 
+          ? { ...l, outstandingAmount: newOutstanding, emi: newEmi }
+          : l
+      ));
+      
+      updateFinancialData({
+        bankBalance: financialData.bankBalance - amount,
+        totalLiabilities: financialData.totalLiabilities - amount,
+        monthlyExpenses: financialData.monthlyExpenses - (liability.emi - newEmi),
+      });
+      
+      // Improve karma and reduce stress for debt reduction
+      updatePlayerStats({
+        karma: playerStats.karma + 5,
+        stress: Math.max(0, playerStats.stress - 10),
+        logic: playerStats.logic + 2,
+      });
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'real_estate': return '🏠';
+      case 'stocks': return '📈';
+      case 'bonds': return '🏛️';
+      case 'business': return '🚀';
+      case 'intellectual': return '📚';
+      case 'vehicles': return '🚗';
+      case 'gold_crypto': return '🪙';
+      case 'home_loan': return '🏠';
+      case 'car_loan': return '🚗';
+      case 'education_loan': return '🎓';
+      case 'credit_card': return '💳';
+      case 'business_debt': return '🏢';
+      case 'personal_loan': return '💰';
+      default: return '📦';
+    }
+  };
+
+  const getAppreciationColor = (rate: number) => {
+    if (rate > 0) return 'text-green-600';
+    if (rate < 0) return 'text-red-600';
+    return 'text-gray-600';
+  };
+
+  const getDebtRisk = (liability: Liability) => {
+    if (liability.interestRate > 20) return { level: 'High', color: 'text-red-600' };
+    if (liability.interestRate > 12) return { level: 'Medium', color: 'text-yellow-600' };
+    return { level: 'Low', color: 'text-green-600' };
+  };
+
   return (
-    <div 
-      className="min-h-screen p-4"
-      style={{ backgroundColor: '#faf8f3' }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: '#3a3a3a' }}>
-          Assets & Liabilities
-        </h1>
-        <div 
-          className="px-4 py-2 rounded-xl font-semibold"
-          style={{ 
-            backgroundColor: netWorth >= 0 ? '#22C55E' : '#EF4444',
-            color: '#ffffff'
-          }}
-        >
-          Net Worth: {formatMoney(netWorth)}
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="flex gap-2 mb-6">
-        {['overview', 'assets', 'liabilities'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className="px-4 py-2 rounded-xl font-medium capitalize transition-all"
-            style={{
-              backgroundColor: activeTab === tab ? '#4F9CF9' : '#ffffff',
-              color: activeTab === tab ? '#ffffff' : '#3a3a3a',
-              border: '1px solid #e8dcc6'
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className="space-y-4">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div 
-              className="rounded-xl p-6"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <TrendingUp size={24} style={{ color: '#22C55E' }} />
-                <h3 className="font-semibold" style={{ color: '#3a3a3a' }}>Total Assets</h3>
-              </div>
-              <div className="text-2xl font-bold mb-1" style={{ color: '#3a3a3a' }}>
-                {formatMoney(totalAssets)}
-              </div>
-              <div className="text-sm" style={{ color: '#9333EA' }}>
-                Monthly Income: {formatMoney(totalMonthlyIncome)}
-              </div>
-            </div>
-
-            <div 
-              className="rounded-xl p-6"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <TrendingDown size={24} style={{ color: '#EF4444' }} />
-                <h3 className="font-semibold" style={{ color: '#3a3a3a' }}>Total Liabilities</h3>
-              </div>
-              <div className="text-2xl font-bold mb-1" style={{ color: '#3a3a3a' }}>
-                {formatMoney(totalLiabilities)}
-              </div>
-              <div className="text-sm" style={{ color: '#EF4444' }}>
-                Monthly EMI: {formatMoney(totalMonthlyEMI)}
-              </div>
-            </div>
-
-            <div 
-              className="rounded-xl p-6"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <Building size={24} style={{ color: '#4F9CF9' }} />
-                <h3 className="font-semibold" style={{ color: '#3a3a3a' }}>Net Worth</h3>
-              </div>
-              <div 
-                className="text-2xl font-bold mb-1"
-                style={{ color: netWorth >= 0 ? '#22C55E' : '#EF4444' }}
-              >
-                {formatMoney(netWorth)}
-              </div>
-              <div className="text-sm" style={{ color: '#666' }}>
-                Assets - Liabilities
-              </div>
-            </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#3a3a3a]">Assets & Liabilities</h1>
+        <div className="flex items-center gap-6">
+          <div className="text-sm">
+            <span className="text-gray-600">Net Worth: </span>
+            <span className={`font-semibold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ₹{netWorth.toLocaleString()}
+            </span>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Assets Tab */}
-      {activeTab === 'assets' && (
-        <div className="space-y-4">
-          {assets.length === 0 ? (
-            <div 
-              className="rounded-xl p-8 text-center"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6'
-              }}
-            >
-              <div className="text-4xl mb-4">📦</div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: '#3a3a3a' }}>
-                No Assets Yet
-              </h3>
-              <p style={{ color: '#666' }}>
-                Start building your wealth by purchasing assets from the Store section
-              </p>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
+            <p className="text-xs text-gray-500">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
+            <p className="text-xs text-gray-500">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Net Worth</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ₹{netWorth.toLocaleString()}
             </div>
-          ) : (
-            assets.map((asset) => (
-              <div
-                key={asset.id}
-                className="rounded-xl p-4"
-                style={{ 
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e8dcc6',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Asset Icon */}
-                  <div 
-                    className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ backgroundColor: '#faf8f3', border: '1px solid #e8dcc6' }}
-                  >
-                    {asset.image}
-                  </div>
+            <p className="text-xs text-gray-500">Assets - Liabilities</p>
+          </CardContent>
+        </Card>
 
-                  {/* Asset Details */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg" style={{ color: '#3a3a3a' }}>
-                          {asset.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          {getCategoryIcon(asset.category)}
-                          <span className="text-sm" style={{ color: '#666' }}>
-                            {asset.category}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-xl" style={{ color: '#3a3a3a' }}>
-                          {formatMoney(asset.value)}
-                        </div>
-                        <div className="text-sm" style={{ color: '#22C55E' }}>
-                          {asset.roi.toFixed(1)}% ROI
-                        </div>
-                      </div>
-                    </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
+            </div>
+            <p className="text-xs text-gray-500">Monthly Net Income</p>
+          </CardContent>
+        </Card>
+      </div>
 
-                    <p className="text-sm mb-3" style={{ color: '#666' }}>
-                      {asset.description}
-                    </p>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'assets' | 'liabilities')}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="assets" className="flex items-center gap-2">
+            <TrendingUp size={16} />
+            Assets ({assets.length})
+          </TabsTrigger>
+          <TabsTrigger value="liabilities" className="flex items-center gap-2">
+            <Minus size={16} />
+            Liabilities ({liabilities.length})
+          </TabsTrigger>
+        </TabsList>
 
-                    <div className="flex items-center justify-between">
-                      <div 
-                        className="px-3 py-1.5 rounded-full text-sm font-medium"
-                        style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
-                      >
-                        +{formatMoney(asset.monthlyIncome)}/month
-                      </div>
-                      <div className="text-sm" style={{ color: '#666' }}>
-                        Purchased: {asset.purchaseDate.toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* Liabilities Tab */}
-      {activeTab === 'liabilities' && (
-        <div className="space-y-4">
-          {liabilities.map((liability) => (
-            <div
-              key={liability.id}
-              className="rounded-xl p-4"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="flex items-start gap-4">
-                {/* Liability Icon */}
-                <div 
-                  className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                  style={{ backgroundColor: '#faf8f3', border: '1px solid #e8dcc6' }}
-                >
-                  {liability.icon}
-                </div>
-
-                {/* Liability Details */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
+        {/* Assets Tab */}
+        <TabsContent value="assets" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {assets.map(asset => (
+              <Card key={asset.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <span className="text-2xl">{asset.icon}</span>
+                    {asset.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <h3 className="font-semibold text-lg" style={{ color: '#3a3a3a' }}>
-                        {liability.name}
-                      </h3>
-                      <div className="text-sm" style={{ color: '#666' }}>
-                        {liability.interestRate}% Interest Rate
-                      </div>
+                      <span className="text-gray-600">Current Value</span>
+                      <div className="font-semibold">₹{asset.value.toLocaleString()}</div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-bold text-xl" style={{ color: '#EF4444' }}>
-                        {formatMoney(liability.amount)}
-                      </div>
-                      <div className="text-sm" style={{ color: '#666' }}>
-                        Outstanding
+                    <div>
+                      <span className="text-gray-600">Purchase Price</span>
+                      <div className="font-semibold">₹{asset.purchasePrice.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Monthly Income</span>
+                      <div className="font-semibold text-green-600">₹{asset.monthlyIncome.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Appreciation</span>
+                      <div className={`font-semibold ${getAppreciationColor(asset.appreciationRate)}`}>
+                        {asset.appreciationRate > 0 ? '+' : ''}{asset.appreciationRate}%
                       </div>
                     </div>
                   </div>
-
-                  <p className="text-sm mb-3" style={{ color: '#666' }}>
-                    {liability.description}
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <div 
-                      className="px-3 py-1.5 rounded-full text-sm font-medium"
-                      style={{ backgroundColor: '#ffffff', color: '#EF4444', border: '1px solid #e8dcc6' }}
+                  
+                  <div className="text-sm text-gray-600 border-t pt-2">
+                    {asset.description}
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm">
+                      <span className="text-gray-600">P&L: </span>
+                      <span className={`font-semibold ${asset.value >= asset.purchasePrice ? 'text-green-600' : 'text-red-600'}`}>
+                        ₹{(asset.value - asset.purchasePrice).toLocaleString()}
+                      </span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleSellAsset(asset.id)}
+                      className="text-red-600 hover:text-red-700"
                     >
-                      -{formatMoney(liability.monthlyEMI)}/month
-                    </div>
-                    <div className="text-sm" style={{ color: '#666' }}>
-                      {liability.remainingMonths} months remaining
-                    </div>
+                      Sell Asset
+                    </Button>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Liabilities Tab */}
+        <TabsContent value="liabilities" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {liabilities.map(liability => {
+              const progress = ((liability.tenure - liability.remainingMonths) / liability.tenure) * 100;
+              const debtRisk = getDebtRisk(liability);
+              
+              return (
+                <Card key={liability.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-2xl">{liability.icon}</span>
+                      {liability.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Outstanding</span>
+                        <div className="font-semibold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Monthly EMI</span>
+                        <div className="font-semibold">₹{liability.emi.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Interest Rate</span>
+                        <div className={`font-semibold ${debtRisk.color}`}>
+                          {liability.interestRate}%
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Remaining</span>
+                        <div className="font-semibold">{liability.remainingMonths} months</div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Progress</span>
+                        <span>{progress.toFixed(1)}%</span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Badge className={`${debtRisk.color} bg-transparent border`}>
+                        {debtRisk.level} Risk
+                      </Badge>
+                      {liability.interestRate > 20 && (
+                        <Badge className="bg-red-100 text-red-800">
+                          High Interest
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="text-sm text-gray-600 border-t pt-2">
+                      {liability.description}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm"
+                        onClick={() => handlePrepayLiability(liability.id, 50000)}
+                        className="bg-green-600 hover:bg-green-700"
+                        disabled={financialData.bankBalance < 50000}
+                      >
+                        Prepay ₹50K
+                      </Button>
+                      <Button 
+                        size="sm"
+                        onClick={() => handlePrepayLiability(liability.id, liability.outstandingAmount)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                        disabled={financialData.bankBalance < liability.outstandingAmount}
+                      >
+                        Pay Full
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Financial Health Alert */}
+      {(totalLiabilityValue / totalAssetValue) > 0.7 && (
+        <Card className="border-yellow-500 bg-yellow-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle size={20} className="text-yellow-600" />
+              <h3 className="font-semibold text-yellow-800">High Debt-to-Asset Ratio</h3>
             </div>
-          ))}
-        </div>
+            <p className="text-sm text-yellow-700">
+              Your debt-to-asset ratio is {((totalLiabilityValue / totalAssetValue) * 100).toFixed(1)}%. 
+              Consider reducing liabilities or increasing assets to improve financial health.
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
