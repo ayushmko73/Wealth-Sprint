@@ -234,34 +234,34 @@ const SettingsSection: React.FC = () => {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+          <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-xl shadow-blue-500/10 border border-gray-200/50 backdrop-blur-sm space-y-8">
             {/* Avatar Selection */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Your Avatar</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <h3 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-700 bg-clip-text text-transparent mb-6">Choose Your Avatar</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {avatarOptions.map(avatar => (
                   <button
                     key={avatar.id}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
-                    className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
+                    className={`relative group p-5 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
                       playerProfile.avatar === avatar.id 
-                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-xl shadow-blue-500/20' 
+                        : 'border-gray-200/60 hover:border-blue-300 bg-white/80 backdrop-blur-sm hover:shadow-lg'
                     }`}
                   >
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
                         <img 
                           src={avatar.src} 
                           alt={avatar.alt} 
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <span className="text-xs font-medium text-gray-600">{avatar.alt}</span>
+                      <span className="text-xs font-semibold text-gray-700">{avatar.alt}</span>
                     </div>
                     {playerProfile.avatar === avatar.id && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -273,16 +273,16 @@ const SettingsSection: React.FC = () => {
 
             {/* Role Title */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Professional Title</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <h3 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-700 bg-clip-text text-transparent mb-6">Professional Title</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {roleTitleOptions.map(role => (
                   <Button
                     key={role}
                     variant={playerProfile.roleTitle === role ? "default" : "outline"}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
-                    className={`h-12 ${playerProfile.roleTitle === role 
-                      ? "bg-blue-600 hover:bg-blue-700" 
-                      : "hover:bg-gray-50"
+                    className={`h-14 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 ${playerProfile.roleTitle === role 
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25" 
+                      : "hover:bg-white hover:shadow-md border-gray-200/60 bg-white/80 backdrop-blur-sm"
                     }`}
                   >
                     {role}
@@ -293,16 +293,16 @@ const SettingsSection: React.FC = () => {
 
             {/* Signature Tagline */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Signature Tagline</h3>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-blue-700 bg-clip-text text-transparent mb-6">Signature Tagline</h3>
               <div className="relative">
                 <Input
                   value={playerProfile.tagline}
                   onChange={(e) => setPlayerProfile(prev => ({ ...prev, tagline: e.target.value }))}
                   placeholder="Enter your personal motto"
                   maxLength={50}
-                  className="pr-16 h-12 text-base"
+                  className="pr-16 h-14 text-base rounded-2xl border-gray-300/60 bg-white/80 backdrop-blur-sm shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-medium">
                   {playerProfile.tagline.length}/50
                 </span>
               </div>
@@ -312,26 +312,26 @@ const SettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-xl shadow-blue-500/10 border border-gray-200/50 backdrop-blur-sm space-y-8">
+            <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
               <div>
-                <h4 className="font-medium text-gray-800">Master Volume</h4>
-                <p className="text-sm text-gray-500">Overall audio level</p>
+                <h4 className="font-bold text-gray-800 text-lg">Master Volume</h4>
+                <p className="text-sm text-gray-600 font-medium">Overall audio level</p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={toggleMute}
-                className="w-12 h-10"
+                className="w-14 h-12 rounded-xl border-gray-300/60 bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300"
               >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
               </Button>
             </div>
 
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Volume</span>
-                <span className="text-sm text-gray-500">{volume}%</span>
+            <div className="p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
+              <div className="flex justify-between mb-4">
+                <span className="text-sm font-bold text-gray-700">Volume</span>
+                <span className="text-sm text-gray-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">{volume}%</span>
               </div>
               <Slider
                 value={[volume]}
@@ -342,31 +342,32 @@ const SettingsSection: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
               <div>
-                <h4 className="font-medium text-gray-800">Background Music</h4>
-                <p className="text-sm text-gray-500">Ambient music during gameplay</p>
+                <h4 className="font-bold text-gray-800 text-lg">Background Music</h4>
+                <p className="text-sm text-gray-600 font-medium">Ambient music during gameplay</p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
                 disabled={isMuted}
+                className="rounded-xl border-gray-300/60 bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300 px-6 py-2"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
               <div>
-                <h4 className="font-medium text-gray-800">Interface Click Sound</h4>
-                <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
+                <h4 className="font-bold text-gray-800 text-lg">Interface Click Sound</h4>
+                <p className="text-sm text-gray-600 font-medium">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-40 h-12 rounded-xl border-gray-300/60 bg-white/80 backdrop-blur-sm">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-gray-200/60 bg-white/95 backdrop-blur-md">
                   <SelectItem value="off">Off</SelectItem>
                   <SelectItem value="subtle">Subtle Beep</SelectItem>
                   <SelectItem value="typewriter">Typewriter</SelectItem>
@@ -375,12 +376,12 @@ const SettingsSection: React.FC = () => {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
               <div>
-                <h4 className="font-medium text-gray-800">Background Music</h4>
-                <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
+                <h4 className="font-bold text-gray-800 text-lg">Background Music Style</h4>
+                <p className="text-sm text-gray-600 font-medium">Calm, minimalist ambient music for focus</p>
               </div>
-              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded border border-gray-200">
+              <div className="text-sm text-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 rounded-xl border border-blue-200/60 font-semibold">
                 Calm Business Lo-Fi
               </div>
             </div>
@@ -389,27 +390,28 @@ const SettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-              <h4 className="font-semibold text-gray-800 mb-2">Game Speed: 24× Faster</h4>
-              <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
-              <p className="text-xs text-gray-500">This setting cannot be changed</p>
+          <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-xl shadow-blue-500/10 border border-gray-200/50 backdrop-blur-sm space-y-8">
+            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 p-6 rounded-2xl border border-blue-200/60 shadow-inner">
+              <h4 className="font-bold text-gray-800 mb-3 text-lg">Game Speed: 24× Faster</h4>
+              <p className="text-sm text-gray-700 mb-2 font-medium">1 real hour = 1 in-game day</p>
+              <p className="text-xs text-gray-600 font-medium bg-white/60 px-3 py-1 rounded-full inline-block">This setting cannot be changed</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {[
                 { key: 'autoSave', label: 'Skip Animations', desc: 'Disable transition animations for faster gameplay' },
                 { key: 'autoSave', label: 'Auto-Save', desc: 'Automatically save progress every 5 minutes' },
                 { key: 'notifications', label: 'Notifications', desc: 'Show alerts for important events' }
               ].map(({ key, label, desc }, index) => (
-                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                <div key={index} className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
                   <div>
-                    <h4 className="font-medium text-gray-800">{label}</h4>
-                    <p className="text-sm text-gray-500">{desc}</p>
+                    <h4 className="font-bold text-gray-800 text-lg">{label}</h4>
+                    <p className="text-sm text-gray-600 font-medium">{desc}</p>
                   </div>
                   <Switch 
                     checked={localSettings[key as keyof typeof localSettings] as boolean}
                     onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, [key]: checked }))}
+                    className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-600 data-[state=checked]:to-indigo-600"
                   />
                 </div>
               ))}
@@ -419,38 +421,38 @@ const SettingsSection: React.FC = () => {
 
       case 'data':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+          <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-xl shadow-blue-500/10 border border-gray-200/50 backdrop-blur-sm space-y-8">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
                 <div>
-                  <h4 className="font-medium text-gray-800">Cloud Save</h4>
-                  <p className="text-sm text-gray-500">Sync progress across devices</p>
+                  <h4 className="font-bold text-gray-800 text-lg">Cloud Save</h4>
+                  <p className="text-sm text-gray-600 font-medium">Sync progress across devices</p>
                 </div>
-                <Badge className="bg-green-100 text-green-700 border border-green-200">Enabled</Badge>
+                <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border border-green-200/60 px-4 py-2 rounded-full font-semibold">Enabled</Badge>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-6 bg-white/80 rounded-2xl border border-gray-200/60 backdrop-blur-sm">
                 <div>
-                  <h4 className="font-medium text-gray-800">Local Encryption</h4>
-                  <p className="text-sm text-gray-500">Secure progress data locally</p>
+                  <h4 className="font-bold text-gray-800 text-lg">Local Encryption</h4>
+                  <p className="text-sm text-gray-600 font-medium">Secure progress data locally</p>
                 </div>
-                <Badge className="bg-green-100 text-green-700 border border-green-200">ON</Badge>
+                <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border border-green-200/60 px-4 py-2 rounded-full font-semibold">ON</Badge>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-6">
               <Button 
                 variant="outline"
-                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
+                className="w-full h-14 text-yellow-700 border-yellow-300/60 hover:bg-yellow-50 bg-white/80 backdrop-blur-sm rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105"
                 onClick={handlePushToGithub}
                 disabled={isGithubPushing}
               >
-                <Github size={16} className="mr-2" />
+                <Github size={18} className="mr-3" />
                 {isGithubPushing ? 'Pushing...' : 'Push Full Project to GitHub'}
               </Button>
 
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <p className="text-sm text-gray-600 text-center">
+              <div className="p-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 rounded-2xl border border-blue-200/60 shadow-inner">
+                <p className="text-sm text-gray-700 text-center font-medium">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </p>
               </div>
@@ -459,22 +461,22 @@ const SettingsSection: React.FC = () => {
                 <AlertDialogTrigger asChild>
                   <Button 
                     variant="outline"
-                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                    className="w-full h-14 text-red-600 border-red-300/60 hover:bg-red-50 bg-white/80 backdrop-blur-sm rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105"
                   >
-                    <RotateCcw size={16} className="mr-2" />
+                    <RotateCcw size={18} className="mr-3" />
                     Reset Game Progress
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl border border-gray-200/60 bg-white/95 backdrop-blur-md">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Reset Game Progress</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="text-xl font-bold">Reset Game Progress</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-600 font-medium">
                       This will permanently delete all your progress, including financial data, team members, and achievements. This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResetGame} className="bg-red-600 hover:bg-red-700">
+                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResetGame} className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl">
                       Reset Everything
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -483,9 +485,9 @@ const SettingsSection: React.FC = () => {
 
               <Button 
                 variant="outline"
-                className="w-full"
+                className="w-full h-14 bg-white/80 backdrop-blur-sm rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 border-gray-300/60 hover:bg-white hover:shadow-md"
               >
-                <Trash2 size={16} className="mr-2" />
+                <Trash2 size={18} className="mr-3" />
                 Clear Cache
               </Button>
             </div>
@@ -498,36 +500,36 @@ const SettingsSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-gradient-to-r from-white via-blue-50/50 to-indigo-50/30 border-b border-gray-200/50 backdrop-blur-sm px-6 py-6 shadow-sm">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-              <p className="text-sm text-gray-500 mt-1">Customize your Wealth Sprint experience</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-blue-700 bg-clip-text text-transparent">Settings</h1>
+              <p className="text-sm text-gray-600 mt-2 font-medium">Customize your Wealth Sprint experience</p>
             </div>
-            <Badge className="bg-blue-600 text-white px-3 py-1.5 text-xs font-medium">
+            <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 text-xs font-semibold rounded-full shadow-lg">
               v4.0
             </Badge>
           </div>
 
           {/* Horizontal Scrollable Menu */}
           <div className="overflow-x-auto">
-            <div className="flex space-x-2 min-w-max pb-2">
+            <div className="flex space-x-3 min-w-max pb-3">
               {menuTabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
                       activeTab === tab.id
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/25'
+                        : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-lg border border-gray-200/50 backdrop-blur-sm'
                     }`}
                   >
-                    <IconComponent size={16} />
+                    <IconComponent size={18} />
                     {tab.label}
                   </button>
                 );
