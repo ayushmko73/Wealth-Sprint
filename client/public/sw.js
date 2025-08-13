@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wealth-sprint-v1';
+const CACHE_NAME = 'wealth-sprint-v4';
 const urlsToCache = [
   '/',
   '/manifest.webmanifest',
