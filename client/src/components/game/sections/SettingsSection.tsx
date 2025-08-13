@@ -60,7 +60,7 @@ const SettingsSection: React.FC = () => {
   });
 
   const [playerProfile, setPlayerProfile] = useState({
-    avatar: '👨‍💼',
+    avatar: 'businessman',
     roleTitle: 'Founder',
     tagline: 'Everything begins with one decision.',
     displayName: 'Player',
@@ -148,7 +148,48 @@ const SettingsSection: React.FC = () => {
     }
   };
 
-  const avatarOptions = ['👨‍💼', '👩‍💼', '👨‍💻', '👩‍💻', '🧑‍🚀', '👨‍🎓', '👩‍🎓', '🧑‍🔬'];
+  const avatarOptions = [
+    {
+      id: 'businessman',
+      src: '/avatars/Professional_businessman_avatar_65fb4ef4.png',
+      alt: 'Professional Businessman'
+    },
+    {
+      id: 'businesswoman', 
+      src: '/avatars/Professional_businesswoman_avatar_530f5b0d.png',
+      alt: 'Professional Businesswoman'
+    },
+    {
+      id: 'tech_dev',
+      src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
+      alt: 'Tech Developer'
+    },
+    {
+      id: 'female_dev',
+      src: '/avatars/Female_tech_developer_avatar_43073e14.png',
+      alt: 'Female Developer'
+    },
+    {
+      id: 'entrepreneur',
+      src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
+      alt: 'Entrepreneur'
+    },
+    {
+      id: 'scientist',
+      src: '/avatars/Research_scientist_avatar_1524d525.png', 
+      alt: 'Research Scientist'
+    },
+    {
+      id: 'graduate',
+      src: '/avatars/Academic_graduate_avatar_ecf643db.png',
+      alt: 'Graduate'
+    },
+    {
+      id: 'astronaut',
+      src: '/avatars/Space_professional_avatar_d10ac062.png',
+      alt: 'Space Professional'
+    }
+  ];
   const roleTitleOptions = ['Founder', 'Visionary', 'CXO', 'Capital Architect', 'Entrepreneur', 'Innovator'];
 
   // Time Engine Debug Console
@@ -234,9 +275,9 @@ const SettingsSection: React.FC = () => {
 
         {/* Audio Settings */}
         <TabsContent value="audio" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="bg-white border-gray-200 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+              <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Volume2 size={20} />
                 Sound Settings
               </CardTitle>
@@ -315,7 +356,7 @@ const SettingsSection: React.FC = () => {
                     <h4 className="font-medium">Background Music</h4>
                     <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
                   </div>
-                  <div className="text-sm text-gray-600 bg-[#f5f0e6] px-3 py-1 rounded">
+                  <div className="text-sm text-gray-600 bg-gradient-to-r from-white to-green-50 px-3 py-1 rounded border border-green-200">
                     Calm Business Lo-Fi
                   </div>
                 </div>
@@ -328,9 +369,9 @@ const SettingsSection: React.FC = () => {
         <TabsContent value="gameplay" className="space-y-4">
 
           {/* Original Gameplay Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="bg-white border-gray-200 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+              <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Clock size={20} />
                 Gameplay Speed
               </CardTitle>
@@ -338,9 +379,9 @@ const SettingsSection: React.FC = () => {
             <CardContent className="space-y-6">
               <div>
                 <h3 className="font-semibold mb-3">Auto Cycle Rate</h3>
-                <Card className="ring-2 ring-[#d4af37] opacity-90">
+                <Card className="bg-gradient-to-br from-white to-slate-50 ring-2 ring-emerald-300 shadow-sm">
                   <CardContent className="pt-4">
-                    <h4 className="font-medium">24× Faster</h4>
+                    <h4 className="font-medium text-gray-800">24× Faster</h4>
                     <p className="text-sm text-gray-600">1 real hour = 1 in-game day (24x faster than real time)</p>
                     <p className="text-xs text-gray-500 mt-1">This setting cannot be changed</p>
                   </CardContent>
@@ -387,9 +428,9 @@ const SettingsSection: React.FC = () => {
 
         {/* Data & Privacy */}
         <TabsContent value="data" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="bg-white border-gray-200 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50">
+              <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Shield size={20} />
                 Data & Privacy
               </CardTitle>
@@ -428,7 +469,7 @@ const SettingsSection: React.FC = () => {
                 </div>
                 
                 {/* Save buttons removed as per user request */}
-                <div className="text-sm text-gray-600 p-4 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-600 p-4 bg-gradient-to-r from-white to-blue-50 rounded-lg border border-blue-200">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </div>
 
@@ -472,9 +513,9 @@ const SettingsSection: React.FC = () => {
 
         {/* Player Profile */}
         <TabsContent value="profile" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="bg-white border-gray-200 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50">
+              <CardTitle className="flex items-center gap-2 text-gray-800">
                 <User size={20} />
                 Player Profile Settings
               </CardTitle>
@@ -485,13 +526,17 @@ const SettingsSection: React.FC = () => {
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
                   {avatarOptions.map(avatar => (
                     <button
-                      key={avatar}
-                      onClick={() => setPlayerProfile(prev => ({ ...prev, avatar }))}
-                      className={`text-3xl p-3 rounded-lg border-2 transition-all ${
-                        playerProfile.avatar === avatar ? 'border-[#d4af37] bg-[#d4af37]/10' : 'border-gray-200 hover:border-gray-300'
+                      key={avatar.id}
+                      onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
+                      className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
+                        playerProfile.avatar === avatar.id ? 'border-[#d4af37] bg-[#d4af37]/10' : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      {avatar}
+                      <img 
+                        src={avatar.src} 
+                        alt={avatar.alt} 
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>
@@ -539,9 +584,9 @@ const SettingsSection: React.FC = () => {
       </Tabs>
 
       {/* Footer Quote */}
-      <Card className="bg-gradient-to-r from-[#f5f0e6] to-[#d4af37]/10 border-[#d4af37]/20">
+      <Card className="bg-gradient-to-r from-white via-gray-50 to-slate-100 border-gray-300 shadow-lg">
         <CardContent className="pt-6 text-center">
-          <p className="text-sm italic text-[#3a3a3a]">
+          <p className="text-sm italic text-gray-700">
             "A well-run empire begins with a well-set interface."
           </p>
           <p className="text-xs text-gray-500 mt-2">— Wealth Sprint v4.0</p>
