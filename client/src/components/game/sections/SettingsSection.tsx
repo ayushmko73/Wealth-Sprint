@@ -329,7 +329,7 @@ const SettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-lg border border-green-100 space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-medium text-black">Master Volume</h4>
@@ -406,7 +406,7 @@ const SettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-gradient-to-br from-purple-50 to-violet-50 rounded-3xl shadow-lg border border-purple-100 space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-2xl border border-blue-200 shadow-inner">
               <h4 className="font-semibold text-black mb-2">Game Speed: 24× Faster</h4>
               <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
@@ -436,7 +436,7 @@ const SettingsSection: React.FC = () => {
 
       case 'data':
         return (
-          <div className="p-6 bg-gradient-to-br from-red-50 to-rose-50 rounded-3xl shadow-lg border border-red-100 space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
