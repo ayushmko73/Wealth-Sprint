@@ -251,23 +251,23 @@ const SettingsSection: React.FC = () => {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
             {/* Avatar Selection */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Your Avatar</h3>
+              <h3 className="text-lg font-semibold text-black mb-4">Choose Your Avatar</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {avatarOptions.map(avatar => (
                   <button
                     key={avatar.id}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
-                    className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
+                    className={`relative group p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                       playerProfile.avatar === avatar.id 
-                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg shadow-blue-500/20' 
+                        : 'border-gray-200 hover:border-gray-300 bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg'
                     }`}
                   >
                     <div className="flex flex-col items-center space-y-2">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
                         <img 
                           src={avatar.src} 
                           alt={avatar.alt} 
@@ -290,16 +290,16 @@ const SettingsSection: React.FC = () => {
 
             {/* Role Title */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Professional Title</h3>
+              <h3 className="text-lg font-semibold text-black mb-4">Professional Title</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {roleTitleOptions.map(role => (
                   <Button
                     key={role}
                     variant={playerProfile.roleTitle === role ? "default" : "outline"}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
-                    className={`h-12 ${playerProfile.roleTitle === role 
-                      ? "bg-blue-600 hover:bg-blue-700" 
-                      : "hover:bg-gray-50"
+                    className={`h-12 rounded-2xl font-medium transition-all ${playerProfile.roleTitle === role 
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30" 
+                      : "hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 border-2 border-gray-200"
                     }`}
                   >
                     {role}
@@ -310,7 +310,7 @@ const SettingsSection: React.FC = () => {
 
             {/* Signature Tagline */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Signature Tagline</h3>
+              <h3 className="text-lg font-semibold text-black mb-4">Signature Tagline</h3>
               <div className="relative">
                 <Input
                   value={playerProfile.tagline}
@@ -329,10 +329,10 @@ const SettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+          <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-lg border border-green-100 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-gray-800">Master Volume</h4>
+                <h4 className="font-medium text-black">Master Volume</h4>
                 <p className="text-sm text-gray-500">Overall audio level</p>
               </div>
               <Button
@@ -361,7 +361,7 @@ const SettingsSection: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-gray-800">Background Music</h4>
+                <h4 className="font-medium text-black">Background Music</h4>
                 <p className="text-sm text-gray-500">Ambient music during gameplay</p>
               </div>
               <Button
@@ -376,7 +376,7 @@ const SettingsSection: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium text-gray-800">Interface Click Sound</h4>
+                <h4 className="font-medium text-black">Interface Click Sound</h4>
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
@@ -406,9 +406,9 @@ const SettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-              <h4 className="font-semibold text-gray-800 mb-2">Game Speed: 24× Faster</h4>
+          <div className="p-6 bg-gradient-to-br from-purple-50 to-violet-50 rounded-3xl shadow-lg border border-purple-100 space-y-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-2xl border border-blue-200 shadow-inner">
+              <h4 className="font-semibold text-black mb-2">Game Speed: 24× Faster</h4>
               <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
               <p className="text-xs text-gray-500">This setting cannot be changed</p>
             </div>
@@ -421,7 +421,7 @@ const SettingsSection: React.FC = () => {
               ].map(({ key, label, desc }, index) => (
                 <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
                   <div>
-                    <h4 className="font-medium text-gray-800">{label}</h4>
+                    <h4 className="font-medium text-black">{label}</h4>
                     <p className="text-sm text-gray-500">{desc}</p>
                   </div>
                   <Switch 
@@ -436,11 +436,11 @@ const SettingsSection: React.FC = () => {
 
       case 'data':
         return (
-          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+          <div className="p-6 bg-gradient-to-br from-red-50 to-rose-50 rounded-3xl shadow-lg border border-red-100 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium text-gray-800">Cloud Save</h4>
+                  <h4 className="font-medium text-black">Cloud Save</h4>
                   <p className="text-sm text-gray-500">Sync progress across devices</p>
                 </div>
                 <Badge className="bg-green-100 text-green-700 border border-green-200">Enabled</Badge>
@@ -448,7 +448,7 @@ const SettingsSection: React.FC = () => {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium text-gray-800">Local Encryption</h4>
+                  <h4 className="font-medium text-black">Local Encryption</h4>
                   <p className="text-sm text-gray-500">Secure progress data locally</p>
                 </div>
                 <Badge className="bg-green-100 text-green-700 border border-green-200">ON</Badge>
@@ -466,7 +466,7 @@ const SettingsSection: React.FC = () => {
                 {isGithubPushing ? 'Pushing...' : 'Push Full Project to GitHub'}
               </Button>
 
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 shadow-inner">
                 <p className="text-sm text-gray-600 text-center">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </p>
@@ -522,8 +522,8 @@ const SettingsSection: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Settings</h1>
-              <p className="text-sm text-indigo-600 mt-1 font-medium">Customize your Wealth Sprint experience</p>
+              <h1 className="text-3xl font-bold text-black">Settings</h1>
+              <p className="text-sm text-gray-600 mt-1 font-medium">Customize your Wealth Sprint experience</p>
             </div>
             <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 text-sm font-semibold rounded-2xl shadow-lg">
               v4.0
@@ -542,14 +542,8 @@ const SettingsSection: React.FC = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
                       isActive
-                        ? (tab.id === 'profile' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30' :
-                           tab.id === 'audio' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-xl shadow-green-500/30' :
-                           tab.id === 'gameplay' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-xl shadow-purple-500/30' :
-                           'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-xl shadow-red-500/30')
-                        : (tab.id === 'profile' ? 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200/60 shadow-md' :
-                           tab.id === 'audio' ? 'bg-white text-green-600 hover:bg-green-50 border border-green-200/60 shadow-md' :
-                           tab.id === 'gameplay' ? 'bg-white text-purple-600 hover:bg-purple-50 border border-purple-200/60 shadow-md' :
-                           'bg-white text-red-600 hover:bg-red-50 border border-red-200/60 shadow-md')
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30'
+                        : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200/60 shadow-md'
                     }`}
                   >
                     <IconComponent size={18} />
