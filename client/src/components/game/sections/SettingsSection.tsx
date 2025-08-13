@@ -49,6 +49,7 @@ const SettingsSection: React.FC = () => {
     isBackgroundPlaying
   } = useAudio();
 
+  const [activeTab, setActiveTab] = useState('profile');
   const [localSettings, setLocalSettings] = useState({
     theme: 'light',
     soundEnabled: true, // Default ON
@@ -172,6 +173,13 @@ const SettingsSection: React.FC = () => {
   ];
   const roleTitleOptions = ['Founder', 'Visionary', 'CXO', 'Capital Architect', 'Entrepreneur', 'Innovator'];
 
+  const menuTabs = [
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'audio', label: 'Audio', icon: Volume2 },
+    { id: 'gameplay', label: 'Gameplay', icon: Clock },
+    { id: 'data', label: 'Data & Privacy', icon: Shield }
+  ];
+
   // Time Engine Debug Console
   const handleTimeEngineDebug = () => {
     console.log("⏱️ Game Time Engine Active: 24× faster than real world time");
@@ -222,316 +230,319 @@ const SettingsSection: React.FC = () => {
 
 
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-6">
-      {/* Modern Header */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-              Settings
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">Customize your Wealth Sprint experience</p>
-          </div>
-          <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1.5 text-xs font-medium">
-            v4.0
-          </Badge>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto">
-        {/* Modern Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          {/* Profile Card */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
-              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <User size={28} className="text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-white">Player Profile</h2>
-                    <p className="text-white/80">Personalize your avatar and identity</p>
-                  </div>
-                </div>
-              </div>
-              
-              <CardContent className="p-6 space-y-6">
-                {/* Avatar Selection */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Your Avatar</h3>
-                  <div className="grid grid-cols-4 gap-4">
-                    {avatarOptions.map(avatar => (
-                      <button
-                        key={avatar.id}
-                        onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
-                        className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
-                          playerProfile.avatar === avatar.id 
-                            ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <div className="flex flex-col items-center space-y-2">
-                          <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                            <img 
-                              src={avatar.src} 
-                              alt={avatar.alt} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <span className="text-xs font-medium text-gray-600">{avatar.alt}</span>
-                        </div>
-                        {playerProfile.avatar === avatar.id && (
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Role Title */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Professional Title</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {roleTitleOptions.map(role => (
-                      <Button
-                        key={role}
-                        variant={playerProfile.roleTitle === role ? "default" : "outline"}
-                        onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
-                        className={`h-12 ${playerProfile.roleTitle === role 
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700" 
-                          : "hover:bg-gray-50"
-                        }`}
-                      >
-                        {role}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Signature Tagline */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Motto</h3>
-                  <div className="relative">
-                    <Input
-                      value={playerProfile.tagline}
-                      onChange={(e) => setPlayerProfile(prev => ({ ...prev, tagline: e.target.value }))}
-                      placeholder="Enter your personal motto"
-                      maxLength={50}
-                      className="pr-16 h-12 text-base"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                      {playerProfile.tagline.length}/50
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Audio Settings Card */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                  <Volume2 size={20} className="text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white">Audio</h2>
-              </div>
-            </div>
-            
-            <CardContent className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium text-gray-800">Master Volume</h4>
-                  <p className="text-sm text-gray-500">Overall audio level</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleMute}
-                  className="w-12 h-10"
-                >
-                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </Button>
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Volume</span>
-                  <span className="text-sm text-gray-500">{volume}%</span>
-                </div>
-                <Slider
-                  value={[volume]}
-                  onValueChange={handleVolumeChange}
-                  max={100}
-                  step={1}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium text-gray-800">Background Music</h4>
-                  <p className="text-sm text-gray-500">Ambient music during gameplay</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
-                  disabled={isMuted}
-                >
-                  {isBackgroundPlaying ? 'Stop' : 'Play'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Gameplay Settings Card */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                  <Clock size={20} className="text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white">Gameplay</h2>
-              </div>
-            </div>
-            
-            <CardContent className="p-6 space-y-4">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
-                <h4 className="font-semibold text-gray-800 mb-2">Game Speed: 24× Faster</h4>
-                <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
-                <p className="text-xs text-gray-500">This setting cannot be changed</p>
-              </div>
-
-              <div className="space-y-3">
-                {[
-                  { key: 'autoSave', label: 'Auto-Save', desc: 'Automatically save progress every 5 minutes' },
-                  { key: 'notifications', label: 'Notifications', desc: 'Show alerts for important events' }
-                ].map(({ key, label, desc }) => (
-                  <div key={key} className="flex items-center justify-between py-2">
-                    <div>
-                      <h4 className="font-medium text-gray-800">{label}</h4>
-                      <p className="text-sm text-gray-500">{desc}</p>
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+            {/* Avatar Selection */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Your Avatar</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {avatarOptions.map(avatar => (
+                  <button
+                    key={avatar.id}
+                    onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
+                    className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
+                      playerProfile.avatar === avatar.id 
+                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <img 
+                          src={avatar.src} 
+                          alt={avatar.alt} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-gray-600">{avatar.alt}</span>
                     </div>
-                    <Switch 
-                      checked={localSettings[key as keyof typeof localSettings] as boolean}
-                      onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, [key]: checked }))}
-                    />
-                  </div>
+                    {playerProfile.avatar === avatar.id && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Data & Privacy Card */}
-          <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-500 to-violet-600 p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                  <Shield size={20} className="text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white">Data & Privacy</h2>
+            {/* Role Title */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Professional Title</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {roleTitleOptions.map(role => (
+                  <Button
+                    key={role}
+                    variant={playerProfile.roleTitle === role ? "default" : "outline"}
+                    onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
+                    className={`h-12 ${playerProfile.roleTitle === role 
+                      ? "bg-blue-600 hover:bg-blue-700" 
+                      : "hover:bg-gray-50"
+                    }`}
+                  >
+                    {role}
+                  </Button>
+                ))}
               </div>
             </div>
-            
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-800">Cloud Save</h4>
-                      <p className="text-sm text-gray-500">Sync progress across devices</p>
-                    </div>
-                    <Badge className="bg-green-100 text-green-700 border border-green-200">Enabled</Badge>
+
+            {/* Signature Tagline */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Signature Tagline</h3>
+              <div className="relative">
+                <Input
+                  value={playerProfile.tagline}
+                  onChange={(e) => setPlayerProfile(prev => ({ ...prev, tagline: e.target.value }))}
+                  placeholder="Enter your personal motto"
+                  maxLength={50}
+                  className="pr-16 h-12 text-base"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                  {playerProfile.tagline.length}/50
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'audio':
+        return (
+          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-800">Master Volume</h4>
+                <p className="text-sm text-gray-500">Overall audio level</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleMute}
+                className="w-12 h-10"
+              >
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </Button>
+            </div>
+
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Volume</span>
+                <span className="text-sm text-gray-500">{volume}%</span>
+              </div>
+              <Slider
+                value={[volume]}
+                onValueChange={handleVolumeChange}
+                max={100}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-800">Background Music</h4>
+                <p className="text-sm text-gray-500">Ambient music during gameplay</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
+                disabled={isMuted}
+              >
+                {isBackgroundPlaying ? 'Stop' : 'Play'}
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-800">Interface Click Sound</h4>
+                <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
+              </div>
+              <Select defaultValue="subtle">
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="off">Off</SelectItem>
+                  <SelectItem value="subtle">Subtle Beep</SelectItem>
+                  <SelectItem value="typewriter">Typewriter</SelectItem>
+                  <SelectItem value="futuristic">Futuristic Pulse</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-800">Background Music</h4>
+                <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
+              </div>
+              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded border border-gray-200">
+                Calm Business Lo-Fi
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'gameplay':
+        return (
+          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+              <h4 className="font-semibold text-gray-800 mb-2">Game Speed: 24× Faster</h4>
+              <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
+              <p className="text-xs text-gray-500">This setting cannot be changed</p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                { key: 'autoSave', label: 'Skip Animations', desc: 'Disable transition animations for faster gameplay' },
+                { key: 'autoSave', label: 'Auto-Save', desc: 'Automatically save progress every 5 minutes' },
+                { key: 'notifications', label: 'Notifications', desc: 'Show alerts for important events' }
+              ].map(({ key, label, desc }, index) => (
+                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                  <div>
+                    <h4 className="font-medium text-gray-800">{label}</h4>
+                    <p className="text-sm text-gray-500">{desc}</p>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-800">Local Encryption</h4>
-                      <p className="text-sm text-gray-500">Secure progress data locally</p>
-                    </div>
-                    <Badge className="bg-green-100 text-green-700 border border-green-200">ON</Badge>
-                  </div>
+                  <Switch 
+                    checked={localSettings[key as keyof typeof localSettings] as boolean}
+                    onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, [key]: checked }))}
+                  />
                 </div>
+              ))}
+            </div>
+          </div>
+        );
 
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline"
-                    className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
-                    onClick={handlePushToGithub}
-                    disabled={isGithubPushing}
-                  >
-                    <Github size={16} className="mr-2" />
-                    {isGithubPushing ? 'Pushing...' : 'Push to GitHub'}
-                  </Button>
-
-                  <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-                    <AlertDialogTrigger asChild>
-                      <Button 
-                        variant="outline"
-                        className="w-full text-red-600 border-red-300 hover:bg-red-50"
-                      >
-                        <RotateCcw size={16} className="mr-2" />
-                        Reset Game Progress
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Reset Game Progress</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete all your progress, including financial data, team members, and achievements. This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleResetGame} className="bg-red-600 hover:bg-red-700">
-                          Reset Everything
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-
-                  <Button 
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Trash2 size={16} className="mr-2" />
-                    Clear Cache
-                  </Button>
+      case 'data':
+        return (
+          <div className="p-6 bg-white rounded-2xl shadow-sm space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-gray-800">Cloud Save</h4>
+                  <p className="text-sm text-gray-500">Sync progress across devices</p>
                 </div>
+                <Badge className="bg-green-100 text-green-700 border border-green-200">Enabled</Badge>
               </div>
 
-              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-gray-800">Local Encryption</h4>
+                  <p className="text-sm text-gray-500">Secure progress data locally</p>
+                </div>
+                <Badge className="bg-green-100 text-green-700 border border-green-200">ON</Badge>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button 
+                variant="outline"
+                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
+                onClick={handlePushToGithub}
+                disabled={isGithubPushing}
+              >
+                <Github size={16} className="mr-2" />
+                {isGithubPushing ? 'Pushing...' : 'Push Full Project to GitHub'}
+              </Button>
+
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <p className="text-sm text-gray-600 text-center">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </p>
               </div>
-            </CardContent>
-          </Card>
 
+              <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    <RotateCcw size={16} className="mr-2" />
+                    Reset Game Progress
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset Game Progress</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete all your progress, including financial data, team members, and achievements. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResetGame} className="bg-red-600 hover:bg-red-700">
+                      Reset Everything
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <Button 
+                variant="outline"
+                className="w-full"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Clear Cache
+              </Button>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
+              <p className="text-sm text-gray-500 mt-1">Customize your Wealth Sprint experience</p>
+            </div>
+            <Badge className="bg-blue-600 text-white px-3 py-1.5 text-xs font-medium">
+              v4.0
+            </Badge>
+          </div>
+
+          {/* Horizontal Scrollable Menu */}
+          <div className="overflow-x-auto">
+            <div className="flex space-x-2 min-w-max pb-2">
+              {menuTabs.map(tab => {
+                const IconComponent = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                    }`}
+                  >
+                    <IconComponent size={16} />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Footer */}
-        <Card className="mt-8 bg-gradient-to-r from-gray-50 to-slate-100 border-gray-200 shadow-lg rounded-2xl">
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm italic text-gray-700">
-              "A well-run empire begins with a well-set interface."
-            </p>
-            <p className="text-xs text-gray-500 mt-2">— Wealth Sprint v4.0</p>
-          </CardContent>
-        </Card>
+      {/* Content Area */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {renderTabContent()}
       </div>
     </div>
   );
 };
 
 export default SettingsSection;
-
