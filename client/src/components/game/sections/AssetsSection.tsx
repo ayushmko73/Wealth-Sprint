@@ -137,44 +137,44 @@ const AssetsSection: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="card-gradient-green card-accent-border">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold metric-positive">₹{totalAssetValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
             <p className="text-xs text-gray-500">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</p>
           </CardContent>
         </Card>
 
-        <Card className="card-gradient-red card-accent-border">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold metric-negative">₹{totalLiabilityValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
             <p className="text-xs text-gray-500">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</p>
           </CardContent>
         </Card>
 
-        <Card className={`${netWorth >= 0 ? 'card-gradient-blue' : 'card-gradient-yellow'} card-accent-border`}>
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Net Worth</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${netWorth >= 0 ? 'metric-positive' : 'metric-negative'}`}>
+            <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               ₹{netWorth.toLocaleString()}
             </div>
             <p className="text-xs text-gray-500">Assets - Liabilities</p>
           </CardContent>
         </Card>
 
-        <Card className={`${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'card-gradient-teal' : 'card-gradient-pink'} card-accent-border`}>
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'metric-positive' : 'metric-negative'}`}>
+            <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
             </div>
             <p className="text-xs text-gray-500">Monthly Net Income</p>

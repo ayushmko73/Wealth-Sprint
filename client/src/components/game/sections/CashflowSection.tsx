@@ -46,13 +46,13 @@ const CashflowSection: React.FC = () => {
       <h1 className="text-2xl font-bold text-[#3a3a3a]">Cashflow Statement</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="card-gradient-green card-accent-border">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Income</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold metric-positive">
+            <div className="text-2xl font-bold text-green-600">
               ₹{(financialData.mainIncome + financialData.sideIncome).toLocaleString()}
             </div>
             <p className="text-xs text-gray-500">
@@ -61,13 +61,13 @@ const CashflowSection: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="card-gradient-red card-accent-border">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
             <TrendingDown className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold metric-negative">
+            <div className="text-2xl font-bold text-red-600">
               ₹{financialData.monthlyExpenses.toLocaleString()}
             </div>
             <p className="text-xs text-gray-500">
@@ -76,13 +76,13 @@ const CashflowSection: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className={`${(financialData.cashflow || 0) >= 0 ? 'card-gradient-blue' : 'card-gradient-yellow'} card-accent-border`}>
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
-            <DollarSign className={`h-4 w-4 ${(financialData.cashflow || 0) >= 0 ? 'text-blue-600' : 'text-yellow-600'}`} />
+            <DollarSign className={`h-4 w-4 ${(financialData.cashflow || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`} />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${(financialData.cashflow || 0) >= 0 ? 'metric-positive' : 'metric-negative'}`}>
+            <div className={`text-2xl font-bold ${(financialData.cashflow || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               ₹{(financialData.cashflow || 0).toLocaleString()}
             </div>
             <p className="text-xs text-gray-500">
@@ -93,10 +93,10 @@ const CashflowSection: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="card-gradient-indigo card-accent-border">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp size={20} className="text-indigo-600" />
+              <TrendingUp size={20} />
               Monthly Cashflow Overview
             </CardTitle>
           </CardHeader>
@@ -107,10 +107,10 @@ const CashflowSection: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="card-gradient-purple card-accent-border">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PieChart size={20} className="text-purple-600" />
+              <PieChart size={20} />
               Expense Breakdown
             </CardTitle>
           </CardHeader>
