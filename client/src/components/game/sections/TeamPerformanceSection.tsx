@@ -137,7 +137,7 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
 
       {/* Performance Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-white">
+        <Card className="card-gradient-blue card-accent-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -149,19 +149,19 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="card-gradient-green card-accent-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Assigned to Sectors</p>
-                <p className="text-2xl font-bold text-green-600">{assignedMembers.length}</p>
+                <p className="text-2xl font-bold metric-positive">{assignedMembers.length}</p>
               </div>
               <Building className="text-green-500" size={24} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="card-gradient-purple card-accent-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -173,7 +173,7 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="card-gradient-yellow card-accent-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -201,7 +201,7 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
                 if (!performance) return null;
 
                 return (
-                  <Card key={member.id} className="bg-white hover:shadow-lg transition-shadow">
+                  <Card key={member.id} className="card-gradient-teal card-accent-border">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">

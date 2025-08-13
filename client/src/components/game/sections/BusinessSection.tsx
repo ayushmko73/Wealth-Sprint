@@ -164,7 +164,7 @@ export default function BusinessSection() {
 
       {/* No Sectors Message */}
       {purchasedSectors.length === 0 && (
-        <Card className="text-center py-12">
+        <Card className="card-gradient-blue card-accent-border text-center py-12">
           <CardContent>
             <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">No Business Sectors Yet</h3>
