@@ -315,15 +315,15 @@ const DashboardBar: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-green-50 border-l-4 border-green-400 rounded-xl">
+        <Card className="bg-purple-50 border-l-4 border-purple-400 rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="bg-green-100 p-2 rounded-full">
-                <Scale size={16} className="text-green-600" />
+              <div className="bg-purple-100 p-2 rounded-full">
+                <Scale size={16} className="text-purple-600" />
               </div>
               <div>
-                <div className="font-semibold text-green-800 text-sm">Karma Balance</div>
-                <div className="text-xs text-green-600">
+                <div className="font-semibold text-purple-800 text-sm">Karma Balance</div>
+                <div className="text-xs text-purple-600">
                   {playerStats.karma >= 80 ? 'Highly ethical approach' :
                    playerStats.karma >= 60 ? 'Good moral compass' :
                    playerStats.karma >= 40 ? 'Balanced decisions' : 'Consider your choices'}
@@ -335,12 +335,12 @@ const DashboardBar: React.FC = () => {
       </div>
 
       {/* Decision Test Button (Development) */}
-      <Card className="bg-purple-50 border border-purple-200">
+      <Card className="bg-pink-50 border border-pink-200">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-semibold text-purple-800 text-sm">Daily Decisions</div>
-              <div className="text-xs text-purple-600">
+              <div className="font-semibold text-pink-800 text-sm">Daily Decisions</div>
+              <div className="text-xs text-pink-600">
                 {hasCompletedToday ? 'Completed for today' : 'Ready for today\'s decisions'}
               </div>
             </div>
@@ -348,7 +348,7 @@ const DashboardBar: React.FC = () => {
               onClick={() => startDailyDecisions(currentDay)}
               disabled={hasCompletedToday}
               size="sm"
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-pink-600 hover:bg-pink-700 text-white"
             >
               <PlayCircle size={16} className="mr-1" />
               Start Decisions
