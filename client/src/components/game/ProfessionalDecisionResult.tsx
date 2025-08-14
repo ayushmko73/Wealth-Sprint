@@ -76,39 +76,34 @@ const ProfessionalDecisionResult: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-3 z-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[85vh] flex flex-col overflow-hidden">
         
         {/* Success Header with Curved Design */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-white bg-opacity-10 rounded-full scale-150 -translate-y-20"></div>
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-4 text-center relative overflow-hidden">
           <div className="relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-3">
-              <CheckCircle size={32} className="text-white" />
-            </div>
-            <h1 className="text-xl font-bold mb-1">Day {currentSession.day} Complete!</h1>
-            <p className="text-emerald-100 text-sm font-medium">{completedDecisions.length} strategic decisions made</p>
+            <CheckCircle size={24} className="mx-auto mb-2" />
+            <h1 className="text-lg font-bold mb-1">Day {currentSession.day} Complete!</h1>
+            <p className="text-emerald-100 text-xs font-medium">{completedDecisions.length} decisions secured</p>
           </div>
-          {/* Bottom curve */}
-          <div className="absolute bottom-0 left-0 right-0 h-8 bg-white rounded-t-[40px]"></div>
         </div>
 
         {/* Content with curved sections */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto">
           
           {/* Impact Summary with curved cards */}
-          <div className="mb-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 text-center">Impact on Your Stats</h2>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="mb-4">
+            <h2 className="text-base font-bold text-gray-800 mb-3">Impact on Your Stats:</h2>
+            <div className="grid grid-cols-2 gap-2">
               {Object.entries(totalImpact).map(([key, value]) => {
                 if (value === 0) return null;
                 const Icon = getImpactIcon(key);
                 return (
-                  <div key={key} className={`bg-gradient-to-br ${getImpactColor(value, key)} text-white p-4 rounded-2xl shadow-lg`}>
+                  <div key={key} className={`bg-gradient-to-br ${getImpactColor(value, key)} text-white p-3 rounded-xl shadow-lg`}>
                     <div className="flex items-center justify-between mb-2">
-                      <Icon size={20} />
+                      <Icon size={16} />
                       <div className="text-right">
-                        <div className="text-lg font-bold">
+                        <div className="text-sm font-bold">
                           {key === 'financial' ? formatFinancialValue(value) : (value > 0 ? `+${value}` : value)}
                         </div>
                         <div className="text-xs opacity-90 capitalize font-medium">
@@ -116,8 +111,8 @@ const ProfessionalDecisionResult: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {/* Small curved indicator */}
-                    <div className="w-full bg-white bg-opacity-20 rounded-full h-1">
+                    {/* Small progress bar */}
+                    <div className="w-full bg-white bg-opacity-30 rounded-full h-1">
                       <div className="bg-white h-1 rounded-full" style={{ width: '70%' }}></div>
                     </div>
                   </div>
@@ -126,34 +121,30 @@ const ProfessionalDecisionResult: React.FC = () => {
             </div>
           </div>
 
-          {/* Summary Section with curved background */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-2xl mb-6">
-            <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+          {/* Summary Section */}
+          <div className="mb-4">
+            <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              What Happened
+              What Happened:
             </h3>
-            <p className="text-sm text-gray-700 leading-relaxed">
+            <p className="text-xs text-gray-700 leading-relaxed">
               {completedDecisions.length === 1 
-                ? `Made 1 strategic decision affecting multiple aspects of your wealth journey.`
-                : `Made ${completedDecisions.length} strategic decisions impacting your business and personal growth.`
+                ? `Made 1 strategic decision affecting multiple aspects of your business and personal life.`
+                : `Made ${completedDecisions.length} strategic decisions affecting multiple aspects of your business and personal life.`
               }
             </p>
           </div>
 
         </div>
 
-        {/* Curved Footer */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 relative">
-          {/* Top curve */}
-          <div className="absolute top-0 left-0 right-0 h-8 bg-white rounded-b-[40px]"></div>
-          <div className="pt-4 text-center">
-            <button
-              onClick={handleContinue}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-2xl font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full"
-            >
-              Continue Journey
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="bg-gray-50 p-3 text-center">
+          <button
+            onClick={handleContinue}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 w-full"
+          >
+            Continue Journey
+          </button>
         </div>
       </div>
     </div>
