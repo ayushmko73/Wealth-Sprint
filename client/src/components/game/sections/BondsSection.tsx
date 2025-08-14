@@ -144,7 +144,7 @@ const BondsSection: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Professional Header */}
       <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-b border-blue-500">
         <div className="px-4 py-4">
@@ -183,23 +183,23 @@ const BondsSection: React.FC = () => {
       <div className="p-4 space-y-4">
         {/* Portfolio Performance Summary */}
         <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 shadow-sm">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <CardContent className="p-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="text-center">
-                <div className="text-blue-600 text-sm font-medium">Total Invested</div>
-                <div className="text-lg font-bold text-blue-800">{formatMoney(totalInvested)}</div>
+                <div className="text-blue-600 text-xs font-medium">Total Invested</div>
+                <div className="text-base font-bold text-blue-800 sm:text-lg">{formatMoney(totalInvested)}</div>
               </div>
               <div className="text-center">
-                <div className="text-green-600 text-sm font-medium">Expected Returns</div>
-                <div className="text-lg font-bold text-green-800">{formatMoney(expectedReturns)}</div>
+                <div className="text-green-600 text-xs font-medium">Expected Returns</div>
+                <div className="text-base font-bold text-green-800 sm:text-lg">{formatMoney(expectedReturns)}</div>
               </div>
               <div className="text-center">
-                <div className="text-purple-600 text-sm font-medium">Active Bonds</div>
-                <div className="text-lg font-bold text-purple-800">{activeBonds.length}</div>
+                <div className="text-purple-600 text-xs font-medium">Active Bonds</div>
+                <div className="text-base font-bold text-purple-800 sm:text-lg">{activeBonds.length}</div>
               </div>
               <div className="text-center">
-                <div className="text-yellow-600 text-sm font-medium">Avg. Yield</div>
-                <div className="text-lg font-bold text-yellow-800">
+                <div className="text-yellow-600 text-xs font-medium">Avg. Yield</div>
+                <div className="text-base font-bold text-yellow-800 sm:text-lg">
                   {activeBonds.length > 0 
                     ? (activeBonds.reduce((sum, bond) => sum + bond.interestRate, 0) / activeBonds.length).toFixed(1)
                     : '0'
@@ -251,49 +251,50 @@ const BondsSection: React.FC = () => {
                 }`}
                 onClick={() => setSelectedBond(isSelected ? null : bond.id)}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    {/* Left Side - Bond Info */}
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className={`p-2.5 rounded-lg ${isSelected ? 'bg-white shadow-sm' : 'bg-gray-50'}`}>
-                        <IconComponent className={`w-5 h-5 ${colors.text}`} />
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-bold text-gray-800">{bond.type.toUpperCase()}</h3>
-                          <Badge className={`${colors.badge} text-xs px-2 py-0.5 border-0`}>
-                            {bond.risk.split(' ')[0]}
-                          </Badge>
+                <CardContent className="p-3 sm:p-4">
+                  <div className="space-y-3">
+                    {/* Top Row - Bond Type and Badge */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`p-2 rounded-lg ${isSelected ? 'bg-white shadow-sm' : 'bg-gray-50'}`}>
+                          <IconComponent className={`w-4 h-4 ${colors.text}`} />
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{bond.name}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {bond.features.slice(0, 3).map((feature, idx) => (
-                            <span 
-                              key={idx}
-                              className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full"
-                            >
-                              {feature}
-                            </span>
-                          ))}
+                        <div>
+                          <h3 className="font-bold text-gray-800 text-sm">{bond.type.toUpperCase()}</h3>
+                          <p className="text-xs text-gray-600">{bond.name}</p>
                         </div>
                       </div>
+                      <Badge className={`${colors.badge} text-xs px-2 py-0.5 border-0`}>
+                        {bond.risk.split(' ')[0]}
+                      </Badge>
                     </div>
                     
-                    {/* Right Side - Key Metrics */}
-                    <div className="flex gap-6">
-                      <div className="text-center">
+                    {/* Middle Row - Key Metrics */}
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div>
                         <div className="text-xs text-gray-500 mb-1">Annual Yield</div>
-                        <div className={`text-xl font-bold ${colors.text}`}>{bond.interestRate}%</div>
+                        <div className={`text-lg font-bold ${colors.text}`}>{bond.interestRate}%</div>
                       </div>
-                      <div className="text-center">
+                      <div>
                         <div className="text-xs text-gray-500 mb-1">Maturity</div>
-                        <div className={`text-xl font-bold ${colors.text}`}>{bond.maturity}T</div>
+                        <div className={`text-lg font-bold ${colors.text}`}>{bond.maturity}T</div>
                       </div>
-                      <div className="text-center">
+                      <div>
                         <div className="text-xs text-gray-500 mb-1">Min Amount</div>
                         <div className="text-sm font-semibold text-gray-700">{formatMoney(bond.minAmount)}</div>
                       </div>
+                    </div>
+                    
+                    {/* Bottom Row - Features */}
+                    <div className="flex flex-wrap gap-1">
+                      {bond.features.slice(0, 3).map((feature, idx) => (
+                        <span 
+                          key={idx}
+                          className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full"
+                        >
+                          {feature}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
@@ -346,7 +347,7 @@ const BondsSection: React.FC = () => {
                     </div>
                     
                     {/* Investment Input & Summary Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4">
                       <div>
                         <label className="text-blue-200 text-sm block mb-2">Investment Amount</label>
                         <Input
@@ -354,7 +355,7 @@ const BondsSection: React.FC = () => {
                           placeholder={`Min ${formatMoney(bond.minAmount)}`}
                           value={investmentAmount}
                           onChange={(e) => setInvestmentAmount(e.target.value)}
-                          className="bg-white bg-opacity-20 border-blue-400 text-white placeholder-blue-200 focus:border-white"
+                          className="bg-white bg-opacity-20 border-blue-400 text-white placeholder-blue-200 focus:border-white w-full"
                           min={bond.minAmount}
                           max={bond.maxAmount}
                         />
@@ -388,8 +389,8 @@ const BondsSection: React.FC = () => {
                     </div>
                     
                     {/* Action Row */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-blue-200">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-sm text-blue-200">
                         <Banknote className="w-4 h-4" />
                         <span>Bank Account ({formatMoney(financialData.bankBalance)})</span>
                       </div>
@@ -397,7 +398,7 @@ const BondsSection: React.FC = () => {
                       <Button
                         onClick={() => handleBondPurchase(selectedBond)}
                         disabled={!investmentAmount || amount < bond.minAmount || amount > bond.maxAmount}
-                        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 border-0"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 border-0"
                       >
                         <ArrowDownUp className="w-4 h-4 mr-2" />
                         Invest Now
@@ -428,27 +429,30 @@ const BondsSection: React.FC = () => {
                   const maturityValue = bond.investedAmount * (1 + bond.interestRate / 100);
                   
                   return (
-                    <div key={bond.id} className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-100">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-100 rounded-lg">
-                            <PiggyBank className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-800">{bond.type} Bond</span>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge className="bg-blue-600 text-white text-xs px-2 py-0.5">
-                                {bond.interestRate}% APR
-                              </Badge>
-                              <span className="text-xs text-gray-500">
-                                {bond.turnsToMature} turns remaining
-                              </span>
+                    <div key={bond.id} className="bg-gradient-to-r from-gray-50 to-blue-50 p-3 rounded-lg border border-gray-100">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-blue-100 rounded-lg">
+                              <PiggyBank className="w-3 h-3 text-blue-600" />
+                            </div>
+                            <div>
+                              <span className="font-semibold text-gray-800 text-sm">{bond.type} Bond</span>
+                              <div className="flex items-center gap-1 mt-1">
+                                <Badge className="bg-blue-600 text-white text-xs px-1.5 py-0.5">
+                                  {bond.interestRate}% APR
+                                </Badge>
+                              </div>
                             </div>
                           </div>
+                          <div className="text-xs text-gray-500">
+                            {bond.turnsToMature} turns left
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-600">Investment Value</div>
-                          <div className="font-bold text-lg text-gray-800">
+                        
+                        <div className="text-center">
+                          <div className="text-xs text-gray-600 mb-1">Investment Value</div>
+                          <div className="font-bold text-base text-gray-800">
                             {formatMoney(bond.investedAmount)} → <span className="text-green-600">{formatMoney(maturityValue)}</span>
                           </div>
                         </div>
