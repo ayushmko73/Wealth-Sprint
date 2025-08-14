@@ -18,9 +18,9 @@ const CompactDashboard: React.FC = () => {
   const progressToFI = Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100);
 
   return (
-    <div className="p-1 max-w-none mx-auto">
+    <div className="p-1 w-full">
       {/* Compact Card */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden w-full">
         
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 text-center">
@@ -47,8 +47,8 @@ const CompactDashboard: React.FC = () => {
         </div>
 
         {/* Compact Stats Grid - All 6 items */}
-        <div className="p-1">
-          <div className="space-y-1">
+        <div className="p-2">
+          <div className="space-y-2">
             {/* Row 1 - 2 columns */}
             <div className="grid grid-cols-2 gap-1">
               <div className="bg-pink-400 text-white p-6 rounded-xl">
