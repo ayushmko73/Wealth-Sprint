@@ -7,7 +7,7 @@ import { formatIndianCurrency } from '../../lib/utils';
 import StartScreen from './components/StartScreen';
 import GameplayContent from './components/GameplayContent';
 import CyberModeButton from './components/CyberModeButton';
-import ScenarioEngine from './ScenarioEngine';
+
 import DashboardBar from './DashboardBar';
 import InvestmentTable from './InvestmentTable';
 import RevenueOverview from './RevenueOverview';
@@ -43,7 +43,6 @@ import {
   Building2,
   ShoppingCart
 } from 'lucide-react';
-import TaskPanel from './TaskPanel';
 import WealthTracker from './WealthTracker';
 import CashflowSection from './sections/CashflowSection';
 import StocksSection from './sections/StocksSection';
@@ -161,7 +160,6 @@ const GameDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardBar />
-            <ScenarioEngine />
           </div>
         );
     }
