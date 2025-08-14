@@ -36,20 +36,25 @@ interface DecisionSystemState {
   currentDecision: Decision | null;
   selectedOption: DecisionOption | null;
   
+  // New consolidated interface support
+  selectedOptions: Record<string, DecisionOption>;
+  
   // Game integration
   gameDay: number;
   hasCompletedToday: boolean;
   
   // Actions
   startDailyDecisions: (day: number) => void;
-  selectDecisionOption: (option: DecisionOption) => void;
+  selectDecisionOption: (decisionId: string, option: DecisionOption) => void;
   submitDecision: () => void;
+  submitAllDecisions: () => void;
   nextDecision: () => void;
   finishDailyDecisions: () => void;
   
   // Blockchain functions (simulated for now)
   storeDecisionOnChain: (decision: PlayerDecision) => Promise<string>;
   retrieveDecisionFromChain: (hash: string) => Promise<PlayerDecision>;
+  checkAndStartTodaysDecisions: () => void;
   
   // Data management
   getDecisionHistory: () => PlayerDecision[];
@@ -69,6 +74,7 @@ const useDecisionSystem = create<DecisionSystemState>()(
     showResultScreen: false,
     currentDecision: null,
     selectedOption: null,
+    selectedOptions: {},
     gameDay: 1,
     hasCompletedToday: false,
 
@@ -92,14 +98,21 @@ const useDecisionSystem = create<DecisionSystemState>()(
         showDecisionCard: true,
         showResultScreen: false,
         selectedOption: null,
+        selectedOptions: {},
         gameDay: day,
         hasCompletedToday: false
       });
     },
 
     // Select an option for the current decision
-    selectDecisionOption: (option: DecisionOption) => {
-      set({ selectedOption: option });
+    selectDecisionOption: (decisionId: string, option: DecisionOption) => {
+      set((state) => ({
+        selectedOption: option,
+        selectedOptions: {
+          ...state.selectedOptions,
+          [decisionId]: option
+        }
+      }));
     },
 
     // Submit the selected decision and show results
@@ -145,6 +158,81 @@ const useDecisionSystem = create<DecisionSystemState>()(
         // This will be integrated with useWealthSprintGame store
         console.log('Applying consequences:', selectedOption.consequences);
       }
+    },
+
+    // Submit all decisions at once (new consolidated interface)
+    submitAllDecisions: async () => {
+      const { currentSession, selectedOptions } = get();
+      if (!currentSession) return;
+
+      const useWealthSprintGame = await import('../stores/useWealthSprintGame').then(m => m.useWealthSprintGame);
+
+      // Process all decisions
+      for (const decision of currentSession.decisions) {
+        const selectedOption = selectedOptions[decision.id];
+        if (!selectedOption) continue;
+
+        // Create player decision record
+        const playerDecision: PlayerDecision = {
+          id: `pd_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          decisionId: decision.id,
+          day: currentSession.day,
+          question: decision.question,
+          selectedOptionId: selectedOption.id,
+          selectedOptionText: selectedOption.text,
+          consequences: selectedOption.consequences,
+          timestamp: new Date()
+        };
+
+        // Store on blockchain (simulated)
+        try {
+          const blockchainHash = await get().storeDecisionOnChain(playerDecision);
+          playerDecision.blockchainHash = blockchainHash;
+          console.log('Decision stored on blockchain:', blockchainHash);
+        } catch (error) {
+          console.error('Error storing on blockchain:', error);
+        }
+
+        // Apply consequences to game state
+        if (selectedOption.consequences) {
+          console.log('Applying consequences:', selectedOption.consequences);
+          
+          // Apply financial consequences
+          if (selectedOption.consequences.financial) {
+            useWealthSprintGame.getState().updateFinancialData({
+              bankBalance: selectedOption.consequences.financial
+            });
+          }
+
+          // Apply stat consequences (emotion, stress, etc.)
+          const statUpdates: any = {};
+          Object.entries(selectedOption.consequences).forEach(([key, value]) => {
+            if (key !== 'financial' && key !== 'description' && typeof value === 'number') {
+              statUpdates[key] = value;
+            }
+          });
+          
+          if (Object.keys(statUpdates).length > 0) {
+            useWealthSprintGame.getState().updatePlayerStats(statUpdates);
+          }
+        }
+
+        // Add to completed decisions and history
+        currentSession.completedDecisions.push(playerDecision);
+        set(state => ({
+          allPlayerDecisions: [...state.allPlayerDecisions, playerDecision]
+        }));
+      }
+
+      // Mark session as completed
+      currentSession.isCompleted = true;
+      currentSession.endTime = new Date();
+
+      set({
+        showDecisionCard: false,
+        showResultScreen: true,
+        hasCompletedToday: true
+      });
     },
 
     // Move to next decision or finish session

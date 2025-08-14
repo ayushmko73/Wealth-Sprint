@@ -78,9 +78,9 @@ const DecisionManager: React.FC = () => {
   return (
     <>
       {/* Decision Card */}
-      {showDecisionCard && currentDecision && (
+      {showDecisionCard && currentSession && (
         <DecisionCard 
-          decision={currentDecision} 
+          decisions={currentSession.decisions} 
           dayNumber={gameDay}
         />
       )}
