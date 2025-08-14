@@ -160,8 +160,8 @@ const GameDashboard: React.FC = () => {
         return <SettingsSection />;
       default:
         return (
-          <div className="h-full">
-            <CompactDashboard />
+          <div className="space-y-6">
+            <DashboardBar />
           </div>
         );
     }
