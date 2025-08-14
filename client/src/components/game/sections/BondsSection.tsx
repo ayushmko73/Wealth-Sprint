@@ -257,7 +257,7 @@ const BondsSection: React.FC = () => {
         {bondProducts.map((bond) => {
           const isSelected = selectedBond === bond.id;
           const colorMap = {
-            emerald: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-100' },
+            emerald: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-100' },
             blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100' },
             red: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', badge: 'bg-red-100' }
           };
@@ -425,7 +425,6 @@ const BondsSection: React.FC = () => {
                         disabled={!investmentAmount || amount < bond.minAmount || amount > bond.maxAmount}
                         className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 border-0"
                       >
-                        <ArrowDownUp className="w-3 h-3 mr-2" />
                         Invest Now
                       </Button>
                     </div>
