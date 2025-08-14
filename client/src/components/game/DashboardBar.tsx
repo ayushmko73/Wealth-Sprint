@@ -1,9 +1,11 @@
 import React from 'react';
 import { useWealthSprintGame } from '../../lib/stores/useWealthSprintGame';
+import { useDecisionSystem } from '../../lib/stores/useDecisionSystem';
 import { formatIndianCurrency } from '../../lib/utils';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
+import { Button } from '../ui/button';
 import { 
   DollarSign, 
   Heart, 
@@ -14,11 +16,13 @@ import {
   Battery,
   TrendingUp,
   TrendingDown,
-  Target
+  Target,
+  PlayCircle
 } from 'lucide-react';
 
 const DashboardBar: React.FC = () => {
   const { playerStats, financialData, currentWeek, currentDay, gameState } = useWealthSprintGame();
+  const { startDailyDecisions, hasCompletedToday } = useDecisionSystem();
 
   // Using the new Indian currency formatting function
 
@@ -329,6 +333,29 @@ const DashboardBar: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Decision Test Button (Development) */}
+      <Card className="bg-purple-50 border border-purple-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-semibold text-purple-800 text-sm">Daily Decisions</div>
+              <div className="text-xs text-purple-600">
+                {hasCompletedToday ? 'Completed for today' : 'Ready for today\'s decisions'}
+              </div>
+            </div>
+            <Button
+              onClick={() => startDailyDecisions(currentDay)}
+              disabled={hasCompletedToday}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              <PlayCircle size={16} className="mr-1" />
+              Start Decisions
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Special Status Alerts */}
       {(gameState.isHospitalized || gameState.isMentalBreakdown || gameState.isBlackoutMode) && (

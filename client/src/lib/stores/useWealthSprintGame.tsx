@@ -321,17 +321,54 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
 
     // Actions
     updatePlayerStats: (updates: Partial<PlayerStats>) => {
-      set((state) => ({
-        playerStats: {
-          ...state.playerStats,
-          ...updates,
-        },
-      }));
+      set((state) => {
+        const newStats = { ...state.playerStats };
+        
+        // Handle incremental updates for numeric stats
+        Object.entries(updates).forEach(([key, value]) => {
+          if (typeof value === 'number') {
+            const statKey = key as keyof PlayerStats;
+            if (statKey === 'emotion' || statKey === 'stress' || statKey === 'karma' || 
+                statKey === 'logic' || statKey === 'reputation' || statKey === 'energy' ||
+                statKey === 'clarityXP' || statKey === 'loopScore') {
+              // Add the value (could be positive or negative) and clamp between 0-100
+              const currentValue = newStats[statKey] as number;
+              (newStats as any)[statKey] = Math.max(0, Math.min(100, currentValue + value));
+            } else {
+              // Direct assignment for other numeric values
+              (newStats as any)[key] = value;
+            }
+          } else {
+            // Direct assignment for non-numeric values
+            (newStats as any)[key] = value;
+          }
+        });
+        
+        return {
+          playerStats: newStats,
+        };
+      });
     },
 
     updateFinancialData: (updates: Partial<FinancialData>) => {
       set((state) => {
-        const newFinancialData = { ...state.financialData, ...updates };
+        const newFinancialData = { ...state.financialData };
+        
+        // Handle incremental updates for numeric financial data
+        Object.entries(updates).forEach(([key, value]) => {
+          if (typeof value === 'number') {
+            if (key === 'bankBalance') {
+              // Add the value (could be positive or negative)
+              newFinancialData.bankBalance = Math.max(0, newFinancialData.bankBalance + value);
+            } else {
+              // Direct assignment for other numeric values
+              (newFinancialData as any)[key] = value;
+            }
+          } else {
+            // Direct assignment for non-numeric values
+            (newFinancialData as any)[key] = value;
+          }
+        });
         
         // Calculate net worth
         newFinancialData.netWorth = newFinancialData.bankBalance + newFinancialData.totalAssets - newFinancialData.totalLiabilities;

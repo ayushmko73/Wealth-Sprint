@@ -61,6 +61,7 @@ import StrategyCardsSection from './sections/StrategyCardsSection';
 import StoreSection from './sections/StoreSection';
 
 import AdvancedTeamManagement from './AdvancedTeamManagement';
+import { DecisionManager } from './decisions';
 
 import EnhancedStockMarket from './EnhancedStockMarket';
 import SageAI from './GorkAI';
@@ -303,6 +304,9 @@ const GameDashboard: React.FC = () => {
       
       {/* Sage AI Assistant */}
       <SageAI />
+      
+      {/* Decision System Manager */}
+      <DecisionManager />
     </div>
   );
 };
