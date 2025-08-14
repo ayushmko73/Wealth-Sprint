@@ -40,6 +40,7 @@ export const DAILY_DECISIONS: Record<number, Decision[]> = {
             financial: -250000,
             logic: 5,
             stress: 10,
+            reputation: 5,
             description: "Invested ₹25L in suburban property. Potential for future growth but current stress from large expense."
           }
         },
@@ -77,6 +78,7 @@ export const DAILY_DECISIONS: Record<number, Decision[]> = {
             emotion: 15,
             energy: 10,
             stress: -10,
+            reputation: 3,
             description: "Spent ₹15K on Goa trip. Feeling refreshed and emotionally fulfilled from quality time with friends."
           }
         },
@@ -97,6 +99,7 @@ export const DAILY_DECISIONS: Record<number, Decision[]> = {
             financial: -3000,
             emotion: 8,
             karma: 5,
+            reputation: 2,
             description: "Spent ₹3K on local trip. Found middle ground between saving and socializing."
           }
         }
