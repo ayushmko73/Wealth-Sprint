@@ -100,7 +100,7 @@ const DashboardBar: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 max-w-md mx-auto p-3">
+    <div className="space-y-4 max-w-md mx-auto p-4 bg-white rounded-2xl shadow-lg border border-gray-200 my-4">
       {/* Main Financial Card */}
       <Card className="bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 text-white rounded-3xl overflow-hidden shadow-xl">
         <CardContent className="p-6">

@@ -442,53 +442,87 @@ const BusinessDealsSection: React.FC = () => {
                   </div>
                 )}
 
-                {/* Deal Options */}
-                <div className="space-y-3">
-                  <h3 className="font-semibold">Your Options:</h3>
-                  {selectedDealData.options.map(option => (
-                    <Card key={option.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="pt-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <p className="font-medium">{option.text}</p>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                          {option.consequences.cashflow !== 0 && (
-                            <Badge variant="outline" className={option.consequences.cashflow > 0 ? 'text-green-600' : 'text-red-600'}>
-                              Cash: {option.consequences.cashflow > 0 ? '+' : ''}₹{(option.consequences.cashflow / 10000000).toFixed(1)}Cr
-                            </Badge>
-                          )}
-                          {option.consequences.reputation !== 0 && (
-                            <Badge variant="outline" className={option.consequences.reputation > 0 ? 'text-green-600' : 'text-red-600'}>
-                              Rep: {option.consequences.reputation > 0 ? '+' : ''}{option.consequences.reputation}
-                            </Badge>
-                          )}
-                          {option.consequences.stress !== 0 && (
-                            <Badge variant="outline" className={option.consequences.stress > 0 ? 'text-red-600' : 'text-green-600'}>
-                              Stress: {option.consequences.stress > 0 ? '+' : ''}{option.consequences.stress}
-                            </Badge>
-                          )}
-                          {option.consequences.karma !== 0 && (
-                            <Badge variant="outline" className={option.consequences.karma > 0 ? 'text-green-600' : 'text-red-600'}>
-                              Karma: {option.consequences.karma > 0 ? '+' : ''}{option.consequences.karma}
-                            </Badge>
-                          )}
-                          {option.consequences.equity !== 0 && (
-                            <Badge variant="outline" className="text-purple-600">
-                              Equity: {option.consequences.equity}%
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <Button 
+                {/* Decision Interface */}
+                <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-lg">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">What will you do?</h3>
+                    <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {selectedDealData.options.map((option, index) => (
+                      <div key={option.id} className="group">
+                        <button
                           onClick={() => handleDealDecision(selectedDealData.id, option.id)}
-                          className="w-full bg-[#d4af37] hover:bg-[#b8941f]"
+                          className="w-full bg-white border-2 border-gray-200 rounded-xl p-5 text-left hover:border-blue-400 hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]"
                         >
-                          Choose This Option
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <div className="flex items-start gap-4">
+                            <div className="w-8 h-8 rounded-full border-2 border-gray-300 group-hover:border-blue-500 flex items-center justify-center transition-colors">
+                              <div className="w-3 h-3 rounded-full bg-gray-300 group-hover:bg-blue-500 transition-colors"></div>
+                            </div>
+                            
+                            <div className="flex-1">
+                              <p className="font-semibold text-gray-800 mb-3 text-base leading-relaxed">
+                                {option.text}
+                              </p>
+                              
+                              <div className="flex flex-wrap gap-2">
+                                {option.consequences.cashflow !== 0 && (
+                                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                                    option.consequences.cashflow > 0 
+                                      ? 'bg-green-100 text-green-700' 
+                                      : 'bg-red-100 text-red-700'
+                                  }`}>
+                                    <TrendingUp size={14} />
+                                    <span>Income {option.consequences.cashflow > 0 ? '+' : ''}₹{Math.abs(option.consequences.cashflow / 10000)}</span>
+                                  </div>
+                                )}
+                                
+                                {option.consequences.stress !== 0 && (
+                                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                                    option.consequences.stress > 0 
+                                      ? 'bg-orange-100 text-orange-700' 
+                                      : 'bg-blue-100 text-blue-700'
+                                  }`}>
+                                    <AlertTriangle size={14} />
+                                    <span>Stress {option.consequences.stress > 0 ? '+' : ''}{option.consequences.stress}</span>
+                                  </div>
+                                )}
+                                
+                                {option.consequences.reputation !== 0 && (
+                                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                                    option.consequences.reputation > 0 
+                                      ? 'bg-purple-100 text-purple-700' 
+                                      : 'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    <Users size={14} />
+                                    <span>Reputation {option.consequences.reputation > 0 ? '+' : ''}{option.consequences.reputation}</span>
+                                  </div>
+                                )}
+                                
+                                {option.consequences.karma !== 0 && (
+                                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                                    option.consequences.karma > 0 
+                                      ? 'bg-green-100 text-green-700' 
+                                      : 'bg-red-100 text-red-700'
+                                  }`}>
+                                    <span>Logic {option.consequences.karma > 0 ? '+' : ''}{option.consequences.karma}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                      <Clock size={16} />
+                      <span>Decision timer: {selectedDealData.timeLimit} hours remaining</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
