@@ -3,6 +3,7 @@ import { useDecisionSystem } from '../../../lib/stores/useDecisionSystem';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import DecisionCard from './DecisionCard';
 import DecisionResultScreen from './DecisionResultScreen';
+import ProfessionalDecisionResult from '../ProfessionalDecisionResult';
 
 const DecisionManager: React.FC = () => {
   const {
@@ -87,12 +88,7 @@ const DecisionManager: React.FC = () => {
 
       {/* Result Screen */}
       {showResultScreen && currentSession && (
-        <DecisionResultScreen 
-          playerDecision={currentSession.completedDecisions[currentSession.completedDecisions.length - 1]}
-          isLastDecision={
-            currentSession.currentDecisionIndex >= currentSession.decisions.length - 1
-          }
-        />
+        <ProfessionalDecisionResult />
       )}
     </>
   );

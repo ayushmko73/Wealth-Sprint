@@ -44,7 +44,6 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import WealthTracker from './WealthTracker';
-import CompactDashboard from './CompactDashboard';
 import CashflowSection from './sections/CashflowSection';
 import StocksSection from './sections/StocksSection';
 import BondsSection from './sections/BondsSection';
@@ -161,7 +160,7 @@ const GameDashboard: React.FC = () => {
       default:
         return (
           <div className="space-y-6">
-            <CompactDashboard />
+            <DashboardBar />
           </div>
         );
     }
