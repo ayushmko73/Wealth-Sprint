@@ -32,53 +32,103 @@ const BondsSection: React.FC = () => {
   const [selectedBond, setSelectedBond] = useState<string | null>(null);
   const [investmentAmount, setInvestmentAmount] = useState('');
 
-  // Bond data with enhanced banking integration
-  const bondProducts = [
-    {
-      id: 'gov-bond-1',
-      name: 'Government Savings Bond',
-      issuer: 'Reserve Bank of India',
-      type: 'Government',
-      interestRate: 4.5,
-      maturity: 12,
-      minAmount: 10000,
-      maxAmount: 500000,
-      risk: 'Low Risk',
-      riskLevel: 1,
-      features: ['Tax Free', 'Government Backed', 'Early Exit Option'],
-      description: 'Sovereign guaranteed bond with tax benefits',
-      color: 'emerald'
-    },
-    {
-      id: 'corp-bond-1', 
-      name: 'Corporate Fixed Deposit Bond',
-      issuer: 'HDFC Bank Limited',
-      type: 'Corporate',
-      interestRate: 8.2,
-      maturity: 8,
-      minAmount: 25000,
-      maxAmount: 1000000,
-      risk: 'Medium Risk',
-      riskLevel: 2,
-      features: ['Higher Returns', 'AAA Rating', 'Quarterly Interest'],
-      description: 'Premium corporate bond from leading bank',
-      color: 'blue'
-    },
-    {
-      id: 'high-yield-1',
-      name: 'High Yield Corporate Bond',
-      issuer: 'Emerging Finance Corp',
-      type: 'High Yield',
-      interestRate: 14.5,
-      maturity: 4,
-      minAmount: 50000,
-      maxAmount: 2000000,
-      risk: 'High Risk', 
-      riskLevel: 3,
-      features: ['Premium Returns', 'Short Term', 'High Liquidity'],
-      description: 'High yield bond for aggressive investors',
-      color: 'red'
+  // Dynamic bond calculator function
+  const calculateBondReturns = (principalAmount: number, bondType: 'government' | 'corporate' | 'high_yield') => {
+    // Set interest rate and maturity ranges based on bond type
+    const bondRanges = {
+      government: { 
+        interestMin: 7, interestMax: 18, 
+        maturityMin: 12, maturityMax: 36 
+      },
+      corporate: { 
+        interestMin: 9, interestMax: 20, 
+        maturityMin: 12, maturityMax: 36 
+      },
+      high_yield: { 
+        interestMin: 12, interestMax: 25, 
+        maturityMin: 12, maturityMax: 36 
+      }
+    };
+
+    const range = bondRanges[bondType];
+    
+    // Randomly select interest rate and maturity within ranges
+    const interestRate = Math.random() * (range.interestMax - range.interestMin) + range.interestMin;
+    const maturityMonths = Math.floor(Math.random() * (range.maturityMax - range.maturityMin + 1)) + range.maturityMin;
+    
+    let totalReturn;
+    
+    if (bondType === 'high_yield') {
+      // Apply risk factor for high yield bonds
+      const riskFactor = Math.random() * 0.5 + 0.5; // Between 0.5 and 1.0
+      totalReturn = principalAmount * (1 + (interestRate * maturityMonths / 12) / 100) * riskFactor;
+    } else {
+      totalReturn = principalAmount * (1 + (interestRate * maturityMonths / 12) / 100);
     }
+
+    return {
+      interestRate: parseFloat(interestRate.toFixed(1)),
+      maturityMonths,
+      totalReturn: parseFloat(totalReturn.toFixed(2))
+    };
+  };
+
+  // Generate dynamic bond products with realistic calculator
+  const generateBondProduct = (id: string, type: 'government' | 'corporate' | 'high_yield') => {
+    const sample = calculateBondReturns(100000, type); // Sample calculation for display
+    
+    const bondDetails = {
+      government: {
+        name: 'Government Savings Bond',
+        issuer: 'Reserve Bank of India',
+        minAmount: 10000,
+        maxAmount: 500000,
+        risk: 'Low Risk',
+        riskLevel: 1,
+        features: ['Tax Free', 'Government Backed', 'Early Exit Option'],
+        description: 'Sovereign guaranteed bond with tax benefits',
+        color: 'emerald'
+      },
+      corporate: {
+        name: 'Corporate Fixed Deposit Bond',
+        issuer: 'HDFC Bank Limited',
+        minAmount: 25000,
+        maxAmount: 1000000,
+        risk: 'Medium Risk',
+        riskLevel: 2,
+        features: ['Higher Returns', 'AAA Rating', 'Quarterly Interest'],
+        description: 'Premium corporate bond from leading bank',
+        color: 'blue'
+      },
+      high_yield: {
+        name: 'High Yield Corporate Bond',
+        issuer: 'Emerging Finance Corp',
+        minAmount: 50000,
+        maxAmount: 2000000,
+        risk: 'High Risk',
+        riskLevel: 3,
+        features: ['Premium Returns', 'Short Term', 'High Liquidity'],
+        description: 'High yield bond for aggressive investors',
+        color: 'red'
+      }
+    };
+
+    const details = bondDetails[type];
+    
+    return {
+      id,
+      type: type === 'government' ? 'Government' : type === 'corporate' ? 'Corporate' : 'High Yield',
+      ...details,
+      interestRate: sample.interestRate,
+      maturity: sample.maturityMonths
+    };
+  };
+
+  // Bond products with dynamic generation
+  const bondProducts = [
+    generateBondProduct('gov-bond-1', 'government'),
+    generateBondProduct('corp-bond-1', 'corporate'),
+    generateBondProduct('high-yield-1', 'high_yield')
   ];
 
   // Banking Integration Functions
@@ -182,7 +232,7 @@ const BondsSection: React.FC = () => {
       {/* Professional Portfolio Overview with Compact Cards */}
       <div className="p-4 space-y-4">
         {/* Portfolio Performance Summary */}
-        <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 shadow-sm">
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardContent className="p-3">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="text-center">
@@ -277,7 +327,7 @@ const BondsSection: React.FC = () => {
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">Maturity</div>
-                        <div className={`text-lg font-bold ${colors.text}`}>{bond.maturity}T</div>
+                        <div className={`text-lg font-bold ${colors.text}`}>{bond.maturity}M</div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">Min Amount</div>
@@ -308,10 +358,10 @@ const BondsSection: React.FC = () => {
       {selectedBond && (
         <div className="px-4">
           <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg border-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-white">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-white text-lg">
                 <DollarSign className="w-5 h-5" />
-                Quick Investment - {bondProducts.find(b => b.id === selectedBond)?.name}
+                Quick Investment - {bondProducts.find(b => b.id === selectedBond)?.type} Fixed Deposit Bond
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-4">
@@ -320,70 +370,61 @@ const BondsSection: React.FC = () => {
                 if (!bond) return null;
                 
                 const amount = parseInt(investmentAmount) || 0;
-                const paymentMethod = 'Bank Account';
                 
                 return (
-                  <div className="space-y-4">
-                    {/* Compact Bond Info */}
-                    <div className="bg-white bg-opacity-10 rounded-lg p-3">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-blue-100">
-                        <div>
-                          <div className="text-blue-200">Issuer</div>
-                          <div className="font-medium text-white">{bond.issuer}</div>
-                        </div>
-                        <div>
-                          <div className="text-blue-200">Risk</div>
-                          <div className="font-medium text-white">{bond.risk}</div>
-                        </div>
-                        <div>
-                          <div className="text-blue-200">Rate</div>
-                          <div className="font-medium text-white">{bond.interestRate}% p.a.</div>
-                        </div>
-                        <div>
-                          <div className="text-blue-200">Maturity</div>
-                          <div className="font-medium text-white">{bond.maturity} Turns</div>
-                        </div>
+                  <div className="space-y-3">
+                    {/* Compact Bond Info Grid */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <div className="text-blue-200 text-xs">Issuer</div>
+                        <div className="font-medium text-white">{bond.issuer}</div>
+                      </div>
+                      <div>
+                        <div className="text-blue-200 text-xs">Risk</div>
+                        <div className="font-medium text-white">{bond.risk}</div>
+                      </div>
+                      <div>
+                        <div className="text-blue-200 text-xs">Rate</div>
+                        <div className="font-medium text-white">{bond.interestRate}% p.a.</div>
+                      </div>
+                      <div>
+                        <div className="text-blue-200 text-xs">Maturity</div>
+                        <div className="font-medium text-white">{bond.maturity} Months</div>
                       </div>
                     </div>
                     
-                    {/* Investment Input & Summary Row */}
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-blue-200 text-sm block mb-2">Investment Amount</label>
-                        <Input
-                          type="number"
-                          placeholder={`Min ${formatMoney(bond.minAmount)}`}
-                          value={investmentAmount}
-                          onChange={(e) => setInvestmentAmount(e.target.value)}
-                          className="bg-white bg-opacity-20 border-blue-400 text-white placeholder-blue-200 focus:border-white w-full"
-                          min={bond.minAmount}
-                          max={bond.maxAmount}
-                        />
-                        <div className="text-xs text-blue-200 mt-1">
-                          Range: {formatMoney(bond.minAmount)} - {formatMoney(bond.maxAmount)}
-                        </div>
+                    {/* Investment Amount Input */}
+                    <div>
+                      <label className="text-blue-200 text-sm block mb-1">Investment Amount</label>
+                      <Input
+                        type="number"
+                        placeholder={`Min ${formatMoney(bond.minAmount)}`}
+                        value={investmentAmount}
+                        onChange={(e) => setInvestmentAmount(e.target.value)}
+                        className="bg-white bg-opacity-20 border-blue-400 text-white placeholder-blue-200 focus:border-white w-full text-lg font-bold"
+                        min={bond.minAmount}
+                        max={bond.maxAmount}
+                      />
+                      <div className="text-xs text-blue-200 mt-1">
+                        Range: {formatMoney(bond.minAmount)} - {formatMoney(bond.maxAmount)}
                       </div>
+                    </div>
 
-                      {/* Quick Summary */}
-                      <div className="bg-white bg-opacity-10 rounded-lg p-3">
-                        <div className="text-xs text-blue-200 mb-2">Investment Preview</div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between text-blue-100">
-                            <span>Principal:</span>
-                            <span className="font-semibold text-white">{formatMoney(amount)}</span>
-                          </div>
-                          <div className="flex justify-between text-blue-100">
-                            <span>Returns:</span>
-                            <span className="font-semibold text-green-300">
-                              {formatMoney(amount * (bond.interestRate / 100))}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-blue-100 border-t border-blue-400 pt-1">
-                            <span>Total Value:</span>
-                            <span className="font-bold text-green-300">
-                              {formatMoney(amount * (1 + bond.interestRate / 100))}
-                            </span>
-                          </div>
+                    {/* Investment Preview */}
+                    <div className="text-sm">
+                      <div className="text-blue-200 text-xs mb-2">Investment Preview</div>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-blue-200 text-xs">Principal</div>
+                          <div className="font-bold text-white">{formatMoney(amount)}</div>
+                        </div>
+                        <div>
+                          <div className="text-blue-200 text-xs">Returns</div>
+                          <div className="font-bold text-green-300">{formatMoney(amount * (bond.interestRate / 100))}</div>
+                        </div>
+                        <div>
+                          <div className="text-blue-200 text-xs">Total Value</div>
+                          <div className="font-bold text-green-300">{formatMoney(amount * (1 + bond.interestRate / 100))}</div>
                         </div>
                       </div>
                     </div>
@@ -446,7 +487,7 @@ const BondsSection: React.FC = () => {
                             </div>
                           </div>
                           <div className="text-xs text-gray-500">
-                            {bond.turnsToMature} turns left
+                            {bond.turnsToMature} months left
                           </div>
                         </div>
                         
