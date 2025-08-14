@@ -6,7 +6,23 @@ import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
 import { Input } from '../../ui/input';
 import { formatMoney } from '../../../lib/utils/formatMoney';
-import { TrendingUp, Shield, AlertTriangle, Clock, DollarSign, Target } from 'lucide-react';
+import { 
+  TrendingUp, 
+  Shield, 
+  AlertTriangle, 
+  Clock, 
+  DollarSign, 
+  Target, 
+  PiggyBank,
+  BarChart3,
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
+  Percent,
+  CheckCircle,
+  XCircle,
+  Activity
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 const BondsSection: React.FC = () => {
@@ -23,33 +39,57 @@ const BondsSection: React.FC = () => {
   const bondTypes = {
     Government: {
       name: 'Government Bond',
-      icon: <Shield className="w-5 h-5" />,
-      color: 'bg-green-100 border-green-200',
+      shortName: 'GOV',
+      icon: Shield,
+      gradient: 'from-green-600 to-green-700',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      textColor: 'text-green-800',
       badgeColor: 'bg-green-500',
       interestRate: 4,
       maturityTurns: 12,
       risk: 'Low',
-      description: 'Safest investment backed by government guarantee'
+      riskScore: 1,
+      minInvestment: 10000,
+      issuer: 'Government of India',
+      description: 'Safest investment backed by sovereign guarantee',
+      features: ['Tax Benefits', 'Capital Protection', 'Sovereign Backed']
     },
     Corporate: {
       name: 'Corporate Bond',
-      icon: <TrendingUp className="w-5 h-5" />,
-      color: 'bg-blue-100 border-blue-200',
+      shortName: 'CORP',
+      icon: TrendingUp,
+      gradient: 'from-blue-600 to-blue-700',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      textColor: 'text-blue-800',
       badgeColor: 'bg-blue-500',
       interestRate: 8,
       maturityTurns: 8,
       risk: 'Medium',
-      description: 'Higher returns from established companies'
+      riskScore: 2,
+      minInvestment: 25000,
+      issuer: 'AAA Rated Companies',
+      description: 'Higher returns from established corporates',
+      features: ['Regular Income', 'Credit Rating AAA', 'Liquid Market']
     },
     Junk: {
-      name: 'Junk Bond',
-      icon: <AlertTriangle className="w-5 h-5" />,
-      color: 'bg-red-100 border-red-200',
+      name: 'High Yield Bond',
+      shortName: 'HY',
+      icon: AlertTriangle,
+      gradient: 'from-orange-600 to-red-600',
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200',
+      textColor: 'text-red-800',
       badgeColor: 'bg-red-500',
       interestRate: 15,
       maturityTurns: 4,
       risk: 'High',
-      description: 'High risk, high reward - 10% default chance'
+      riskScore: 3,
+      minInvestment: 50000,
+      issuer: 'Emerging Companies',
+      description: 'Premium returns with higher credit risk',
+      features: ['High Yield', 'Short Tenure', '10% Default Risk']
     }
   };
 
@@ -83,227 +123,319 @@ const BondsSection: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#3a3a3a]">Bond Investments</h1>
-        <div className="flex items-center gap-4">
-          <Badge className="bg-[#d4af37] text-white">
-            {formatMoney(totalBondValue)} Invested
-          </Badge>
-          <Badge className="bg-green-600 text-white">
-            {formatMoney(expectedReturns)} Expected
-          </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Professional Bond Market Header */}
+      <div className="w-full bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 shadow-xl border-b border-slate-500">
+        <div className="px-4 py-3">
+          {/* Header Row */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-white bg-opacity-20 p-1.5 rounded">
+                <PiggyBank className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Professional Bond Market</h2>
+                <p className="text-slate-100 text-xs">Fixed income investments • Secure returns</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-500 text-white px-2 py-1 text-xs font-semibold">
+                OPEN
+              </Badge>
+              <div className="text-right text-white text-xs">
+                <div className="text-slate-200">Portfolio</div>
+                <div className="font-semibold">{formatMoney(totalBondValue)}</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Market Summary */}
+          <div className="flex items-center justify-between bg-white bg-opacity-15 rounded-lg px-3 py-1.5">
+            <div className="flex items-center gap-4 text-white text-sm">
+              <div className="flex items-center gap-1">
+                <span className="text-slate-200">10Y Yield:</span>
+                <span className="font-bold">7.24%</span>
+                <span className="text-green-300 text-xs">+0.02%</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-slate-200">Credit Spread:</span>
+                <span className="font-bold">1.85%</span>
+                <span className="text-red-300 text-xs">-0.05%</span>
+              </div>
+            </div>
+            <div className="text-white text-xs">
+              <span className="text-slate-200">Available:</span>
+              <span className="ml-1 font-medium">{formatMoney(financialData.bankBalance)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Purchase Bonds */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+      <div className="p-4 space-y-4">
+        {/* Professional Bond Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {Object.entries(bondTypes).map(([type, info]) => {
+            const Icon = info.icon;
+            const isSelected = selectedBondType === type;
+            
+            return (
+              <Card 
+                key={type}
+                className={`cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
+                  isSelected 
+                    ? `bg-gradient-to-br ${info.gradient} text-white border-white shadow-xl` 
+                    : `${info.bgColor} ${info.borderColor} hover:shadow-md`
+                }`}
+                onClick={() => setSelectedBondType(type as any)}
+              >
+                <CardContent className="p-4">
+                  {/* Bond Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-white bg-opacity-20' : 'bg-white'}`}>
+                        <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : info.textColor}`} />
+                      </div>
+                      <div>
+                        <h3 className={`font-bold text-sm ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                          {info.shortName}
+                        </h3>
+                        <p className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
+                          {info.name}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge 
+                      className={`${
+                        isSelected 
+                          ? 'bg-white bg-opacity-20 text-white' 
+                          : `${info.badgeColor} text-white`
+                      } text-xs font-semibold`}
+                    >
+                      {info.risk}
+                    </Badge>
+                  </div>
+
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className={`p-2 rounded ${isSelected ? 'bg-white bg-opacity-10' : 'bg-white'}`}>
+                      <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
+                        Annual Yield
+                      </div>
+                      <div className={`text-lg font-bold ${isSelected ? 'text-white' : info.textColor}`}>
+                        {info.interestRate}%
+                      </div>
+                    </div>
+                    <div className={`p-2 rounded ${isSelected ? 'bg-white bg-opacity-10' : 'bg-white'}`}>
+                      <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
+                        Maturity
+                      </div>
+                      <div className={`text-lg font-bold ${isSelected ? 'text-white' : info.textColor}`}>
+                        {info.maturityTurns}T
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div className="space-y-1">
+                    <div className={`text-xs font-medium ${isSelected ? 'text-white text-opacity-90' : 'text-slate-700'}`}>
+                      Key Features:
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {info.features.map((feature, index) => (
+                        <span 
+                          key={index}
+                          className={`text-xs px-2 py-0.5 rounded-full ${
+                            isSelected 
+                              ? 'bg-white bg-opacity-20 text-white' 
+                              : 'bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Min Investment */}
+                  <div className="mt-3 pt-2 border-t border-white border-opacity-20">
+                    <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
+                      Min. Investment: <span className="font-semibold">{formatMoney(info.minInvestment)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Investment Panel */}
+        <Card className="shadow-lg border border-slate-200">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b">
+            <CardTitle className="flex items-center gap-2 text-slate-800">
               <DollarSign className="w-5 h-5" />
-              Purchase Bonds
+              Investment Order - {bondTypes[selectedBondType].name}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-sm text-gray-600">
-                Bank Balance: {formatMoney(financialData.bankBalance)}
-              </div>
-              
-              {/* Bond Type Selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Select Bond Type:</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {Object.entries(bondTypes).map(([type, info]) => (
-                    <button
-                      key={type}
-                      onClick={() => setSelectedBondType(type as any)}
-                      className={`p-3 rounded-lg border text-left transition-colors ${
-                        selectedBondType === type 
-                          ? 'border-[#d4af37] bg-[#d4af37] bg-opacity-10' 
-                          : info.color
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          {info.icon}
-                          <span className="font-medium">{info.name}</span>
-                        </div>
-                        <Badge className={`${info.badgeColor} text-white text-xs`}>
-                          {info.risk} Risk
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2">{info.description}</div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-500">Returns:</span>
-                          <span className="font-medium ml-1">{info.interestRate}%</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Maturity:</span>
-                          <span className="font-medium ml-1">{info.maturityTurns} turns</span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Investment Details */}
+              <div className="space-y-3">
+                <div className="bg-slate-50 p-3 rounded-lg">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-slate-600">Issuer:</span>
+                      <div className="font-semibold">{bondTypes[selectedBondType].issuer}</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-600">Rating:</span>
+                      <div className="font-semibold">AAA</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-600">Coupon:</span>
+                      <div className="font-semibold">{bondTypes[selectedBondType].interestRate}% p.a.</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-600">Tenure:</span>
+                      <div className="font-semibold">{bondTypes[selectedBondType].maturityTurns} Turns</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-slate-700 block mb-1">
+                    Investment Amount
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder={`Min. ${formatMoney(bondTypes[selectedBondType].minInvestment)}`}
+                    value={purchaseAmount}
+                    onChange={(e) => setPurchaseAmount(e.target.value)}
+                    className="w-full"
+                  />
                 </div>
               </div>
 
-              {/* Purchase Amount */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Investment Amount:</label>
-                <Input
-                  type="number"
-                  placeholder="Enter amount"
-                  value={purchaseAmount}
-                  onChange={(e) => setPurchaseAmount(e.target.value)}
-                  className="w-full"
-                />
-              </div>
+              {/* Order Summary */}
+              <div className="space-y-3">
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                  <div className="text-sm font-medium text-blue-800 mb-2">Order Summary</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-blue-700">Investment:</span>
+                      <span className="font-semibold">{formatMoney(parseInt(purchaseAmount) || 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-700">Annual Returns:</span>
+                      <span className="font-semibold">{formatMoney((parseInt(purchaseAmount) || 0) * bondTypes[selectedBondType].interestRate / 100)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-700">Maturity Value:</span>
+                      <span className="font-semibold text-green-700">{formatMoney((parseInt(purchaseAmount) || 0) * (1 + bondTypes[selectedBondType].interestRate / 100))}</span>
+                    </div>
+                  </div>
+                </div>
 
-              {/* Purchase Button */}
-              <Button
-                onClick={handlePurchase}
-                disabled={!purchaseAmount || parseInt(purchaseAmount) <= 0}
-                className="w-full bg-[#d4af37] hover:bg-[#b8941f]"
-              >
-                Purchase {bondTypes[selectedBondType].name}
-              </Button>
+                <Button
+                  onClick={handlePurchase}
+                  disabled={!purchaseAmount || parseInt(purchaseAmount) < bondTypes[selectedBondType].minInvestment}
+                  className={`w-full bg-gradient-to-r ${bondTypes[selectedBondType].gradient} hover:shadow-lg text-white font-semibold py-2.5`}
+                >
+                  Purchase Bond - {formatMoney(parseInt(purchaseAmount) || 0)}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Portfolio Overview */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Portfolio Overview
+        <Card className="shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b">
+            <CardTitle className="flex items-center gap-2 text-slate-800">
+              <BarChart3 className="w-5 h-5" />
+              Bond Portfolio Overview
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-sm text-gray-600">Total Invested</div>
-                  <div className="text-lg font-bold text-blue-600">
-                    {formatMoney(totalBondValue)}
-                  </div>
-                </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <div className="text-sm text-gray-600">Expected Returns</div>
-                  <div className="text-lg font-bold text-green-600">
-                    {formatMoney(expectedReturns)}
-                  </div>
-                </div>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-center">
+                <div className="text-blue-600 text-sm font-medium">Total Invested</div>
+                <div className="text-xl font-bold text-blue-800">{formatMoney(totalBondValue)}</div>
               </div>
-
-              <div className="grid grid-cols-3 gap-2 text-sm">
-                <div className="text-center">
-                  <div className="text-gray-600">Active</div>
-                  <div className="font-bold">{activeBonds.length}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-gray-600">Matured</div>
-                  <div className="font-bold text-green-600">{maturedBonds.length}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-gray-600">Defaulted</div>
-                  <div className="font-bold text-red-600">{defaultedBonds.length}</div>
+              <div className="bg-green-50 p-3 rounded-lg border border-green-200 text-center">
+                <div className="text-green-600 text-sm font-medium">Expected Returns</div>
+                <div className="text-xl font-bold text-green-800">{formatMoney(expectedReturns)}</div>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center">
+                <div className="text-slate-600 text-sm font-medium">Active Bonds</div>
+                <div className="text-xl font-bold text-slate-800">{activeBonds.length}</div>
+              </div>
+              <div className="bg-purple-50 p-3 rounded-lg border border-purple-200 text-center">
+                <div className="text-purple-600 text-sm font-medium">Avg. Yield</div>
+                <div className="text-xl font-bold text-purple-800">
+                  {activeBonds.length > 0 
+                    ? (activeBonds.reduce((sum, bond) => sum + bond.interestRate, 0) / activeBonds.length).toFixed(1)
+                    : '0'
+                  }%
                 </div>
               </div>
             </div>
+
+            {/* Active Bonds List */}
+            {activeBonds.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  Active Holdings ({activeBonds.length})
+                </h4>
+                <div className="space-y-2">
+                  {activeBonds.map((bond) => {
+                    const bondInfo = bondTypes[bond.type];
+                    const Icon = bondInfo.icon;
+                    const maturityProgress = ((bondInfo.maturityTurns - bond.turnsToMature) / bondInfo.maturityTurns) * 100;
+                    const expectedReturn = bond.investedAmount * (1 + bond.interestRate / 100);
+                    
+                    return (
+                      <div key={bond.id} className={`p-3 rounded-lg border ${bondInfo.borderColor} ${bondInfo.bgColor}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Icon className={`w-4 h-4 ${bondInfo.textColor}`} />
+                            <span className="font-medium text-sm">{bondInfo.shortName}</span>
+                            <Badge className={`${bondInfo.badgeColor} text-white text-xs`}>
+                              {bond.interestRate}%
+                            </Badge>
+                          </div>
+                          <div className="text-right text-sm">
+                            <div className="text-slate-600">{bond.turnsToMature}T left</div>
+                            <div className="font-semibold text-slate-900">
+                              {formatMoney(bond.investedAmount)} → {formatMoney(expectedReturn)}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs text-slate-600">
+                            <span>Maturity Progress</span>
+                            <span>{maturityProgress.toFixed(1)}%</span>
+                          </div>
+                          <Progress value={maturityProgress} className="h-1.5" />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {activeBonds.length === 0 && (
+              <div className="text-center py-8 text-slate-500">
+                <PiggyBank className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No active bonds in your portfolio</p>
+                <p className="text-sm">Purchase your first bond to start earning fixed returns</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Active Bonds */}
-      {activeBonds.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              Active Bonds ({activeBonds.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {activeBonds.map((bond) => {
-                const bondInfo = bondTypes[bond.type];
-                const maturityProgress = ((bondInfo.maturityTurns - bond.turnsToMature) / bondInfo.maturityTurns) * 100;
-                const expectedReturn = bond.investedAmount * (1 + bond.interestRate / 100);
-                
-                return (
-                  <div key={bond.id} className={`p-4 rounded-lg border ${bondInfo.color}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {bondInfo.icon}
-                        <span className="font-medium">{bondInfo.name}</span>
-                        <Badge className={`${bondInfo.badgeColor} text-white text-xs`}>
-                          {bond.interestRate}%
-                        </Badge>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-600">
-                          {bond.turnsToMature} turns left
-                        </div>
-                        <div className="font-medium">
-                          {formatMoney(bond.investedAmount)} → {formatMoney(expectedReturn)}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>Maturity Progress</span>
-                        <span>{maturityProgress.toFixed(1)}%</span>
-                      </div>
-                      <Progress value={maturityProgress} className="h-2" />
-                    </div>
-                    
-                    <div className="mt-2 text-xs text-gray-500">
-                      Purchased: {bond.purchaseDate instanceof Date ? bond.purchaseDate.toLocaleDateString() : new Date(bond.purchaseDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Transaction History */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Bond Transactions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {financialData.transactionHistory
-              .filter(tx => tx.type === 'bond_purchase' || tx.type === 'bond_maturity')
-              .slice(0, 10)
-              .map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <div>
-                    <div className="font-medium text-sm">{transaction.description}</div>
-                    <div className="text-xs text-gray-500">
-                      {transaction.timestamp instanceof Date ? transaction.timestamp.toLocaleDateString() : new Date(transaction.timestamp).toLocaleDateString()} {transaction.timestamp instanceof Date ? transaction.timestamp.toLocaleTimeString() : new Date(transaction.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  <div className={`font-bold ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {transaction.amount >= 0 ? '+' : ''}{formatMoney(transaction.amount)}
-                  </div>
-                </div>
-              ))}
-            {financialData.transactionHistory.filter(tx => tx.type === 'bond_purchase' || tx.type === 'bond_maturity').length === 0 && (
-              <div className="text-center text-gray-500 py-4">
-                No bond transactions yet. Purchase your first bond above!
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
