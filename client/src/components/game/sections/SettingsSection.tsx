@@ -262,7 +262,7 @@ const SettingsSection: React.FC = () => {
                     onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
                     className={`relative group p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                       playerProfile.avatar === avatar.id 
-                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg shadow-blue-500/20' 
+                        ? 'border-blue-500 bg-white shadow-lg shadow-blue-500/20' 
                         : 'border-gray-200 hover:border-gray-300 bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg'
                     }`}
                   >
@@ -298,7 +298,7 @@ const SettingsSection: React.FC = () => {
                     variant={playerProfile.roleTitle === role ? "default" : "outline"}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
                     className={`h-12 rounded-2xl font-medium transition-all ${playerProfile.roleTitle === role 
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30" 
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 text-white" 
                       : "hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 border-2 border-gray-200"
                     }`}
                   >
@@ -339,7 +339,7 @@ const SettingsSection: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={toggleMute}
-                className="w-12 h-10"
+                className="w-12 h-10 bg-white hover:bg-gray-50 border-2"
               >
                 {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </Button>
@@ -350,13 +350,35 @@ const SettingsSection: React.FC = () => {
                 <span className="text-sm font-medium text-gray-700">Volume</span>
                 <span className="text-sm text-gray-500">{volume}%</span>
               </div>
-              <Slider
-                value={[volume]}
-                onValueChange={handleVolumeChange}
-                max={100}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="h-1 bg-gray-300 rounded-full relative">
+                  {/* Track line with dashes */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-full h-0.5 bg-gray-400" style={{
+                      backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 2px, #9ca3af 2px, #9ca3af 6px, transparent 6px, transparent 8px)',
+                    }}></div>
+                  </div>
+                  {/* Progress line */}
+                  <div 
+                    className="h-full bg-blue-500 rounded-full relative"
+                    style={{ width: `${volume}%` }}
+                  >
+                    {/* White circular thumb */}
+                    <div 
+                      className="absolute -right-2 -top-1.5 w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform"
+                      style={{ right: '-8px' }}
+                    />
+                  </div>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={volume}
+                  onChange={(e) => handleVolumeChange([parseInt(e.target.value)])}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
             </div>
 
             <div className="flex items-center justify-between">
@@ -369,6 +391,7 @@ const SettingsSection: React.FC = () => {
                 size="sm"
                 onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
                 disabled={isMuted}
+                className="bg-white hover:bg-gray-50 border-2"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
@@ -380,7 +403,7 @@ const SettingsSection: React.FC = () => {
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-32 bg-white border-2">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -458,7 +481,7 @@ const SettingsSection: React.FC = () => {
             <div className="space-y-3">
               <Button 
                 variant="outline"
-                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
+                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50 bg-white border-2"
                 onClick={handlePushToGithub}
                 disabled={isGithubPushing}
               >
@@ -476,7 +499,7 @@ const SettingsSection: React.FC = () => {
                 <AlertDialogTrigger asChild>
                   <Button 
                     variant="outline"
-                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50 bg-white border-2"
                   >
                     <RotateCcw size={16} className="mr-2" />
                     Reset Game Progress
@@ -501,7 +524,7 @@ const SettingsSection: React.FC = () => {
               <Button 
                 variant="outline"
                 onClick={handleClearCache}
-                className="w-full h-14 text-red-700 border-red-300/60 hover:bg-red-50 bg-white/80 backdrop-blur-sm rounded-3xl font-semibold transition-all duration-300 transform hover:scale-105"
+                className="w-full h-14 text-red-700 border-red-300/60 hover:bg-red-50 bg-white backdrop-blur-sm rounded-3xl font-semibold transition-all duration-300 transform hover:scale-105 border-2"
               >
                 <Trash2 size={16} className="mr-2" />
                 Clear Cache
