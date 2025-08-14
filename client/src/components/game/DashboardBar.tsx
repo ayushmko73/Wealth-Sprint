@@ -100,238 +100,268 @@ const DashboardBar: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 p-4">
-      {/* Modern Financial Overview Card */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 rounded-3xl p-6 text-white shadow-2xl">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp size={24} className="text-blue-200" />
-              <h2 className="text-xl font-bold">Net Worth</h2>
+    <div className="space-y-4 max-w-md mx-auto p-3">
+      {/* Main Financial Card */}
+      <Card className="bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 text-white rounded-3xl overflow-hidden shadow-xl">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp size={18} />
+                <span className="text-sm opacity-90">Net Worth</span>
+              </div>
+              <div className="text-2xl font-bold">{formatIndianCurrency(financialData.netWorth)}</div>
+              <div className="text-xs opacity-75">
+                {financialData.netWorth >= 0 ? 'Positive Growth' : 'Recovery Mode'}
+              </div>
             </div>
-            <div className="text-3xl font-black mb-2">{formatIndianCurrency(financialData.netWorth)}</div>
-            <div className="text-blue-200 text-sm">
-              {financialData.netWorth >= 0 ? '↗ Positive Growth' : '↘ Recovery Mode'}
+            
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign size={18} />
+                <span className="text-sm opacity-90">Monthly Income</span>
+              </div>
+              <div className="text-2xl font-bold">
+                {formatIndianCurrency(financialData.mainIncome + financialData.sideIncome)}
+              </div>
+              <div className="text-xs opacity-75">Main + Side Income</div>
             </div>
           </div>
           
-          <div>
+          <div className="border-t border-white/20 pt-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium">FI Progress</span>
+              <span className="text-sm font-bold">{fiProgress.toFixed(1)}%</span>
+            </div>
+            <div className="flex justify-between text-xs opacity-80 mb-3">
+              <span>Week {currentWeek}, Day {currentDay}</span>
+              <span>{formatIndianCurrency(financialData.sideIncome)} / {formatIndianCurrency(financialData.monthlyExpenses)}</span>
+            </div>
+            <div className="w-full bg-white/20 rounded-full h-2 mb-2">
+              <div 
+                className="bg-green-400 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${Math.min(100, fiProgress)}%` }}
+              />
+            </div>
+            <div className="text-center text-xs opacity-80">
+              {Math.floor(((currentWeek - 1) * 7 + currentDay) / 7)} weeks played • {fiProgress >= 100 ? 'Financial Independence Achieved!' : 'Building Wealth...'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats Grid - 2x3 Layout */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Emotion */}
+        <Card className="bg-gradient-to-br from-pink-400 to-red-500 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <DollarSign size={24} className="text-green-300" />
-              <h2 className="text-xl font-bold">Monthly Income</h2>
+              <Heart size={20} />
+              <div>
+                <div className="font-bold">Emotion</div>
+                <div className="text-xs opacity-80">Feelings</div>
+              </div>
             </div>
-            <div className="text-3xl font-black mb-2">
-              {formatIndianCurrency(financialData.mainIncome + financialData.sideIncome)}
+            <div className="text-2xl font-black mb-2">{playerStats.emotion}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${playerStats.emotion}%` }}
+              />
             </div>
-            <div className="text-green-200 text-sm">Main + Side Income</div>
-          </div>
-        </div>
-        
-        <div className="mt-6 pt-6 border-t border-white/20">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-white font-semibold">FI Progress</span>
-            <span className="text-white font-bold">{fiProgress.toFixed(1)}%</span>
-          </div>
-          <div className="flex justify-between text-sm text-blue-200 mb-3">
-            <span>Week {currentWeek}, Day {currentDay}</span>
-            <span>{formatIndianCurrency(financialData.sideIncome)} / {formatIndianCurrency(financialData.monthlyExpenses)}</span>
-          </div>
-          <div className="w-full bg-white/20 rounded-full h-4">
-            <div 
-              className="bg-gradient-to-r from-green-400 to-green-500 h-4 rounded-full transition-all duration-1000 shadow-lg"
-              style={{ width: `${Math.min(100, fiProgress)}%` }}
-            />
-          </div>
-          <div className="text-center mt-2 text-sm text-white/80">
-            {Math.floor(((currentWeek - 1) * 7 + currentDay) / 7)} weeks played • {fiProgress >= 100 ? 'Financial Independence Achieved!' : 'Building Wealth...'}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        {/* Stress */}
+        <Card className="bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle size={20} />
+              <div>
+                <div className="font-bold">Stress</div>
+                <div className="text-xs opacity-80">Pressure</div>
+              </div>
+            </div>
+            <div className="text-2xl font-black mb-2">{playerStats.stress}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${100 - playerStats.stress}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Logic */}
+        <Card className="bg-gradient-to-br from-blue-400 to-indigo-600 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Brain size={20} />
+              <div>
+                <div className="font-bold">Logic</div>
+                <div className="text-xs opacity-80">Reasoning</div>
+              </div>
+            </div>
+            <div className="text-2xl font-black mb-2">{playerStats.logic}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${playerStats.logic}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Karma */}
+        <Card className="bg-gradient-to-br from-purple-400 to-purple-700 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Scale size={20} />
+              <div>
+                <div className="font-bold">Karma</div>
+                <div className="text-xs opacity-80">Balance</div>
+              </div>
+            </div>
+            <div className="text-2xl font-black mb-2">{playerStats.karma}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${playerStats.karma}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Reputation */}
+        <Card className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Star size={20} />
+              <div>
+                <div className="font-bold">Reputation</div>
+                <div className="text-xs opacity-80">Standing</div>
+              </div>
+            </div>
+            <div className="text-2xl font-black mb-2">{playerStats.reputation}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${playerStats.reputation}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Energy */}
+        <Card className="bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-2xl overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Battery size={20} />
+              <div>
+                <div className="font-bold">Energy</div>
+                <div className="text-xs opacity-80">Vitality</div>
+              </div>
+            </div>
+            <div className="text-2xl font-black mb-2">{playerStats.energy}</div>
+            <div className="w-full bg-white/30 rounded-full h-1">
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-500"
+                style={{ width: `${playerStats.energy}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Colorful Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {/* Emotion Card - Red Theme */}
-        <div className="bg-gradient-to-br from-red-400 to-pink-500 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Heart size={28} className="text-red-100" />
-            <div>
-              <h3 className="font-bold text-lg">Emotion</h3>
-              <div className="text-red-100 text-sm">Feelings</div>
+      {/* Status Insight Cards */}
+      <div className="space-y-3">
+        <Card className="bg-blue-50 border-l-4 border-blue-400 rounded-xl">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <Brain size={16} className="text-blue-600" />
+              </div>
+              <div>
+                <div className="font-semibold text-blue-800 text-sm">Logic Level</div>
+                <div className="text-xs text-blue-600">
+                  {playerStats.logic >= 80 ? 'Excellent reasoning' :
+                   playerStats.logic >= 60 ? 'Good analytical skills' :
+                   playerStats.logic >= 40 ? 'Decent judgment' : 'Needs improvement'}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.emotion}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${playerStats.emotion}%` }}
-            />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Stress Card - Orange Theme */}
-        <div className="bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <AlertTriangle size={28} className="text-orange-100" />
-            <div>
-              <h3 className="font-bold text-lg">Stress</h3>
-              <div className="text-orange-100 text-sm">Pressure</div>
+        <Card className="bg-red-50 border-l-4 border-red-400 rounded-xl">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-red-100 p-2 rounded-full">
+                <Heart size={16} className="text-red-600" />
+              </div>
+              <div>
+                <div className="font-semibold text-red-800 text-sm">Emotional State</div>
+                <div className="text-xs text-red-600">
+                  {playerStats.emotion >= 80 ? 'Very positive outlook' :
+                   playerStats.emotion >= 60 ? 'Generally optimistic' :
+                   playerStats.emotion >= 40 ? 'Neutral mood' : 'Feeling challenged'}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.stress}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${100 - playerStats.stress}%` }}
-            />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Logic Card - Blue Theme */}
-        <div className="bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Brain size={28} className="text-blue-100" />
-            <div>
-              <h3 className="font-bold text-lg">Logic</h3>
-              <div className="text-blue-100 text-sm">Reasoning</div>
+        <Card className="bg-green-50 border-l-4 border-green-400 rounded-xl">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-green-100 p-2 rounded-full">
+                <Scale size={16} className="text-green-600" />
+              </div>
+              <div>
+                <div className="font-semibold text-green-800 text-sm">Karma Balance</div>
+                <div className="text-xs text-green-600">
+                  {playerStats.karma >= 80 ? 'Highly ethical approach' :
+                   playerStats.karma >= 60 ? 'Good moral compass' :
+                   playerStats.karma >= 40 ? 'Balanced decisions' : 'Consider your choices'}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.logic}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${playerStats.logic}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Karma Card - Purple Theme */}
-        <div className="bg-gradient-to-br from-purple-400 to-purple-700 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Scale size={28} className="text-purple-100" />
-            <div>
-              <h3 className="font-bold text-lg">Karma</h3>
-              <div className="text-purple-100 text-sm">Balance</div>
-            </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.karma}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${playerStats.karma}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Reputation Card - Yellow Theme */}
-        <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Star size={28} className="text-yellow-100" />
-            <div>
-              <h3 className="font-bold text-lg">Reputation</h3>
-              <div className="text-yellow-100 text-sm">Standing</div>
-            </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.reputation}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${playerStats.reputation}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Energy Card - Green Theme */}
-        <div className="bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl p-5 text-white shadow-xl">
-          <div className="flex items-center gap-3 mb-3">
-            <Battery size={28} className="text-green-100" />
-            <div>
-              <h3 className="font-bold text-lg">Energy</h3>
-              <div className="text-green-100 text-sm">Vitality</div>
-            </div>
-          </div>
-          <div className="text-3xl font-black mb-2">{playerStats.energy}</div>
-          <div className="w-full bg-white/30 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-500"
-              style={{ width: `${playerStats.energy}%` }}
-            />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Status Alerts */}
+      {/* Special Status Alerts */}
       {(gameState.isHospitalized || gameState.isMentalBreakdown || gameState.isBlackoutMode) && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
-          <div className="flex gap-3 flex-wrap">
-            {gameState.isHospitalized && (
-              <div className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                🏥 Hospitalized ({gameState.hospitalizationTurnsLeft} turns left)
-              </div>
-            )}
-            {gameState.isMentalBreakdown && (
-              <div className="bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                💔 Mental Breakdown ({gameState.breakdownTurnsLeft} turns left)
-              </div>
-            )}
-            {gameState.isBlackoutMode && (
-              <div className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                😵 Blackout Mode ({gameState.blackoutTurnsLeft} turns left)
-              </div>
-            )}
-          </div>
+        <div className="space-y-2">
+          {gameState.isHospitalized && (
+            <Card className="bg-red-100 border border-red-300">
+              <CardContent className="p-3">
+                <div className="text-red-700 text-sm font-medium">
+                  🏥 Hospitalized ({gameState.hospitalizationTurnsLeft} turns left)
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {gameState.isMentalBreakdown && (
+            <Card className="bg-purple-100 border border-purple-300">
+              <CardContent className="p-3">
+                <div className="text-purple-700 text-sm font-medium">
+                  💔 Mental Breakdown ({gameState.breakdownTurnsLeft} turns left)
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {gameState.isBlackoutMode && (
+            <Card className="bg-gray-100 border border-gray-300">
+              <CardContent className="p-3">
+                <div className="text-gray-700 text-sm font-medium">
+                  😵 Blackout Mode ({gameState.blackoutTurnsLeft} turns left)
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
-
-      {/* Quick Insights Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-blue-200 rounded-2xl p-4 shadow-lg">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="bg-blue-100 p-2 rounded-full">
-              <Brain size={20} className="text-blue-600" />
-            </div>
-            <div>
-              <h4 className="font-bold text-blue-800">Logic Level</h4>
-              <p className="text-sm text-blue-600">
-                {playerStats.logic >= 80 ? 'Excellent reasoning' :
-                 playerStats.logic >= 60 ? 'Good analytical skills' :
-                 playerStats.logic >= 40 ? 'Decent judgment' : 'Needs improvement'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-red-200 rounded-2xl p-4 shadow-lg">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="bg-red-100 p-2 rounded-full">
-              <Heart size={20} className="text-red-600" />
-            </div>
-            <div>
-              <h4 className="font-bold text-red-800">Emotional State</h4>
-              <p className="text-sm text-red-600">
-                {playerStats.emotion >= 80 ? 'Very positive outlook' :
-                 playerStats.emotion >= 60 ? 'Generally optimistic' :
-                 playerStats.emotion >= 40 ? 'Neutral mood' : 'Feeling challenged'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-green-200 rounded-2xl p-4 shadow-lg">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="bg-green-100 p-2 rounded-full">
-              <Scale size={20} className="text-green-600" />
-            </div>
-            <div>
-              <h4 className="font-bold text-green-800">Karma Balance</h4>
-              <p className="text-sm text-green-600">
-                {playerStats.karma >= 80 ? 'Highly ethical approach' :
-                 playerStats.karma >= 60 ? 'Good moral compass' :
-                 playerStats.karma >= 40 ? 'Balanced decisions' : 'Consider your choices'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
