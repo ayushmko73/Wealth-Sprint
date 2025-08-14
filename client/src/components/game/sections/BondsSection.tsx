@@ -7,21 +7,17 @@ import { Progress } from '../../ui/progress';
 import { Input } from '../../ui/input';
 import { formatMoney } from '../../../lib/utils/formatMoney';
 import { 
-  TrendingUp, 
   Shield, 
+  TrendingUp, 
   AlertTriangle, 
-  Clock, 
   DollarSign, 
-  Target, 
   PiggyBank,
-  BarChart3,
-  Calendar,
-  ArrowUpRight,
-  ArrowDownRight,
-  Percent,
-  CheckCircle,
-  XCircle,
-  Activity
+  CreditCard,
+  Banknote,
+  Wallet,
+  ArrowDownUp,
+  CheckCircle2,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -33,409 +29,473 @@ const BondsSection: React.FC = () => {
     addTransaction 
   } = useWealthSprintGame();
   
-  const [selectedBondType, setSelectedBondType] = useState<'Government' | 'Corporate' | 'Junk'>('Government');
-  const [purchaseAmount, setPurchaseAmount] = useState('');
+  const [selectedBond, setSelectedBond] = useState<string | null>(null);
+  const [investmentAmount, setInvestmentAmount] = useState('');
 
-  const bondTypes = {
-    Government: {
-      name: 'Government Bond',
-      shortName: 'GOV',
-      icon: Shield,
-      gradient: 'from-green-600 to-green-700',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-800',
-      badgeColor: 'bg-green-500',
-      interestRate: 4,
-      maturityTurns: 12,
-      risk: 'Low',
-      riskScore: 1,
-      minInvestment: 10000,
-      issuer: 'Government of India',
-      description: 'Safest investment backed by sovereign guarantee',
-      features: ['Tax Benefits', 'Capital Protection', 'Sovereign Backed']
+  // Bond data with enhanced banking integration
+  const bondProducts = [
+    {
+      id: 'gov-bond-1',
+      name: 'Government Savings Bond',
+      issuer: 'Reserve Bank of India',
+      type: 'Government',
+      interestRate: 4.5,
+      maturity: 12,
+      minAmount: 10000,
+      maxAmount: 500000,
+      risk: 'Low Risk',
+      riskLevel: 1,
+      features: ['Tax Free', 'Government Backed', 'Early Exit Option'],
+      description: 'Sovereign guaranteed bond with tax benefits',
+      color: 'emerald'
     },
-    Corporate: {
-      name: 'Corporate Bond',
-      shortName: 'CORP',
-      icon: TrendingUp,
-      gradient: 'from-blue-600 to-blue-700',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
-      badgeColor: 'bg-blue-500',
-      interestRate: 8,
-      maturityTurns: 8,
-      risk: 'Medium',
-      riskScore: 2,
-      minInvestment: 25000,
-      issuer: 'AAA Rated Companies',
-      description: 'Higher returns from established corporates',
-      features: ['Regular Income', 'Credit Rating AAA', 'Liquid Market']
+    {
+      id: 'corp-bond-1', 
+      name: 'Corporate Fixed Deposit Bond',
+      issuer: 'HDFC Bank Limited',
+      type: 'Corporate',
+      interestRate: 8.2,
+      maturity: 8,
+      minAmount: 25000,
+      maxAmount: 1000000,
+      risk: 'Medium Risk',
+      riskLevel: 2,
+      features: ['Higher Returns', 'AAA Rating', 'Quarterly Interest'],
+      description: 'Premium corporate bond from leading bank',
+      color: 'blue'
     },
-    Junk: {
-      name: 'High Yield Bond',
-      shortName: 'HY',
-      icon: AlertTriangle,
-      gradient: 'from-orange-600 to-red-600',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      textColor: 'text-red-800',
-      badgeColor: 'bg-red-500',
-      interestRate: 15,
-      maturityTurns: 4,
-      risk: 'High',
-      riskScore: 3,
-      minInvestment: 50000,
-      issuer: 'Emerging Companies',
-      description: 'Premium returns with higher credit risk',
-      features: ['High Yield', 'Short Tenure', '10% Default Risk']
+    {
+      id: 'high-yield-1',
+      name: 'High Yield Corporate Bond',
+      issuer: 'Emerging Finance Corp',
+      type: 'High Yield',
+      interestRate: 14.5,
+      maturity: 4,
+      minAmount: 50000,
+      maxAmount: 2000000,
+      risk: 'High Risk', 
+      riskLevel: 3,
+      features: ['Premium Returns', 'Short Term', 'High Liquidity'],
+      description: 'High yield bond for aggressive investors',
+      color: 'red'
     }
-  };
+  ];
 
-  const handlePurchase = () => {
-    const amount = parseInt(purchaseAmount);
+  // Banking Integration Functions
+  const handleBondPurchase = (bondId: string) => {
+    const bond = bondProducts.find(b => b.id === bondId);
+    if (!bond) return;
+
+    const amount = parseInt(investmentAmount);
     if (isNaN(amount) || amount <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error('Please enter a valid investment amount');
       return;
     }
+
+    if (amount < bond.minAmount) {
+      toast.error(`Minimum investment required: ${formatMoney(bond.minAmount)}`);
+      return;
+    }
+
+    if (amount > bond.maxAmount) {
+      toast.error(`Maximum investment limit: ${formatMoney(bond.maxAmount)}`);
+      return;
+    }
+
+    // Check available balance (Bank + Credit Card)
+    const availableBalance = financialData.bankBalance + (financialData.creditCardLimit - financialData.liabilities);
     
+    if (amount > availableBalance) {
+      toast.error('Insufficient funds in bank account and credit card');
+      return;
+    }
+
+    // Determine payment method
+    let paymentMethod = 'Bank Account';
     if (amount > financialData.bankBalance) {
-      toast.error('Insufficient bank balance');
-      return;
+      paymentMethod = 'Credit Card';
     }
-    
-    if (purchaseBond(selectedBondType, amount)) {
-      toast.success(`Successfully purchased ${bondTypes[selectedBondType].name} for ${formatMoney(amount)}`);
-      setPurchaseAmount('');
+
+    // Convert to old format for existing purchaseBond function
+    let bondType: 'Government' | 'Corporate' | 'Junk';
+    if (bond.type === 'Government') bondType = 'Government';
+    else if (bond.type === 'Corporate') bondType = 'Corporate';
+    else bondType = 'Junk';
+
+    if (purchaseBond(bondType, amount)) {
+      toast.success(`Bond purchased via ${paymentMethod} for ${formatMoney(amount)}`);
+      setInvestmentAmount('');
+      setSelectedBond(null);
+      
+      // Add transaction record
+      addTransaction({
+        id: `bond_${Date.now()}`,
+        type: 'bond_purchase',
+        description: `${bond.name} - ${paymentMethod}`,
+        amount: -amount,
+        category: 'Investment',
+        timestamp: new Date(),
+        paymentMethod: paymentMethod
+      });
     } else {
-      toast.error('Failed to purchase bond');
+      toast.error('Bond purchase failed');
     }
   };
 
   const activeBonds = financialData.bondPortfolio.filter(bond => bond.status === 'active');
-  const maturedBonds = financialData.bondPortfolio.filter(bond => bond.status === 'matured');
-  const defaultedBonds = financialData.bondPortfolio.filter(bond => bond.status === 'defaulted');
-
-  const totalBondValue = activeBonds.reduce((sum, bond) => sum + bond.investedAmount, 0);
+  const totalInvested = activeBonds.reduce((sum, bond) => sum + bond.investedAmount, 0);
   const expectedReturns = activeBonds.reduce((sum, bond) => 
     sum + (bond.investedAmount * (1 + bond.interestRate / 100)), 0
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Professional Bond Market Header */}
-      <div className="w-full bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 shadow-xl border-b border-slate-500">
-        <div className="px-4 py-3">
-          {/* Header Row */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="bg-white bg-opacity-20 p-1.5 rounded">
-                <PiggyBank className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">Professional Bond Market</h2>
-                <p className="text-slate-100 text-xs">Fixed income investments • Secure returns</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-blue-500 text-white px-2 py-1 text-xs font-semibold">
-                OPEN
-              </Badge>
-              <div className="text-right text-white text-xs">
-                <div className="text-slate-200">Portfolio</div>
-                <div className="font-semibold">{formatMoney(totalBondValue)}</div>
-              </div>
+    <div className="p-4 space-y-6 bg-[#faf8f3] min-h-screen">
+      {/* Bond Investment Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <PiggyBank className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[#3a3a3a]">Bond Investments</h1>
+            <p className="text-gray-600 text-sm">Fixed income • Secure returns • Banking integration</p>
+          </div>
+        </div>
+        
+        {/* Available Balance Display */}
+        <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
+          <div className="flex items-center gap-2">
+            <Banknote className="w-4 h-4 text-green-600" />
+            <div className="text-sm">
+              <div className="text-gray-500">Bank Balance</div>
+              <div className="font-semibold text-green-700">{formatMoney(financialData.bankBalance)}</div>
             </div>
           </div>
-          
-          {/* Market Summary */}
-          <div className="flex items-center justify-between bg-white bg-opacity-15 rounded-lg px-3 py-1.5">
-            <div className="flex items-center gap-4 text-white text-sm">
-              <div className="flex items-center gap-1">
-                <span className="text-slate-200">10Y Yield:</span>
-                <span className="font-bold">7.24%</span>
-                <span className="text-green-300 text-xs">+0.02%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-slate-200">Credit Spread:</span>
-                <span className="font-bold">1.85%</span>
-                <span className="text-red-300 text-xs">-0.05%</span>
-              </div>
-            </div>
-            <div className="text-white text-xs">
-              <span className="text-slate-200">Available:</span>
-              <span className="ml-1 font-medium">{formatMoney(financialData.bankBalance)}</span>
+          <div className="h-8 w-px bg-gray-200"></div>
+          <div className="flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-blue-600" />
+            <div className="text-sm">
+              <div className="text-gray-500">Available Credit</div>
+              <div className="font-semibold text-blue-700">{formatMoney(financialData.creditCardLimit - financialData.liabilities)}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
-        {/* Professional Bond Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {Object.entries(bondTypes).map(([type, info]) => {
-            const Icon = info.icon;
-            const isSelected = selectedBondType === type;
-            
-            return (
-              <Card 
-                key={type}
-                className={`cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
-                  isSelected 
-                    ? `bg-gradient-to-br ${info.gradient} text-white border-white shadow-xl` 
-                    : `${info.bgColor} ${info.borderColor} hover:shadow-md`
-                }`}
-                onClick={() => setSelectedBondType(type as any)}
-              >
-                <CardContent className="p-4">
-                  {/* Bond Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-white bg-opacity-20' : 'bg-white'}`}>
-                        <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : info.textColor}`} />
-                      </div>
-                      <div>
-                        <h3 className={`font-bold text-sm ${isSelected ? 'text-white' : 'text-slate-900'}`}>
-                          {info.shortName}
-                        </h3>
-                        <p className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
-                          {info.name}
-                        </p>
-                      </div>
+      {/* Bond Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {bondProducts.map((bond) => {
+          const isSelected = selectedBond === bond.id;
+          const colorClasses = {
+            emerald: {
+              bg: 'bg-emerald-50',
+              border: 'border-emerald-200',
+              text: 'text-emerald-800',
+              accent: 'bg-emerald-600',
+              icon: 'text-emerald-700'
+            },
+            blue: {
+              bg: 'bg-blue-50', 
+              border: 'border-blue-200',
+              text: 'text-blue-800',
+              accent: 'bg-blue-600',
+              icon: 'text-blue-700'
+            },
+            red: {
+              bg: 'bg-red-50',
+              border: 'border-red-200', 
+              text: 'text-red-800',
+              accent: 'bg-red-600',
+              icon: 'text-red-700'
+            }
+          };
+          
+          const colors = colorClasses[bond.color as keyof typeof colorClasses];
+          const IconComponent = bond.type === 'Government' ? Shield : bond.type === 'Corporate' ? TrendingUp : AlertTriangle;
+          
+          return (
+            <Card 
+              key={bond.id}
+              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                isSelected 
+                  ? `${colors.bg} ${colors.border} border-2 shadow-lg` 
+                  : 'bg-white border border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => setSelectedBond(isSelected ? null : bond.id)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded ${isSelected ? 'bg-white' : colors.bg}`}>
+                      <IconComponent className={`w-4 h-4 ${colors.icon}`} />
                     </div>
-                    <Badge 
-                      className={`${
-                        isSelected 
-                          ? 'bg-white bg-opacity-20 text-white' 
-                          : `${info.badgeColor} text-white`
-                      } text-xs font-semibold`}
-                    >
-                      {info.risk}
-                    </Badge>
-                  </div>
-
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-2 gap-2 mb-3">
-                    <div className={`p-2 rounded ${isSelected ? 'bg-white bg-opacity-10' : 'bg-white'}`}>
-                      <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
-                        Annual Yield
-                      </div>
-                      <div className={`text-lg font-bold ${isSelected ? 'text-white' : info.textColor}`}>
-                        {info.interestRate}%
-                      </div>
-                    </div>
-                    <div className={`p-2 rounded ${isSelected ? 'bg-white bg-opacity-10' : 'bg-white'}`}>
-                      <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
-                        Maturity
-                      </div>
-                      <div className={`text-lg font-bold ${isSelected ? 'text-white' : info.textColor}`}>
-                        {info.maturityTurns}T
-                      </div>
+                    <div>
+                      <h3 className="font-semibold text-sm text-[#3a3a3a]">{bond.type.toUpperCase()}</h3>
+                      <p className="text-xs text-gray-600">{bond.name}</p>
                     </div>
                   </div>
-
-                  {/* Features */}
-                  <div className="space-y-1">
-                    <div className={`text-xs font-medium ${isSelected ? 'text-white text-opacity-90' : 'text-slate-700'}`}>
-                      Key Features:
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {info.features.map((feature, index) => (
-                        <span 
-                          key={index}
-                          className={`text-xs px-2 py-0.5 rounded-full ${
-                            isSelected 
-                              ? 'bg-white bg-opacity-20 text-white' 
-                              : 'bg-slate-100 text-slate-700'
-                          }`}
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
+                  <Badge 
+                    className={`${colors.accent} text-white text-xs px-2 py-0.5`}
+                  >
+                    {bond.risk.split(' ')[0]}
+                  </Badge>
+                </div>
+                
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className={`p-2 rounded-lg ${isSelected ? 'bg-white' : 'bg-gray-50'}`}>
+                    <div className="text-xs text-gray-500">Annual Yield</div>
+                    <div className={`text-lg font-bold ${colors.text}`}>{bond.interestRate}%</div>
                   </div>
-
-                  {/* Min Investment */}
-                  <div className="mt-3 pt-2 border-t border-white border-opacity-20">
-                    <div className={`text-xs ${isSelected ? 'text-white text-opacity-80' : 'text-slate-600'}`}>
-                      Min. Investment: <span className="font-semibold">{formatMoney(info.minInvestment)}</span>
-                    </div>
+                  <div className={`p-2 rounded-lg ${isSelected ? 'bg-white' : 'bg-gray-50'}`}>
+                    <div className="text-xs text-gray-500">Maturity</div>
+                    <div className={`text-lg font-bold ${colors.text}`}>{bond.maturity}T</div>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                </div>
+                
+                {/* Features */}
+                <div className="space-y-2">
+                  <div className="text-xs font-medium text-gray-700">Key Features:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {bond.features.map((feature, idx) => (
+                      <span 
+                        key={idx}
+                        className={`text-xs px-2 py-0.5 rounded-full ${
+                          isSelected 
+                            ? 'bg-white text-gray-700' 
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Investment Range */}
+                <div className="mt-3 pt-2 border-t border-gray-200">
+                  <div className="text-xs text-gray-500">
+                    Min: <span className="font-medium">{formatMoney(bond.minAmount)}</span> • 
+                    Max: <span className="font-medium">{formatMoney(bond.maxAmount)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-        {/* Investment Panel */}
-        <Card className="shadow-lg border border-slate-200">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b">
-            <CardTitle className="flex items-center gap-2 text-slate-800">
+      {/* Investment Panel - Only shows when bond is selected */}
+      {selectedBond && (
+        <Card className="shadow-lg bg-white border border-gray-200">
+          <CardHeader className="border-b bg-gradient-to-r from-[#e8dcc6] to-[#FAF4E6]">
+            <CardTitle className="flex items-center gap-2 text-[#3a3a3a]">
               <DollarSign className="w-5 h-5" />
-              Investment Order - {bondTypes[selectedBondType].name}
+              Investment Order - {bondProducts.find(b => b.id === selectedBond)?.name}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Investment Details */}
-              <div className="space-y-3">
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-slate-600">Issuer:</span>
-                      <div className="font-semibold">{bondTypes[selectedBondType].issuer}</div>
+            {(() => {
+              const bond = bondProducts.find(b => b.id === selectedBond);
+              if (!bond) return null;
+              
+              const amount = parseInt(investmentAmount) || 0;
+              const paymentMethod = amount > financialData.bankBalance ? 'Credit Card' : 'Bank Account';
+              
+              return (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Bond Details */}
+                  <div className="space-y-4">
+                    <div className="bg-[#faf8f3] p-4 rounded-lg">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-gray-600">Issuer:</span>
+                          <div className="font-medium text-[#3a3a3a]">{bond.issuer}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Risk Level:</span>
+                          <div className="font-medium text-[#3a3a3a]">{bond.risk}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Interest Rate:</span>
+                          <div className="font-medium text-[#3a3a3a]">{bond.interestRate}% p.a.</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Maturity:</span>
+                          <div className="font-medium text-[#3a3a3a]">{bond.maturity} Turns</div>
+                        </div>
+                      </div>
                     </div>
+                    
                     <div>
-                      <span className="text-slate-600">Rating:</span>
-                      <div className="font-semibold">AAA</div>
-                    </div>
-                    <div>
-                      <span className="text-slate-600">Coupon:</span>
-                      <div className="font-semibold">{bondTypes[selectedBondType].interestRate}% p.a.</div>
-                    </div>
-                    <div>
-                      <span className="text-slate-600">Tenure:</span>
-                      <div className="font-semibold">{bondTypes[selectedBondType].maturityTurns} Turns</div>
+                      <label className="text-sm font-medium text-[#3a3a3a] block mb-2">
+                        Investment Amount
+                      </label>
+                      <Input
+                        type="number"
+                        placeholder={`Minimum ${formatMoney(bond.minAmount)}`}
+                        value={investmentAmount}
+                        onChange={(e) => setInvestmentAmount(e.target.value)}
+                        className="w-full"
+                        min={bond.minAmount}
+                        max={bond.maxAmount}
+                      />
+                      <div className="text-xs text-gray-500 mt-1">
+                        Range: {formatMoney(bond.minAmount)} - {formatMoney(bond.maxAmount)}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-1">
-                    Investment Amount
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder={`Min. ${formatMoney(bondTypes[selectedBondType].minInvestment)}`}
-                    value={purchaseAmount}
-                    onChange={(e) => setPurchaseAmount(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="space-y-3">
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <div className="text-sm font-medium text-blue-800 mb-2">Order Summary</div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-blue-700">Investment:</span>
-                      <span className="font-semibold">{formatMoney(parseInt(purchaseAmount) || 0)}</span>
+                  {/* Investment Summary & Payment */}
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <div className="text-sm font-medium text-blue-800 mb-3">Investment Summary</div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-blue-700">Principal Amount:</span>
+                          <span className="font-semibold">{formatMoney(amount)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-blue-700">Annual Interest:</span>
+                          <span className="font-semibold">{formatMoney(amount * bond.interestRate / 100)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-blue-700">Maturity Value:</span>
+                          <span className="font-semibold text-green-700">
+                            {formatMoney(amount * (1 + bond.interestRate / 100))}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-blue-700">Annual Returns:</span>
-                      <span className="font-semibold">{formatMoney((parseInt(purchaseAmount) || 0) * bondTypes[selectedBondType].interestRate / 100)}</span>
+                    
+                    {/* Payment Method Indicator */}
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="text-sm font-medium text-gray-700 mb-2">Payment Method</div>
+                      <div className="flex items-center gap-2">
+                        {paymentMethod === 'Bank Account' ? (
+                          <>
+                            <Banknote className="w-4 h-4 text-green-600" />
+                            <span className="text-green-700 font-medium">Bank Account</span>
+                            <span className="text-xs text-gray-500">
+                              (Available: {formatMoney(financialData.bankBalance)})
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-4 h-4 text-blue-600" />
+                            <span className="text-blue-700 font-medium">Credit Card</span>
+                            <span className="text-xs text-gray-500">
+                              (Available: {formatMoney(financialData.creditCardLimit - financialData.liabilities)})
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-blue-700">Maturity Value:</span>
-                      <span className="font-semibold text-green-700">{formatMoney((parseInt(purchaseAmount) || 0) * (1 + bondTypes[selectedBondType].interestRate / 100))}</span>
-                    </div>
+                    
+                    <Button
+                      onClick={() => handleBondPurchase(selectedBond)}
+                      disabled={!investmentAmount || amount < bond.minAmount || amount > bond.maxAmount}
+                      className="w-full bg-[#d4af37] hover:bg-[#b8941f] text-white font-semibold py-3"
+                    >
+                      <ArrowDownUp className="w-4 h-4 mr-2" />
+                      Invest {formatMoney(amount)} via {paymentMethod}
+                    </Button>
                   </div>
                 </div>
-
-                <Button
-                  onClick={handlePurchase}
-                  disabled={!purchaseAmount || parseInt(purchaseAmount) < bondTypes[selectedBondType].minInvestment}
-                  className={`w-full bg-gradient-to-r ${bondTypes[selectedBondType].gradient} hover:shadow-lg text-white font-semibold py-2.5`}
-                >
-                  Purchase Bond - {formatMoney(parseInt(purchaseAmount) || 0)}
-                </Button>
-              </div>
-            </div>
+              );
+            })()}
           </CardContent>
         </Card>
+      )}
 
-        {/* Portfolio Overview */}
-        <Card className="shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b">
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <BarChart3 className="w-5 h-5" />
-              Bond Portfolio Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-center">
-                <div className="text-blue-600 text-sm font-medium">Total Invested</div>
-                <div className="text-xl font-bold text-blue-800">{formatMoney(totalBondValue)}</div>
-              </div>
-              <div className="bg-green-50 p-3 rounded-lg border border-green-200 text-center">
-                <div className="text-green-600 text-sm font-medium">Expected Returns</div>
-                <div className="text-xl font-bold text-green-800">{formatMoney(expectedReturns)}</div>
-              </div>
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center">
-                <div className="text-slate-600 text-sm font-medium">Active Bonds</div>
-                <div className="text-xl font-bold text-slate-800">{activeBonds.length}</div>
-              </div>
-              <div className="bg-purple-50 p-3 rounded-lg border border-purple-200 text-center">
-                <div className="text-purple-600 text-sm font-medium">Avg. Yield</div>
-                <div className="text-xl font-bold text-purple-800">
-                  {activeBonds.length > 0 
-                    ? (activeBonds.reduce((sum, bond) => sum + bond.interestRate, 0) / activeBonds.length).toFixed(1)
-                    : '0'
-                  }%
-                </div>
+      {/* Portfolio Overview */}
+      <Card className="bg-white shadow-sm">
+        <CardHeader className="border-b bg-gradient-to-r from-[#e8dcc6] to-[#FAF4E6]">
+          <CardTitle className="flex items-center gap-2 text-[#3a3a3a]">
+            <Wallet className="w-5 h-5" />
+            Bond Portfolio Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <div className="text-blue-600 text-sm font-medium">Total Invested</div>
+              <div className="text-xl font-bold text-blue-800">{formatMoney(totalInvested)}</div>
+            </div>
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <div className="text-green-600 text-sm font-medium">Expected Returns</div>
+              <div className="text-xl font-bold text-green-800">{formatMoney(expectedReturns)}</div>
+            </div>
+            <div className="text-center p-3 bg-purple-50 rounded-lg">
+              <div className="text-purple-600 text-sm font-medium">Active Bonds</div>
+              <div className="text-xl font-bold text-purple-800">{activeBonds.length}</div>
+            </div>
+            <div className="text-center p-3 bg-yellow-50 rounded-lg">
+              <div className="text-yellow-600 text-sm font-medium">Avg. Yield</div>
+              <div className="text-xl font-bold text-yellow-800">
+                {activeBonds.length > 0 
+                  ? (activeBonds.reduce((sum, bond) => sum + bond.interestRate, 0) / activeBonds.length).toFixed(1)
+                  : '0'
+                }%
               </div>
             </div>
+          </div>
 
-            {/* Active Bonds List */}
-            {activeBonds.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="font-semibold text-slate-800 flex items-center gap-2">
-                  <Activity className="w-4 h-4" />
-                  Active Holdings ({activeBonds.length})
-                </h4>
-                <div className="space-y-2">
-                  {activeBonds.map((bond) => {
-                    const bondInfo = bondTypes[bond.type];
-                    const Icon = bondInfo.icon;
-                    const maturityProgress = ((bondInfo.maturityTurns - bond.turnsToMature) / bondInfo.maturityTurns) * 100;
-                    const expectedReturn = bond.investedAmount * (1 + bond.interestRate / 100);
-                    
-                    return (
-                      <div key={bond.id} className={`p-3 rounded-lg border ${bondInfo.borderColor} ${bondInfo.bgColor}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Icon className={`w-4 h-4 ${bondInfo.textColor}`} />
-                            <span className="font-medium text-sm">{bondInfo.shortName}</span>
-                            <Badge className={`${bondInfo.badgeColor} text-white text-xs`}>
+          {/* Active Bonds List */}
+          {activeBonds.length > 0 ? (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-[#3a3a3a] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                Active Holdings ({activeBonds.length})
+              </h4>
+              <div className="space-y-2">
+                {activeBonds.map((bond) => {
+                  const progress = ((bond.maturityTurns - bond.turnsToMature) / bond.maturityTurns) * 100;
+                  const maturityValue = bond.investedAmount * (1 + bond.interestRate / 100);
+                  
+                  return (
+                    <div key={bond.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-blue-100 rounded">
+                            <PiggyBank className="w-3 h-3 text-blue-600" />
+                          </div>
+                          <div>
+                            <span className="font-medium text-sm text-[#3a3a3a]">{bond.type} Bond</span>
+                            <Badge className="ml-2 bg-blue-600 text-white text-xs">
                               {bond.interestRate}%
                             </Badge>
                           </div>
-                          <div className="text-right text-sm">
-                            <div className="text-slate-600">{bond.turnsToMature}T left</div>
-                            <div className="font-semibold text-slate-900">
-                              {formatMoney(bond.investedAmount)} → {formatMoney(expectedReturn)}
-                            </div>
-                          </div>
                         </div>
-                        
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs text-slate-600">
-                            <span>Maturity Progress</span>
-                            <span>{maturityProgress.toFixed(1)}%</span>
+                        <div className="text-right text-sm">
+                          <div className="text-gray-600">{bond.turnsToMature} turns left</div>
+                          <div className="font-semibold text-[#3a3a3a]">
+                            {formatMoney(bond.investedAmount)} → {formatMoney(maturityValue)}
                           </div>
-                          <Progress value={maturityProgress} className="h-1.5" />
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-gray-600">
+                          <span>Progress to Maturity</span>
+                          <span>{progress.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={progress} className="h-1.5" />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            )}
-
-            {activeBonds.length === 0 && (
-              <div className="text-center py-8 text-slate-500">
-                <PiggyBank className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No active bonds in your portfolio</p>
-                <p className="text-sm">Purchase your first bond to start earning fixed returns</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <PiggyBank className="w-16 h-16 mx-auto mb-3 opacity-40" />
+              <p className="font-medium">No active bond investments</p>
+              <p className="text-sm">Select a bond above to start building your fixed income portfolio</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
