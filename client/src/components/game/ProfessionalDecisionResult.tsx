@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDecisionSystem } from '../../lib/stores/useDecisionSystem';
-import { CheckCircle, TrendingUp, Heart, Brain, Scale, Zap, DollarSign, Trophy } from 'lucide-react';
+import { CheckCircle, TrendingUp, Heart, Brain, Scale, Zap, DollarSign, Star } from 'lucide-react';
 
 const ProfessionalDecisionResult: React.FC = () => {
   const { currentSession, finishDailyDecisions, selectedOptions } = useDecisionSystem();
@@ -58,7 +58,7 @@ const ProfessionalDecisionResult: React.FC = () => {
       stress: Zap,
       karma: Scale,
       logic: Brain,
-      reputation: Trophy,
+      reputation: Star,
       energy: TrendingUp
     };
     return icons[type as keyof typeof icons] || TrendingUp;
