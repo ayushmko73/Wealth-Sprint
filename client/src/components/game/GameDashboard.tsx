@@ -291,7 +291,7 @@ const GameDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto mobile-scroll bg-white">
-        <div className="h-full bg-white">
+        <div className="p-4 bg-white">
           {renderMainContent()}
         </div>
       </div>

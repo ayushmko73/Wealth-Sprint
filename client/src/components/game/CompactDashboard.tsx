@@ -18,9 +18,9 @@ const CompactDashboard: React.FC = () => {
   const progressToFI = Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100);
 
   return (
-    <div className="w-full h-full">
+    <div className="p-1 w-full">
       {/* Compact Card */}
-      <div className="bg-white overflow-hidden w-full h-full flex flex-col">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden w-full">
         
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 text-center">
@@ -47,11 +47,11 @@ const CompactDashboard: React.FC = () => {
         </div>
 
         {/* Compact Stats Grid - All 6 items */}
-        <div className="flex-1 p-0.5">
-          <div className="space-y-0.5 h-full flex flex-col">
+        <div className="p-2">
+          <div className="space-y-2">
             {/* Row 1 - 2 columns */}
-            <div className="grid grid-cols-2 gap-0.5 flex-1">
-              <div className="bg-pink-400 text-white p-6 rounded-lg">
+            <div className="grid grid-cols-2 gap-1">
+              <div className="bg-pink-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Heart size={16} />
                   <div className="text-right">
@@ -65,7 +65,7 @@ const CompactDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-orange-400 text-white p-6 rounded-lg">
+              <div className="bg-orange-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Zap size={16} />
                   <div className="text-right">
@@ -81,8 +81,8 @@ const CompactDashboard: React.FC = () => {
             </div>
 
             {/* Row 2 - 2 columns */}
-            <div className="grid grid-cols-2 gap-0.5 flex-1">
-              <div className="bg-blue-400 text-white p-6 rounded-lg">
+            <div className="grid grid-cols-2 gap-1">
+              <div className="bg-blue-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Brain size={16} />
                   <div className="text-right">
@@ -96,7 +96,7 @@ const CompactDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-purple-400 text-white p-6 rounded-lg">
+              <div className="bg-purple-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Scale size={16} />
                   <div className="text-right">
@@ -112,8 +112,8 @@ const CompactDashboard: React.FC = () => {
             </div>
 
             {/* Row 3 - 2 columns */}
-            <div className="grid grid-cols-2 gap-0.5 flex-1">
-              <div className="bg-yellow-400 text-white p-6 rounded-lg">
+            <div className="grid grid-cols-2 gap-1">
+              <div className="bg-yellow-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Star size={16} />
                   <div className="text-right">
@@ -127,7 +127,7 @@ const CompactDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-emerald-400 text-white p-6 rounded-lg">
+              <div className="bg-emerald-400 text-white p-6 rounded-xl">
                 <div className="flex items-center justify-between">
                   <Battery size={16} />
                   <div className="text-right">
