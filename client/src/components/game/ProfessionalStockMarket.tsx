@@ -335,50 +335,34 @@ const ProfessionalStockMarket: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      {/* Professional Header with Live Market Tracker */}
-      <div className="mb-8">
-        {/* Live Market Tracker - Professional Design */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-                  <BarChart3 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">Live Market Stock Tracker</h1>
-                  <p className="text-blue-100 text-sm">Real-time Indian Equity Markets</p>
-                </div>
+      {/* Compact Live Market Tracker */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg overflow-hidden">
+          <div className="p-4 text-white">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                <h2 className="text-lg font-bold">Live Market Stock Tracker</h2>
               </div>
-              <Badge className="bg-green-500 text-white px-3 py-1 animate-pulse">
-                <div className="w-2 h-2 bg-white rounded-full mr-2"></div>
+              <Badge className="bg-green-500 text-white px-2 py-1 text-xs animate-pulse">
+                <div className="w-1.5 h-1.5 bg-white rounded-full mr-1"></div>
                 LIVE
               </Badge>
             </div>
-          </div>
-
-          {/* Scrolling Ticker */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-3 overflow-hidden">
-            <div className="flex animate-scroll whitespace-nowrap">
-              {stocks.concat(stocks).map((stock, index) => (
-                <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-6">
-                  <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
-                    <span className="font-bold text-blue-600">{stock.code}</span>
-                    <span className="text-slate-800 font-medium">₹{stock.price.toFixed(2)}</span>
-                    <div className={`flex items-center gap-1 ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {stock.changePercent >= 0 ? (
-                        <ArrowUpRight className="w-3 h-3" />
-                      ) : (
-                        <ArrowDownRight className="w-3 h-3" />
-                      )}
-                      <span className="text-xs font-medium">
-                        {stock.changePercent >= 0 ? '+' : ''}₹{stock.change.toFixed(2)} 
-                        ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
-                      </span>
-                    </div>
+            
+            {/* Compact Ticker */}
+            <div className="overflow-hidden">
+              <div className="flex animate-scroll whitespace-nowrap">
+                {stocks.concat(stocks).map((stock, index) => (
+                  <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-4">
+                    <span className="font-bold text-white mr-2">{stock.code}</span>
+                    <span className="text-blue-100 mr-2">₹{stock.price.toFixed(2)}</span>
+                    <span className={`text-xs ${stock.changePercent >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                      {stock.changePercent >= 0 ? '+' : ''}₹{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                    </span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -473,123 +457,117 @@ const ProfessionalStockMarket: React.FC = () => {
                     {isSelected ? 'Hide Trading Panel' : `Trade ${stock.code}`}
                   </Button>
 
-                  {/* Expandable Trading Panel */}
+                  {/* Compact Trading Panel */}
                   {isSelected && (
-                    <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Trading Form */}
-                        <div className="space-y-4">
-                          <div>
-                            <label className="text-sm font-medium text-slate-700 block mb-2">Trade Type</label>
-                            <select 
-                              value={tradeType} 
-                              onChange={(e) => setTradeTypes(prev => ({ ...prev, [stock.code]: e.target.value as any }))}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                              <option value="delivery">Delivery (Hold)</option>
-                              <option value="intraday">Intraday (Same Day)</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-medium text-slate-700 block mb-2">Quantity</label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="number"
-                                value={quantity}
-                                onChange={(e) => setQuantities(prev => ({ ...prev, [stock.code]: Math.max(1, parseInt(e.target.value) || 1) }))}
-                                className="flex-1 border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                min="1"
-                              />
-                              <span className="text-sm text-slate-600">shares</span>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 text-sm bg-white p-3 rounded-lg border">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Price per Share:</span>
-                              <span className="font-medium">₹{stock.price.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Trade Value:</span>
-                              <span className="font-medium">₹{tradeValue.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between text-red-600">
-                              <span>Total Charges:</span>
-                              <span className="font-medium">₹{charges.total.toFixed(2)}</span>
-                            </div>
-                            <div className="border-t pt-2 flex justify-between font-semibold text-green-700">
-                              <span>Final Buy Price:</span>
-                              <span>₹{(tradeValue + charges.total).toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between font-semibold text-red-700">
-                              <span>Final Sell Price:</span>
-                              <span>₹{(tradeValue - charges.total).toLocaleString()}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => handleTrade(stock.code, true)}
-                              className="bg-green-600 hover:bg-green-700 text-white flex-1 font-semibold"
-                              disabled={financialData.bankBalance < (tradeValue + charges.total)}
-                            >
-                              Buy ₹{(tradeValue + charges.total).toLocaleString()}
-                            </Button>
-                            <Button
-                              onClick={() => handleTrade(stock.code, false)}
-                              className="bg-red-600 hover:bg-red-700 text-white flex-1 font-semibold"
-                              disabled={!holding || holding.quantity < quantity}
-                            >
-                              Sell ₹{(tradeValue - charges.total).toLocaleString()}
-                            </Button>
-                          </div>
+                    <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                      {/* Trading Controls - Single Row */}
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <label className="text-xs font-medium text-slate-700 block mb-1">Trade Type</label>
+                          <select 
+                            value={tradeType} 
+                            onChange={(e) => setTradeTypes(prev => ({ ...prev, [stock.code]: e.target.value as any }))}
+                            className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="delivery">Delivery (Hold)</option>
+                            <option value="intraday">Intraday (Same Day)</option>
+                          </select>
                         </div>
-
-                        {/* Charges Breakdown */}
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <Calculator className="w-4 h-4 text-slate-600" />
-                            <h4 className="font-medium text-slate-800">Charges Breakdown ({tradeType})</h4>
-                          </div>
-                          <div className="space-y-2 text-sm bg-white p-3 rounded-lg border">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Brokerage:</span>
-                              <span className="font-medium">₹{charges.brokerage.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Exchange Charges:</span>
-                              <span className="font-medium">₹{charges.exchangeCharges.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">STT:</span>
-                              <span className="font-medium">₹{charges.stt.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">GST (18%):</span>
-                              <span className="font-medium">₹{charges.gst.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">SEBI Charges:</span>
-                              <span className="font-medium">₹{charges.sebiCharges.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Stamp Duty:</span>
-                              <span className="font-medium">₹{charges.stampDuty.toFixed(2)}</span>
-                            </div>
-                            {charges.dpCharges > 0 && (
-                              <div className="flex justify-between">
-                                <span className="text-slate-600">DP Charges:</span>
-                                <span className="font-medium">₹{charges.dpCharges.toFixed(2)}</span>
-                              </div>
-                            )}
-                            <div className="border-t pt-2 flex justify-between font-semibold">
-                              <span className="text-slate-800">Total Charges:</span>
-                              <span className="text-slate-900">₹{charges.total.toFixed(2)}</span>
-                            </div>
-                          </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-700 block mb-1">Quantity</label>
+                          <Input
+                            type="number"
+                            value={quantity}
+                            onChange={(e) => setQuantities(prev => ({ ...prev, [stock.code]: Math.max(1, parseInt(e.target.value) || 1) }))}
+                            className="w-full px-2 py-1.5 border-slate-300 text-xs focus:ring-1 focus:ring-blue-500"
+                            min="1"
+                          />
                         </div>
                       </div>
+
+                      {/* Price Summary - Compact */}
+                      <div className="bg-white p-2 rounded border mb-3 text-xs">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-slate-600">Price per Share:</span>
+                            <span className="font-medium">₹{stock.price.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600">Trade Value:</span>
+                            <span className="font-medium">₹{tradeValue.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between text-red-600">
+                            <span>Total Charges:</span>
+                            <span className="font-medium">₹{charges.total.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between font-semibold text-green-700">
+                            <span>Final Buy Price:</span>
+                            <span>₹{(tradeValue + charges.total).toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className="mt-1 pt-1 border-t flex justify-between font-semibold text-red-700">
+                          <span>Final Sell Price:</span>
+                          <span>₹{(tradeValue - charges.total).toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleTrade(stock.code, true)}
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1 font-semibold text-xs py-2"
+                          disabled={financialData.bankBalance < (tradeValue + charges.total)}
+                        >
+                          Buy ₹{(tradeValue + charges.total).toLocaleString()}
+                        </Button>
+                        <Button
+                          onClick={() => handleTrade(stock.code, false)}
+                          className="bg-red-600 hover:bg-red-700 text-white flex-1 font-semibold text-xs py-2"
+                          disabled={!holding || holding.quantity < quantity}
+                        >
+                          Sell ₹{(tradeValue - charges.total).toLocaleString()}
+                        </Button>
+                      </div>
+
+                      {/* Collapsible Charges Breakdown */}
+                      <details className="mt-2">
+                        <summary className="cursor-pointer text-xs text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                          <Calculator className="w-3 h-3" />
+                          Charges Breakdown ({tradeType})
+                        </summary>
+                        <div className="mt-2 text-xs bg-white p-2 rounded border">
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                            <div className="flex justify-between">
+                              <span>Brokerage:</span>
+                              <span>₹{charges.brokerage.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Exchange:</span>
+                              <span>₹{charges.exchangeCharges.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>STT:</span>
+                              <span>₹{charges.stt.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>GST (18%):</span>
+                              <span>₹{charges.gst.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>SEBI:</span>
+                              <span>₹{charges.sebiCharges.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Stamp:</span>
+                              <span>₹{charges.stampDuty.toFixed(2)}</span>
+                            </div>
+                          </div>
+                          <div className="border-t mt-1 pt-1 flex justify-between font-semibold">
+                            <span>Total:</span>
+                            <span>₹{charges.total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </details>
                     </div>
                   )}
                 </div>
