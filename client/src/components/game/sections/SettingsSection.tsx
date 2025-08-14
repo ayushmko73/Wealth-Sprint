@@ -400,7 +400,7 @@ const SettingsSection: React.FC = () => {
                 <SelectTrigger className="w-32 bg-white border-2 border-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-2 border-gray-200">
                   <SelectItem value="off">Off</SelectItem>
                   <SelectItem value="subtle">Subtle Beep</SelectItem>
                   <SelectItem value="typewriter">Typewriter</SelectItem>
