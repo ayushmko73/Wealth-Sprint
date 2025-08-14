@@ -118,16 +118,7 @@ const DecisionResultScreen: React.FC = () => {
             </p>
           </div>
 
-          {/* Blockchain Status */}
-          <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span className="text-xs font-medium text-purple-800">Secured on Blockchain</span>
-            </div>
-            <p className="text-xs text-purple-600">
-              Hash: {`${Math.random().toString(36).substr(2, 9)}...${Math.random().toString(36).substr(2, 9)}`}
-            </p>
-          </div>
+
         </div>
 
         {/* Compact Footer */}

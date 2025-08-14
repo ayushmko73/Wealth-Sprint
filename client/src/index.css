@@ -18,7 +18,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background-color: #F5F5DC !important;
+  background-color: #000000 !important;
 }
 
 /* Safe area support for mobile devices */

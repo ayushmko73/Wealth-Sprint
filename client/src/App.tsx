@@ -20,10 +20,10 @@ function App() {
 
   if (!showGame) {
     return (
-      <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[#3a3a3a] mb-4">Wealth Sprint</h1>
-          <p className="text-lg text-[#3a3a3a] opacity-70">Loading your financial journey...</p>
+          <h1 className="text-4xl font-bold text-white mb-4">Wealth Sprint</h1>
+          <p className="text-lg text-white opacity-70">Loading your financial journey...</p>
         </div>
       </div>
     );
@@ -32,7 +32,7 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen bg-[#F5F5DC] overflow-x-hidden">
+        <div className="min-h-screen bg-black overflow-x-hidden">
           <ErrorBoundary>
             <GameDashboard />
           </ErrorBoundary>
