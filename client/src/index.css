@@ -18,7 +18,7 @@
 html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background-color: #121212 !important;
+  background-color: #ffffff !important;
 }
 
 /* Safe area support for mobile devices */
@@ -59,34 +59,34 @@ html, body {
   animation: scroll 30s linear infinite;
 }
 
-/* Theme Support - Dark Minimalist */
+/* Theme Support - Light Minimalist */
 :root {
   --primary: #8b7355;
   --primary-foreground: #f5f3f0;
   --secondary: #8a8982;
-  --secondary-foreground: #ffffff;
-  --background: #121212;
-  --foreground: #ffffff;
-  --card: #1e1e1e;
-  --card-foreground: #ffffff;
-  --border: #6b6a64;
-  --muted: #878681;
-  --muted-foreground: #a0a0a0;
+  --secondary-foreground: #000000;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #f8f9fa;
+  --card-foreground: #000000;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --muted-foreground: #374151;
 }
 
-/* Dark Theme */
+/* Light Theme */
 .dark {
   --primary: #d4af37;
-  --primary-foreground: white;
-  --secondary: #1f2937;
-  --secondary-foreground: #f9fafb;
-  --background: #121212;
-  --foreground: #ffffff;
-  --card: #1e1e1e;
-  --card-foreground: #ffffff;
-  --border: #374151;
-  --muted: #374151;
-  --muted-foreground: #9ca3af;
+  --primary-foreground: #000000;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #000000;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #f8f9fa;
+  --card-foreground: #000000;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --muted-foreground: #374151;
 }
 
 .dark body {
@@ -97,20 +97,20 @@ html, body {
 /* Cyber White Theme */
 .cyber {
   --primary: #00ffff;
-  --primary-foreground: #000011;
-  --secondary: #000022;
-  --secondary-foreground: #ffffff;
-  --background: #000011;
-  --foreground: #ffffff;
-  --card: #001122;
-  --card-foreground: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #f0f9ff;
+  --secondary-foreground: #000000;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #f8fafc;
+  --card-foreground: #000000;
   --border: #00ffff;
-  --muted: #001133;
-  --muted-foreground: #00cccc;
+  --muted: #64748b;
+  --muted-foreground: #334155;
 }
 
 .cyber body {
-  background: linear-gradient(135deg, #000011 0%, #000033 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   color: var(--foreground);
 }
 
