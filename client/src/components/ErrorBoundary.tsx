@@ -27,10 +27,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="min-h-screen bg-[#f0ead6] flex items-center justify-center">
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#3a3a3a] mb-4">Something went wrong</h1>
-            <p className="text-lg text-[#3a3a3a] opacity-70">Please refresh the page to continue.</p>
+            <h1 className="text-4xl font-bold text-white mb-4">Something went wrong</h1>
+            <p className="text-lg text-gray-300 opacity-70">Please refresh the page to continue.</p>
             <button 
               onClick={() => window.location.reload()} 
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

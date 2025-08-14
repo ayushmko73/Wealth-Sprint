@@ -59,19 +59,19 @@ html, body {
   animation: scroll 30s linear infinite;
 }
 
-/* Theme Support - Old Minimalist */
+/* Theme Support - Dark Minimalist */
 :root {
   --primary: #8b7355;
   --primary-foreground: #f5f3f0;
   --secondary: #8a8982;
-  --secondary-foreground: #2c2a27;
-  --background: #F5F5DC;
-  --foreground: #2c2a27;
-  --card: #F5F5DC;
-  --card-foreground: #2c2a27;
+  --secondary-foreground: #ffffff;
+  --background: #121212;
+  --foreground: #ffffff;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
   --border: #6b6a64;
   --muted: #878681;
-  --muted-foreground: #4a4844;
+  --muted-foreground: #a0a0a0;
 }
 
 /* Dark Theme */
@@ -80,10 +80,10 @@ html, body {
   --primary-foreground: white;
   --secondary: #1f2937;
   --secondary-foreground: #f9fafb;
-  --background: #F5F5DC;
-  --foreground: #2c2a27;
-  --card: #F5F5DC;
-  --card-foreground: #2c2a27;
+  --background: #121212;
+  --foreground: #ffffff;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
   --border: #374151;
   --muted: #374151;
   --muted-foreground: #9ca3af;
