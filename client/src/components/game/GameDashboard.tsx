@@ -9,6 +9,7 @@ import GameplayContent from './components/GameplayContent';
 import CyberModeButton from './components/CyberModeButton';
 
 import DashboardBar from './DashboardBar';
+import CompactDashboard from './CompactDashboard';
 import InvestmentTable from './InvestmentTable';
 import RevenueOverview from './RevenueOverview';
 import SoundManager from './components/SoundManager';
@@ -159,8 +160,8 @@ const GameDashboard: React.FC = () => {
         return <SettingsSection />;
       default:
         return (
-          <div className="space-y-6">
-            <DashboardBar />
+          <div className="h-full">
+            <CompactDashboard />
           </div>
         );
     }
@@ -291,7 +292,7 @@ const GameDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto mobile-scroll bg-white">
-        <div className="p-4 bg-white">
+        <div className="p-1 bg-white h-full">
           {renderMainContent()}
         </div>
       </div>
