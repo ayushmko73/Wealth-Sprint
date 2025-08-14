@@ -335,65 +335,65 @@ const ProfessionalStockMarket: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Professional Stock Market Tracker - Full Width Blue Background */}
-      <div className="w-full bg-gradient-to-r from-blue-700 via-blue-600 to-blue-700 shadow-xl border-b border-blue-500">
-        <div className="px-4 py-4">
-          {/* Header Row */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-white bg-opacity-20 p-2.5 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-white" />
+      {/* Compact Professional Market Tracker */}
+      <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-b border-blue-500">
+        <div className="px-4 py-3">
+          {/* Compact Header Row */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-white bg-opacity-20 p-1.5 rounded">
+                <BarChart3 className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">NSE Live Market Tracker</h2>
-                <p className="text-blue-100 text-sm">Real-time stock prices • Market hours: 9:15 AM - 3:30 PM</p>
+                <h2 className="text-lg font-bold text-white">NSE Live Market Tracker</h2>
+                <p className="text-blue-100 text-xs">Real-time prices • 9:15 AM - 3:30 PM</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Badge className="bg-green-500 text-white px-3 py-1.5 text-sm font-semibold animate-pulse shadow-lg">
-                <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-green-500 text-white px-2 py-1 text-xs font-semibold animate-pulse">
+                <div className="w-1.5 h-1.5 bg-white rounded-full mr-1.5 animate-pulse"></div>
                 LIVE
               </Badge>
-              <div className="text-right text-white">
-                <div className="text-xs text-blue-200">Market Status</div>
-                <div className="text-sm font-semibold">OPEN</div>
+              <div className="text-right text-white text-xs">
+                <div className="text-blue-200">Status</div>
+                <div className="font-semibold">OPEN</div>
               </div>
             </div>
           </div>
           
-          {/* Market Summary Bar */}
-          <div className="flex items-center justify-between mb-3 bg-white bg-opacity-10 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-6 text-white">
-              <div>
-                <span className="text-blue-200 text-sm">NIFTY 50:</span>
-                <span className="ml-2 font-bold">19,674.25</span>
-                <span className="ml-1 text-green-300 text-sm">+125.40 (+0.64%)</span>
+          {/* Compact Market Summary */}
+          <div className="flex items-center justify-between bg-white bg-opacity-15 rounded-lg px-3 py-1.5 mb-2">
+            <div className="flex items-center gap-4 text-white text-sm">
+              <div className="flex items-center gap-1">
+                <span className="text-blue-200">NIFTY:</span>
+                <span className="font-bold">19,674.25</span>
+                <span className="text-green-300 text-xs">+0.64%</span>
               </div>
-              <div>
-                <span className="text-blue-200 text-sm">SENSEX:</span>
-                <span className="ml-2 font-bold">66,230.15</span>
-                <span className="ml-1 text-green-300 text-sm">+420.18 (+0.64%)</span>
+              <div className="flex items-center gap-1">
+                <span className="text-blue-200">SENSEX:</span>
+                <span className="font-bold">66,230.15</span>
+                <span className="text-green-300 text-xs">+0.64%</span>
               </div>
             </div>
-            <div className="text-right text-white">
-              <div className="text-blue-200 text-xs">Updated:</div>
-              <div className="text-sm font-medium">{new Date().toLocaleTimeString()}</div>
+            <div className="text-white text-xs">
+              <span className="text-blue-200">Updated:</span>
+              <span className="ml-1 font-medium">{new Date().toLocaleTimeString().slice(0, 5)}</span>
             </div>
           </div>
           
-          {/* Enhanced Ticker */}
-          <div className="overflow-hidden bg-white bg-opacity-10 rounded-lg py-2">
+          {/* Streamlined Ticker */}
+          <div className="overflow-hidden bg-white bg-opacity-10 rounded-lg py-1.5">
             <div className="flex animate-scroll whitespace-nowrap">
               {stocks.concat(stocks).map((stock, index) => (
-                <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-6 py-1">
-                  <span className="font-bold text-white text-sm mr-3">{stock.code}</span>
-                  <span className="text-blue-100 font-semibold mr-3">₹{stock.price.toFixed(2)}</span>
-                  <span className={`text-sm font-medium px-2 py-1 rounded-full ${
+                <div key={`${stock.code}-${index}`} className="inline-flex items-center mx-4">
+                  <span className="font-bold text-white text-sm mr-2">{stock.code}</span>
+                  <span className="text-blue-100 font-medium mr-2 text-sm">₹{stock.price.toFixed(2)}</span>
+                  <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                     stock.changePercent >= 0 
-                      ? 'bg-green-500 bg-opacity-80 text-green-100' 
-                      : 'bg-red-500 bg-opacity-80 text-red-100'
+                      ? 'bg-green-500 text-green-100' 
+                      : 'bg-red-500 text-red-100'
                   }`}>
-                    {stock.changePercent >= 0 ? '↗' : '↘'} {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                    {stock.changePercent >= 0 ? '▲' : '▼'}{Math.abs(stock.changePercent).toFixed(2)}%
                   </span>
                 </div>
               ))}
