@@ -64,7 +64,7 @@ import StoreSection from './sections/StoreSection';
 import AdvancedTeamManagement from './AdvancedTeamManagement';
 import { DecisionManager } from './decisions';
 
-import EnhancedStockMarket from './EnhancedStockMarket';
+import ProfessionalStockMarket from './ProfessionalStockMarket';
 import SageAI from './GorkAI';
 
 const GameDashboard: React.FC = () => {
@@ -129,7 +129,7 @@ const GameDashboard: React.FC = () => {
       case 'cashflow':
         return <CashflowSection />;
       case 'stock_market':
-        return <EnhancedStockMarket />;
+        return <ProfessionalStockMarket />;
       case 'bonds':
         return <BondsSection />;
       case 'revenue':
