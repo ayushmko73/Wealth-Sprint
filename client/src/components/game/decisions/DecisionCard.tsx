@@ -46,10 +46,10 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-sm max-h-[85vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm max-h-[85vh] flex flex-col overflow-hidden">
         
         {/* Compact Header */}
-        <div className="bg-blue-600 text-white p-3 rounded-t-lg">
+        <div className="bg-blue-600 text-white p-3 rounded-t-2xl">
           <div className="text-center">
             <h1 className="text-base font-bold">Question {currentDecisionIndex + 1} of {decisions.length}</h1>
           </div>
@@ -88,7 +88,7 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
               <button
                 key={option.id}
                 onClick={() => handleOptionSelect(option)}
-                className={`w-full p-3 text-left rounded-lg border transition-all duration-200 ${
+                className={`w-full p-3 text-left rounded-xl border transition-all duration-200 ${
                   selectedOption?.id === option.id
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 bg-white hover:border-blue-300'
@@ -117,7 +117,7 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
         </div>
 
         {/* Compact Navigation */}
-        <div className="bg-gray-50 p-3 rounded-b-lg border-t flex justify-between items-center">
+        <div className="bg-gray-50 p-3 rounded-b-2xl border-t flex justify-between items-center">
           <button
             onClick={handlePrevious}
             disabled={currentDecisionIndex === 0}
@@ -134,7 +134,7 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
             <button
               onClick={handleSubmitAll}
               disabled={!allAnswered}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:bg-gray-300"
+              className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 disabled:bg-gray-300"
             >
               Submit All
             </button>

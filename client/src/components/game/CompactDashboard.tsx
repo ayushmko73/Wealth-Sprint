@@ -46,93 +46,99 @@ const CompactDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Compact Stats Grid - 6 items in 3x2 */}
+        {/* Compact Stats Grid - All 6 items */}
         <div className="p-3">
-          <div className="grid grid-cols-2 gap-2">
-            {/* Row 1 */}
-            <div className="bg-pink-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Heart size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.emotion}</div>
-                  <div className="text-xs">Emotion</div>
-                  <div className="text-xs opacity-80">Feelings</div>
+          <div className="space-y-2">
+            {/* Row 1 - 2 columns */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-pink-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Heart size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.emotion}</div>
+                    <div className="text-xs">Emotion</div>
+                    <div className="text-xs opacity-80">Feelings</div>
+                  </div>
+                </div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.emotion}%` }}></div>
                 </div>
               </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.emotion}%` }}></div>
-              </div>
-            </div>
-            
-            <div className="bg-orange-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Zap size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.stress || 20}</div>
-                  <div className="text-xs">Stress</div>
-                  <div className="text-xs opacity-80">Pressure</div>
+              
+              <div className="bg-orange-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Zap size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.stress || 20}</div>
+                    <div className="text-xs">Stress</div>
+                    <div className="text-xs opacity-80">Pressure</div>
+                  </div>
                 </div>
-              </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.stress || 20}%` }}></div>
-              </div>
-            </div>
-
-            {/* Row 2 */}
-            <div className="bg-blue-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Brain size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.logic}</div>
-                  <div className="text-xs">Logic</div>
-                  <div className="text-xs opacity-80">Reasoning</div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.stress || 20}%` }}></div>
                 </div>
-              </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.logic}%` }}></div>
-              </div>
-            </div>
-            
-            <div className="bg-purple-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Scale size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.karma}</div>
-                  <div className="text-xs">Karma</div>
-                  <div className="text-xs opacity-80">Balance</div>
-                </div>
-              </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.karma}%` }}></div>
               </div>
             </div>
 
-            {/* Row 3 */}
-            <div className="bg-yellow-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Star size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.reputation || 40}</div>
-                  <div className="text-xs">Reputation</div>
-                  <div className="text-xs opacity-80">Standing</div>
+            {/* Row 2 - 2 columns */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-blue-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Brain size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.logic}</div>
+                    <div className="text-xs">Logic</div>
+                    <div className="text-xs opacity-80">Reasoning</div>
+                  </div>
+                </div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.logic}%` }}></div>
                 </div>
               </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.reputation || 40}%` }}></div>
+              
+              <div className="bg-purple-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Scale size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.karma}</div>
+                    <div className="text-xs">Karma</div>
+                    <div className="text-xs opacity-80">Balance</div>
+                  </div>
+                </div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.karma}%` }}></div>
+                </div>
               </div>
             </div>
-            
-            <div className="bg-green-500 text-white p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <Battery size={16} />
-                <div className="text-right">
-                  <div className="text-lg font-bold">{playerStats.energy || 95}</div>
-                  <div className="text-xs">Energy</div>
-                  <div className="text-xs opacity-80">Vitality</div>
+
+            {/* Row 3 - 2 columns */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-yellow-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Star size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.reputation || 40}</div>
+                    <div className="text-xs">Reputation</div>
+                    <div className="text-xs opacity-80">Standing</div>
+                  </div>
+                </div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.reputation || 40}%` }}></div>
                 </div>
               </div>
-              <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
-                <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.energy || 95}%` }}></div>
+              
+              <div className="bg-green-500 text-white p-3 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <Battery size={16} />
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{playerStats.energy || 95}</div>
+                    <div className="text-xs">Energy</div>
+                    <div className="text-xs opacity-80">Vitality</div>
+                  </div>
+                </div>
+                <div className="w-full bg-white bg-opacity-30 rounded-full h-1 mt-2">
+                  <div className="bg-white h-1 rounded-full" style={{ width: `${playerStats.energy || 95}%` }}></div>
+                </div>
               </div>
             </div>
           </div>
