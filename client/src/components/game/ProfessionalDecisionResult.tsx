@@ -66,13 +66,15 @@ const ProfessionalDecisionResult: React.FC = () => {
 
   const getImpactColor = (value: number, type: string) => {
     const baseColors = {
-      financial: value > 0 ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600',
-      emotion: 'from-pink-500 to-pink-600',
-      stress: value < 0 ? 'from-green-500 to-green-600' : 'from-orange-500 to-orange-600',
-      karma: 'from-purple-500 to-purple-600',
-      logic: 'from-blue-500 to-blue-600'
+      financial: value > 0 ? 'from-green-400 to-green-500' : 'from-red-400 to-red-500',
+      emotion: 'from-pink-400 to-pink-500',
+      stress: value < 0 ? 'from-green-400 to-green-500' : 'from-orange-400 to-orange-500',
+      karma: 'from-purple-400 to-purple-500',
+      logic: 'from-blue-400 to-blue-500',
+      reputation: 'from-yellow-400 to-yellow-500',
+      energy: 'from-emerald-400 to-emerald-500'
     };
-    return baseColors[type as keyof typeof baseColors] || 'from-gray-500 to-gray-600';
+    return baseColors[type as keyof typeof baseColors] || 'from-gray-400 to-gray-500';
   };
 
   return (
