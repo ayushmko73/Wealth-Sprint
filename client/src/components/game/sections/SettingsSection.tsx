@@ -317,7 +317,7 @@ const SettingsSection: React.FC = () => {
                   onChange={(e) => setPlayerProfile(prev => ({ ...prev, tagline: e.target.value }))}
                   placeholder="Enter your personal motto"
                   maxLength={50}
-                  className="pr-16 h-12 text-base"
+                  className="pr-16 h-12 text-base bg-white border-2 border-white"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                   {playerProfile.tagline.length}/50
@@ -339,7 +339,7 @@ const SettingsSection: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={toggleMute}
-                className="w-12 h-10 bg-white hover:bg-gray-50 border-2"
+                className="w-12 h-10 bg-white hover:bg-gray-50 border-2 border-white"
               >
                 {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </Button>
@@ -360,15 +360,9 @@ const SettingsSection: React.FC = () => {
                   </div>
                   {/* Progress line */}
                   <div 
-                    className="h-full bg-blue-500 rounded-full relative"
+                    className="h-full bg-blue-500 rounded-full"
                     style={{ width: `${volume}%` }}
-                  >
-                    {/* White circular thumb */}
-                    <div 
-                      className="absolute -right-2 -top-1.5 w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform"
-                      style={{ right: '-8px' }}
-                    />
-                  </div>
+                  />
                 </div>
                 <input
                   type="range"
@@ -391,7 +385,7 @@ const SettingsSection: React.FC = () => {
                 size="sm"
                 onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
                 disabled={isMuted}
-                className="bg-white hover:bg-gray-50 border-2"
+                className="bg-white hover:bg-gray-50 border-2 border-white"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
@@ -403,7 +397,7 @@ const SettingsSection: React.FC = () => {
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32 bg-white border-2">
+                <SelectTrigger className="w-32 bg-white border-2 border-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
