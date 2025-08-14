@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Decision, DecisionOption } from '../../../lib/data/decisionsData';
-import { useDecisionSystem } from '../../../lib/stores/useDecisionSystem';
+import { useDecisionSystem, Decision, DecisionOption } from '../../../lib/stores/useDecisionSystem';
 
 interface DecisionCardProps {
   decisions: Decision[];
@@ -22,7 +21,7 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
   }
 
   const selectedOption = selectedOptions[currentDecision.id];
-  
+
   const handleOptionSelect = (option: DecisionOption) => {
     selectDecisionOption(currentDecision.id, option);
   };
@@ -39,194 +38,114 @@ const DecisionCard: React.FC<DecisionCardProps> = ({ decisions, dayNumber }) => 
     }
   };
 
-  const handleSubmitAll = () => {
-    const allAnswered = decisions.every(d => selectedOptions[d.id]);
-    if (allAnswered) {
-      submitAllDecisions();
-    }
-  };
-
-  const getProgressPercentage = () => {
-    const answeredCount = decisions.filter(d => selectedOptions[d.id]).length;
-    return (answeredCount / decisions.length) * 100;
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      real_estate: 'bg-green-100 text-green-800',
-      business: 'bg-blue-100 text-blue-800',
-      transport: 'bg-yellow-100 text-yellow-800',
-      technology: 'bg-purple-100 text-purple-800',
-      lifestyle: 'bg-pink-100 text-pink-800',
-      unexpected: 'bg-red-100 text-red-800',
-      partnership: 'bg-indigo-100 text-indigo-800',
-      investment: 'bg-teal-100 text-teal-800',
-      relationships: 'bg-rose-100 text-rose-800',
-      support: 'bg-orange-100 text-orange-800'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  const handleSubmitAll = async () => {
+    await submitAllDecisions();
   };
 
   const allAnswered = decisions.every(d => selectedOptions[d.id]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-sm max-h-[85vh] flex flex-col overflow-hidden">
         
-        {/* Professional Blue Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white p-6 relative">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">Daily Business Decisions</h1>
-              <p className="text-blue-100 text-sm">Strategic choices that shape your wealth journey</p>
-            </div>
-            <div className="text-right">
-              <span className="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-semibold">
-                About — Day {dayNumber}
-              </span>
-            </div>
+        {/* Compact Header */}
+        <div className="bg-blue-600 text-white p-3 rounded-t-lg">
+          <div className="text-center">
+            <h1 className="text-base font-bold">Question {currentDecisionIndex + 1} of {decisions.length}</h1>
           </div>
           
-          {/* Progress Bar */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-blue-100">Progress ({Math.round(getProgressPercentage())}%)</span>
-              <span className="text-sm text-blue-100">{Object.keys(selectedOptions).length} of {decisions.length} completed</span>
-            </div>
-            <div className="w-full bg-blue-800 bg-opacity-50 rounded-full h-2">
-              <div 
-                className="bg-white bg-opacity-90 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${getProgressPercentage()}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Decision Navigation */}
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2">
+          {/* Mini Progress Bar */}
+          <div className="mt-2">
+            <div className="flex gap-1">
               {decisions.map((_, index) => (
-                <button
+                <div
                   key={index}
-                  onClick={() => setCurrentDecisionIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                    index === currentDecisionIndex 
-                      ? 'bg-white' 
-                      : selectedOptions[decisions[index].id] 
-                        ? 'bg-green-400' 
-                        : 'bg-white bg-opacity-30'
+                  className={`h-1 flex-1 rounded-full ${
+                    selectedOptions[decisions[index].id] 
+                      ? 'bg-green-400' 
+                      : index === currentDecisionIndex
+                      ? 'bg-white'
+                      : 'bg-blue-800'
                   }`}
                 />
               ))}
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(currentDecision?.category || '')}`}>
-              {currentDecision?.category?.replace('_', ' ')?.toUpperCase() || 'GENERAL'}
-            </span>
           </div>
         </div>
 
-        {/* Decision Content */}
-        <div className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-3xl mx-auto">
-            {/* Question */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                  Question {currentDecisionIndex + 1} of {decisions.length}
-                </span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800 leading-relaxed">
-                {currentDecision.question}
-              </h2>
-            </div>
+        {/* Compact Content */}
+        <div className="flex-1 p-3 overflow-y-auto">
+          {/* Question */}
+          <div className="mb-3">
+            <p className="text-sm text-gray-800 leading-snug">
+              {currentDecision.question}
+            </p>
+          </div>
 
-            {/* Options */}
-            <div className="space-y-4 mb-8">
-              {currentDecision.options.map((option, index) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleOptionSelect(option)}
-                  className={`w-full p-5 text-left rounded-xl border-2 transition-all duration-300 ${
-                    selectedOption?.id === option.id
-                      ? 'border-blue-500 bg-blue-50 shadow-lg scale-[1.02]'
-                      : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                        selectedOption?.id === option.id
-                          ? 'border-blue-500 bg-blue-500'
-                          : 'border-gray-300 bg-white'
-                      }`}>
-                        {selectedOption?.id === option.id && (
-                          <div className="w-3 h-3 bg-white rounded-full" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">
-                          Option {String.fromCharCode(65 + index)}
-                        </span>
-                      </div>
-                      <span className="text-gray-800 font-medium leading-relaxed text-lg">
-                        {option.text}
-                      </span>
-                    </div>
+          {/* Compact Options */}
+          <div className="space-y-2">
+            {currentDecision.options.map((option, index) => (
+              <button
+                key={option.id}
+                onClick={() => handleOptionSelect(option)}
+                className={`w-full p-3 text-left rounded-lg border transition-all duration-200 ${
+                  selectedOption?.id === option.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 bg-white hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 ${
+                    selectedOption?.id === option.id 
+                      ? 'border-blue-500 bg-blue-500' 
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedOption?.id === option.id && (
+                      <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                    )}
                   </div>
-                </button>
-              ))}
-            </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium text-gray-600 mb-1">
+                      Option {String.fromCharCode(65 + index)}
+                    </div>
+                    <p className="text-sm text-gray-800">{option.text}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Navigation Footer */}
-        <div className="bg-gray-50 p-6 border-t">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={handlePrevious}
-              disabled={currentDecisionIndex === 0}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                currentDecisionIndex === 0
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-              }`}
-            >
-              Previous
-            </button>
-
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">
-                {selectedOption ? '✓ Decision made' : 'Please select an option'}
-              </div>
-            </div>
-
-            {currentDecisionIndex < decisions.length - 1 ? (
-              <button
-                onClick={handleNext}
-                disabled={!selectedOption}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  selectedOption
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                Next Decision
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmitAll}
-                disabled={!allAnswered}
-                className={`px-8 py-3 rounded-lg font-bold text-lg transition-all duration-200 ${
-                  allAnswered
-                    ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                Complete All Decisions
-              </button>
-            )}
+        {/* Compact Navigation */}
+        <div className="bg-gray-50 p-3 rounded-b-lg border-t flex justify-between items-center">
+          <button
+            onClick={handlePrevious}
+            disabled={currentDecisionIndex === 0}
+            className="text-sm px-3 py-1.5 text-gray-600 hover:text-gray-800 disabled:opacity-30"
+          >
+            ← Prev
+          </button>
+          
+          <div className="text-xs text-gray-500">
+            {selectedOption ? '✓' : '○'}
           </div>
+          
+          {currentDecisionIndex === decisions.length - 1 ? (
+            <button
+              onClick={handleSubmitAll}
+              disabled={!allAnswered}
+              className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:bg-gray-300"
+            >
+              Submit All
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="text-sm px-3 py-1.5 text-gray-600 hover:text-gray-800"
+            >
+              Next →
+            </button>
+          )}
         </div>
       </div>
     </div>
