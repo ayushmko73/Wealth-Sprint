@@ -10,6 +10,7 @@ import {
   Building2, 
   Wallet, 
   TrendingUp, 
+  TrendingDown,
   Calendar, 
   PiggyBank, 
   Receipt, 
@@ -25,7 +26,8 @@ import {
   Clock,
   ChevronRight,
   Plus,
-  Minus
+  Minus,
+  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -75,17 +77,13 @@ const BankSection: React.FC = () => {
       {/* Combined Professional Banking Header with All Key Metrics */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 rounded-xl text-white shadow-lg">
         {/* Main Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center mb-4">
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
               <Building2 className="w-5 h-5" />
               Banking
             </h1>
             <p className="text-blue-100 text-xs">Professional Financial Services</p>
-          </div>
-          <div className="text-right">
-            <div className="text-xs opacity-90">Portfolio Value</div>
-            <div className="text-lg font-bold">{formatMoney(financialData.netWorth)}</div>
           </div>
         </div>
 
@@ -143,45 +141,122 @@ const BankSection: React.FC = () => {
         </TabsList>
 
         <TabsContent value="account" className="space-y-3 mt-4">
-          {/* Compact Account Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Card className="bg-blue-50 border border-blue-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-base text-blue-800">
-                  <Activity className="w-4 h-4" />
-                  Account Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between items-center p-2 bg-white rounded">
-                  <span className="text-sm text-gray-600">Available Balance</span>
-                  <span className="font-bold text-blue-600">{formatMoney(financialData.bankBalance)}</span>
+          {/* Professional Account Details */}
+          <div className="space-y-2">
+            {/* Account Holder */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex justify-between items-center p-2 bg-white rounded">
-                  <span className="text-sm text-gray-600">Monthly Inflow</span>
-                  <span className="font-bold text-green-600">{formatMoney(financialData.mainIncome + financialData.sideIncome)}</span>
-                </div>
-              </CardContent>
-            </Card>
+                <span className="text-sm font-medium text-gray-700">Account Holder</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-purple-700">Wealth Player</span>
+                <ChevronRight className="w-4 h-4 text-purple-500" />
+              </div>
+            </div>
 
-            <Card className="bg-blue-50 border border-blue-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-base text-blue-800">
-                  <Target className="w-4 h-4" />
-                  Investment Portfolio
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between items-center p-2 bg-white rounded">
-                  <span className="text-sm text-gray-600">Fixed Deposits</span>
-                  <span className="font-bold text-blue-600">{formatMoney(financialData.investments.fd)}</span>
+            {/* Net Worth */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-100 rounded-lg border border-green-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex justify-between items-center p-2 bg-white rounded">
-                  <span className="text-sm text-gray-600">Total Investments</span>
-                  <span className="font-bold text-green-600">{formatMoney(financialData.investments.stocks + financialData.investments.bonds + financialData.investments.fd)}</span>
+                <span className="text-sm font-medium text-gray-700">Net Worth</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-green-700">{formatMoney(financialData.netWorth)}</span>
+                <ChevronRight className="w-4 h-4 text-green-500" />
+              </div>
+            </div>
+
+            {/* Debt/Liabilities */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                  <TrendingDown className="w-4 h-4 text-white" />
                 </div>
-              </CardContent>
-            </Card>
+                <span className="text-sm font-medium text-gray-700">Debt</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-red-700">{formatMoney(financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0))}</span>
+                <ChevronRight className="w-4 h-4 text-red-500" />
+              </div>
+            </div>
+
+            {/* Credit Score */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-lg border border-blue-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Target className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Credit Score</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-blue-700">{Math.min(900, Math.max(300, 720 + Math.floor((financialData.netWorth - 500000) / 10000)))}</span>
+                <ChevronRight className="w-4 h-4 text-blue-500" />
+              </div>
+            </div>
+
+            {/* Monthly Income */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-lg border border-cyan-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
+                  <ArrowUpRight className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Monthly Income</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-cyan-700">{formatMoney(financialData.mainIncome + financialData.sideIncome)}</span>
+                <ChevronRight className="w-4 h-4 text-cyan-500" />
+              </div>
+            </div>
+
+            {/* Monthly Expenses */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                  <ArrowDownRight className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Monthly Expenses</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-orange-700">{formatMoney(Math.floor((financialData.mainIncome + financialData.sideIncome) * 0.6))}</span>
+                <ChevronRight className="w-4 h-4 text-orange-500" />
+              </div>
+            </div>
+
+            {/* Cash Reserves */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+                  <Banknote className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Cash Reserves</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-teal-700">{formatMoney(financialData.bankBalance)}</span>
+                <ChevronRight className="w-4 h-4 text-teal-500" />
+              </div>
+            </div>
+
+            {/* Risk Profile */}
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-100 rounded-lg border border-amber-200 hover:shadow-sm transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Risk Profile</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-amber-700">
+                  {financialData.investments.stocks > financialData.bankBalance ? 'High' : 
+                   financialData.investments.stocks > financialData.bankBalance * 0.3 ? 'Medium' : 'Low'}
+                </span>
+                <ChevronRight className="w-4 h-4 text-amber-500" />
+              </div>
+            </div>
           </div>
         </TabsContent>
 
