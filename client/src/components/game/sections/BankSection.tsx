@@ -129,8 +129,8 @@ const BankSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Simple Financial Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {/* Compact Financial Overview */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Monthly Income */}
           <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
             <ArrowUpRight className="w-5 h-5 mx-auto mb-1 text-blue-200" />
@@ -157,20 +157,6 @@ const BankSection: React.FC = () => {
             <AlertTriangle className="w-5 h-5 mx-auto mb-1 text-blue-200" />
             <p className="text-blue-100 text-xs mb-1">Risk Profile</p>
             <p className="text-sm font-bold">{riskProfile}</p>
-          </div>
-
-          {/* Reputation */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <Activity className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">Reputation</p>
-            <p className="text-sm font-bold">{playerStats.reputation}/100</p>
-          </div>
-
-          {/* FI Progress */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <Target className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">FI Progress</p>
-            <p className="text-sm font-bold">{fiProgress.toFixed(0)}%</p>
           </div>
         </div>
       </div>
@@ -200,144 +186,91 @@ const BankSection: React.FC = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="account" className="space-y-3 mt-4">
-          {/* Comprehensive Account Details */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg text-blue-800">
-                <Wallet className="w-5 h-5" />
-                Complete Account Summary
+        <TabsContent value="account" className="mt-3">
+          {/* Professional Account Summary */}
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader className="pb-2 px-4 pt-4">
+              <CardTitle className="flex items-center gap-2 text-base text-gray-800">
+                <Wallet className="w-4 h-4" />
+                Account Summary
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {/* Account Holder */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                      <Activity className="w-4 h-4 text-white" />
+            <CardContent className="px-4 pb-4">
+              {/* Compact Grid Layout */}
+              <div className="grid grid-cols-1 gap-2">
+                {/* Primary Financial Metrics */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-100">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                      <span className="text-xs font-medium text-gray-700">Net Worth</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Account Holder</span>
+                    <span className="text-xs font-bold text-green-700">{formatMoney(financialData.netWorth)}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-purple-700">{playerStats.name || 'Wealth Player'}</span>
+                  
+                  <div className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-100">
+                    <div className="flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4 text-red-600" />
+                      <span className="text-xs font-medium text-gray-700">Total Debt</span>
+                    </div>
+                    <span className="text-xs font-bold text-red-700">{formatMoney(totalDebt)}</span>
                   </div>
                 </div>
 
-                {/* Net Worth */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-100 rounded-lg border border-green-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="w-4 h-4 text-white" />
+                {/* Secondary Financial Metrics */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-100">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs font-medium text-gray-700">Credit Score</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Net Worth</span>
+                    <span className="text-xs font-bold text-blue-700">{creditScore}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-green-700">{formatMoney(financialData.netWorth)}</span>
+                  
+                  <div className="flex items-center justify-between p-2 bg-teal-50 rounded border border-teal-100">
+                    <div className="flex items-center gap-2">
+                      <Banknote className="w-4 h-4 text-teal-600" />
+                      <span className="text-xs font-medium text-gray-700">Cash Reserves</span>
+                    </div>
+                    <span className="text-xs font-bold text-teal-700">{formatMoney(financialData.bankBalance)}</span>
                   </div>
                 </div>
 
-                {/* Total Debt */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                      <TrendingDown className="w-4 h-4 text-white" />
+                {/* Income & Expenses */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between p-2 bg-cyan-50 rounded border border-cyan-100">
+                    <div className="flex items-center gap-2">
+                      <ArrowUpRight className="w-4 h-4 text-cyan-600" />
+                      <span className="text-xs font-medium text-gray-700">Monthly Income</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Total Debt</span>
+                    <span className="text-xs font-bold text-cyan-700">{formatMoney(monthlyIncome)}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-red-700">{formatMoney(totalDebt)}</span>
+                  
+                  <div className="flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-100">
+                    <div className="flex items-center gap-2">
+                      <ArrowDownRight className="w-4 h-4 text-orange-600" />
+                      <span className="text-xs font-medium text-gray-700">Monthly Expenses</span>
+                    </div>
+                    <span className="text-xs font-bold text-orange-700">{formatMoney(monthlyExpenses)}</span>
                   </div>
                 </div>
 
-                {/* Credit Score */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-lg border border-blue-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                      <Shield className="w-4 h-4 text-white" />
+                {/* Profile Metrics */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-100">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      <span className="text-xs font-medium text-gray-700">Risk Profile</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Credit Score</span>
+                    <span className="text-xs font-bold text-amber-700">{riskProfile}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-blue-700">{creditScore}</span>
-                  </div>
-                </div>
-
-                {/* Monthly Income */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-lg border border-cyan-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
-                      <ArrowUpRight className="w-4 h-4 text-white" />
+                  
+                  <div className="flex items-center justify-between p-2 bg-indigo-50 rounded border border-indigo-100">
+                    <div className="flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-indigo-600" />
+                      <span className="text-xs font-medium text-gray-700">Reputation</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Monthly Income</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-cyan-700">{formatMoney(monthlyIncome)}</span>
-                  </div>
-                </div>
-
-                {/* Monthly Expenses */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                      <ArrowDownRight className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Monthly Expenses</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-orange-700">{formatMoney(monthlyExpenses)}</span>
-                  </div>
-                </div>
-
-                {/* Cash Reserves */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
-                      <Banknote className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Cash Reserves</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-teal-700">{formatMoney(financialData.bankBalance)}</span>
-                  </div>
-                </div>
-
-                {/* Risk Profile */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-100 rounded-lg border border-amber-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Risk Profile</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-amber-700">{riskProfile}</span>
-                  </div>
-                </div>
-
-                {/* Reputation */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
-                      <Activity className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Reputation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-indigo-700">{playerStats.reputation}/100</span>
-                  </div>
-                </div>
-
-                {/* Financial Independence Progress */}
-                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200 hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                      <Target className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Financial Independence Progress</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-emerald-700">{fiProgress.toFixed(0)}%</span>
+                    <span className="text-xs font-bold text-indigo-700">{playerStats.reputation}/100</span>
                   </div>
                 </div>
               </div>
