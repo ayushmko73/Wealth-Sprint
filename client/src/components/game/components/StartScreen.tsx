@@ -55,7 +55,7 @@ const StartScreen: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5f0e6] via-[#f8f4e8] to-[#f0ead6] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#e6f0ff] via-[#e8f2ff] to-[#d6e8ff] flex items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
