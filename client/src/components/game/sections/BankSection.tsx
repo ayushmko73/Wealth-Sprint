@@ -72,68 +72,53 @@ const BankSection: React.FC = () => {
 
   return (
     <div className="space-y-4 p-4">
-      {/* Compact Blue Header */}
+      {/* Combined Professional Banking Header with All Key Metrics */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 rounded-xl text-white shadow-lg">
-        <div className="flex items-center justify-between">
+        {/* Main Header */}
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Building2 className="w-6 h-6" />
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
               Banking
             </h1>
-            <p className="text-blue-100 text-sm">Professional Financial Services</p>
+            <p className="text-blue-100 text-xs">Professional Financial Services</p>
           </div>
           <div className="text-right">
             <div className="text-xs opacity-90">Portfolio Value</div>
-            <div className="text-xl font-bold">{formatMoney(financialData.netWorth)}</div>
+            <div className="text-lg font-bold">{formatMoney(financialData.netWorth)}</div>
           </div>
         </div>
-      </div>
 
-      {/* Compact Overview Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Primary Balance Card */}
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-700 text-white border-0 shadow-md">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <Wallet className="w-6 h-6 mx-auto mb-1 text-blue-200" />
-              <p className="text-blue-100 text-xs mb-1">Bank Balance</p>
-              <p className="text-lg font-bold">{formatMoney(financialData.bankBalance)}</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Integrated Financial Overview */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {/* Bank Balance */}
+          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+            <Wallet className="w-5 h-5 mx-auto mb-1 text-blue-200" />
+            <p className="text-blue-100 text-xs mb-1">Bank Balance</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
+          </div>
 
-        {/* Net Worth Card */}
-        <Card className="bg-gradient-to-br from-blue-400 to-blue-600 text-white border-0 shadow-md">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <Target className="w-6 h-6 mx-auto mb-1 text-blue-200" />
-              <p className="text-blue-100 text-xs mb-1">Net Worth</p>
-              <p className="text-lg font-bold">{formatMoney(financialData.netWorth)}</p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Net Worth */}
+          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+            <Target className="w-5 h-5 mx-auto mb-1 text-blue-200" />
+            <p className="text-blue-100 text-xs mb-1">Net Worth</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.netWorth)}</p>
+          </div>
 
-        {/* Income Card */}
-        <Card className="bg-gradient-to-br from-blue-300 to-blue-500 text-white border-0 shadow-md">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <Banknote className="w-6 h-6 mx-auto mb-1 text-blue-100" />
-              <p className="text-blue-100 text-xs mb-1">Monthly Income</p>
-              <p className="text-lg font-bold">{formatMoney(financialData.mainIncome + financialData.sideIncome)}</p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Monthly Income */}
+          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+            <Banknote className="w-5 h-5 mx-auto mb-1 text-blue-200" />
+            <p className="text-blue-100 text-xs mb-1">Monthly Income</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.mainIncome + financialData.sideIncome)}</p>
+          </div>
 
-        {/* Fixed Deposits Card */}
-        <Card className="bg-gradient-to-br from-blue-200 to-blue-400 text-white border-0 shadow-md">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <PiggyBank className="w-6 h-6 mx-auto mb-1 text-blue-100" />
-              <p className="text-blue-100 text-xs mb-1">Fixed Deposits</p>
-              <p className="text-lg font-bold">{formatMoney(financialData.investments.fd)}</p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Fixed Deposits */}
+          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+            <PiggyBank className="w-5 h-5 mx-auto mb-1 text-blue-200" />
+            <p className="text-blue-100 text-xs mb-1">Fixed Deposits</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.investments.fd)}</p>
+          </div>
+        </div>
       </div>
 
       {/* Compact Tab Navigation */}
@@ -411,9 +396,6 @@ const BankSection: React.FC = () => {
               <CardTitle className="flex items-center gap-2 text-base text-blue-800">
                 <Receipt className="w-4 h-4" />
                 Transaction History
-                <Badge className="ml-auto bg-blue-200 text-blue-900 text-xs">
-                  Last 15
-                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
