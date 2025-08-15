@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { TeamMember, TeamRole, teamRoles, generateRandomTeamMember, generateRandomName, calculatePromotionCost, calculateBonusAmount } from '../data/teamRoles';
 import { useTeamManagement } from './useTeamManagement';
+import { formatMoney } from '../utils/formatMoney';
 
 export interface PlayerStats {
   name?: string;
@@ -84,6 +85,11 @@ export interface Liability {
   approvalDate?: Date;
   disbursementDate?: Date;
   gameTimeApprovalDay?: number;
+  // Penalty tracking
+  missedPayments?: number;
+  penaltyLevel?: 0 | 1 | 2; // 0: no penalty, 1: first penalty (5% extra interest), 2: bank takeover
+  lastPaymentDue?: number; // Game day when last payment was due
+  originalInterestRate?: number; // Store original rate before penalties
 }
 
 export interface FinancialData {
@@ -152,6 +158,11 @@ interface WealthSprintGameState {
     blackoutTurnsLeft: number;
     turnsWithoutBreak: number;
     lastAutoSaveTurn: number;
+    // Bankruptcy and jail states
+    isBankrupt: boolean;
+    isInJail: boolean;
+    jailTurnsLeft: number;
+    bankruptcyReason: string;
   };
   
   // Player Data
@@ -200,6 +211,10 @@ interface WealthSprintGameState {
   disburseLoan: (loanId: string) => boolean;
   payLoanEMI: (loanId: string, amount?: number) => boolean;
   processLoanApprovals: () => void;
+  // Loan penalty functions
+  processLoanPenalties: () => void;
+  applyLoanPenalty: (loanId: string, penaltyLevel: 1 | 2) => void;
+  triggerBankruptcy: (reason: string) => void;
   
   // Investment functions
   makeInvestment: (type: 'stocks' | 'bonds' | 'fd' | 'mutualFunds' | 'realEstate', amount: number) => boolean;
@@ -323,6 +338,11 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       blackoutTurnsLeft: 0,
       turnsWithoutBreak: 0,
       lastAutoSaveTurn: 0,
+      // Bankruptcy and jail states
+      isBankrupt: false,
+      isInJail: false,
+      jailTurnsLeft: 0,
+      bankruptcyReason: '',
     },
     
     playerStats: { ...initialPlayerStats },
@@ -639,8 +659,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           // Update team experience every 48 weeks 
           useTeamManagement.getState().increaseTeamExperience(newWeek);
           
-          // Process loan approvals
+          // Process loan approvals and penalties
           get().processLoanApprovals();
+          get().processLoanPenalties();
           
           return {
             currentWeek: newWeek,
@@ -1935,7 +1956,12 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         icon: '🏦',
         status: 'pending',
         applicationDate: new Date(),
-        gameTimeApprovalDay: approvalGameDay
+        gameTimeApprovalDay: approvalGameDay,
+        // Initialize penalty tracking
+        missedPayments: 0,
+        penaltyLevel: 0,
+        lastPaymentDue: undefined,
+        originalInterestRate: 28
       };
       
       set((state) => ({
@@ -2115,6 +2141,144 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           get().approveLoan(loan.id);
         }
       });
+    },
+    
+    // Loan penalty processing - Check every game day for missed payments
+    processLoanPenalties: () => {
+      const state = get();
+      const currentGameDay = state.timeEngine.currentGameDay;
+      
+      state.financialData.liabilities.forEach(loan => {
+        if (loan.category === 'personal_loan' && loan.status === 'active') {
+          // Initialize penalty tracking if not present
+          if (!loan.lastPaymentDue) {
+            get().updateLiability(loan.id, {
+              lastPaymentDue: currentGameDay + 28, // First payment due after 4 weeks (28 days)
+              missedPayments: 0,
+              penaltyLevel: 0,
+              originalInterestRate: loan.interestRate
+            });
+            return;
+          }
+          
+          // Check if payment is overdue (4 weeks = 28 game days)
+          if (currentGameDay > loan.lastPaymentDue!) {
+            const missedPayments = (loan.missedPayments || 0) + 1;
+            
+            if (missedPayments === 1 && (!loan.penaltyLevel || loan.penaltyLevel === 0)) {
+              // First penalty: 5% additional interest
+              get().applyLoanPenalty(loan.id, 1);
+            } else if (missedPayments >= 2 && loan.penaltyLevel !== 2) {
+              // Second penalty: Bank takeover
+              get().applyLoanPenalty(loan.id, 2);
+            }
+            
+            // Update next payment due date
+            get().updateLiability(loan.id, {
+              missedPayments,
+              lastPaymentDue: currentGameDay + 28 // Next payment due in 4 weeks
+            });
+          }
+        }
+      });
+    },
+    
+    // Apply specific penalty levels
+    applyLoanPenalty: (loanId: string, penaltyLevel: 1 | 2) => {
+      const state = get();
+      const loan = state.financialData.liabilities.find(l => l.id === loanId);
+      
+      if (!loan) return;
+      
+      if (penaltyLevel === 1) {
+        // First penalty: 5% additional interest (33% total instead of 28%)
+        const newInterestRate = (loan.originalInterestRate || 28) + 5;
+        const newEMI = Math.floor((loan.outstandingAmount * (newInterestRate/100/12)) / (1 - Math.pow(1 + (newInterestRate/100/12), -loan.remainingMonths)));
+        
+        get().updateLiability(loanId, {
+          interestRate: newInterestRate,
+          emi: newEMI,
+          penaltyLevel: 1
+        });
+        
+        get().addGameEvent({
+          id: `loan_penalty_1_${Date.now()}`,
+          type: 'warning',
+          title: '🚨 Loan Penalty Applied!',
+          description: `Your loan payment is overdue! Interest rate increased by 5% to ${newInterestRate}%. Pay your EMI to avoid further penalties.`,
+          timestamp: new Date()
+        });
+        
+      } else if (penaltyLevel === 2) {
+        // Second penalty: Bank takeover of assets/liabilities
+        const totalAssetValue = state.financialData.assets.reduce((sum, asset) => sum + asset.value, 0);
+        const totalLoanAmount = loan.outstandingAmount;
+        
+        if (totalAssetValue >= totalLoanAmount) {
+          // Bank takes over sufficient assets to cover loan
+          let remainingDebt = totalLoanAmount;
+          const assetsToTake = [...state.financialData.assets];
+          
+          // Remove assets until debt is covered
+          while (remainingDebt > 0 && assetsToTake.length > 0) {
+            const asset = assetsToTake.pop()!;
+            remainingDebt -= asset.value;
+            get().removeAsset(asset.id);
+          }
+          
+          // Remove the loan as it's now covered
+          get().removeLiability(loanId);
+          
+          get().addGameEvent({
+            id: `loan_penalty_2_${Date.now()}`,
+            type: 'warning',
+            title: '🏦 Bank Asset Seizure!',
+            description: `The bank has seized your assets worth ${formatMoney(totalAssetValue)} to cover your outstanding loan of ${formatMoney(totalLoanAmount)}.`,
+            timestamp: new Date()
+          });
+          
+        } else {
+          // Insufficient assets - Bankruptcy and jail
+          get().triggerBankruptcy(`Loan default: Unable to cover ₹${totalLoanAmount.toLocaleString()} loan with assets worth ₹${totalAssetValue.toLocaleString()}`);
+        }
+        
+        get().updateLiability(loanId, {
+          penaltyLevel: 2
+        });
+      }
+    },
+    
+    // Trigger bankruptcy and jail
+    triggerBankruptcy: (reason: string) => {
+      set((state) => ({
+        gameState: {
+          ...state.gameState,
+          isBankrupt: true,
+          isInJail: true,
+          jailTurnsLeft: 30, // 30 game days in jail
+          bankruptcyReason: reason
+        },
+        financialData: {
+          ...state.financialData,
+          bankBalance: 0,
+          assets: [], // All assets seized
+          liabilities: [], // All debts cleared through bankruptcy
+          totalAssets: 0,
+          totalLiabilities: 0,
+          netWorth: 0
+        }
+      }));
+      
+      get().addGameEvent({
+        id: `bankruptcy_${Date.now()}`,
+        type: 'warning',
+        title: '💸 BANKRUPTCY & JAIL!',
+        description: `${reason}. You have been declared bankrupt and sentenced to 30 days in jail. All assets seized, all debts cleared.`,
+        timestamp: new Date()
+      });
+      
+      // End the game with failure
+      get().endGame('failure');
     },
   }))
 );

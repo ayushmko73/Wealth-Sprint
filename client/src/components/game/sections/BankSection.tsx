@@ -35,7 +35,6 @@ const BankSection: React.FC = () => {
   const { financialData, playerStats, updateFinancialData, addTransaction, applyForLoan, disburseLoan } = useWealthSprintGame();
   const [fdAmount, setFdAmount] = useState('');
   const [loanAmount, setLoanAmount] = useState('');
-  const [loanPurpose, setLoanPurpose] = useState('Business Expansion');
 
   const handleCreateFD = () => {
     const amount = parseInt(fdAmount);
@@ -98,7 +97,7 @@ const BankSection: React.FC = () => {
       return;
     }
     
-    const loanId = applyForLoan(amount, loanPurpose);
+    const loanId = applyForLoan(amount, 'Personal Loan');
     if (loanId) {
       toast.success(`Loan application submitted! Application ID: ${loanId.slice(-8)}`);
       setLoanAmount('');
@@ -483,20 +482,6 @@ const BankSection: React.FC = () => {
                       className="w-full"
                     />
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-green-800 mb-1 block">Purpose</label>
-                    <select 
-                      value={loanPurpose} 
-                      onChange={(e) => setLoanPurpose(e.target.value)}
-                      className="w-full p-2 border border-green-300 rounded-md bg-white text-sm"
-                    >
-                      <option value="Business Expansion">Business Expansion</option>
-                      <option value="Investment">Investment</option>
-                      <option value="Debt Consolidation">Debt Consolidation</option>
-                      <option value="Emergency Fund">Emergency Fund</option>
-                      <option value="Education">Education</option>
-                    </select>
-                  </div>
                   <Button 
                     onClick={handleApplyLoan}
                     className="w-full bg-green-600 hover:bg-green-700 text-white"
@@ -578,7 +563,7 @@ const BankSection: React.FC = () => {
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-yellow-900">{formatMoney(loan.originalAmount)}</p>
-                          <p className="text-xs text-yellow-700">Applied on {loan.applicationDate?.toLocaleDateString()}</p>
+                          <p className="text-xs text-yellow-700">Applied on {loan.applicationDate ? new Date(loan.applicationDate).toLocaleDateString() : 'N/A'}</p>
                         </div>
                       </div>
                     </div>
