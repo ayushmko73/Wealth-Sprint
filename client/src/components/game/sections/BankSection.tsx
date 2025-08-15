@@ -32,7 +32,7 @@ import {
 import { toast } from 'sonner';
 
 const BankSection: React.FC = () => {
-  const { financialData, playerStats, updateFinancialData, addTransaction, applyForLoan, disburseLoan } = useWealthSprintGame();
+  const { financialData, playerStats, updateFinancialData, addTransaction, applyForLoan, disburseLoan, payLoanEMI } = useWealthSprintGame();
   const [fdAmount, setFdAmount] = useState('');
   const [loanAmount, setLoanAmount] = useState('');
 
@@ -161,30 +161,32 @@ const BankSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Compact Tab Navigation */}
+      {/* Horizontal Scrolling Tab Navigation */}
       <Tabs defaultValue="account" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-blue-100 rounded-lg p-1">
-          <TabsTrigger value="account" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Wallet className="w-3 h-3 mr-1" />
-            Account
-          </TabsTrigger>
-          <TabsTrigger value="credit-card" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <CreditCard className="w-3 h-3 mr-1" />
-            Credit
-          </TabsTrigger>
-          <TabsTrigger value="loan" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Banknote className="w-3 h-3 mr-1" />
-            Loan
-          </TabsTrigger>
-          <TabsTrigger value="fd" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <PiggyBank className="w-3 h-3 mr-1" />
-            Deposits
-          </TabsTrigger>
-          <TabsTrigger value="statement" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Receipt className="w-3 h-3 mr-1" />
-            History
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="flex w-max bg-blue-100 rounded-lg p-1 min-w-full">
+            <TabsTrigger value="account" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+              <Wallet className="w-4 h-4 mr-1" />
+              Account
+            </TabsTrigger>
+            <TabsTrigger value="credit-card" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+              <CreditCard className="w-4 h-4 mr-1" />
+              Credit
+            </TabsTrigger>
+            <TabsTrigger value="loan" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+              <Banknote className="w-4 h-4 mr-1" />
+              Loan
+            </TabsTrigger>
+            <TabsTrigger value="fd" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+              <PiggyBank className="w-4 h-4 mr-1" />
+              Deposits
+            </TabsTrigger>
+            <TabsTrigger value="statement" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+              <Receipt className="w-4 h-4 mr-1" />
+              History
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="account" className="mt-3">
           {/* Professional Account Summary */}
@@ -568,18 +570,11 @@ const BankSection: React.FC = () => {
                                 size="sm"
                                 onClick={() => {
                                   if (financialData.bankBalance >= finalAmount) {
-                                    updateFinancialData({
-                                      bankBalance: financialData.bankBalance - finalAmount,
-                                      liabilities: financialData.liabilities.filter(l => l.id !== loan.id)
-                                    });
-                                    addTransaction({
-                                      type: 'loan_payment',
-                                      amount: -finalAmount,
-                                      description: `Early loan settlement - ${loan.name} (9% interest rate applied)`,
-                                      fromAccount: 'bank',
-                                      toAccount: 'bank'
-                                    });
-                                    toast.success(`Loan settled early with 9% interest rate! Saved ${formatMoney(discountAmount)}`);
+                                    if (payLoanEMI(loan.id, finalAmount)) {
+                                      toast.success(`Loan settled early with 9% interest rate! Saved ${formatMoney(discountAmount)}`);
+                                    } else {
+                                      toast.error('Failed to process early settlement');
+                                    }
                                   } else {
                                     toast.error('Insufficient balance for early settlement');
                                   }
@@ -597,28 +592,7 @@ const BankSection: React.FC = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                if (financialData.bankBalance >= loan.emi) {
-                                  const updatedLoan = {
-                                    ...loan,
-                                    outstandingAmount: Math.max(0, loan.outstandingAmount - loan.emi),
-                                    remainingMonths: loan.remainingMonths - 1
-                                  };
-                                  
-                                  updateFinancialData({
-                                    bankBalance: financialData.bankBalance - loan.emi,
-                                    liabilities: updatedLoan.remainingMonths <= 0 ? 
-                                      financialData.liabilities.filter(l => l.id !== loan.id) :
-                                      financialData.liabilities.map(l => l.id === loan.id ? updatedLoan : l)
-                                  });
-                                  
-                                  addTransaction({
-                                    type: 'loan_payment',
-                                    amount: -loan.emi,
-                                    description: `Loan EMI payment - ${loan.name}`,
-                                    fromAccount: 'bank',
-                                    toAccount: 'bank'
-                                  });
-                                  
+                                if (payLoanEMI(loan.id)) {
                                   toast.success(`EMI payment of ${formatMoney(loan.emi)} completed`);
                                 } else {
                                   toast.error('Insufficient balance for EMI payment');
@@ -633,18 +607,7 @@ const BankSection: React.FC = () => {
                             <Button
                               size="sm"
                               onClick={() => {
-                                if (financialData.bankBalance >= loan.outstandingAmount) {
-                                  updateFinancialData({
-                                    bankBalance: financialData.bankBalance - loan.outstandingAmount,
-                                    liabilities: financialData.liabilities.filter(l => l.id !== loan.id)
-                                  });
-                                  addTransaction({
-                                    type: 'loan_payment',
-                                    amount: -loan.outstandingAmount,
-                                    description: `Full loan repayment - ${loan.name}`,
-                                    fromAccount: 'bank',
-                                    toAccount: 'bank'
-                                  });
+                                if (payLoanEMI(loan.id, loan.outstandingAmount)) {
                                   toast.success(`Loan fully repaid!`);
                                 } else {
                                   toast.error('Insufficient balance for full repayment');
