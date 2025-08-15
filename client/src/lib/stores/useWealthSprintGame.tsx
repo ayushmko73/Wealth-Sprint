@@ -1939,24 +1939,23 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       }
       
       const loanId = `loan_${Date.now()}`;
-      const currentGameDay = state.timeEngine.currentGameDay;
-      const approvalGameDay = currentGameDay + 12; // 12 game days for approval
       
       const newLoan: Liability = {
         id: loanId,
         name: `Personal Loan - ${purpose}`,
         category: 'personal_loan',
-        outstandingAmount: 0, // Will be set when disbursed
+        outstandingAmount: amount, // Instantly active with full amount
         originalAmount: amount,
         interestRate: 28, // 28% annual
         emi: Math.floor((amount * (28/100/12)) / (1 - Math.pow(1 + (28/100/12), -24))), // 2 year tenure
         tenure: 24,
         remainingMonths: 24,
-        description: `${purpose} - Applied for ₹${amount.toLocaleString()}`,
+        description: `${purpose} - ₹${amount.toLocaleString()}`,
         icon: '🏦',
-        status: 'pending',
+        status: 'active', // Instantly approved and active
         applicationDate: new Date(),
-        gameTimeApprovalDay: approvalGameDay,
+        approvalDate: new Date(),
+        disbursementDate: new Date(),
         // Initialize penalty tracking
         missedPayments: 0,
         penaltyLevel: 0,
@@ -1967,23 +1966,25 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       set((state) => ({
         financialData: {
           ...state.financialData,
-          liabilities: [...state.financialData.liabilities, newLoan]
+          bankBalance: state.financialData.bankBalance + amount, // Add loan amount to bank balance immediately
+          liabilities: [...state.financialData.liabilities, newLoan],
+          totalLiabilities: state.financialData.totalLiabilities + amount // Add to total liabilities
         }
       }));
       
       get().addTransaction({
-        type: 'loan_applied',
-        amount: 0,
-        description: `Applied for loan: ${purpose} - ₹${amount.toLocaleString()}`,
+        type: 'loan_disbursed',
+        amount: amount,
+        description: `Instant loan approved and disbursed: ${purpose} - ₹${amount.toLocaleString()}`,
         fromAccount: 'bank',
         toAccount: 'bank'
       });
       
       get().addGameEvent({
-        id: `loan_application_${Date.now()}`,
-        type: 'info',
-        title: 'Loan Application Submitted',
-        description: `Applied for ₹${amount.toLocaleString()} loan for ${purpose}. Approval expected in 12 days.`,
+        id: `loan_instant_${Date.now()}`,
+        type: 'achievement',
+        title: 'Loan Instantly Approved!',
+        description: `₹${amount.toLocaleString()} loan for ${purpose} approved and disbursed immediately. EMI: ₹${newLoan.emi.toLocaleString()}/month`,
         timestamp: new Date()
       });
       
