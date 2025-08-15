@@ -46,7 +46,7 @@ const StartScreen: React.FC = () => {
             Make wise financial choices to reach Financial Freedom. Every decision matters on your journey to wealth.
           </p>
           <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d4af37]"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
           <p className="text-sm text-gray-500">Starting your journey...</p>
         </div>
@@ -59,10 +59,10 @@ const StartScreen: React.FC = () => {
       <div className="w-full max-w-2xl space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-[#d4af37] mb-2 drop-shadow-lg">
+          <h1 className="text-5xl font-bold text-[#3a3a3a] mb-2">
             Wealth Sprint
           </h1>
-          <p className="text-xl text-[#b8941f] font-semibold">
+          <p className="text-xl text-[#5a5a5a]">
             Your Journey to Financial Freedom Starts Here
           </p>
           <Badge className="bg-[#d4af37] text-white px-4 py-1">
@@ -71,13 +71,13 @@ const StartScreen: React.FC = () => {
         </div>
 
         {/* Main Start Card */}
-        <Card className="bg-white/90 backdrop-blur-sm border-2 border-[#d4af37]/40 shadow-lg shadow-[#d4af37]/20">
+        <Card className="bg-white/80 backdrop-blur-sm border-2 border-[#d4af37]/20">
           <CardHeader>
-            <CardTitle className="text-center text-2xl text-[#d4af37] font-bold">Start Your Adventure</CardTitle>
+            <CardTitle className="text-center text-2xl">Start Your Adventure</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <label className="text-sm font-medium text-[#b8941f] mb-2 block">
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
                 What should we call you?
               </label>
               <Input
@@ -117,11 +117,11 @@ const StartScreen: React.FC = () => {
             { icon: Users, label: 'Build Team', desc: 'Manage staff' },
             { icon: Briefcase, label: 'Make Deals', desc: 'Business opportunities' }
           ].map((feature, index) => (
-            <Card key={index} className="bg-white/70 hover:bg-white/90 hover:shadow-lg hover:shadow-[#d4af37]/20 transition-all duration-300 cursor-pointer group border border-[#d4af37]/20 hover:border-[#d4af37]/40">
+            <Card key={index} className="bg-white/60 hover:bg-white/80 transition-all duration-300 cursor-pointer group">
               <CardContent className="pt-4 text-center">
                 <feature.icon size={32} className="mx-auto mb-2 text-[#d4af37] group-hover:scale-110 transition-transform" />
-                <h3 className="font-semibold text-sm text-[#b8941f]">{feature.label}</h3>
-                <p className="text-xs text-[#8b7355]">{feature.desc}</p>
+                <h3 className="font-semibold text-sm">{feature.label}</h3>
+                <p className="text-xs text-gray-600">{feature.desc}</p>
               </CardContent>
             </Card>
           ))}
@@ -129,7 +129,7 @@ const StartScreen: React.FC = () => {
 
         {/* Info */}
         <div className="text-center">
-          <Button variant="ghost" className="text-[#b8941f] hover:text-[#d4af37] hover:bg-[#d4af37]/10 transition-all duration-200">
+          <Button variant="ghost" className="text-gray-600 hover:text-gray-800">
             <Info size={16} className="mr-1" />
             How to Play
           </Button>
