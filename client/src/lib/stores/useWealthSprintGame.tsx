@@ -44,7 +44,7 @@ export interface BusinessSectorInvestment {
 
 export interface Transaction {
   id: string;
-  type: 'bond_purchase' | 'bond_maturity' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations' | 'store_purchase';
+  type: 'bond_purchase' | 'bond_maturity' | 'salary_credit' | 'bonus_paid' | 'loan_deducted' | 'team_payment' | 'fd_maturity' | 'investment' | 'business' | 'sector_purchase' | 'business_operations' | 'store_purchase' | 'loan_applied' | 'loan_approved' | 'loan_disbursed' | 'loan_payment';
   amount: number;
   description: string;
   timestamp: Date;
@@ -79,6 +79,11 @@ export interface Liability {
   remainingMonths: number;
   description: string;
   icon: string;
+  status?: 'pending' | 'approved' | 'active' | 'paid_off';
+  applicationDate?: Date;
+  approvalDate?: Date;
+  disbursementDate?: Date;
+  gameTimeApprovalDay?: number;
 }
 
 export interface FinancialData {
@@ -188,6 +193,13 @@ interface WealthSprintGameState {
   // Credit card functions
   chargeToCredit: (amount: number, description: string) => boolean;
   payCreditCardBill: (amount: number) => boolean;
+  
+  // Loan functions
+  applyForLoan: (amount: number, purpose: string) => string | false;
+  approveLoan: (loanId: string) => boolean;
+  disburseLoan: (loanId: string) => boolean;
+  payLoanEMI: (loanId: string, amount?: number) => boolean;
+  processLoanApprovals: () => void;
   
   // Investment functions
   makeInvestment: (type: 'stocks' | 'bonds' | 'fd' | 'mutualFunds' | 'realEstate', amount: number) => boolean;
@@ -626,6 +638,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           
           // Update team experience every 48 weeks 
           useTeamManagement.getState().increaseTeamExperience(newWeek);
+          
+          // Process loan approvals
+          get().processLoanApprovals();
           
           return {
             currentWeek: newWeek,
@@ -1886,6 +1901,220 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       }));
 
       return netWorth;
+    },
+    
+    // Loan management functions
+    applyForLoan: (amount: number, purpose: string) => {
+      const state = get();
+      
+      // Check if player is eligible (minimum net worth, credit score, etc.)
+      const creditScore = Math.min(900, Math.max(300, 720 + Math.floor((state.financialData.netWorth - 500000) / 10000)));
+      if (creditScore < 600) {
+        return false; // Credit score too low
+      }
+      
+      if (amount < 50000 || amount > 2000000) {
+        return false; // Amount out of range
+      }
+      
+      const loanId = `loan_${Date.now()}`;
+      const currentGameDay = state.timeEngine.currentGameDay;
+      const approvalGameDay = currentGameDay + 12; // 12 game days for approval
+      
+      const newLoan: Liability = {
+        id: loanId,
+        name: `Personal Loan - ${purpose}`,
+        category: 'personal_loan',
+        outstandingAmount: 0, // Will be set when disbursed
+        originalAmount: amount,
+        interestRate: 28, // 28% annual
+        emi: Math.floor((amount * (28/100/12)) / (1 - Math.pow(1 + (28/100/12), -24))), // 2 year tenure
+        tenure: 24,
+        remainingMonths: 24,
+        description: `${purpose} - Applied for ₹${amount.toLocaleString()}`,
+        icon: '🏦',
+        status: 'pending',
+        applicationDate: new Date(),
+        gameTimeApprovalDay: approvalGameDay
+      };
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          liabilities: [...state.financialData.liabilities, newLoan]
+        }
+      }));
+      
+      get().addTransaction({
+        type: 'loan_applied',
+        amount: 0,
+        description: `Applied for loan: ${purpose} - ₹${amount.toLocaleString()}`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      get().addGameEvent({
+        id: `loan_application_${Date.now()}`,
+        type: 'info',
+        title: 'Loan Application Submitted',
+        description: `Applied for ₹${amount.toLocaleString()} loan for ${purpose}. Approval expected in 12 days.`,
+        timestamp: new Date()
+      });
+      
+      return loanId;
+    },
+    
+    approveLoan: (loanId: string) => {
+      const state = get();
+      const loan = state.financialData.liabilities.find(l => l.id === loanId);
+      
+      if (!loan || loan.status !== 'pending') {
+        return false;
+      }
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          liabilities: state.financialData.liabilities.map(liability =>
+            liability.id === loanId
+              ? { ...liability, status: 'approved', approvalDate: new Date() }
+              : liability
+          )
+        }
+      }));
+      
+      get().addTransaction({
+        type: 'loan_approved',
+        amount: 0,
+        description: `Loan approved: ${loan.name} - ₹${loan.originalAmount.toLocaleString()}`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      get().addGameEvent({
+        id: `loan_approval_${Date.now()}`,
+        type: 'achievement',
+        title: 'Loan Approved!',
+        description: `Your loan application for ₹${loan.originalAmount.toLocaleString()} has been approved. You can now disburse the amount.`,
+        timestamp: new Date()
+      });
+      
+      return true;
+    },
+    
+    disburseLoan: (loanId: string) => {
+      const state = get();
+      const loan = state.financialData.liabilities.find(l => l.id === loanId);
+      
+      if (!loan || loan.status !== 'approved') {
+        return false;
+      }
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          bankBalance: state.financialData.bankBalance + loan.originalAmount,
+          liabilities: state.financialData.liabilities.map(liability =>
+            liability.id === loanId
+              ? { 
+                  ...liability, 
+                  status: 'active', 
+                  outstandingAmount: loan.originalAmount,
+                  disbursementDate: new Date() 
+                }
+              : liability
+          ),
+          totalLiabilities: state.financialData.totalLiabilities + loan.originalAmount
+        }
+      }));
+      
+      get().addTransaction({
+        type: 'loan_disbursed',
+        amount: loan.originalAmount,
+        description: `Loan disbursed: ${loan.name} - ₹${loan.originalAmount.toLocaleString()}`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      get().addGameEvent({
+        id: `loan_disbursement_${Date.now()}`,
+        type: 'financial',
+        title: 'Loan Disbursed',
+        description: `₹${loan.originalAmount.toLocaleString()} has been credited to your account. EMI: ₹${loan.emi.toLocaleString()}/month`,
+        timestamp: new Date()
+      });
+      
+      return true;
+    },
+    
+    payLoanEMI: (loanId: string, amount?: number) => {
+      const state = get();
+      const loan = state.financialData.liabilities.find(l => l.id === loanId);
+      
+      if (!loan || loan.status !== 'active' || loan.outstandingAmount <= 0) {
+        return false;
+      }
+      
+      const paymentAmount = amount || loan.emi;
+      
+      if (paymentAmount > state.financialData.bankBalance) {
+        return false; // Insufficient funds
+      }
+      
+      const principal = paymentAmount - (loan.outstandingAmount * (loan.interestRate / 100 / 12));
+      const newOutstanding = Math.max(0, loan.outstandingAmount - principal);
+      const newRemainingMonths = Math.max(0, loan.remainingMonths - 1);
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          bankBalance: state.financialData.bankBalance - paymentAmount,
+          liabilities: state.financialData.liabilities.map(liability =>
+            liability.id === loanId
+              ? { 
+                  ...liability, 
+                  outstandingAmount: newOutstanding,
+                  remainingMonths: newRemainingMonths,
+                  status: (newOutstanding === 0 ? 'paid_off' : 'active') as 'paid_off' | 'active'
+                }
+              : liability
+          ).filter(liability => 
+            liability.id !== loanId || liability.outstandingAmount > 0
+          ),
+          totalLiabilities: state.financialData.totalLiabilities - principal
+        }
+      }));
+      
+      get().addTransaction({
+        type: 'loan_payment',
+        amount: -paymentAmount,
+        description: `Loan EMI: ${loan.name} - ₹${paymentAmount.toLocaleString()}`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      if (newOutstanding === 0) {
+        get().addGameEvent({
+          id: `loan_paid_off_${Date.now()}`,
+          type: 'achievement',
+          title: 'Loan Paid Off!',
+          description: `Congratulations! You have fully paid off your ${loan.name}.`,
+          timestamp: new Date()
+        });
+      }
+      
+      return true;
+    },
+    
+    processLoanApprovals: () => {
+      const state = get();
+      const currentGameDay = state.timeEngine.currentGameDay;
+      
+      state.financialData.liabilities.forEach(loan => {
+        if (loan.status === 'pending' && loan.gameTimeApprovalDay && currentGameDay >= loan.gameTimeApprovalDay) {
+          get().approveLoan(loan.id);
+        }
+      });
     },
   }))
 );
