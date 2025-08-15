@@ -587,7 +587,7 @@ const BankSection: React.FC = () => {
                             <p className="font-medium text-gray-900">{transaction.description}</p>
                             <p className="text-sm text-gray-500 flex items-center gap-2">
                               <Clock className="w-3 h-3" />
-                              {transaction.timestamp.toLocaleDateString()}
+                              {new Date(transaction.timestamp).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
