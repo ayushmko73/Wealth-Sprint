@@ -65,13 +65,13 @@ const StartScreen: React.FC = () => {
           <p className="text-xl text-[#5a5a5a]">
             Your Journey to Financial Freedom Starts Here
           </p>
-          <Badge className="bg-[#d4af37] text-white px-4 py-1">
+          <Badge className="bg-blue-600 text-white px-4 py-1">
             Version 4.0 - Financial Simulation Game
           </Badge>
         </div>
 
         {/* Main Start Card */}
-        <Card className="bg-white/80 backdrop-blur-sm border-2 border-[#d4af37]/20">
+        <Card className="bg-white/80 backdrop-blur-sm border-2 border-blue-200">
           <CardHeader>
             <CardTitle className="text-center text-2xl">Start Your Adventure</CardTitle>
           </CardHeader>
@@ -92,7 +92,7 @@ const StartScreen: React.FC = () => {
             <Button
               onClick={handleStartGame}
               disabled={isStarting}
-              className="w-full h-12 text-lg font-semibold bg-[#d4af37] hover:bg-[#b8941f] transition-all duration-300 transform hover:scale-105"
+              className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
             >
               {isStarting ? (
                 <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ const StartScreen: React.FC = () => {
           ].map((feature, index) => (
             <Card key={index} className="bg-white/60 hover:bg-white/80 transition-all duration-300 cursor-pointer group">
               <CardContent className="pt-4 text-center">
-                <feature.icon size={32} className="mx-auto mb-2 text-[#d4af37] group-hover:scale-110 transition-transform" />
+                <feature.icon size={32} className="mx-auto mb-2 text-blue-600 group-hover:scale-110 transition-transform" />
                 <h3 className="font-semibold text-sm">{feature.label}</h3>
                 <p className="text-xs text-gray-600">{feature.desc}</p>
               </CardContent>
