@@ -161,27 +161,27 @@ const BankSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Horizontal Scrolling Tab Navigation */}
+      {/* Compact Tab Navigation */}
       <Tabs defaultValue="account" className="w-full">
-        <TabsList className="flex w-full bg-blue-100 rounded-lg p-1 overflow-x-auto">
-          <TabsTrigger value="account" className="flex-shrink-0 rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Wallet className="w-4 h-4 mr-1" />
+        <TabsList className="grid w-full grid-cols-5 bg-blue-100 rounded-lg p-1">
+          <TabsTrigger value="account" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <Wallet className="w-3 h-3 mr-1" />
             Account
           </TabsTrigger>
-          <TabsTrigger value="credit-card" className="flex-shrink-0 rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <CreditCard className="w-4 h-4 mr-1" />
+          <TabsTrigger value="credit-card" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <CreditCard className="w-3 h-3 mr-1" />
             Credit
           </TabsTrigger>
-          <TabsTrigger value="loan" className="flex-shrink-0 rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Banknote className="w-4 h-4 mr-1" />
+          <TabsTrigger value="loan" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <Banknote className="w-3 h-3 mr-1" />
             Loan
           </TabsTrigger>
-          <TabsTrigger value="fd" className="flex-shrink-0 rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <PiggyBank className="w-4 h-4 mr-1" />
+          <TabsTrigger value="fd" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <PiggyBank className="w-3 h-3 mr-1" />
             Deposits
           </TabsTrigger>
-          <TabsTrigger value="statement" className="flex-shrink-0 rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
-            <Receipt className="w-4 h-4 mr-1" />
+          <TabsTrigger value="statement" className="text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <Receipt className="w-3 h-3 mr-1" />
             History
           </TabsTrigger>
         </TabsList>
@@ -526,23 +526,140 @@ const BankSection: React.FC = () => {
                     </div>
                   ))}
                   
-                  {/* Active Loans */}
-                  {activeLoans.map((loan) => (
-                    <div key={loan.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium text-red-800">{loan.name}</p>
-                          <p className="text-xs text-red-700">{loan.description}</p>
-                          <Badge variant="secondary" className="mt-1 bg-red-200 text-red-800">Active</Badge>
+                  {/* Active Loans with Repayment Options */}
+                  {activeLoans.map((loan) => {
+                    const loanAge = loan.applicationDate ? Math.floor((Date.now() - new Date(loan.applicationDate).getTime()) / (1000 * 60 * 60 * 24 * 7)) : 0; // weeks
+                    const isEarlyRepayment = loanAge <= 4; // Within 4 weeks
+                    const effectiveInterestRate = isEarlyRepayment ? 9 : 28; // 9% if paid within 4 weeks, otherwise 28%
+                    const discountAmount = isEarlyRepayment ? loan.outstandingAmount * 0.19 : 0; // 19% discount for early payment
+                    const finalAmount = loan.outstandingAmount - discountAmount;
+                    
+                    return (
+                      <div key={loan.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <p className="font-medium text-red-800">{loan.name}</p>
+                            <p className="text-xs text-red-700">{loan.description}</p>
+                            <Badge variant="secondary" className="mt-1 bg-red-200 text-red-800">Active</Badge>
+                            {isEarlyRepayment && (
+                              <Badge variant="secondary" className="mt-1 ml-2 bg-green-200 text-green-800">Early Payment Eligible</Badge>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-red-900">{formatMoney(loan.outstandingAmount)}</p>
+                            <p className="text-xs text-red-700">EMI: {formatMoney(loan.emi)}/month</p>
+                            <p className="text-xs text-red-600">{loan.remainingMonths} months left</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-red-900">{formatMoney(loan.outstandingAmount)}</p>
-                          <p className="text-xs text-red-700">EMI: {formatMoney(loan.emi)}/month</p>
-                          <p className="text-xs text-red-600">{loan.remainingMonths} months left</p>
+                        
+                        {/* Repayment Options */}
+                        <div className="space-y-2">
+                          {isEarlyRepayment && (
+                            <div className="p-2 bg-green-50 border border-green-200 rounded">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-xs font-medium text-green-800">Early Settlement (9% Interest)</span>
+                                <span className="text-xs text-green-600">Save {formatMoney(discountAmount)}</span>
+                              </div>
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-xs text-green-700">Final Amount:</span>
+                                <span className="text-sm font-bold text-green-800">{formatMoney(finalAmount)}</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  if (financialData.bankBalance >= finalAmount) {
+                                    updateFinancialData({
+                                      bankBalance: financialData.bankBalance - finalAmount,
+                                      liabilities: financialData.liabilities.filter(l => l.id !== loan.id)
+                                    });
+                                    addTransaction({
+                                      type: 'loan_payment',
+                                      amount: -finalAmount,
+                                      description: `Early loan settlement - ${loan.name} (9% interest rate applied)`,
+                                      fromAccount: 'bank',
+                                      toAccount: 'bank'
+                                    });
+                                    toast.success(`Loan settled early with 9% interest rate! Saved ${formatMoney(discountAmount)}`);
+                                  } else {
+                                    toast.error('Insufficient balance for early settlement');
+                                  }
+                                }}
+                                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                                disabled={financialData.bankBalance < finalAmount}
+                              >
+                                Settle Early (9% Interest)
+                              </Button>
+                            </div>
+                          )}
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                if (financialData.bankBalance >= loan.emi) {
+                                  const updatedLoan = {
+                                    ...loan,
+                                    outstandingAmount: Math.max(0, loan.outstandingAmount - loan.emi),
+                                    remainingMonths: loan.remainingMonths - 1
+                                  };
+                                  
+                                  updateFinancialData({
+                                    bankBalance: financialData.bankBalance - loan.emi,
+                                    liabilities: updatedLoan.remainingMonths <= 0 ? 
+                                      financialData.liabilities.filter(l => l.id !== loan.id) :
+                                      financialData.liabilities.map(l => l.id === loan.id ? updatedLoan : l)
+                                  });
+                                  
+                                  addTransaction({
+                                    type: 'loan_payment',
+                                    amount: -loan.emi,
+                                    description: `Loan EMI payment - ${loan.name}`,
+                                    fromAccount: 'bank',
+                                    toAccount: 'bank'
+                                  });
+                                  
+                                  toast.success(`EMI payment of ${formatMoney(loan.emi)} completed`);
+                                } else {
+                                  toast.error('Insufficient balance for EMI payment');
+                                }
+                              }}
+                              className="text-xs"
+                              disabled={financialData.bankBalance < loan.emi}
+                            >
+                              Pay EMI
+                            </Button>
+                            
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                if (financialData.bankBalance >= loan.outstandingAmount) {
+                                  updateFinancialData({
+                                    bankBalance: financialData.bankBalance - loan.outstandingAmount,
+                                    liabilities: financialData.liabilities.filter(l => l.id !== loan.id)
+                                  });
+                                  addTransaction({
+                                    type: 'loan_payment',
+                                    amount: -loan.outstandingAmount,
+                                    description: `Full loan repayment - ${loan.name}`,
+                                    fromAccount: 'bank',
+                                    toAccount: 'bank'
+                                  });
+                                  toast.success(`Loan fully repaid!`);
+                                } else {
+                                  toast.error('Insufficient balance for full repayment');
+                                }
+                              }}
+                              className="bg-red-600 hover:bg-red-700 text-white text-xs"
+                              disabled={financialData.bankBalance < loan.outstandingAmount}
+                            >
+                              Pay Full
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
