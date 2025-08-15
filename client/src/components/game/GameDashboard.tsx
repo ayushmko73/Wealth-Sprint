@@ -7,8 +7,9 @@ import { formatIndianCurrency } from '../../lib/utils';
 import StartScreen from './components/StartScreen';
 import GameplayContent from './components/GameplayContent';
 import CyberModeButton from './components/CyberModeButton';
-import ScenarioEngine from './ScenarioEngine';
+
 import DashboardBar from './DashboardBar';
+import CompactDashboard from './CompactDashboard';
 import InvestmentTable from './InvestmentTable';
 import RevenueOverview from './RevenueOverview';
 import SoundManager from './components/SoundManager';
@@ -43,7 +44,6 @@ import {
   Building2,
   ShoppingCart
 } from 'lucide-react';
-import TaskPanel from './TaskPanel';
 import WealthTracker from './WealthTracker';
 import CashflowSection from './sections/CashflowSection';
 import StocksSection from './sections/StocksSection';
@@ -62,8 +62,9 @@ import StrategyCardsSection from './sections/StrategyCardsSection';
 import StoreSection from './sections/StoreSection';
 
 import AdvancedTeamManagement from './AdvancedTeamManagement';
+import { DecisionManager } from './decisions';
 
-import EnhancedStockMarket from './EnhancedStockMarket';
+import ProfessionalStockMarket from './ProfessionalStockMarket';
 import SageAI from './GorkAI';
 
 const GameDashboard: React.FC = () => {
@@ -128,7 +129,7 @@ const GameDashboard: React.FC = () => {
       case 'cashflow':
         return <CashflowSection />;
       case 'stock_market':
-        return <EnhancedStockMarket />;
+        return <ProfessionalStockMarket />;
       case 'bonds':
         return <BondsSection />;
       case 'revenue':
@@ -161,7 +162,6 @@ const GameDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardBar />
-            <ScenarioEngine />
           </div>
         );
     }
@@ -206,7 +206,7 @@ const GameDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-[#f5f0e6] flex flex-col">
+    <div className="h-screen bg-white flex flex-col">
       {/* Mobile Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -291,8 +291,8 @@ const GameDashboard: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto mobile-scroll">
-        <div className="p-4">
+      <div className="flex-1 overflow-y-auto mobile-scroll bg-white">
+        <div className="p-1 bg-white h-full">
           {renderMainContent()}
         </div>
       </div>
@@ -305,6 +305,9 @@ const GameDashboard: React.FC = () => {
       
       {/* Sage AI Assistant */}
       <SageAI />
+      
+      {/* Decision System Manager */}
+      <DecisionManager />
     </div>
   );
 };

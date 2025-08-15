@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
+import { useWealthSprintGame, Asset, Liability } from '../../../lib/stores/useWealthSprintGame';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -8,162 +8,25 @@ import { Progress } from '../../ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Home, TrendingUp, Car, Briefcase, Minus, Plus, AlertTriangle } from 'lucide-react';
 
-interface Asset {
-  id: string;
-  name: string;
-  category: 'real_estate' | 'stocks' | 'bonds' | 'business' | 'intellectual' | 'vehicles' | 'gold_crypto';
-  value: number;
-  purchasePrice: number;
-  purchaseDate: Date;
-  monthlyIncome: number;
-  appreciationRate: number;
-  maintenanceCost: number;
-  description: string;
-  icon: string;
-}
-
-interface Liability {
-  id: string;
-  name: string;
-  category: 'home_loan' | 'car_loan' | 'education_loan' | 'credit_card' | 'business_debt' | 'personal_loan';
-  outstandingAmount: number;
-  originalAmount: number;
-  interestRate: number;
-  emi: number;
-  tenure: number;
-  remainingMonths: number;
-  description: string;
-  icon: string;
-}
-
 const AssetsSection: React.FC = () => {
-  const { financialData, updateFinancialData, playerStats, updatePlayerStats } = useWealthSprintGame();
+  const { 
+    financialData, 
+    updateFinancialData, 
+    playerStats, 
+    updatePlayerStats,
+    getAssets,
+    getLiabilities,
+    removeAsset,
+    updateLiability,
+    addTransaction
+  } = useWealthSprintGame();
   const [activeTab, setActiveTab] = useState<'assets' | 'liabilities'>('assets');
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
 
-  const [assets, setAssets] = useState<Asset[]>([
-    {
-      id: 'asset_1',
-      name: '2BHK Apartment in Mumbai',
-      category: 'real_estate',
-      value: 8500000,
-      purchasePrice: 7500000,
-      purchaseDate: new Date('2023-01-15'),
-      monthlyIncome: 25000,
-      appreciationRate: 8.5,
-      maintenanceCost: 3000,
-      description: 'Prime location apartment generating rental income',
-      icon: '🏠',
-    },
-    {
-      id: 'asset_2',
-      name: 'Delivery Vehicle Fleet',
-      category: 'vehicles',
-      value: 1200000,
-      purchasePrice: 1500000,
-      purchaseDate: new Date('2023-06-10'),
-      monthlyIncome: 45000,
-      appreciationRate: -10,
-      maintenanceCost: 8000,
-      description: '3 commercial vehicles for delivery business',
-      icon: '🚚',
-    },
-    {
-      id: 'asset_3',
-      name: 'Tech Startup Equity',
-      category: 'business',
-      value: 2500000,
-      purchasePrice: 1000000,
-      purchaseDate: new Date('2023-03-20'),
-      monthlyIncome: 0,
-      appreciationRate: 25,
-      maintenanceCost: 0,
-      description: '15% stake in a growing fintech startup',
-      icon: '🚀',
-    },
-    {
-      id: 'asset_4',
-      name: 'Government Bonds',
-      category: 'bonds',
-      value: 500000,
-      purchasePrice: 500000,
-      purchaseDate: new Date('2023-08-05'),
-      monthlyIncome: 3500,
-      appreciationRate: 0,
-      maintenanceCost: 0,
-      description: 'Safe government securities with fixed returns',
-      icon: '🏛️',
-    },
-    {
-      id: 'asset_5',
-      name: 'Online Course Revenue',
-      category: 'intellectual',
-      value: 150000,
-      purchasePrice: 50000,
-      purchaseDate: new Date('2023-04-12'),
-      monthlyIncome: 12000,
-      appreciationRate: 15,
-      maintenanceCost: 1000,
-      description: 'Passive income from educational content',
-      icon: '📚',
-    },
-  ]);
-
-  const [liabilities, setLiabilities] = useState<Liability[]>([
-    {
-      id: 'liability_1',
-      name: 'Home Loan',
-      category: 'home_loan',
-      outstandingAmount: 5500000,
-      originalAmount: 6500000,
-      interestRate: 8.5,
-      emi: 52000,
-      tenure: 240,
-      remainingMonths: 180,
-      description: 'Housing loan for Mumbai apartment',
-      icon: '🏠',
-    },
-    {
-      id: 'liability_2',
-      name: 'Business Working Capital',
-      category: 'business_debt',
-      outstandingAmount: 800000,
-      originalAmount: 1200000,
-      interestRate: 12,
-      emi: 25000,
-      tenure: 60,
-      remainingMonths: 35,
-      description: 'Working capital for business operations',
-      icon: '🏢',
-    },
-    {
-      id: 'liability_3',
-      name: 'Credit Card Outstanding',
-      category: 'credit_card',
-      outstandingAmount: 150000,
-      originalAmount: 150000,
-      interestRate: 42,
-      emi: 15000,
-      tenure: 12,
-      remainingMonths: 12,
-      description: 'High-interest credit card debt',
-      icon: '💳',
-    },
-    {
-      id: 'liability_4',
-      name: 'Car Loan',
-      category: 'car_loan',
-      outstandingAmount: 450000,
-      originalAmount: 800000,
-      interestRate: 9.5,
-      emi: 18000,
-      tenure: 60,
-      remainingMonths: 28,
-      description: 'Personal vehicle loan',
-      icon: '🚗',
-    },
-  ]);
+  // Get assets and liabilities from the global game state
+  const assets = getAssets() || [];
+  const liabilities = getLiabilities() || [];
 
   const totalAssetValue = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalLiabilityValue = liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
@@ -177,11 +40,18 @@ const AssetsSection: React.FC = () => {
       const saleValue = asset.value * 0.95; // 5% transaction cost
       updateFinancialData({
         bankBalance: financialData.bankBalance + saleValue,
-        totalAssets: financialData.totalAssets - asset.value,
-        sideIncome: financialData.sideIncome - asset.monthlyIncome,
-        monthlyExpenses: financialData.monthlyExpenses - asset.maintenanceCost,
       });
-      setAssets(assets.filter(a => a.id !== assetId));
+      
+      // Add transaction record
+      addTransaction({
+        type: 'investment',
+        amount: saleValue,
+        description: `Sold ${asset.name}`,
+        fromAccount: 'business',
+        toAccount: 'bank',
+      });
+      
+      removeAsset(assetId);
       setSelectedAsset(null);
     }
   };
@@ -192,16 +62,22 @@ const AssetsSection: React.FC = () => {
       const newOutstanding = Math.max(0, liability.outstandingAmount - amount);
       const newEmi = newOutstanding > 0 ? liability.emi : 0;
       
-      setLiabilities(liabilities.map(l => 
-        l.id === liabilityId 
-          ? { ...l, outstandingAmount: newOutstanding, emi: newEmi }
-          : l
-      ));
+      updateLiability(liabilityId, {
+        outstandingAmount: newOutstanding,
+        emi: newEmi
+      });
       
       updateFinancialData({
         bankBalance: financialData.bankBalance - amount,
-        totalLiabilities: financialData.totalLiabilities - amount,
-        monthlyExpenses: financialData.monthlyExpenses - (liability.emi - newEmi),
+      });
+      
+      // Add transaction record
+      addTransaction({
+        type: 'loan_deducted',
+        amount: -amount,
+        description: `Prepaid ${liability.name}`,
+        fromAccount: 'bank',
+        toAccount: 'business',
       });
       
       // Improve karma and reduce stress for debt reduction
@@ -219,9 +95,10 @@ const AssetsSection: React.FC = () => {
       case 'stocks': return '📈';
       case 'bonds': return '🏛️';
       case 'business': return '🚀';
-      case 'intellectual': return '📚';
+      case 'gadget': return '💻';
       case 'vehicles': return '🚗';
-      case 'gold_crypto': return '🪙';
+      case 'investment': return '🪙';
+      case 'entertainment': return '🎮';
       case 'home_loan': return '🏠';
       case 'car_loan': return '🚗';
       case 'education_loan': return '🎓';
@@ -345,8 +222,8 @@ const AssetsSection: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-gray-600">Appreciation</span>
-                      <div className={`font-semibold ${getAppreciationColor(asset.appreciationRate)}`}>
-                        {asset.appreciationRate > 0 ? '+' : ''}{asset.appreciationRate}%
+                      <div className={`font-semibold ${getAppreciationColor(asset.appreciationRate || 0)}`}>
+                        {(asset.appreciationRate || 0) > 0 ? '+' : ''}{(asset.appreciationRate || 0)}%
                       </div>
                     </div>
                   </div>

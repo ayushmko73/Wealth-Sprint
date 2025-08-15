@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { useStore } from '../../../lib/stores/useStore';
 import { formatMoney } from '../../../lib/utils/formatMoney';
+import { storeItems, getCategories } from '../../../lib/data/storeItems';
 import { 
   Home, 
   Car, 
@@ -11,97 +12,51 @@ import {
   CheckCircle,
   Star,
   X,
-  Coins
+  Coins,
+  TrendingUp,
+  GamepadIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const storeItems = [
-  {
-    id: 'small-apartment',
-    name: 'Small Apartment',
-    subtitle: 'Residential Property',
-    price: 45000,
-    monthlyIncome: 500,
-    category: 'Real Estate',
-    image: '🏠',
-    description: 'Cozy starter home in prime location'
-  },
-  {
-    id: 'luxury-villa',
-    name: 'Luxury Villa', 
-    subtitle: 'Premium Residence',
-    price: 250000,
-    monthlyIncome: 5000,
-    category: 'Real Estate',
-    image: '🏰',
-    description: 'Exclusive villa with premium amenities'
-  },
-  {
-    id: 'coffee-shop',
-    name: 'Coffee Shop',
-    subtitle: 'Food & Beverage',
-    price: 80000,
-    monthlyIncome: 1200,
-    category: 'Business',
-    image: '☕',
-    description: 'Trendy coffee shop in busy district'
-  },
-  {
-    id: 'delivery-van',
-    name: 'Delivery Van',
-    subtitle: 'Commercial Vehicle',
-    price: 25000,
-    monthlyIncome: 400,
-    category: 'Transport',
-    image: '🚐',
-    description: 'Reliable van for delivery services'
-  },
-  {
-    id: 'motorbike',
-    name: 'Motorbike',
-    subtitle: 'Personal Transport',
-    price: 12000,
-    monthlyIncome: 90,
-    category: 'Transport',
-    image: '🏍️',
-    description: 'Fast and efficient city transport'
-  },
-  {
-    id: 'laptop',
-    name: 'High-End Laptop',
-    subtitle: 'Professional Tech',
-    price: 3500,
-    monthlyIncome: 30,
-    category: 'Tech',
-    image: '💻',
-    description: 'Powerful laptop for work and gaming'
-  }
-];
-
 const StoreSection: React.FC = () => {
-  const { financialData, addTransaction, updateFinancialData } = useWealthSprintGame();
+  const { 
+    financialData, 
+    addTransaction, 
+    updateFinancialData, 
+    addAsset,
+    chargeToCredit 
+  } = useWealthSprintGame();
   const { purchaseItem, getPurchasedItems } = useStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
 
-  const categories = ['All', 'Real Estate', 'Transport', 'Business', 'Tech'];
+  const categories = ['All', ...getCategories().map(cat => 
+    cat.charAt(0).toUpperCase() + cat.slice(1)
+  )];
   
   const categoryIcons: Record<string, React.ReactNode> = {
     'All': <Star size={16} />,
-    'Real Estate': <Home size={16} />,
-    'Transport': <Car size={16} />,
+    'Property': <Home size={16} />,
+    'Vehicle': <Car size={16} />,
     'Business': <Building2 size={16} />,
-    'Tech': <Smartphone size={16} />
+    'Gadget': <Smartphone size={16} />,
+    'Investment': <TrendingUp size={16} />,
+    'Entertainment': <GamepadIcon size={16} />
   };
 
   const filteredItems = storeItems.filter(item => {
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || 
+      item.category.charAt(0).toUpperCase() + item.category.slice(1) === selectedCategory;
     return matchesCategory;
   });
 
   const handlePurchase = (item: any) => {
-    if (financialData.bankBalance < item.price) {
-      toast.error('Insufficient funds for this purchase');
+    const currentCreditUsed = financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+    const creditLimit = 500000; // ₹5 lakh credit limit
+    const availableCredit = creditLimit - currentCreditUsed;
+    
+    if (financialData.bankBalance < item.price && availableCredit < item.price) {
+      toast.error('Insufficient funds and credit limit exceeded');
       return;
     }
     setShowPurchaseModal(item);
@@ -109,18 +64,49 @@ const StoreSection: React.FC = () => {
 
   const confirmPurchase = (item: any) => {
     try {
-      updateFinancialData({
-        bankBalance: financialData.bankBalance - item.price,
-      });
+      let paymentMethod = '';
+      
+      if (financialData.bankBalance >= item.price) {
+        // Pay with bank balance
+        updateFinancialData({
+          bankBalance: financialData.bankBalance - item.price,
+        });
+        paymentMethod = 'Bank Account';
+      } else {
+        // Pay with credit card
+        const success = chargeToCredit(item.price, item.name);
+        if (!success) {
+          toast.error('Credit limit exceeded');
+          return;
+        }
+        paymentMethod = 'Credit Card';
+      }
 
+      // Add to both store purchases (for inventory tracking) and assets (for financial tracking)
       purchaseItem({
         id: item.id,
         name: item.name,
         price: item.price,
         category: item.category.toLowerCase(),
         description: item.description,
-        icon: item.image,
-        passiveIncome: item.monthlyIncome
+        icon: item.icon,
+        passiveIncome: item.passiveIncome || 0
+      });
+
+      // Add to assets with proper categorization
+      const assetCategory = getCategoryMapping(item.category);
+      addAsset({
+        name: item.name,
+        category: assetCategory,
+        value: item.price, // Asset value equals purchase price initially
+        purchasePrice: item.price,
+        purchaseDate: new Date(),
+        monthlyIncome: item.passiveIncome || 0, // Use passiveIncome from store data
+        appreciationRate: item.appreciationRate || getAppreciationRate(item.category),
+        maintenanceCost: item.maintenanceCost || getMaintenanceCost(item.category, item.price),
+        description: item.description,
+        icon: item.icon,
+        storeItemId: item.id,
       });
 
       addTransaction({
@@ -132,9 +118,41 @@ const StoreSection: React.FC = () => {
       });
 
       setShowPurchaseModal(null);
-      toast.success(`Successfully purchased ${item.name}!`);
+      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Added to your assets.`);
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
+    }
+  };
+
+  // Helper functions for asset categorization
+  const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' => {
+    switch (storeCategory) {
+      case 'property': return 'real_estate';
+      case 'vehicle': return 'vehicles';
+      case 'business': return 'business';
+      case 'gadget': return 'gadget';
+      case 'investment': return 'investment';
+      default: return 'entertainment';
+    }
+  };
+
+  const getAppreciationRate = (category: string): number => {
+    switch (category) {
+      case 'property': return 8.5; // Real estate typically appreciates 8-10% annually
+      case 'vehicle': return -10; // Vehicles depreciate
+      case 'business': return 15; // Businesses can appreciate with growth
+      case 'gadget': return -20; // Tech gadgets depreciate quickly
+      default: return 0;
+    }
+  };
+
+  const getMaintenanceCost = (category: string, price: number): number => {
+    switch (category) {
+      case 'property': return Math.floor(price * 0.01 / 12); // 1% annually as monthly cost
+      case 'vehicle': return Math.floor(price * 0.05 / 12); // 5% annually for vehicle maintenance
+      case 'business': return Math.floor(price * 0.02 / 12); // 2% annually for business expenses
+      case 'gadget': return Math.floor(price * 0.01 / 12); // 1% annually for tech maintenance
+      default: return 0;
     }
   };
 
@@ -197,7 +215,7 @@ const StoreSection: React.FC = () => {
                           className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
                           style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
                         >
-                          {storeItem.image}
+                          {storeItem.icon}
                         </div>
                         <div>
                           <div className="font-medium" style={{ color: '#3a3a3a' }}>
@@ -207,7 +225,7 @@ const StoreSection: React.FC = () => {
                             className="text-sm px-2 py-1 rounded-full inline-block"
                             style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
                           >
-                            +{formatMoney(storeItem.monthlyIncome)}/month
+                            +{formatMoney(storeItem.passiveIncome || 0)}/month
                           </div>
                         </div>
                       </div>
@@ -229,7 +247,7 @@ const StoreSection: React.FC = () => {
           {filteredItems.map((item) => {
             const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
             const canAfford = financialData.bankBalance >= item.price;
-            const roi = ((item.monthlyIncome * 12) / item.price * 100);
+            const roi = (((item.passiveIncome || 0) * 12) / item.price * 100);
             
             return (
               <div
@@ -247,7 +265,7 @@ const StoreSection: React.FC = () => {
                     className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
                     style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
                   >
-                    {item.image}
+                    {item.icon}
                   </div>
                   
                   {/* Content */}
@@ -258,7 +276,7 @@ const StoreSection: React.FC = () => {
                           {item.name}
                         </h3>
                         <p className="text-sm" style={{ color: '#666' }}>
-                          {item.subtitle}
+                          {item.category}
                         </p>
                       </div>
                       <div className="text-right">
@@ -277,7 +295,7 @@ const StoreSection: React.FC = () => {
                       style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
                     >
                       <Coins size={12} />
-                      {formatMoney(item.monthlyIncome)}/month
+                      {formatMoney(item.passiveIncome || 0)}/month
                     </div>
                     
                     <p className="text-sm mb-4" style={{ color: '#666' }}>
@@ -339,16 +357,41 @@ const StoreSection: React.FC = () => {
                 {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
               </p>
               
+              {/* Payment Method Display */}
               <div 
-                className="rounded-xl p-4 mb-6"
+                className="rounded-xl p-4 mb-4"
                 style={{ backgroundColor: '#f8f9fa' }}
               >
-                <div className="text-sm mb-2" style={{ color: '#666' }}>After purchase:</div>
-                <div className="font-semibold" style={{ color: '#3a3a3a' }}>
-                  Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
-                </div>
-                <div className="text-sm" style={{ color: '#9333EA' }}>
-                  +{formatMoney(showPurchaseModal.monthlyIncome)}/month income
+                <div className="text-sm mb-2" style={{ color: '#666' }}>Payment Method:</div>
+                {financialData.bankBalance >= showPurchaseModal.price ? (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="font-semibold text-green-700">Bank Account</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="font-semibold text-blue-700">💳 Credit Card</span>
+                  </div>
+                )}
+                
+                <div className="text-sm" style={{ color: '#666' }}>After purchase:</div>
+                {financialData.bankBalance >= showPurchaseModal.price ? (
+                  <div className="font-semibold" style={{ color: '#3a3a3a' }}>
+                    Bank Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
+                  </div>
+                ) : (
+                  <div>
+                    <div className="font-semibold" style={{ color: '#3a3a3a' }}>
+                      Bank Balance: {formatMoney(financialData.bankBalance)}
+                    </div>
+                    <div className="font-semibold text-blue-700">
+                      Credit Used: {formatMoney((financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0) + showPurchaseModal.price)}
+                    </div>
+                  </div>
+                )}
+                <div className="text-sm mt-1" style={{ color: '#9333EA' }}>
+                  +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month income
                 </div>
               </div>
               
