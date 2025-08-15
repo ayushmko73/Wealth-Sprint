@@ -400,7 +400,7 @@ const BankSection: React.FC = () => {
                 <Plus className="w-4 h-4" />
                 Apply for Personal Loan
               </CardTitle>
-              <p className="text-xs text-green-700">28% Annual Interest • 12 Game Days Approval Time</p>
+              <p className="text-xs text-green-700">28% Annual Interest • Instant Approval</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
