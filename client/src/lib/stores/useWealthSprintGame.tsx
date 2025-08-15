@@ -210,6 +210,7 @@ interface WealthSprintGameState {
   approveLoan: (loanId: string) => boolean;
   disburseLoan: (loanId: string) => boolean;
   payLoanEMI: (loanId: string, amount?: number) => boolean;
+  customLoanPayment: (loanId: string, amount: number) => boolean;
   processLoanApprovals: () => void;
   // Loan penalty functions
   processLoanPenalties: () => void;
@@ -1928,6 +1929,12 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     applyForLoan: (amount: number, purpose: string) => {
       const state = get();
       
+      // Check for existing active loans - only one loan allowed at a time
+      const activeLoans = state.financialData.liabilities.filter(l => l.category === 'personal_loan' && l.status === 'active');
+      if (activeLoans.length > 0) {
+        return false; // Cannot take new loan while existing loan is active
+      }
+      
       // Check if player is eligible (minimum net worth, credit score, etc.)
       const creditScore = Math.min(900, Math.max(300, 720 + Math.floor((state.financialData.netWorth - 500000) / 10000)));
       if (creditScore < 600) {
@@ -2121,11 +2128,82 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       });
       
       if (newOutstanding === 0) {
+        // Increase credit score by 5 points when loan is fully paid
+        set((state) => ({
+          playerStats: {
+            ...state.playerStats,
+            creditScore: Math.min(900, (state.playerStats.creditScore || 720) + 5)
+          }
+        }));
+        
         get().addGameEvent({
           id: `loan_paid_off_${Date.now()}`,
           type: 'achievement',
           title: 'Loan Paid Off!',
-          description: `Congratulations! You have fully paid off your ${loan.name}.`,
+          description: `Congratulations! You have fully paid off your ${loan.name}. Credit score increased by 5 points!`,
+          timestamp: new Date()
+        });
+      }
+      
+      return true;
+    },
+
+    customLoanPayment: (loanId: string, amount: number) => {
+      const state = get();
+      const loan = state.financialData.liabilities.find(l => l.id === loanId);
+      
+      if (!loan || loan.status !== 'active' || loan.outstandingAmount <= 0) {
+        return false;
+      }
+      
+      if (amount <= 0 || amount > state.financialData.bankBalance) {
+        return false; // Invalid amount or insufficient funds
+      }
+      
+      const newOutstanding = Math.max(0, loan.outstandingAmount - amount);
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          bankBalance: state.financialData.bankBalance - amount,
+          liabilities: state.financialData.liabilities.map(liability =>
+            liability.id === loanId
+              ? { 
+                  ...liability, 
+                  outstandingAmount: newOutstanding,
+                  status: (newOutstanding === 0 ? 'paid_off' : 'active') as 'paid_off' | 'active',
+                  lastCustomPayment: Date.now()
+                }
+              : liability
+          ).filter(liability => 
+            liability.id !== loanId || liability.outstandingAmount > 0
+          ),
+          totalLiabilities: state.financialData.totalLiabilities - amount
+        }
+      }));
+      
+      get().addTransaction({
+        type: 'loan_payment',
+        amount: -amount,
+        description: `Custom loan payment: ${loan.name} - ₹${amount.toLocaleString()}`,
+        fromAccount: 'bank',
+        toAccount: 'bank'
+      });
+      
+      if (newOutstanding === 0) {
+        // Increase credit score by 5 points when loan is fully paid
+        set((state) => ({
+          playerStats: {
+            ...state.playerStats,
+            creditScore: Math.min(900, (state.playerStats.creditScore || 720) + 5)
+          }
+        }));
+        
+        get().addGameEvent({
+          id: `loan_custom_paid_off_${Date.now()}`,
+          type: 'achievement',
+          title: 'Loan Paid Off!',
+          description: `Congratulations! You have fully paid off your ${loan.name} with custom payment. Credit score increased by 5 points!`,
           timestamp: new Date()
         });
       }

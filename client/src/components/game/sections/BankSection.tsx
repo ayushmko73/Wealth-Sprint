@@ -32,9 +32,11 @@ import {
 import { toast } from 'sonner';
 
 const BankSection: React.FC = () => {
-  const { financialData, playerStats, updateFinancialData, addTransaction, applyForLoan, disburseLoan, payLoanEMI } = useWealthSprintGame();
+  const { financialData, playerStats, updateFinancialData, addTransaction, applyForLoan, disburseLoan, payLoanEMI, customLoanPayment } = useWealthSprintGame();
   const [fdAmount, setFdAmount] = useState('');
   const [loanAmount, setLoanAmount] = useState('');
+  const [customPaymentAmount, setCustomPaymentAmount] = useState('');
+  const [showCustomPayment, setShowCustomPayment] = useState<string | null>(null);
 
   const handleCreateFD = () => {
     const amount = parseInt(fdAmount);
@@ -97,9 +99,16 @@ const BankSection: React.FC = () => {
       return;
     }
     
+    // Check for existing active loans first
+    const hasActiveLoan = financialData.liabilities.some(l => l.category === 'personal_loan' && l.status === 'active');
+    if (hasActiveLoan) {
+      toast.error('You cannot take a new loan while you have an active loan. Please repay your current loan first.');
+      return;
+    }
+    
     const loanId = applyForLoan(amount, 'Personal Loan');
     if (loanId) {
-      toast.success(`Loan application submitted! Application ID: ${loanId.slice(-8)}`);
+      toast.success(`Loan instantly approved and disbursed! Amount: ₹${amount.toLocaleString()}`);
       setLoanAmount('');
     } else {
       toast.error('Loan application failed. Check your credit score and eligibility.');
@@ -530,11 +539,8 @@ const BankSection: React.FC = () => {
                   
                   {/* Active Loans with Repayment Options */}
                   {activeLoans.map((loan) => {
-                    const loanAge = loan.applicationDate ? Math.floor((Date.now() - new Date(loan.applicationDate).getTime()) / (1000 * 60 * 60 * 24 * 7)) : 0; // weeks
-                    const isEarlyRepayment = loanAge <= 4; // Within 4 weeks
-                    const effectiveInterestRate = isEarlyRepayment ? 9 : 28; // 9% if paid within 4 weeks, otherwise 28%
-                    const discountAmount = isEarlyRepayment ? loan.outstandingAmount * 0.19 : 0; // 19% discount for early payment
-                    const finalAmount = loan.outstandingAmount - discountAmount;
+                    // Calculate 9% interest for full payment
+                    const ninePercentAmount = Math.floor(loan.outstandingAmount * 1.09); // 9% interest on outstanding amount
                     
                     return (
                       <div key={loan.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -543,82 +549,90 @@ const BankSection: React.FC = () => {
                             <p className="font-medium text-red-800">{loan.name}</p>
                             <p className="text-xs text-red-700">{loan.description}</p>
                             <Badge variant="secondary" className="mt-1 bg-red-200 text-red-800">Active</Badge>
-                            {isEarlyRepayment && (
-                              <Badge variant="secondary" className="mt-1 ml-2 bg-green-200 text-green-800">Early Payment Eligible</Badge>
-                            )}
                           </div>
                           <div className="text-right">
                             <p className="font-bold text-red-900">{formatMoney(loan.outstandingAmount)}</p>
-                            <p className="text-xs text-red-700">EMI: {formatMoney(loan.emi)}/month</p>
-                            <p className="text-xs text-red-600">{loan.remainingMonths} months left</p>
+                            <p className="text-xs text-red-700">EMI: {formatMoney(loan.emi)}/month (Auto-deducted)</p>
+                            <p className="text-xs text-red-600">{loan.remainingMonths} months remaining</p>
                           </div>
                         </div>
                         
                         {/* Repayment Options */}
                         <div className="space-y-2">
-                          {isEarlyRepayment && (
-                            <div className="p-2 bg-green-50 border border-green-200 rounded">
-                              <div className="flex justify-between items-center mb-2">
-                                <span className="text-xs font-medium text-green-800">Early Settlement (9% Interest)</span>
-                                <span className="text-xs text-green-600">Save {formatMoney(discountAmount)}</span>
-                              </div>
-                              <div className="flex justify-between items-center mb-2">
-                                <span className="text-xs text-green-700">Final Amount:</span>
-                                <span className="text-sm font-bold text-green-800">{formatMoney(finalAmount)}</span>
-                              </div>
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  if (financialData.bankBalance >= finalAmount) {
-                                    if (payLoanEMI(loan.id, finalAmount)) {
-                                      toast.success(`Loan settled early with 9% interest rate! Saved ${formatMoney(discountAmount)}`);
-                                    } else {
-                                      toast.error('Failed to process early settlement');
-                                    }
-                                  } else {
-                                    toast.error('Insufficient balance for early settlement');
-                                  }
-                                }}
-                                className="w-full bg-green-600 hover:bg-green-700 text-white"
-                                disabled={financialData.bankBalance < finalAmount}
-                              >
-                                Settle Early (9% Interest)
-                              </Button>
-                            </div>
-                          )}
+                          {/* Full Payment with 9% Interest */}
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              if (customLoanPayment(loan.id, ninePercentAmount)) {
+                                toast.success(`Loan fully repaid with 9% interest! Total paid: ${formatMoney(ninePercentAmount)}`);
+                              } else {
+                                toast.error('Insufficient balance for full repayment');
+                              }
+                            }}
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm"
+                            disabled={financialData.bankBalance < ninePercentAmount}
+                          >
+                            Pay Full (9% Interest) - {formatMoney(ninePercentAmount)}
+                          </Button>
                           
-                          <div className="grid grid-cols-2 gap-2">
+                          {/* Custom Repayment */}
+                          {showCustomPayment === loan.id ? (
+                            <div className="p-2 bg-blue-50 border border-blue-200 rounded">
+                              <div className="space-y-2">
+                                <Input
+                                  type="number"
+                                  placeholder="Enter custom amount"
+                                  value={customPaymentAmount}
+                                  onChange={(e) => setCustomPaymentAmount(e.target.value)}
+                                  className="w-full text-sm"
+                                />
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      const amount = parseInt(customPaymentAmount);
+                                      if (amount && amount >= loan.emi) {
+                                        if (customLoanPayment(loan.id, amount)) {
+                                          toast.success(`Custom payment of ${formatMoney(amount)} completed`);
+                                          setCustomPaymentAmount('');
+                                          setShowCustomPayment(null);
+                                        } else {
+                                          toast.error('Payment failed or insufficient balance');
+                                        }
+                                      } else {
+                                        toast.error(`Minimum payment amount is ${formatMoney(loan.emi)} (monthly EMI)`);
+                                      }
+                                    }}
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                                    disabled={!customPaymentAmount || parseInt(customPaymentAmount) > financialData.bankBalance}
+                                  >
+                                    Pay
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setShowCustomPayment(null);
+                                      setCustomPaymentAmount('');
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => {
-                                if (payLoanEMI(loan.id)) {
-                                  toast.success(`EMI payment of ${formatMoney(loan.emi)} completed`);
-                                } else {
-                                  toast.error('Insufficient balance for EMI payment');
-                                }
-                              }}
-                              className="text-xs"
-                              disabled={financialData.bankBalance < loan.emi}
+                              onClick={() => setShowCustomPayment(loan.id)}
+                              className="w-full text-sm flex items-center justify-between"
                             >
-                              Pay EMI
+                              Custom Repayment
+                              <ChevronRight className="w-4 h-4" />
                             </Button>
-                            
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                if (payLoanEMI(loan.id, loan.outstandingAmount)) {
-                                  toast.success(`Loan fully repaid!`);
-                                } else {
-                                  toast.error('Insufficient balance for full repayment');
-                                }
-                              }}
-                              className="bg-red-600 hover:bg-red-700 text-white text-xs"
-                              disabled={financialData.bankBalance < loan.outstandingAmount}
-                            >
-                              Pay Full
-                            </Button>
-                          </div>
+                          )}
                         </div>
                       </div>
                     );
