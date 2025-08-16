@@ -176,30 +176,47 @@ const BankSection: React.FC = () => {
 
       {/* Tab Content */}
       <Tabs defaultValue="account" className="w-full">
-        {/* Integrated Tab Navigation */}
-        <div className="overflow-x-auto px-4 pb-4">
-          <TabsList className="flex w-max bg-white/20 backdrop-blur-sm rounded-lg p-1 min-w-full border border-white/30">
-            <TabsTrigger value="account" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white/90 font-medium whitespace-nowrap">
-              <Wallet className="w-4 h-4 mr-1" />
-              Account
-            </TabsTrigger>
-            <TabsTrigger value="credit-card" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white/90 font-medium whitespace-nowrap">
-              <CreditCard className="w-4 h-4 mr-1" />
-              Credit
-            </TabsTrigger>
-            <TabsTrigger value="loan" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white/90 font-medium whitespace-nowrap">
-              <Banknote className="w-4 h-4 mr-1" />
-              Loan
-            </TabsTrigger>
-            <TabsTrigger value="fd" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white/90 font-medium whitespace-nowrap">
-              <PiggyBank className="w-4 h-4 mr-1" />
-              Deposits
-            </TabsTrigger>
-            <TabsTrigger value="statement" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white/90 font-medium whitespace-nowrap">
-              <Receipt className="w-4 h-4 mr-1" />
-              History
-            </TabsTrigger>
-          </TabsList>
+        {/* New Integrated Tab Navigation - Merged with Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 -mt-4">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-1 px-4 pb-4 min-w-max">
+              <TabsTrigger 
+                value="account" 
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+              >
+                <Wallet className="w-4 h-4" />
+                Account
+              </TabsTrigger>
+              <TabsTrigger 
+                value="credit-card" 
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+              >
+                <CreditCard className="w-4 h-4" />
+                Credit
+              </TabsTrigger>
+              <TabsTrigger 
+                value="loan" 
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+              >
+                <Banknote className="w-4 h-4" />
+                Loan
+              </TabsTrigger>
+              <TabsTrigger 
+                value="fd" 
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+              >
+                <PiggyBank className="w-4 h-4" />
+                Deposits
+              </TabsTrigger>
+              <TabsTrigger 
+                value="statement" 
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+              >
+                <Receipt className="w-4 h-4" />
+                History
+              </TabsTrigger>
+            </div>
+          </div>
         </div>
 
         <TabsContent value="account" className="mt-3">
