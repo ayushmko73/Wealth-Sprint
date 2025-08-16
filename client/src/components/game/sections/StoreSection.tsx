@@ -68,10 +68,11 @@ const StoreSection: React.FC = () => {
   )];
   
   const emiOptions = [
-    { months: 1, label: '1 Month' },
+    { months: 1, label: 'Full Payment' },
     { months: 2, label: '2 Months' },
     { months: 6, label: '6 Months' },
-    { months: 12, label: '1 Year' }
+    { months: 12, label: '1 Year' },
+    { months: 60, label: '5 Years' }
   ];
   
   const categoryIcons: Record<string, React.ReactNode> = {
@@ -473,20 +474,20 @@ const StoreSection: React.FC = () => {
                   {/* Liability Warning - Show cause and bad impact */}
                   {item.isLiability && (item.cause || item.badImpact) && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-2 mb-3">
-                      <div className="flex items-center gap-1 mb-1">
-                        <AlertTriangle className="w-3 h-3 text-red-600" />
-                        <span className="text-xs font-semibold text-red-700">⚠️ Lifestyle Inflation Trap</span>
+                      <div className="flex items-center gap-1 mb-2">
+                        <AlertTriangle className="w-4 h-4 text-red-600" />
+                        <span className="text-sm font-bold text-red-700">⚠️ Lifestyle Inflation Trap</span>
                       </div>
                       {item.cause && (
-                        <div className="mb-1">
-                          <span className="text-[10px] font-semibold text-red-700">Cause: </span>
-                          <span className="text-[10px] text-red-600">{item.cause}</span>
+                        <div className="mb-2">
+                          <span className="text-xs font-bold text-red-700 block mb-1">Cause:</span>
+                          <span className="text-xs text-red-600 leading-relaxed">{item.cause}</span>
                         </div>
                       )}
                       {item.badImpact && (
                         <div>
-                          <span className="text-[10px] font-semibold text-red-700">Bad Impact: </span>
-                          <span className="text-[10px] text-red-600">{item.badImpact}</span>
+                          <span className="text-xs font-bold text-red-700 block mb-1">Bad Impact:</span>
+                          <span className="text-xs text-red-600 leading-relaxed">{item.badImpact}</span>
                         </div>
                       )}
                     </div>
@@ -661,15 +662,15 @@ const StoreSection: React.FC = () => {
                     <p className="text-[9px] text-purple-600">• Build credit score faster</p>
                   </div>
                   
-                  {/* EMI Options - Ultra Compact */}
+                  {/* EMI Options - Horizontal Scrolling */}
                   <div className="mt-1.5 border-t border-purple-200 pt-1">
                     <p className="text-[10px] font-semibold text-purple-700 mb-1">EMI Options:</p>
-                    <div className="grid grid-cols-4 gap-0.5">
+                    <div className="flex gap-1 overflow-x-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 pb-1">
                       {emiOptions.map((option) => (
                         <button
                           key={option.months}
                           onClick={() => setSelectedEmiMonths(option.months)}
-                          className={`text-[9px] px-1 py-0.5 rounded text-center transition-all ${
+                          className={`text-[9px] px-2 py-0.5 rounded text-center transition-all whitespace-nowrap flex-shrink-0 ${
                             selectedEmiMonths === option.months
                               ? 'bg-purple-600 text-white font-bold'
                               : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
