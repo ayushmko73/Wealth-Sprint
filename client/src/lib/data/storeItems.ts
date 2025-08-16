@@ -5,7 +5,7 @@ export interface StoreItem {
   name: string;
   price: number;
   description: string;
-  category: 'property' | 'vehicle' | 'business' | 'gadget' | 'investment' | 'entertainment';
+  category: 'property' | 'vehicle' | 'business' | 'gadget' | 'investment' | 'entertainment' | 'liability';
   icon: string;
   image?: string;
   // Future expansion fields
@@ -17,6 +17,7 @@ export interface StoreItem {
   disabilities?: string[];
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
   specialEffect?: string;
+  isLiability?: boolean; // Items that drain money instead of generating it
 }
 
 export const storeItems: StoreItem[] = [
@@ -80,17 +81,7 @@ export const storeItems: StoreItem[] = [
     rarity: 'common',
     specialEffect: 'Unlocks delivery business opportunities',
   },
-  {
-    id: 'motorbike',
-    name: 'Motorbike',
-    price: 12000,
-    description: 'Two-wheeler for quick city travel.',
-    category: 'vehicle',
-    icon: '🏍️',
-    passiveIncome: 800,
-    maintenanceCost: 300,
-    appreciationRate: -15,
-  },
+
   {
     id: 'laptop',
     name: 'Laptop',
@@ -147,21 +138,7 @@ export const storeItems: StoreItem[] = [
     maintenanceCost: 800,
     appreciationRate: -8,
   },
-  {
-    id: 'drone',
-    name: 'Drone',
-    price: 2200,
-    description: 'Aerial photography and delivery potential.',
-    category: 'gadget',
-    icon: '🚁',
-    passiveIncome: 300,
-    maintenanceCost: 80,
-    appreciationRate: -25,
-    abilities: ['Aerial surveillance', 'Photography services', 'Emergency response'],
-    disabilities: ['Weather sensitive', 'Battery limited', 'Regulatory restrictions'],
-    rarity: 'rare',
-    specialEffect: 'Provides real-time market data for investments',
-  },
+
   {
     id: 'fast_food_stall',
     name: 'Fast Food Stall',
@@ -184,17 +161,7 @@ export const storeItems: StoreItem[] = [
     maintenanceCost: 100,
     appreciationRate: -10,
   },
-  {
-    id: 'smartwatch',
-    name: 'Smart Watch',
-    price: 600,
-    description: 'Tracks fitness and sends notifications.',
-    category: 'gadget',
-    icon: '⌚',
-    passiveIncome: 50,
-    maintenanceCost: 20,
-    appreciationRate: -30,
-  },
+
   {
     id: 'advertising_billboard',
     name: 'Advertising Billboard',
@@ -221,17 +188,7 @@ export const storeItems: StoreItem[] = [
     rarity: 'epic',
     specialEffect: 'Attracts high-net-worth investors, increasing all investment returns by 5%',
   },
-  {
-    id: 'car',
-    name: 'Car',
-    price: 35000,
-    description: 'Personal vehicle for daily transportation.',
-    category: 'vehicle',
-    icon: '🚗',
-    passiveIncome: 1200,
-    maintenanceCost: 400,
-    appreciationRate: -12,
-  },
+
   {
     id: 'commercial_office',
     name: 'Commercial Office Space',
@@ -247,17 +204,7 @@ export const storeItems: StoreItem[] = [
     rarity: 'legendary',
     specialEffect: 'Increases credibility for business loans by 200 credit points',
   },
-  {
-    id: 'warehouse_facility',
-    name: 'Industrial Warehouse',
-    price: 5000000,
-    description: 'Large storage facility for logistics business',
-    category: 'property',
-    icon: '🏭',
-    passiveIncome: 18000,
-    maintenanceCost: 2500,
-    appreciationRate: 6,
-  },
+
   {
     id: 'delivery_fleet',
     name: 'Delivery Vehicle Fleet',
@@ -298,6 +245,168 @@ export const storeItems: StoreItem[] = [
     disabilities: ['High labor costs', 'Food waste risk', 'Health regulations', 'Economic sensitivity'],
     rarity: 'legendary',
     specialEffect: 'Generates celebrity endorsements worth ₹50,000 quarterly',
+  },
+
+  // 🔻 LIABILITIES - Items that drain money instead of building wealth
+  {
+    id: 'luxury_car_emi',
+    name: 'Luxury Car (EMI Trap)',
+    price: 80000,
+    description: 'Flashy car that drains money through EMI and maintenance.',
+    category: 'liability',
+    icon: '🚗',
+    passiveIncome: -2500, // Negative income = expense
+    maintenanceCost: 1200,
+    appreciationRate: -15,
+    isLiability: true,
+    abilities: ['Status symbol', 'Social prestige'],
+    disabilities: ['High EMI', 'Depreciation', 'Insurance costs', 'Fuel expenses'],
+    rarity: 'rare',
+    specialEffect: 'Increases reputation by 2 but drains ₹2,500 monthly through EMI',
+  },
+  {
+    id: 'expensive_smartphone',
+    name: 'Expensive Smartphone Upgrade',
+    price: 15000,
+    description: 'Latest flagship phone that becomes outdated quickly.',
+    category: 'liability',
+    icon: '📱',
+    passiveIncome: -500, // Monthly plan + EMI
+    maintenanceCost: 200,
+    appreciationRate: -40,
+    isLiability: true,
+    abilities: ['Social status', 'Latest features'],
+    disabilities: ['Rapid obsolescence', 'Expensive plans', 'Fragile hardware'],
+    rarity: 'common',
+    specialEffect: 'Tempts you to upgrade every year, causing recurring expenses',
+  },
+  {
+    id: 'designer_clothing',
+    name: 'Designer Clothing Addiction',
+    price: 25000,
+    description: 'Expensive wardrobe that provides no financial returns.',
+    category: 'liability',
+    icon: '👔',
+    passiveIncome: -800, // Monthly shopping addiction
+    maintenanceCost: 300,
+    appreciationRate: -60,
+    isLiability: true,
+    abilities: ['Fashion statement', 'Confidence boost'],
+    disabilities: ['No resale value', 'Trend dependency', 'Seasonal obsolescence'],
+    rarity: 'common',
+    specialEffect: 'Triggers impulse buying, reducing savings by ₹800 monthly',
+  },
+  {
+    id: 'credit_card_debt',
+    name: 'Credit Card Debt',
+    price: 50000,
+    description: 'High-interest debt that compounds monthly.',
+    category: 'liability',
+    icon: '💳',
+    passiveIncome: -1750, // 3.5% monthly interest
+    maintenanceCost: 0,
+    appreciationRate: 0,
+    isLiability: true,
+    abilities: ['Instant gratification'],
+    disabilities: ['Compound interest', 'Minimum payment trap', 'Credit score damage'],
+    rarity: 'epic',
+    specialEffect: 'Grows by 3.5% monthly if not paid off, financial death spiral',
+  },
+  {
+    id: 'lavish_vacations',
+    name: 'Lavish Destination Vacations',
+    price: 40000,
+    description: 'Expensive holidays that provide temporary happiness.',
+    category: 'liability',
+    icon: '✈️',
+    passiveIncome: -1000, // Annual vacation fund
+    maintenanceCost: 500,
+    appreciationRate: -100,
+    isLiability: true,
+    abilities: ['Memories', 'Social media content', 'Temporary happiness'],
+    disabilities: ['No lasting value', 'Recurring expense', 'FOMO addiction'],
+    rarity: 'rare',
+    specialEffect: 'Creates vacation addiction, demanding bigger trips yearly',
+  },
+  {
+    id: 'overpriced_gym',
+    name: 'Overpriced Gym Membership',
+    price: 8000,
+    description: 'Expensive gym membership you rarely use.',
+    category: 'liability',
+    icon: '🏋️',
+    passiveIncome: -600, // Monthly membership
+    maintenanceCost: 100,
+    appreciationRate: -100,
+    isLiability: true,
+    abilities: ['Health motivation', 'Social environment'],
+    disabilities: ['Unused membership', 'Recurring charges', 'Contract lock-in'],
+    rarity: 'common',
+    specialEffect: 'Auto-renews annually, charging ₹600 monthly whether used or not',
+  },
+  {
+    id: 'luxury_apartment_rent',
+    name: 'High-Rent Luxury Apartment',
+    price: 35000,
+    description: 'Expensive rental that drains savings monthly.',
+    category: 'liability',
+    icon: '🏙️',
+    passiveIncome: -4500, // Monthly rent
+    maintenanceCost: 800,
+    appreciationRate: 0,
+    isLiability: true,
+    abilities: ['Prime location', 'Luxury amenities', 'Status address'],
+    disabilities: ['No ownership', 'Annual rent hikes', 'Security deposits'],
+    rarity: 'epic',
+    specialEffect: 'Rent increases 10% annually, no asset building',
+  },
+  {
+    id: 'gambling_casino',
+    name: 'Gambling & Casino Nights',
+    price: 20000,
+    description: 'Risky entertainment that usually leads to losses.',
+    category: 'liability',
+    icon: '🎲',
+    passiveIncome: -1500, // Average monthly losses
+    maintenanceCost: 200,
+    appreciationRate: -100,
+    isLiability: true,
+    abilities: ['Adrenaline rush', 'Social activity'],
+    disabilities: ['Addiction risk', 'House always wins', 'Impulsive decisions'],
+    rarity: 'epic',
+    specialEffect: 'Creates gambling addiction, losses increase over time',
+  },
+  {
+    id: 'impulse_shopping_loan',
+    name: 'Loan on Impulse Shopping',
+    price: 30000,
+    description: 'Personal loan taken for unnecessary purchases.',
+    category: 'liability',
+    icon: '🛍️',
+    passiveIncome: -1200, // EMI payments
+    maintenanceCost: 300,
+    appreciationRate: -80,
+    isLiability: true,
+    abilities: ['Instant gratification', 'Latest trends'],
+    disabilities: ['High interest rates', 'Impulse regret', 'Debt accumulation'],
+    rarity: 'rare',
+    specialEffect: 'Triggers more impulse buying, creating a debt cycle',
+  },
+  {
+    id: 'uninsured_medical',
+    name: 'Uninsured Medical Expenses',
+    price: 45000,
+    description: 'Medical bills that could have been avoided with insurance.',
+    category: 'liability',
+    icon: '🏥',
+    passiveIncome: -1800, // Medical payment plan
+    maintenanceCost: 400,
+    appreciationRate: -100,
+    isLiability: true,
+    abilities: ['Health treatment'],
+    disabilities: ['Financial stress', 'Recurring treatments', 'Emergency costs'],
+    rarity: 'legendary',
+    specialEffect: 'Medical emergencies can trigger massive unexpected expenses',
   },
 ];
 

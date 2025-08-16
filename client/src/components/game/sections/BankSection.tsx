@@ -419,6 +419,58 @@ const BankSection: React.FC = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* EMI Status Section */}
+          <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base text-purple-800">
+                <Calendar className="w-4 h-4" />
+                EMI Status & Management
+              </CardTitle>
+              <p className="text-xs text-purple-700">Auto-deducted every 4 weeks • Manage your installments</p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Sample EMI entries - would be populated from actual EMI data */}
+              <div className="text-sm text-purple-600">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div>
+                      <p className="font-semibold text-purple-800">No Active EMIs</p>
+                      <p className="text-xs text-purple-600">Purchase items with EMI to see them here</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* EMI Summary */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                  <p className="text-xs text-purple-600">Total EMIs</p>
+                  <p className="font-bold text-purple-800">0</p>
+                </div>
+                <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                  <p className="text-xs text-purple-600">Monthly Total</p>
+                  <p className="font-bold text-purple-800">{formatMoney(0)}</p>
+                </div>
+                <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                  <p className="text-xs text-purple-600">Next Payment</p>
+                  <p className="font-bold text-purple-800">-</p>
+                </div>
+              </div>
+              
+              <div className="bg-amber-50 border border-amber-200 rounded p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm font-semibold text-amber-800">EMI Payment Schedule</span>
+                </div>
+                <p className="text-xs text-amber-700">
+                  EMI payments are automatically deducted from your account every 4 weeks. 
+                  Ensure sufficient balance to avoid late fees.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
           </div>
         )}
 

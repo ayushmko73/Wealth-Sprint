@@ -61,10 +61,18 @@ const StoreSection: React.FC = () => {
   const { purchaseItem, getPurchasedItems } = useStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
+  const [selectedEmiMonths, setSelectedEmiMonths] = useState<number>(1);
 
   const categories = ['All', ...getCategories().map(cat => 
     cat.charAt(0).toUpperCase() + cat.slice(1)
   )];
+  
+  const emiOptions = [
+    { months: 1, label: '1 Month' },
+    { months: 2, label: '2 Months' },
+    { months: 6, label: '6 Months' },
+    { months: 12, label: '1 Year' }
+  ];
   
   const categoryIcons: Record<string, React.ReactNode> = {
     'All': <Star className="w-4 h-4" />,
@@ -73,7 +81,8 @@ const StoreSection: React.FC = () => {
     'Business': <Building2 className="w-4 h-4" />,
     'Gadget': <Smartphone className="w-4 h-4" />,
     'Investment': <TrendingUp className="w-4 h-4" />,
-    'Entertainment': <Gamepad2 className="w-4 h-4" />
+    'Entertainment': <Gamepad2 className="w-4 h-4" />,
+    'Liability': <AlertTriangle className="w-4 h-4" />
   };
 
   const getCategoryColors = (category: string, isSelected: boolean) => {
@@ -124,7 +133,18 @@ const StoreSection: React.FC = () => {
       'warehouse_facility': <Warehouse className="w-6 h-6" />,
       'delivery_fleet': <Truck className="w-6 h-6" />,
       'tesla': <Zap className="w-6 h-6" />,
-      'restaurant': <Utensils className="w-6 h-6" />
+      'restaurant': <Utensils className="w-6 h-6" />,
+      // Liability items
+      'luxury_car_emi': <Car className="w-6 h-6" />,
+      'expensive_smartphone': <Smartphone className="w-6 h-6" />,
+      'designer_clothing': <Building2 className="w-6 h-6" />,
+      'credit_card_debt': <DollarSign className="w-6 h-6" />,
+      'lavish_vacations': <Plane className="w-6 h-6" />,
+      'overpriced_gym': <Dumbbell className="w-6 h-6" />,
+      'luxury_apartment_rent': <Building className="w-6 h-6" />,
+      'gambling_casino': <Target className="w-6 h-6" />,
+      'impulse_shopping_loan': <ShoppingCart className="w-6 h-6" />,
+      'uninsured_medical': <Shield className="w-6 h-6" />
     };
     return iconMap[item.id] || <ShoppingBag className="w-6 h-6" />;
   };
@@ -156,7 +176,7 @@ const StoreSection: React.FC = () => {
     setShowPurchaseModal(item);
   };
 
-  const confirmPurchase = (item: any, selectedPaymentMethod?: string) => {
+  const confirmPurchase = (item: any, selectedPaymentMethod?: string, emiMonths: number = 1) => {
     try {
       let paymentMethod = '';
       let useCredit = false;
@@ -170,6 +190,12 @@ const StoreSection: React.FC = () => {
         }
         paymentMethod = 'Credit Card';
         useCredit = true;
+        
+        // Create EMI entry if credit card and months > 1
+        if (emiMonths > 1) {
+          const monthlyEmi = Math.ceil(item.price / emiMonths);
+          paymentMethod += ` (${emiMonths} month EMI)`;
+        }
       } else {
         updateFinancialData({
           bankBalance: financialData.bankBalance - item.price,
@@ -188,9 +214,11 @@ const StoreSection: React.FC = () => {
       });
 
       const assetCategory = getCategoryMapping(item.category);
+      const assetType = item.isLiability ? 'Liability' : assetCategory;
+      
       addAsset({
         name: item.name,
-        category: assetCategory,
+        category: assetType,
         value: item.price,
         purchasePrice: item.price,
         purchaseDate: new Date(),
@@ -211,6 +239,7 @@ const StoreSection: React.FC = () => {
       });
       
       setShowPurchaseModal(null);
+      setSelectedEmiMonths(1); // Reset EMI selection
       
       // Add credit card benefits
       if (useCredit) {
@@ -231,13 +260,14 @@ const StoreSection: React.FC = () => {
     }
   };
 
-  const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' => {
+  const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' | 'liability' => {
     switch (storeCategory) {
       case 'property': return 'real_estate';
       case 'vehicle': return 'vehicles';
       case 'business': return 'business';
       case 'gadget': return 'gadget';
       case 'investment': return 'investment';
+      case 'liability': return 'liability';
       default: return 'entertainment';
     }
   };
@@ -610,6 +640,31 @@ const StoreSection: React.FC = () => {
                     <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
                     <p className="text-xs text-purple-600">• Build credit score faster</p>
                   </div>
+                  
+                  {/* EMI Options - Compact */}
+                  <div className="mt-2 border-t border-purple-200 pt-2">
+                    <p className="text-xs font-semibold text-purple-700 mb-1">EMI Options:</p>
+                    <div className="grid grid-cols-4 gap-1">
+                      {emiOptions.map((option) => (
+                        <button
+                          key={option.months}
+                          onClick={() => setSelectedEmiMonths(option.months)}
+                          className={`text-xs p-1 rounded text-center transition-all ${
+                            selectedEmiMonths === option.months
+                              ? 'bg-purple-600 text-white font-bold'
+                              : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedEmiMonths > 1 && (
+                      <p className="text-xs text-purple-600 mt-1">
+                        Monthly: {formatMoney(Math.ceil(showPurchaseModal.price / selectedEmiMonths))}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -629,10 +684,13 @@ const StoreSection: React.FC = () => {
                 {/* Credit Card Payment Button */}
                 <Button
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 text-sm"
-                  onClick={() => confirmPurchase(showPurchaseModal, 'credit')}
+                  onClick={() => confirmPurchase(showPurchaseModal, 'credit', selectedEmiMonths)}
                 >
                   <Sparkles className="w-3 h-3 mr-2" />
-                  Pay with Credit Card + Benefits
+                  {selectedEmiMonths > 1 
+                    ? `Pay with Credit Card (${selectedEmiMonths} month EMI)`
+                    : 'Pay with Credit Card + Benefits'
+                  }
                 </Button>
               </div>
             </CardContent>
