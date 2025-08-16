@@ -126,9 +126,9 @@ const BankSection: React.FC = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Compact Banking Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-3 rounded-xl text-white shadow-lg">
-        {/* Main Header with Live Status */}
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+        {/* Main Header */}
+        <div className="flex items-center justify-between p-3 pb-2">
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4" />
             <div>
@@ -136,26 +136,20 @@ const BankSection: React.FC = () => {
               <p className="text-blue-100 text-xs">Real-time account management • Banking hours: 24/7</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs font-semibold bg-green-500 px-2 py-1 rounded text-white">LIVE</span>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-blue-200">Account Status</p>
-              <p className="text-sm font-bold text-green-400">ACTIVE</p>
-            </div>
+          <div className="text-right">
+            <p className="text-xs text-blue-200">Account Status</p>
+            <p className="text-sm font-bold text-green-400">ACTIVE</p>
           </div>
         </div>
 
         {/* Compact Financial Metrics */}
-        <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+        <div className="bg-white/10 px-3 pb-3 backdrop-blur-sm">
           <div className="grid grid-cols-2 gap-3 mb-2">
             <div>
               <p className="text-blue-200 text-xs">NET WORTH: <span className="text-white font-bold">{formatMoney(financialData.netWorth)}</span> <span className="text-green-400">+2.3%</span></p>
             </div>
             <div>
-              <p className="text-blue-200 text-xs">CREDIT SCORE: <span className="text-white font-bold">{creditScore}</span> <span className="text-yellow-400">+5</span></p>
+              <p className="text-blue-200 text-xs">CREDIT SCORE: <span className="text-white font-bold">{creditScore}</span></p>
             </div>
           </div>
           
@@ -668,90 +662,89 @@ const BankSection: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="fd" className="space-y-3 mt-4">
-          {/* Compact FD Overview */}
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-blue-600 to-blue-700 text-white border-0 shadow-md">
-              <CardContent className="p-4 text-center">
-                <PiggyBank className="w-6 h-6 mx-auto mb-2 text-blue-200" />
+          {/* Merged FD Header with Overview */}
+          <div className="grid grid-cols-2 gap-2">
+            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
+              <CardContent className="p-3 text-center">
+                <PiggyBank className="w-5 h-5 mx-auto mb-1 text-blue-200" />
                 <p className="text-xs text-blue-100 mb-1">Total FD Amount</p>
                 <p className="text-lg font-bold">{formatMoney(financialData.investments.fd)}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-md">
-              <CardContent className="p-4 text-center">
-                <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-200" />
+            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-lg">
+              <CardContent className="p-3 text-center">
+                <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-200" />
                 <p className="text-xs text-green-100 mb-1">Annual Interest</p>
                 <p className="text-lg font-bold">{formatMoney(financialData.investments.fd * 0.07)}</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Compact FD Creation */}
-          <Card className="bg-blue-50 border border-blue-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base text-blue-800">
-                <Plus className="w-4 h-4" />
-                Create Fixed Deposit
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Input
-                    type="number"
-                    placeholder="Enter amount to invest"
-                    value={fdAmount}
-                    onChange={(e) => setFdAmount(e.target.value)}
-                    className="w-full"
-                  />
-                  <Button 
-                    onClick={handleCreateFD} 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    size="sm"
-                    disabled={!fdAmount || parseInt(fdAmount) > financialData.bankBalance}
-                  >
-                    <Lock className="w-3 h-3 mr-1" />
-                    Create FD (7% APY)
-                  </Button>
-                </div>
-
-                <div className="bg-white p-3 rounded-lg">
-                  <p className="text-sm font-medium text-blue-800 mb-2">Calculator</p>
-                  {fdAmount ? (
-                    <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
-                        <span>Principal:</span>
-                        <span className="font-medium">{formatMoney(parseInt(fdAmount) || 0)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Annual Interest:</span>
-                        <span className="text-green-600 font-medium">{formatMoney((parseInt(fdAmount) || 0) * 0.07)}</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-1">
-                        <span className="font-medium">Maturity (1Y):</span>
-                        <span className="font-bold text-blue-600">{formatMoney((parseInt(fdAmount) || 0) * 1.07)}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-500">Enter amount to calculate returns</p>
-                  )}
+          {/* Enhanced FD Creation */}
+          <Card className="bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-200 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Plus className="w-4 h-4 text-blue-600" />
+                <h3 className="text-base font-bold text-blue-800">Create Fixed Deposit</h3>
+                <div className="ml-auto text-right">
+                  <p className="text-xs text-blue-600">Interest Rate</p>
+                  <p className="text-sm font-bold text-green-600">7% APY</p>
                 </div>
               </div>
               
-              {/* Compact Benefits */}
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="flex items-center gap-1 p-2 bg-white rounded text-center">
-                  <Shield className="w-3 h-3 text-green-600" />
-                  <span>Guaranteed 7%</span>
-                </div>
-                <div className="flex items-center gap-1 p-2 bg-white rounded text-center">
-                  <Lock className="w-3 h-3 text-blue-600" />
-                  <span>Zero Risk</span>
-                </div>
-                <div className="flex items-center gap-1 p-2 bg-white rounded text-center">
-                  <Clock className="w-3 h-3 text-purple-600" />
-                  <span>Flexible Terms</span>
+              <div className="space-y-3">
+                <Input
+                  type="number"
+                  placeholder="Enter amount to invest"
+                  value={fdAmount}
+                  onChange={(e) => setFdAmount(e.target.value)}
+                  className="w-full text-center text-lg font-semibold"
+                />
+                
+                {fdAmount && (
+                  <div className="bg-white p-3 rounded-lg border border-blue-100">
+                    <div className="grid grid-cols-3 gap-3 text-center text-xs">
+                      <div>
+                        <p className="text-gray-600">Principal</p>
+                        <p className="font-bold text-blue-800">{formatMoney(parseInt(fdAmount) || 0)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Annual Interest</p>
+                        <p className="font-bold text-green-600">{formatMoney((parseInt(fdAmount) || 0) * 0.07)}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Maturity (1Y)</p>
+                        <p className="font-bold text-blue-800">{formatMoney((parseInt(fdAmount) || 0) * 1.07)}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <Button 
+                  onClick={handleCreateFD} 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-md"
+                  size="sm"
+                  disabled={!fdAmount || parseInt(fdAmount) > financialData.bankBalance}
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Create FD (7% APY)
+                </Button>
+                
+                {/* Compact Benefits */}
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="flex items-center gap-1 p-2 bg-green-50 rounded border border-green-200 text-center">
+                    <Shield className="w-3 h-3 text-green-600" />
+                    <span className="text-green-700 font-medium">Guaranteed</span>
+                  </div>
+                  <div className="flex items-center gap-1 p-2 bg-blue-50 rounded border border-blue-200 text-center">
+                    <Lock className="w-3 h-3 text-blue-600" />
+                    <span className="text-blue-700 font-medium">Zero Risk</span>
+                  </div>
+                  <div className="flex items-center gap-1 p-2 bg-purple-50 rounded border border-purple-200 text-center">
+                    <Clock className="w-3 h-3 text-purple-600" />
+                    <span className="text-purple-700 font-medium">Flexible</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
