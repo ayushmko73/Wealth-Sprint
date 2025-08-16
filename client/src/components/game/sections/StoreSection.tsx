@@ -81,8 +81,7 @@ const StoreSection: React.FC = () => {
     'Business': <Building2 className="w-4 h-4" />,
     'Gadget': <Smartphone className="w-4 h-4" />,
     'Investment': <TrendingUp className="w-4 h-4" />,
-    'Entertainment': <Gamepad2 className="w-4 h-4" />,
-    'Liability': <AlertTriangle className="w-4 h-4" />
+    'Entertainment': <Gamepad2 className="w-4 h-4" />
   };
 
   const getCategoryColors = (category: string, isSelected: boolean) => {
@@ -134,17 +133,17 @@ const StoreSection: React.FC = () => {
       'delivery_fleet': <Truck className="w-6 h-6" />,
       'tesla': <Zap className="w-6 h-6" />,
       'restaurant': <Utensils className="w-6 h-6" />,
-      // Liability items
-      'luxury_car_emi': <Car className="w-6 h-6" />,
-      'expensive_smartphone': <Smartphone className="w-6 h-6" />,
-      'designer_clothing': <Building2 className="w-6 h-6" />,
-      'credit_card_debt': <DollarSign className="w-6 h-6" />,
-      'lavish_vacations': <Plane className="w-6 h-6" />,
-      'overpriced_gym': <Dumbbell className="w-6 h-6" />,
-      'luxury_apartment_rent': <Building className="w-6 h-6" />,
-      'gambling_casino': <Target className="w-6 h-6" />,
-      'impulse_shopping_loan': <ShoppingCart className="w-6 h-6" />,
-      'uninsured_medical': <Shield className="w-6 h-6" />
+      // New Liability items (distributed across categories)
+      'luxury_sports_car': <Car className="w-6 h-6" />,
+      'private_jet_membership': <Plane className="w-6 h-6" />,
+      'designer_clothing_collection': <Building2 className="w-6 h-6" />,
+      'expensive_watch_set': <Watch className="w-6 h-6" />,
+      'luxury_vacation_package': <Plane className="w-6 h-6" />,
+      'exotic_pets': <Target className="w-6 h-6" />,
+      'ultra_luxury_villa': <Crown className="w-6 h-6" />,
+      'home_theater_upgrade': <MonitorSpeaker className="w-6 h-6" />,
+      'exclusive_club_membership': <Building2 className="w-6 h-6" />,
+      'high_interest_credit_card': <DollarSign className="w-6 h-6" />
     };
     return iconMap[item.id] || <ShoppingBag className="w-6 h-6" />;
   };
@@ -214,7 +213,7 @@ const StoreSection: React.FC = () => {
       });
 
       const assetCategory = getCategoryMapping(item.category);
-      const assetType = item.isLiability ? 'Liability' : assetCategory;
+      const assetType = item.isLiability ? assetCategory : assetCategory;
       
       addAsset({
         name: item.name,
@@ -260,14 +259,13 @@ const StoreSection: React.FC = () => {
     }
   };
 
-  const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' | 'liability' => {
+  const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' => {
     switch (storeCategory) {
       case 'property': return 'real_estate';
       case 'vehicle': return 'vehicles';
       case 'business': return 'business';
       case 'gadget': return 'gadget';
       case 'investment': return 'investment';
-      case 'liability': return 'liability';
       default: return 'entertainment';
     }
   };
@@ -472,6 +470,28 @@ const StoreSection: React.FC = () => {
                   {/* Description */}
                   <p className="text-sm text-slate-600 mb-3">{item.description}</p>
 
+                  {/* Liability Warning - Show cause and bad impact */}
+                  {item.isLiability && (item.cause || item.badImpact) && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-2 mb-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <AlertTriangle className="w-3 h-3 text-red-600" />
+                        <span className="text-xs font-semibold text-red-700">⚠️ Lifestyle Inflation Trap</span>
+                      </div>
+                      {item.cause && (
+                        <div className="mb-1">
+                          <span className="text-[10px] font-semibold text-red-700">Cause: </span>
+                          <span className="text-[10px] text-red-600">{item.cause}</span>
+                        </div>
+                      )}
+                      {item.badImpact && (
+                        <div>
+                          <span className="text-[10px] font-semibold text-red-700">Bad Impact: </span>
+                          <span className="text-[10px] text-red-600">{item.badImpact}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Rarity and Special Effect */}
                   <div className="mb-3">
                     <div className="flex items-center justify-between mb-2">
@@ -571,85 +591,85 @@ const StoreSection: React.FC = () => {
       {/* Compact Purchase Confirmation Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <Card className="max-w-sm w-full bg-white shadow-2xl border-0">
-            <CardContent className="p-4 bg-white rounded-lg">
+          <Card className="max-w-xs w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-3 bg-white rounded-lg">
               {/* Header with Close Button */}
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-bold text-slate-800">Confirm Purchase</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-base font-bold text-slate-800">Confirm Purchase</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowPurchaseModal(null)}
-                  className="h-6 w-6 p-0"
+                  className="h-5 w-5 p-0"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
               {/* Compact Item Info */}
-              <div className="text-center mb-4">
-                <div className="w-12 h-12 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+              <div className="text-center mb-3">
+                <div className="w-8 h-8 mx-auto mb-1 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                   {getItemIcon(showPurchaseModal)}
                 </div>
-                <h4 className="font-bold text-slate-800 text-base mb-1">
+                <h4 className="font-bold text-slate-800 text-sm mb-1">
                   {showPurchaseModal.name}
                 </h4>
-                <p className="text-xl font-bold text-blue-600 mb-1">
+                <p className="text-lg font-bold text-blue-600 mb-1">
                   {formatMoney(showPurchaseModal.price)}
                 </p>
-                <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 rounded-full">
-                  <Coins className="w-3 h-3 text-amber-600" />
-                  <span className="text-xs font-semibold text-amber-700">
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 rounded-full">
+                  <Coins className="w-2 h-2 text-amber-600" />
+                  <span className="text-[10px] font-semibold text-amber-700">
                     +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month
                   </span>
                 </div>
               </div>
 
               {/* Compact Payment Method */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+              <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
+                <div className="text-xs font-semibold text-blue-800 mb-1 flex items-center gap-1">
                   <DollarSign className="w-3 h-3" />
                   Payment Method:
                 </div>
                 
                 {/* Bank Account Option */}
                 {financialData.bankBalance >= showPurchaseModal.price && (
-                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
+                  <div className="bg-green-50 border border-green-200 rounded p-1.5 mb-1.5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-xs font-semibold text-green-700">Bank Account</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                        <span className="text-[10px] font-semibold text-green-700">Bank Account</span>
                       </div>
-                      <span className="text-xs text-green-600">Recommended</span>
+                      <span className="text-[9px] text-green-600">Recommended</span>
                     </div>
-                    <p className="text-xs text-green-600 mt-1">No additional fees • Instant payment</p>
+                    <p className="text-[9px] text-green-600 mt-0.5">No additional fees • Instant payment</p>
                   </div>
                 )}
                 
                 {/* Credit Card Option */}
-                <div className="bg-purple-50 border border-purple-200 rounded p-2">
+                <div className="bg-purple-50 border border-purple-200 rounded p-1.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-xs font-semibold text-purple-700">Credit Card</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                      <span className="text-[10px] font-semibold text-purple-700">Credit Card</span>
                     </div>
-                    <span className="text-xs text-purple-600">Benefits Available</span>
+                    <span className="text-[9px] text-purple-600">Benefits Available</span>
                   </div>
-                  <div className="mt-1 space-y-0.5">
-                    <p className="text-xs text-purple-600">• Instant purchase protection</p>
-                    <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
-                    <p className="text-xs text-purple-600">• Build credit score faster</p>
+                  <div className="mt-0.5 space-y-0">
+                    <p className="text-[9px] text-purple-600">• Instant purchase protection</p>
+                    <p className="text-[9px] text-purple-600">• 0.5% cashback on all purchases</p>
+                    <p className="text-[9px] text-purple-600">• Build credit score faster</p>
                   </div>
                   
-                  {/* EMI Options - Compact */}
-                  <div className="mt-2 border-t border-purple-200 pt-2">
-                    <p className="text-xs font-semibold text-purple-700 mb-1">EMI Options:</p>
-                    <div className="grid grid-cols-4 gap-1">
+                  {/* EMI Options - Ultra Compact */}
+                  <div className="mt-1.5 border-t border-purple-200 pt-1">
+                    <p className="text-[10px] font-semibold text-purple-700 mb-1">EMI Options:</p>
+                    <div className="grid grid-cols-4 gap-0.5">
                       {emiOptions.map((option) => (
                         <button
                           key={option.months}
                           onClick={() => setSelectedEmiMonths(option.months)}
-                          className={`text-xs p-1 rounded text-center transition-all ${
+                          className={`text-[9px] px-1 py-0.5 rounded text-center transition-all ${
                             selectedEmiMonths === option.months
                               ? 'bg-purple-600 text-white font-bold'
                               : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
@@ -660,7 +680,7 @@ const StoreSection: React.FC = () => {
                       ))}
                     </div>
                     {selectedEmiMonths > 1 && (
-                      <p className="text-xs text-purple-600 mt-1">
+                      <p className="text-[9px] text-purple-600 mt-0.5">
                         Monthly: {formatMoney(Math.ceil(showPurchaseModal.price / selectedEmiMonths))}
                       </p>
                     )}
@@ -669,26 +689,26 @@ const StoreSection: React.FC = () => {
               </div>
 
               {/* Compact Action Buttons */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {/* Bank Payment Button */}
                 {financialData.bankBalance >= showPurchaseModal.price && (
                   <Button
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 text-sm"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 text-xs"
                     onClick={() => confirmPurchase(showPurchaseModal, 'bank')}
                   >
-                    <CheckCircle className="w-3 h-3 mr-2" />
+                    <CheckCircle className="w-3 h-3 mr-1" />
                     Pay with Bank Account
                   </Button>
                 )}
                 
                 {/* Credit Card Payment Button */}
                 <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 text-sm"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 text-xs"
                   onClick={() => confirmPurchase(showPurchaseModal, 'credit', selectedEmiMonths)}
                 >
-                  <Sparkles className="w-3 h-3 mr-2" />
+                  <Sparkles className="w-3 h-3 mr-1" />
                   {selectedEmiMonths > 1 
-                    ? `Pay with Credit Card (${selectedEmiMonths} month EMI)`
+                    ? `Pay with Credit Card + Benefits`
                     : 'Pay with Credit Card + Benefits'
                   }
                 </Button>
