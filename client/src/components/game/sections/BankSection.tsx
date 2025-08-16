@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+
 import { formatMoney } from '../../../lib/utils/formatMoney';
 import { 
   Building2, 
@@ -37,6 +37,25 @@ const BankSection: React.FC = () => {
   const [loanAmount, setLoanAmount] = useState('');
   const [customPaymentAmount, setCustomPaymentAmount] = useState('');
   const [showCustomPayment, setShowCustomPayment] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Account');
+
+  const categories = ['Account', 'Credit', 'Loan', 'Deposits', 'History'];
+  
+  const categoryIcons: Record<string, React.ReactNode> = {
+    'Account': <Wallet className="w-4 h-4" />,
+    'Credit': <CreditCard className="w-4 h-4" />,
+    'Loan': <Banknote className="w-4 h-4" />,
+    'Deposits': <PiggyBank className="w-4 h-4" />,
+    'History': <Receipt className="w-4 h-4" />
+  };
+
+  const getCategoryColors = (category: string, isSelected: boolean) => {
+    return {
+      bg: isSelected ? 'bg-white text-blue-800 shadow-md' : 'bg-white/10 text-white hover:bg-white/20',
+      text: 'text-blue-800',
+      badge: 'bg-blue-500'
+    };
+  };
 
   const handleCreateFD = () => {
     const amount = parseInt(fdAmount);
@@ -172,55 +191,28 @@ const BankSection: React.FC = () => {
           </div>
         </div>
         
-      </div>
-
-      {/* Tab Content */}
-      <Tabs defaultValue="account" className="w-full">
-        {/* New Integrated Tab Navigation - Merged with Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 -mt-4">
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-1 px-4 pb-4 min-w-max">
-              <TabsTrigger 
-                value="account" 
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
+        {/* Category Navigation - Merged with Header */}
+        <div className="overflow-x-auto px-4 pb-4">
+          <div className="flex gap-2 min-w-max">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap shadow-md ${
+                  getCategoryColors(category, selectedCategory === category).bg
+                }`}
               >
-                <Wallet className="w-4 h-4" />
-                Account
-              </TabsTrigger>
-              <TabsTrigger 
-                value="credit-card" 
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
-              >
-                <CreditCard className="w-4 h-4" />
-                Credit
-              </TabsTrigger>
-              <TabsTrigger 
-                value="loan" 
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
-              >
-                <Banknote className="w-4 h-4" />
-                Loan
-              </TabsTrigger>
-              <TabsTrigger 
-                value="fd" 
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
-              >
-                <PiggyBank className="w-4 h-4" />
-                Deposits
-              </TabsTrigger>
-              <TabsTrigger 
-                value="statement" 
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-t-lg transition-all duration-200 whitespace-nowrap bg-white text-blue-800 border-b-2 border-blue-800 shadow-sm data-[state=inactive]:bg-blue-700 data-[state=inactive]:text-white data-[state=inactive]:border-transparent data-[state=inactive]:hover:bg-blue-600"
-              >
-                <Receipt className="w-4 h-4" />
-                History
-              </TabsTrigger>
-            </div>
+                {categoryIcons[category]}
+                {category}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
 
-        <TabsContent value="account" className="mt-3">
-          {/* Compact Account Summary */}
+      {/* Content based on selected category */}
+      <div className="mt-3">
+        {selectedCategory === 'Account' && (
           <div className="space-y-3">
             {/* Primary Metrics Row */}
             <div className="grid grid-cols-2 gap-2">
@@ -298,10 +290,11 @@ const BankSection: React.FC = () => {
               </div>
             </div>
           </div>
-        </TabsContent>
+        )}
 
-        <TabsContent value="credit-card" className="space-y-3 mt-4">
-          {/* Enhanced Premium Credit Card */}
+        {selectedCategory === 'Credit' && (
+          <div className="space-y-3">
+            {/* Enhanced Premium Credit Card */}
           <Card className="bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900 text-white border-0 shadow-2xl overflow-hidden relative">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12"></div>
             <CardContent className="p-4 relative z-10">
@@ -426,10 +419,12 @@ const BankSection: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+          </div>
+        )}
 
-        <TabsContent value="loan" className="space-y-3 mt-4">
-          {/* Loan Application */}
+        {selectedCategory === 'Loan' && (
+          <div className="space-y-3">
+            {/* Loan Application */}
           <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base text-green-800">
@@ -666,10 +661,12 @@ const BankSection: React.FC = () => {
               </CardContent>
             </Card>
           )}
-        </TabsContent>
+          </div>
+        )}
 
-        <TabsContent value="fd" className="space-y-3 mt-4">
-          {/* Merged Compact FD Section */}
+        {selectedCategory === 'Deposits' && (
+          <div className="space-y-3">
+            {/* Merged Compact FD Section */}
           <Card className="bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-200 shadow-md">
             <CardContent className="p-4">
               {/* FD Overview Header */}
@@ -755,10 +752,12 @@ const BankSection: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+          </div>
+        )}
 
-        <TabsContent value="statement" className="space-y-3 mt-4">
-          <Card className="bg-blue-50 border border-blue-200">
+        {selectedCategory === 'History' && (
+          <div className="space-y-3">
+            <Card className="bg-blue-50 border border-blue-200">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base text-blue-800">
                 <Receipt className="w-4 h-4" />
@@ -814,8 +813,9 @@ const BankSection: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
