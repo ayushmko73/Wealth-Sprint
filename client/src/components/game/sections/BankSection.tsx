@@ -145,7 +145,8 @@ const BankSection: React.FC = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Expanded Banking Header - Stock Market Style */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <div className="mx-2">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg">
         {/* Header Content */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
@@ -207,6 +208,7 @@ const BankSection: React.FC = () => {
               </button>
             ))}
           </div>
+        </div>
         </div>
       </div>
 

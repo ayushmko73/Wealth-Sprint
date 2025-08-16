@@ -312,7 +312,8 @@ const StoreSection: React.FC = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Store Header - Inspired by Stock Market/Banking Sections */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <div className="mx-2">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg">
         {/* Main Header Row */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
@@ -379,6 +380,7 @@ const StoreSection: React.FC = () => {
               </button>
             ))}
           </div>
+        </div>
         </div>
       </div>
 
