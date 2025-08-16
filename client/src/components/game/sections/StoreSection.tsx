@@ -77,44 +77,11 @@ const StoreSection: React.FC = () => {
   };
 
   const getCategoryColors = (category: string, isSelected: boolean) => {
-    const colorMap: Record<string, { bg: string, text: string, badge: string }> = {
-      'All': { 
-        bg: isSelected ? 'bg-white text-slate-800' : 'bg-white/10 text-white hover:bg-white/20', 
-        text: 'text-slate-800', 
-        badge: 'bg-slate-500' 
-      },
-      'Property': { 
-        bg: isSelected ? 'bg-white text-emerald-800' : 'bg-emerald-500/20 text-white hover:bg-emerald-500/30', 
-        text: 'text-emerald-800', 
-        badge: 'bg-emerald-600' 
-      },
-      'Vehicle': { 
-        bg: isSelected ? 'bg-white text-blue-800' : 'bg-blue-500/20 text-white hover:bg-blue-500/30', 
-        text: 'text-blue-800', 
-        badge: 'bg-blue-600' 
-      },
-      'Business': { 
-        bg: isSelected ? 'bg-white text-amber-800' : 'bg-amber-500/20 text-white hover:bg-amber-500/30', 
-        text: 'text-amber-800', 
-        badge: 'bg-amber-600' 
-      },
-      'Gadget': { 
-        bg: isSelected ? 'bg-white text-purple-800' : 'bg-purple-500/20 text-white hover:bg-purple-500/30', 
-        text: 'text-purple-800', 
-        badge: 'bg-purple-600' 
-      },
-      'Investment': { 
-        bg: isSelected ? 'bg-white text-teal-800' : 'bg-teal-500/20 text-white hover:bg-teal-500/30', 
-        text: 'text-teal-800', 
-        badge: 'bg-teal-600' 
-      },
-      'Entertainment': { 
-        bg: isSelected ? 'bg-white text-rose-800' : 'bg-rose-500/20 text-white hover:bg-rose-500/30', 
-        text: 'text-rose-800', 
-        badge: 'bg-rose-600' 
-      }
+    return {
+      bg: isSelected ? 'bg-white text-blue-800 shadow-md' : 'bg-white/10 text-white hover:bg-white/20',
+      text: 'text-blue-800',
+      badge: 'bg-blue-500'
     };
-    return colorMap[category] || colorMap['All'];
   };
 
   const getRarityColor = (rarity?: string) => {
