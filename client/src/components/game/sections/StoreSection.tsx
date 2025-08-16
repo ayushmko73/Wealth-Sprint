@@ -473,21 +473,21 @@ const StoreSection: React.FC = () => {
 
                   {/* Liability Warning - Show cause and bad impact */}
                   {item.isLiability && (item.cause || item.badImpact) && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-2 mb-3">
-                      <div className="flex items-center gap-1 mb-2">
-                        <AlertTriangle className="w-4 h-4 text-red-600" />
-                        <span className="text-sm font-bold text-red-700">⚠️ Lifestyle Inflation Trap</span>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+                      <div className="flex items-center gap-2 mb-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                        <span className="text-base font-bold text-red-700">⚠️ Lifestyle Inflation Trap</span>
                       </div>
                       {item.cause && (
-                        <div className="mb-2">
-                          <span className="text-xs font-bold text-red-700 block mb-1">Cause:</span>
-                          <span className="text-xs text-red-600 leading-relaxed">{item.cause}</span>
+                        <div className="mb-3">
+                          <span className="text-sm font-bold text-red-700 block mb-2">Cause:</span>
+                          <span className="text-sm text-red-600 leading-relaxed">{item.cause}</span>
                         </div>
                       )}
                       {item.badImpact && (
                         <div>
-                          <span className="text-xs font-bold text-red-700 block mb-1">Bad Impact:</span>
-                          <span className="text-xs text-red-600 leading-relaxed">{item.badImpact}</span>
+                          <span className="text-sm font-bold text-red-700 block mb-2">Bad Impact:</span>
+                          <span className="text-sm text-red-600 leading-relaxed">{item.badImpact}</span>
                         </div>
                       )}
                     </div>
@@ -609,18 +609,18 @@ const StoreSection: React.FC = () => {
 
               {/* Compact Item Info */}
               <div className="text-center mb-3">
-                <div className="w-8 h-8 mx-auto mb-1 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-lg">
                   {getItemIcon(showPurchaseModal)}
                 </div>
-                <h4 className="font-bold text-slate-800 text-sm mb-1">
+                <h4 className="font-bold text-slate-800 text-base mb-2">
                   {showPurchaseModal.name}
                 </h4>
-                <p className="text-lg font-bold text-blue-600 mb-1">
+                <p className="text-xl font-bold text-blue-600 mb-2">
                   {formatMoney(showPurchaseModal.price)}
                 </p>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 rounded-full">
-                  <Coins className="w-2 h-2 text-amber-600" />
-                  <span className="text-[10px] font-semibold text-amber-700">
+                <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                  <Coins className="w-3 h-3 text-amber-600" />
+                  <span className="text-xs font-semibold text-amber-700">
                     +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month
                   </span>
                 </div>
@@ -628,49 +628,49 @@ const StoreSection: React.FC = () => {
 
               {/* Compact Payment Method */}
               <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
-                <div className="text-xs font-semibold text-blue-800 mb-1 flex items-center gap-1">
-                  <DollarSign className="w-3 h-3" />
+                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
+                  <DollarSign className="w-4 h-4" />
                   Payment Method:
                 </div>
                 
                 {/* Bank Account Option */}
                 {financialData.bankBalance >= showPurchaseModal.price && (
-                  <div className="bg-green-50 border border-green-200 rounded p-1.5 mb-1.5">
+                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                        <span className="text-[10px] font-semibold text-green-700">Bank Account</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-xs font-semibold text-green-700">Bank Account</span>
                       </div>
-                      <span className="text-[9px] text-green-600">Recommended</span>
+                      <span className="text-xs text-green-600">Recommended</span>
                     </div>
-                    <p className="text-[9px] text-green-600 mt-0.5">No additional fees • Instant payment</p>
+                    <p className="text-xs text-green-600 mt-1">No additional fees • Instant payment</p>
                   </div>
                 )}
                 
                 {/* Credit Card Option */}
-                <div className="bg-purple-50 border border-purple-200 rounded p-1.5">
+                <div className="bg-purple-50 border border-purple-200 rounded p-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                      <span className="text-[10px] font-semibold text-purple-700">Credit Card</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span className="text-xs font-semibold text-purple-700">Credit Card</span>
                     </div>
-                    <span className="text-[9px] text-purple-600">Benefits Available</span>
+                    <span className="text-xs text-purple-600">Benefits Available</span>
                   </div>
-                  <div className="mt-0.5 space-y-0">
-                    <p className="text-[9px] text-purple-600">• Instant purchase protection</p>
-                    <p className="text-[9px] text-purple-600">• 0.5% cashback on all purchases</p>
-                    <p className="text-[9px] text-purple-600">• Build credit score faster</p>
+                  <div className="mt-1 space-y-0">
+                    <p className="text-xs text-purple-600">• Instant purchase protection</p>
+                    <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
+                    <p className="text-xs text-purple-600">• Build credit score faster</p>
                   </div>
                   
                   {/* EMI Options - Horizontal Scrolling */}
-                  <div className="mt-1.5 border-t border-purple-200 pt-1">
-                    <p className="text-[10px] font-semibold text-purple-700 mb-1">EMI Options:</p>
-                    <div className="flex gap-1 overflow-x-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 pb-1">
+                  <div className="mt-2 border-t border-purple-200 pt-2">
+                    <p className="text-xs font-semibold text-purple-700 mb-2">EMI Options:</p>
+                    <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 pb-2">
                       {emiOptions.map((option) => (
                         <button
                           key={option.months}
                           onClick={() => setSelectedEmiMonths(option.months)}
-                          className={`text-[9px] px-2 py-0.5 rounded text-center transition-all whitespace-nowrap flex-shrink-0 ${
+                          className={`text-xs px-3 py-1 rounded text-center transition-all whitespace-nowrap flex-shrink-0 ${
                             selectedEmiMonths === option.months
                               ? 'bg-purple-600 text-white font-bold'
                               : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
@@ -681,8 +681,8 @@ const StoreSection: React.FC = () => {
                       ))}
                     </div>
                     {selectedEmiMonths > 1 && (
-                      <p className="text-[9px] text-purple-600 mt-0.5">
-                        Monthly: {formatMoney(Math.ceil(showPurchaseModal.price / selectedEmiMonths))}
+                      <p className="text-xs text-purple-600 mt-1 font-medium">
+                        Monthly: {formatMoney(Math.round(showPurchaseModal.price / selectedEmiMonths))}
                       </p>
                     )}
                   </div>

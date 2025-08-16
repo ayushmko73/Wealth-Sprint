@@ -420,24 +420,6 @@ export const storeItems: StoreItem[] = [
     rarity: 'epic',
     specialEffect: 'Creates pressure to maintain expensive lifestyle to fit in',
   },
-  {
-    id: 'high_interest_credit_card',
-    name: 'High-Interest Credit Card',
-    price: 0,
-    description: 'Credit facility that creates debt trap through high interest and overspending habits.',
-    category: 'investment',
-    icon: '💳',
-    passiveIncome: -3500, // Interest charges on accumulated debt
-    maintenanceCost: 500,
-    appreciationRate: 0,
-    isLiability: true,
-    cause: 'Quick access to money, overspending habit',
-    badImpact: 'Debt trap, huge interest payments, low credit score',
-    abilities: ['Instant purchasing power', 'Emergency access'],
-    disabilities: ['Compound interest trap', 'Overspending temptation', 'Credit score damage'],
-    rarity: 'legendary',
-    specialEffect: 'Debt compounds at 3.5% monthly, creating financial death spiral',
-  },
 ];
 
 // Helper functions
