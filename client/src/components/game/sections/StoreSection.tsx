@@ -198,8 +198,14 @@ const StoreSection: React.FC = () => {
         toAccount: 'business',
       });
 
+      // Set the selected category to match the purchased item's category if not on 'All'
+      if (selectedCategory === 'All') {
+        const itemCategory = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+        setSelectedCategory(itemCategory);
+      }
+      
       setShowPurchaseModal(null);
-      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}!`);
+      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Check the ${item.category} category.`);
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
     }
@@ -244,6 +250,16 @@ const StoreSection: React.FC = () => {
     const storeItem = storeItems.find(si => si.id === item.storeItemId);
     return sum + (storeItem?.price || 0);
   }, 0);
+
+  // Sort items to show purchased items first, then unpurchased
+  const sortedItems = filteredItems.sort((a, b) => {
+    const aIsPurchased = purchasedItems.some(p => p.storeItemId === a.id);
+    const bIsPurchased = purchasedItems.some(p => p.storeItemId === b.id);
+    
+    if (aIsPurchased && !bIsPurchased) return -1;
+    if (!aIsPurchased && bIsPurchased) return 1;
+    return 0;
+  });
 
   return (
     <div className="space-y-4 p-4">
@@ -355,7 +371,7 @@ const StoreSection: React.FC = () => {
 
       {/* Store Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredItems.map((item) => {
+        {sortedItems.map((item) => {
           const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
           const canAfford = financialData.bankBalance >= item.price;
           const roi = (((item.passiveIncome || 0) * 12) / item.price * 100);
@@ -523,9 +539,9 @@ const StoreSection: React.FC = () => {
 
       {/* Purchase Confirmation Modal */}
       {showPurchaseModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full">
-            <CardContent className="p-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <Card className="max-w-md w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-6 bg-white rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold text-slate-800">Confirm Purchase</h3>
                 <Button
@@ -556,41 +572,46 @@ const StoreSection: React.FC = () => {
               </div>
 
               {/* Payment Method */}
-              <div className="bg-slate-50 rounded-lg p-4 mb-6">
-                <div className="text-sm font-semibold text-slate-700 mb-2">Payment Method:</div>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  Payment Method:
+                </div>
                 {financialData.bankBalance >= showPurchaseModal.price ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-green-100 p-2 rounded-md">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     <span className="font-semibold text-green-700">Bank Account</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-blue-100 p-2 rounded-md">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                     <span className="font-semibold text-blue-700">Credit Card</span>
                   </div>
                 )}
                 
-                <div className="text-sm text-slate-600 mt-2">
-                  After purchase: {formatMoney(
+                <div className="text-sm text-slate-600 mt-3 p-2 bg-white rounded border">
+                  <strong>After purchase:</strong> {formatMoney(
                     financialData.bankBalance >= showPurchaseModal.price 
                       ? financialData.bankBalance - showPurchaseModal.price 
                       : financialData.bankBalance
-                  )} remaining
+                  )} remaining in account
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 border-2 border-gray-300 hover:border-gray-400 font-semibold"
                   onClick={() => setShowPurchaseModal(null)}
                 >
+                  <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 font-semibold shadow-lg"
                   onClick={() => confirmPurchase(showPurchaseModal)}
                 >
+                  <CheckCircle className="w-4 h-4 mr-2" />
                   Confirm Purchase
                 </Button>
               </div>
