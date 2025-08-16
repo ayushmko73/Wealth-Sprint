@@ -125,10 +125,10 @@ const BankSection: React.FC = () => {
 
   return (
     <div className="space-y-4 p-4">
-      {/* Banking Header - Stock Market Style */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+      {/* Expanded Banking Header - Stock Market Style */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         {/* Header Content */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
             <Building2 className="w-5 h-5" />
             <div>
@@ -143,7 +143,7 @@ const BankSection: React.FC = () => {
         </div>
         
         {/* Financial Metrics */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-3 mb-3 px-4">
           <div>
             <p className="text-blue-200 text-xs">NET WORTH: <span className="text-white font-bold">{formatMoney(financialData.netWorth)}</span> <span className="text-green-400">+2.3%</span></p>
           </div>
@@ -153,7 +153,7 @@ const BankSection: React.FC = () => {
         </div>
         
         {/* Bottom Metrics */}
-        <div className="grid grid-cols-4 gap-2 text-center">
+        <div className="grid grid-cols-4 gap-2 text-center px-4 pb-3">
           <div>
             <p className="text-blue-200 text-xs">Cash</p>
             <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
@@ -171,34 +171,36 @@ const BankSection: React.FC = () => {
             <p className="text-sm font-bold">{riskProfile}</p>
           </div>
         </div>
-      </div>
-
-      {/* Horizontal Scrolling Tab Navigation */}
-      <Tabs defaultValue="account" className="w-full">
-        <div className="overflow-x-auto">
-          <TabsList className="flex w-max bg-blue-100 rounded-lg p-1 min-w-full">
-            <TabsTrigger value="account" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+        
+        {/* Integrated Tab Navigation */}
+        <div className="overflow-x-auto px-4 pb-4">
+          <TabsList className="flex w-max bg-white/10 backdrop-blur-sm rounded-lg p-1 min-w-full">
+            <TabsTrigger value="account" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white font-medium">
               <Wallet className="w-4 h-4 mr-1" />
               Account
             </TabsTrigger>
-            <TabsTrigger value="credit-card" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <TabsTrigger value="credit-card" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white font-medium">
               <CreditCard className="w-4 h-4 mr-1" />
               Credit
             </TabsTrigger>
-            <TabsTrigger value="loan" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <TabsTrigger value="loan" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white font-medium">
               <Banknote className="w-4 h-4 mr-1" />
               Loan
             </TabsTrigger>
-            <TabsTrigger value="fd" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <TabsTrigger value="fd" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white font-medium">
               <PiggyBank className="w-4 h-4 mr-1" />
               Deposits
             </TabsTrigger>
-            <TabsTrigger value="statement" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-700 font-medium">
+            <TabsTrigger value="statement" className="flex-shrink-0 px-3 py-2 text-xs rounded-md data-[state=active]:bg-white data-[state=active]:text-blue-800 text-white font-medium">
               <Receipt className="w-4 h-4 mr-1" />
               History
             </TabsTrigger>
           </TabsList>
         </div>
+      </div>
+
+      {/* Tab Content */}
+      <Tabs defaultValue="account" className="w-full">
 
         <TabsContent value="account" className="mt-3">
           {/* Compact Account Summary */}
