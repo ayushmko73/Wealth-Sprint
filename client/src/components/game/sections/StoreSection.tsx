@@ -538,71 +538,74 @@ const StoreSection: React.FC = () => {
         })}
       </div>
 
-      {/* Purchase Confirmation Modal */}
+      {/* Compact Purchase Confirmation Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full bg-white shadow-2xl border-0">
-            <CardContent className="p-6 bg-white rounded-lg">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-slate-800">Confirm Purchase</h3>
+          <Card className="max-w-sm w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-4 bg-white rounded-lg">
+              {/* Header with Close Button */}
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-bold text-slate-800">Confirm Purchase</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowPurchaseModal(null)}
+                  className="h-6 w-6 p-0"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
 
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+              {/* Compact Item Info */}
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                   {getItemIcon(showPurchaseModal)}
                 </div>
-                <h4 className="text-lg font-semibold text-slate-800 mb-2">
+                <h4 className="font-bold text-slate-800 text-base mb-1">
                   {showPurchaseModal.name}
                 </h4>
-                <p className="text-2xl font-bold text-blue-600 mb-2">
+                <p className="text-xl font-bold text-blue-600 mb-1">
                   {formatMoney(showPurchaseModal.price)}
                 </p>
-                <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 rounded-full">
                   <Coins className="w-3 h-3 text-amber-600" />
-                  <span className="text-sm font-semibold text-amber-700">
+                  <span className="text-xs font-semibold text-amber-700">
                     +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month
                   </span>
                 </div>
               </div>
 
-              {/* Payment Method */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <div className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
+              {/* Compact Payment Method */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                  <DollarSign className="w-3 h-3" />
                   Payment Method:
                 </div>
                 
                 {/* Bank Account Option */}
                 {financialData.bankBalance >= showPurchaseModal.price && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="font-semibold text-green-700">Bank Account</span>
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-xs font-semibold text-green-700">Bank Account</span>
                       </div>
-                      <span className="text-xs text-green-600 font-medium">Recommended</span>
+                      <span className="text-xs text-green-600">Recommended</span>
                     </div>
                     <p className="text-xs text-green-600 mt-1">No additional fees • Instant payment</p>
                   </div>
                 )}
                 
                 {/* Credit Card Option */}
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <div className="bg-purple-50 border border-purple-200 rounded p-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span className="font-semibold text-purple-700">Credit Card</span>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span className="text-xs font-semibold text-purple-700">Credit Card</span>
                     </div>
-                    <span className="text-xs text-purple-600 font-medium">Benefits Available</span>
+                    <span className="text-xs text-purple-600">Benefits Available</span>
                   </div>
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-1 space-y-0.5">
                     <p className="text-xs text-purple-600">• Instant purchase protection</p>
                     <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
                     <p className="text-xs text-purple-600">• Build credit score faster</p>
@@ -610,35 +613,26 @@ const StoreSection: React.FC = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
+              {/* Compact Action Buttons */}
+              <div className="space-y-2">
                 {/* Bank Payment Button */}
                 {financialData.bankBalance >= showPurchaseModal.price && (
                   <Button
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 font-semibold shadow-lg"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 text-sm"
                     onClick={() => confirmPurchase(showPurchaseModal, 'bank')}
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-3 h-3 mr-2" />
                     Pay with Bank Account
                   </Button>
                 )}
                 
                 {/* Credit Card Payment Button */}
                 <Button
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 font-semibold shadow-lg"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 text-sm"
                   onClick={() => confirmPurchase(showPurchaseModal, 'credit')}
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
+                  <Sparkles className="w-3 h-3 mr-2" />
                   Pay with Credit Card + Benefits
-                </Button>
-                
-                {/* Cancel Button */}
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-gray-300 hover:border-gray-400 font-semibold"
-                  onClick={() => setShowPurchaseModal(null)}
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Cancel
                 </Button>
               </div>
             </CardContent>
