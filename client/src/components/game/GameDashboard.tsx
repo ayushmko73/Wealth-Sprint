@@ -11,7 +11,7 @@ import CyberModeButton from './components/CyberModeButton';
 import DashboardBar from './DashboardBar';
 import CompactDashboard from './CompactDashboard';
 import InvestmentTable from './InvestmentTable';
-import RevenueOverview from './RevenueOverview';
+
 import SoundManager from './components/SoundManager';
 import NotificationCenter from './NotificationCenter';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -133,7 +133,7 @@ const GameDashboard: React.FC = () => {
       case 'bonds':
         return <BondsSection />;
       case 'revenue':
-        return <RevenueOverview />;
+        return <RevenueSection />;
       case 'bank':
         return <BankSection />;
       case 'store':
