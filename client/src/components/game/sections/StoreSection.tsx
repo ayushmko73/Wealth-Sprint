@@ -129,9 +129,18 @@ const StoreSection: React.FC = () => {
     return iconMap[item.id] || <ShoppingBag className="w-6 h-6" />;
   };
 
+  const purchasedItems = getPurchasedItems();
+
   const filteredItems = storeItems.filter(item => {
+    const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
     const matchesCategory = selectedCategory === 'All' || 
       item.category.charAt(0).toUpperCase() + item.category.slice(1) === selectedCategory;
+    
+    // If item is owned, only show it in its specific category, not in "All" or other categories
+    if (isPurchased) {
+      return item.category.charAt(0).toUpperCase() + item.category.slice(1) === selectedCategory;
+    }
+    
     return matchesCategory;
   });
 
@@ -253,7 +262,6 @@ const StoreSection: React.FC = () => {
     }
   };
 
-  const purchasedItems = getPurchasedItems();
   const stats = getCategoryStats();
   const totalValue = storeItems.reduce((sum, item) => sum + item.price, 0);
   const totalItems = storeItems.length;
@@ -354,149 +362,165 @@ const StoreSection: React.FC = () => {
           const canAfford = financialData.bankBalance >= item.price;
           const roi = (((item.passiveIncome || 0) * 12) / item.price * 100);
           
-          return (
-            <Card
-              key={item.id}
-              className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${
-                isPurchased 
-                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' 
-                  : 'bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 hover:border-blue-300'
-              }`}
-            >
-              <CardContent className="p-4">
-                {/* Item Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      isPurchased 
-                        ? 'bg-green-100 text-green-600' 
-                        : 'bg-blue-100 text-blue-600'
-                    }`}>
-                      {getItemIcon(item)}
+          return isPurchased ? (
+              // Compact Owned Item Card
+              <Card
+                key={item.id}
+                className="overflow-hidden transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
+              >
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-100 text-green-600">
+                        {getItemIcon(item)}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-800 text-sm">{item.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <Badge className="text-xs bg-green-100 text-green-700 border-green-200">
+                            {item.category}
+                          </Badge>
+                          <span className="text-xs text-green-600 font-semibold">
+                            {roi.toFixed(1)}% ROI
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-800">{item.name}</h3>
-                      <Badge className={`text-xs ${
-                        isPurchased 
-                          ? 'bg-green-100 text-green-700 border-green-200' 
-                          : 'bg-slate-100 text-slate-700 border-slate-200'
-                      }`}>
-                        {item.category}
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-slate-800">
+                        {formatMoney(item.price)}
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-amber-600">
+                        <Coins className="w-3 h-3" />
+                        <span className="font-semibold">{formatMoney(item.passiveIncome || 0)}/mo</span>
+                      </div>
+                      <CheckCircle className="w-4 h-4 text-green-600 ml-auto mt-1" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              // Full Purchase Card
+              <Card
+                key={item.id}
+                className="overflow-hidden transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 hover:border-blue-300"
+              >
+                <CardContent className="p-4">
+                  {/* Item Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-100 text-blue-600">
+                        {getItemIcon(item)}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-800">{item.name}</h3>
+                        <Badge className="text-xs bg-slate-100 text-slate-700 border-slate-200">
+                          {item.category}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price and ROI */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-right">
+                      <div className="text-xl font-bold text-slate-800">
+                        {formatMoney(item.price)}
+                      </div>
+                      <div className="text-sm text-blue-600 font-semibold">
+                        {roi.toFixed(1)}% Annual ROI
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                      <Coins className="w-3 h-3 text-amber-600" />
+                      <span className="text-xs font-semibold text-amber-700">
+                        {formatMoney(item.passiveIncome || 0)}/mo
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-slate-600 mb-3">{item.description}</p>
+
+                  {/* Rarity and Special Effect */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className={`text-xs px-2 py-1 ${getRarityColor(item.rarity)}`}>
+                        {getRarityIcon(item.rarity)}
+                        <span className="ml-1 capitalize">{item.rarity || 'common'}</span>
                       </Badge>
                     </div>
-                  </div>
-                  {isPurchased && <CheckCircle className="w-5 h-5 text-green-600" />}
-                </div>
-
-                {/* Price and ROI */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-slate-800">
-                      {formatMoney(item.price)}
-                    </div>
-                    <div className="text-sm text-blue-600 font-semibold">
-                      {roi.toFixed(1)}% Annual ROI
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
-                    <Coins className="w-3 h-3 text-amber-600" />
-                    <span className="text-xs font-semibold text-amber-700">
-                      {formatMoney(item.passiveIncome || 0)}/mo
-                    </span>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <p className="text-sm text-slate-600 mb-3">{item.description}</p>
-
-                {/* Rarity and Special Effect */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge className={`text-xs px-2 py-1 ${getRarityColor(item.rarity)}`}>
-                      {getRarityIcon(item.rarity)}
-                      <span className="ml-1 capitalize">{item.rarity || 'common'}</span>
-                    </Badge>
-                  </div>
-                  
-                  {item.specialEffect && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2">
-                      <div className="flex items-start gap-2">
-                        <Zap className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
-                        <p className="text-xs text-amber-800 font-medium">{item.specialEffect}</p>
+                    
+                    {item.specialEffect && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2">
+                        <div className="flex items-start gap-2">
+                          <Zap className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-amber-800 font-medium">{item.specialEffect}</p>
+                        </div>
                       </div>
+                    )}
+                  </div>
+
+                  {/* Abilities and Disabilities */}
+                  {(item.abilities || item.disabilities) && (
+                    <div className="mb-4 space-y-2">
+                      {item.abilities && item.abilities.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-1 mb-1">
+                            <Shield className="w-3 h-3 text-green-600" />
+                            <span className="text-xs font-semibold text-green-700">Abilities:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {item.abilities.slice(0, 3).map((ability, idx) => (
+                              <Badge key={idx} className="text-[10px] bg-green-100 text-green-800 border-green-200">
+                                {ability}
+                              </Badge>
+                            ))}
+                            {item.abilities.length > 3 && (
+                              <Badge className="text-[10px] bg-green-100 text-green-600 border-green-200">
+                                +{item.abilities.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {item.disabilities && item.disabilities.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-1 mb-1">
+                            <AlertTriangle className="w-3 h-3 text-red-600" />
+                            <span className="text-xs font-semibold text-red-700">Risks:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {item.disabilities.slice(0, 2).map((disability, idx) => (
+                              <Badge key={idx} className="text-[10px] bg-red-100 text-red-800 border-red-200">
+                                {disability}
+                              </Badge>
+                            ))}
+                            {item.disabilities.length > 2 && (
+                              <Badge className="text-[10px] bg-red-100 text-red-600 border-red-200">
+                                +{item.disabilities.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
 
-                {/* Abilities and Disabilities */}
-                {(item.abilities || item.disabilities) && (
-                  <div className="mb-4 space-y-2">
-                    {item.abilities && item.abilities.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-1 mb-1">
-                          <Shield className="w-3 h-3 text-green-600" />
-                          <span className="text-xs font-semibold text-green-700">Abilities:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {item.abilities.slice(0, 3).map((ability, idx) => (
-                            <Badge key={idx} className="text-[10px] bg-green-100 text-green-800 border-green-200">
-                              {ability}
-                            </Badge>
-                          ))}
-                          {item.abilities.length > 3 && (
-                            <Badge className="text-[10px] bg-green-100 text-green-600 border-green-200">
-                              +{item.abilities.length - 3} more
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {item.disabilities && item.disabilities.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-1 mb-1">
-                          <AlertTriangle className="w-3 h-3 text-red-600" />
-                          <span className="text-xs font-semibold text-red-700">Risks:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {item.disabilities.slice(0, 2).map((disability, idx) => (
-                            <Badge key={idx} className="text-[10px] bg-red-100 text-red-800 border-red-200">
-                              {disability}
-                            </Badge>
-                          ))}
-                          {item.disabilities.length > 2 && (
-                            <Badge className="text-[10px] bg-red-100 text-red-600 border-red-200">
-                              +{item.disabilities.length - 2} more
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                  {/* Financial Metrics */}
+                  <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
+                    <div className="flex items-center gap-1">
+                      <ArrowUpRight className="w-3 h-3 text-green-500" />
+                      <span className="text-slate-600">Income: {formatMoney(item.passiveIncome || 0)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ArrowDownRight className="w-3 h-3 text-red-500" />
+                      <span className="text-slate-600">Maintenance: {formatMoney(item.maintenanceCost || 0)}</span>
+                    </div>
                   </div>
-                )}
 
-                {/* Financial Metrics */}
-                <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
-                  <div className="flex items-center gap-1">
-                    <ArrowUpRight className="w-3 h-3 text-green-500" />
-                    <span className="text-slate-600">Income: {formatMoney(item.passiveIncome || 0)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <ArrowDownRight className="w-3 h-3 text-red-500" />
-                    <span className="text-slate-600">Maintenance: {formatMoney(item.maintenanceCost || 0)}</span>
-                  </div>
-                </div>
-
-                {/* Action Button */}
-                {isPurchased ? (
-                  <Button 
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                    disabled
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Owned
-                  </Button>
-                ) : (
+                  {/* Action Button */}
                   <Button
                     onClick={() => handlePurchase(item)}
                     className={`w-full ${
@@ -508,10 +532,9 @@ const StoreSection: React.FC = () => {
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     {canAfford ? 'Purchase' : 'Insufficient Funds'}
                   </Button>
-                )}
-              </CardContent>
-            </Card>
-          );
+                </CardContent>
+              </Card>
+            );
         })}
       </div>
 
