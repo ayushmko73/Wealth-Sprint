@@ -172,6 +172,10 @@ const BankSection: React.FC = () => {
           </div>
         </div>
         
+      </div>
+
+      {/* Tab Content */}
+      <Tabs defaultValue="account" className="w-full">
         {/* Integrated Tab Navigation */}
         <div className="overflow-x-auto px-4 pb-4">
           <TabsList className="flex w-max bg-white/10 backdrop-blur-sm rounded-lg p-1 min-w-full">
@@ -197,10 +201,6 @@ const BankSection: React.FC = () => {
             </TabsTrigger>
           </TabsList>
         </div>
-      </div>
-
-      {/* Tab Content */}
-      <Tabs defaultValue="account" className="w-full">
 
         <TabsContent value="account" className="mt-3">
           {/* Compact Account Summary */}
