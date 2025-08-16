@@ -126,9 +126,9 @@ const BankSection: React.FC = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Banking Header - Stock Market Style */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        {/* Main Header Row */}
-        <div className="flex items-center justify-between p-3">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+        {/* Header Content */}
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Building2 className="w-5 h-5" />
             <div>
@@ -142,35 +142,33 @@ const BankSection: React.FC = () => {
           </div>
         </div>
         
-        {/* Financial Overview Row */}
-        <div className="px-3 pb-3">
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <p className="text-blue-200 text-xs">NET WORTH: <span className="text-white font-bold">{formatMoney(financialData.netWorth)}</span> <span className="text-green-400">+2.3%</span></p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">CREDIT SCORE: <span className="text-white font-bold">{creditScore}</span></p>
-            </div>
+        {/* Financial Metrics */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <p className="text-blue-200 text-xs">NET WORTH: <span className="text-white font-bold">{formatMoney(financialData.netWorth)}</span> <span className="text-green-400">+2.3%</span></p>
           </div>
-          
-          {/* Bottom Metrics Row */}
-          <div className="grid grid-cols-4 gap-2 text-center">
-            <div>
-              <p className="text-blue-200 text-xs">Cash</p>
-              <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">Monthly In</p>
-              <p className="text-sm font-bold text-green-400">+{formatMoney(monthlyIncome)}</p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">Monthly Expense</p>
-              <p className="text-sm font-bold text-red-400">-{formatMoney(monthlyExpenses)}</p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">Risk</p>
-              <p className="text-sm font-bold">{riskProfile}</p>
-            </div>
+          <div>
+            <p className="text-blue-200 text-xs">CREDIT SCORE: <span className="text-white font-bold">{creditScore}</span></p>
+          </div>
+        </div>
+        
+        {/* Bottom Metrics */}
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div>
+            <p className="text-blue-200 text-xs">Cash</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Monthly In</p>
+            <p className="text-sm font-bold text-green-400">+{formatMoney(monthlyIncome)}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Monthly Expense</p>
+            <p className="text-sm font-bold text-red-400">-{formatMoney(monthlyExpenses)}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Risk</p>
+            <p className="text-sm font-bold">{riskProfile}</p>
           </div>
         </div>
       </div>
@@ -652,28 +650,25 @@ const BankSection: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="fd" className="space-y-3 mt-4">
-          {/* Merged FD Header with Overview */}
-          <div className="grid grid-cols-2 gap-2">
-            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
-              <CardContent className="p-3 text-center">
-                <PiggyBank className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-                <p className="text-xs text-blue-100 mb-1">Total FD Amount</p>
-                <p className="text-lg font-bold">{formatMoney(financialData.investments.fd)}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-lg">
-              <CardContent className="p-3 text-center">
-                <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-200" />
-                <p className="text-xs text-green-100 mb-1">Annual Interest</p>
-                <p className="text-lg font-bold">{formatMoney(financialData.investments.fd * 0.07)}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Enhanced FD Creation */}
+          {/* Merged Compact FD Section */}
           <Card className="bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-200 shadow-md">
             <CardContent className="p-4">
+              {/* FD Overview Header */}
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-3 rounded-lg text-center">
+                  <PiggyBank className="w-5 h-5 mx-auto mb-1 text-blue-200" />
+                  <p className="text-xs text-blue-100 mb-1">Total FD Amount</p>
+                  <p className="text-lg font-bold">{formatMoney(financialData.investments.fd)}</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-3 rounded-lg text-center">
+                  <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-200" />
+                  <p className="text-xs text-green-100 mb-1">Annual Interest</p>
+                  <p className="text-lg font-bold">{formatMoney(financialData.investments.fd * 0.07)}</p>
+                </div>
+              </div>
+              
+              {/* Create FD Section */}
               <div className="flex items-center gap-2 mb-3">
                 <Plus className="w-4 h-4 text-blue-600" />
                 <h3 className="text-base font-bold text-blue-800">Create Fixed Deposit</h3>
@@ -692,8 +687,20 @@ const BankSection: React.FC = () => {
                   className="w-full text-center text-lg font-semibold"
                 />
                 
+                <Button 
+                  onClick={handleCreateFD} 
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-md"
+                  size="sm"
+                  disabled={!fdAmount || parseInt(fdAmount) > financialData.bankBalance}
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Create FD (7% APY)
+                </Button>
+                
+                {/* Calculator */}
                 {fdAmount && (
                   <div className="bg-white p-3 rounded-lg border border-blue-100">
+                    <p className="text-sm font-semibold text-blue-800 mb-2">Calculator</p>
                     <div className="grid grid-cols-3 gap-3 text-center text-xs">
                       <div>
                         <p className="text-gray-600">Principal</p>
@@ -710,16 +717,6 @@ const BankSection: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
-                <Button 
-                  onClick={handleCreateFD} 
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-md"
-                  size="sm"
-                  disabled={!fdAmount || parseInt(fdAmount) > financialData.bankBalance}
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Create FD (7% APY)
-                </Button>
                 
                 {/* Compact Benefits */}
                 <div className="grid grid-cols-3 gap-2 text-xs">
