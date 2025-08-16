@@ -219,18 +219,18 @@ const StoreSection: React.FC = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Store Header - Inspired by Stock Market/Banking Sections */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-800 text-white">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         {/* Main Header Row */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
             <Store className="w-5 h-5" />
             <div>
               <h1 className="text-lg font-bold">Wealth Store</h1>
-              <p className="text-purple-100 text-xs">Premium assets & investment opportunities • 24/7 marketplace</p>
+              <p className="text-blue-100 text-xs">Premium assets & investment opportunities • 24/7 marketplace</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-purple-200">Market Status</p>
+            <p className="text-xs text-blue-200">Market Status</p>
             <p className="text-sm font-bold text-green-400">OPEN</p>
           </div>
         </div>
@@ -238,29 +238,29 @@ const StoreSection: React.FC = () => {
         {/* Store Metrics */}
         <div className="grid grid-cols-2 gap-3 mb-3 px-4">
           <div>
-            <p className="text-purple-200 text-xs">TOTAL CATALOG: <span className="text-white font-bold">{formatMoney(totalValue)}</span> <span className="text-green-400">+{totalItems} items</span></p>
+            <p className="text-blue-200 text-xs">TOTAL CATALOG: <span className="text-white font-bold">{formatMoney(totalValue)}</span> <span className="text-green-400">+{totalItems} items</span></p>
           </div>
           <div>
-            <p className="text-purple-200 text-xs">YOUR PORTFOLIO: <span className="text-white font-bold">{formatMoney(ownedValue)}</span></p>
+            <p className="text-blue-200 text-xs">YOUR PORTFOLIO: <span className="text-white font-bold">{formatMoney(ownedValue)}</span></p>
           </div>
         </div>
         
         {/* Bottom Metrics */}
         <div className="grid grid-cols-4 gap-2 text-center px-4 pb-3">
           <div>
-            <p className="text-purple-200 text-xs">Balance</p>
+            <p className="text-blue-200 text-xs">Balance</p>
             <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
           </div>
           <div>
-            <p className="text-purple-200 text-xs">Owned</p>
+            <p className="text-blue-200 text-xs">Owned</p>
             <p className="text-sm font-bold text-green-400">{purchasedItems.length}</p>
           </div>
           <div>
-            <p className="text-purple-200 text-xs">Available</p>
-            <p className="text-sm font-bold text-blue-400">{totalItems - purchasedItems.length}</p>
+            <p className="text-blue-200 text-xs">Available</p>
+            <p className="text-sm font-bold text-purple-400">{totalItems - purchasedItems.length}</p>
           </div>
           <div>
-            <p className="text-purple-200 text-xs">Categories</p>
+            <p className="text-blue-200 text-xs">Categories</p>
             <p className="text-sm font-bold">{getCategories().length}</p>
           </div>
         </div>
@@ -274,14 +274,14 @@ const StoreSection: React.FC = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   selectedCategory === category
-                    ? 'bg-white text-purple-800 shadow-md'
+                    ? 'bg-white text-blue-800 shadow-md'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
                 {categoryIcons[category]}
                 {category}
                 {category !== 'All' && (
-                  <Badge className="ml-1 bg-purple-500 text-white text-xs">
+                  <Badge className="ml-1 bg-blue-500 text-white text-xs">
                     {stats[category.toLowerCase()]?.count || 0}
                   </Badge>
                 )}
@@ -339,7 +339,7 @@ const StoreSection: React.FC = () => {
               className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${
                 isPurchased 
                   ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' 
-                  : 'bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 hover:border-purple-300'
+                  : 'bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 hover:border-blue-300'
               }`}
             >
               <CardContent className="p-4">
@@ -349,7 +349,7 @@ const StoreSection: React.FC = () => {
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       isPurchased 
                         ? 'bg-green-100 text-green-600' 
-                        : 'bg-purple-100 text-purple-600'
+                        : 'bg-blue-100 text-blue-600'
                     }`}>
                       {getItemIcon(item)}
                     </div>
@@ -373,7 +373,7 @@ const StoreSection: React.FC = () => {
                     <div className="text-xl font-bold text-slate-800">
                       {formatMoney(item.price)}
                     </div>
-                    <div className="text-sm text-purple-600 font-semibold">
+                    <div className="text-sm text-blue-600 font-semibold">
                       {roi.toFixed(1)}% Annual ROI
                     </div>
                   </div>
@@ -414,7 +414,7 @@ const StoreSection: React.FC = () => {
                     onClick={() => handlePurchase(item)}
                     className={`w-full ${
                       canAfford 
-                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white' 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                   >
@@ -445,13 +445,13 @@ const StoreSection: React.FC = () => {
               </div>
 
               <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-3 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                   {getItemIcon(showPurchaseModal)}
                 </div>
                 <h4 className="text-lg font-semibold text-slate-800 mb-2">
                   {showPurchaseModal.name}
                 </h4>
-                <p className="text-2xl font-bold text-purple-600 mb-2">
+                <p className="text-2xl font-bold text-blue-600 mb-2">
                   {formatMoney(showPurchaseModal.price)}
                 </p>
                 <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
@@ -495,7 +495,7 @@ const StoreSection: React.FC = () => {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700"
                   onClick={() => confirmPurchase(showPurchaseModal)}
                 >
                   Confirm Purchase
