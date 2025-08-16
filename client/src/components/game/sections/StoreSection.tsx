@@ -147,22 +147,25 @@ const StoreSection: React.FC = () => {
     setShowPurchaseModal(item);
   };
 
-  const confirmPurchase = (item: any) => {
+  const confirmPurchase = (item: any, selectedPaymentMethod?: string) => {
     try {
       let paymentMethod = '';
+      let useCredit = false;
       
-      if (financialData.bankBalance >= item.price) {
-        updateFinancialData({
-          bankBalance: financialData.bankBalance - item.price,
-        });
-        paymentMethod = 'Bank Account';
-      } else {
+      // Determine payment method based on user selection or funds availability
+      if (selectedPaymentMethod === 'credit' || (financialData.bankBalance < item.price)) {
         const success = chargeToCredit(item.price, item.name);
         if (!success) {
           toast.error('Credit limit exceeded');
           return;
         }
         paymentMethod = 'Credit Card';
+        useCredit = true;
+      } else {
+        updateFinancialData({
+          bankBalance: financialData.bankBalance - item.price,
+        });
+        paymentMethod = 'Bank Account';
       }
 
       purchaseItem({
@@ -197,15 +200,23 @@ const StoreSection: React.FC = () => {
         fromAccount: 'bank',
         toAccount: 'business',
       });
-
-      // Set the selected category to match the purchased item's category if not on 'All'
-      if (selectedCategory === 'All') {
-        const itemCategory = item.category.charAt(0).toUpperCase() + item.category.slice(1);
-        setSelectedCategory(itemCategory);
-      }
       
       setShowPurchaseModal(null);
-      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Check the ${item.category} category.`);
+      
+      // Add credit card benefits
+      if (useCredit) {
+        const cashback = Math.floor(item.price * 0.005); // 0.5% cashback
+        if (cashback > 0) {
+          updateFinancialData({
+            bankBalance: financialData.bankBalance + cashback,
+          });
+          toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Earned ${formatMoney(cashback)} cashback!`);
+        } else {
+          toast.success(`Successfully purchased ${item.name} using ${paymentMethod}!`);
+        }
+      } else {
+        toast.success(`Successfully purchased ${item.name} using ${paymentMethod}!`);
+      }
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
     }
@@ -334,40 +345,7 @@ const StoreSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Owned Assets Section */}
-      {purchasedItems.length > 0 && (
-        <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200 shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <CheckCircle className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-bold text-emerald-800">Your Assets Portfolio</h2>
-              <Badge className="bg-emerald-600 text-white">{purchasedItems.length} items</Badge>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {purchasedItems.slice(0, 4).map((purchasedItem) => {
-                const storeItem = storeItems.find(item => item.id === purchasedItem.storeItemId);
-                if (!storeItem) return null;
-                
-                return (
-                  <div key={`owned-${purchasedItem.id}`} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-emerald-200">
-                    <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-lg text-emerald-600">
-                      {getItemIcon(storeItem)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-emerald-800">{storeItem.name}</div>
-                      <div className="text-xs text-emerald-600">+{formatMoney(storeItem.passiveIncome || 0)}/month</div>
-                    </div>
-                    <Badge className="bg-emerald-600 text-white text-xs">Owned</Badge>
-                  </div>
-                );
-              })}
-            </div>
-            {purchasedItems.length > 4 && (
-              <p className="text-center text-emerald-600 text-sm mt-2">+{purchasedItems.length - 4} more assets</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      {/* Owned Assets Section - Hidden to reduce clutter */}
 
       {/* Store Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -573,46 +551,71 @@ const StoreSection: React.FC = () => {
 
               {/* Payment Method */}
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                <div className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   Payment Method:
                 </div>
-                {financialData.bankBalance >= showPurchaseModal.price ? (
-                  <div className="flex items-center gap-2 bg-green-100 p-2 rounded-md">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="font-semibold text-green-700">Bank Account</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-blue-100 p-2 rounded-md">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="font-semibold text-blue-700">Credit Card</span>
+                
+                {/* Bank Account Option */}
+                {financialData.bankBalance >= showPurchaseModal.price && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="font-semibold text-green-700">Bank Account</span>
+                      </div>
+                      <span className="text-xs text-green-600 font-medium">Recommended</span>
+                    </div>
+                    <p className="text-xs text-green-600 mt-1">No additional fees • Instant payment</p>
                   </div>
                 )}
                 
-                <div className="text-sm text-slate-600 mt-3 p-2 bg-white rounded border">
-                  <strong>After purchase:</strong> {formatMoney(
-                    financialData.bankBalance >= showPurchaseModal.price 
-                      ? financialData.bankBalance - showPurchaseModal.price 
-                      : financialData.bankBalance
-                  )} remaining in account
+                {/* Credit Card Option */}
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="font-semibold text-purple-700">Credit Card</span>
+                    </div>
+                    <span className="text-xs text-purple-600 font-medium">Benefits Available</span>
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-xs text-purple-600">• Instant purchase protection</p>
+                    <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
+                    <p className="text-xs text-purple-600">• Build credit score faster</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="space-y-3">
+                {/* Bank Payment Button */}
+                {financialData.bankBalance >= showPurchaseModal.price && (
+                  <Button
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 font-semibold shadow-lg"
+                    onClick={() => confirmPurchase(showPurchaseModal, 'bank')}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Pay with Bank Account
+                  </Button>
+                )}
+                
+                {/* Credit Card Payment Button */}
+                <Button
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 font-semibold shadow-lg"
+                  onClick={() => confirmPurchase(showPurchaseModal, 'credit')}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Pay with Credit Card + Benefits
+                </Button>
+                
+                {/* Cancel Button */}
                 <Button
                   variant="outline"
-                  className="flex-1 border-2 border-gray-300 hover:border-gray-400 font-semibold"
+                  className="w-full border-2 border-gray-300 hover:border-gray-400 font-semibold"
                   onClick={() => setShowPurchaseModal(null)}
                 >
                   <X className="w-4 h-4 mr-2" />
                   Cancel
-                </Button>
-                <Button
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 font-semibold shadow-lg"
-                  onClick={() => confirmPurchase(showPurchaseModal)}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Confirm Purchase
                 </Button>
               </div>
             </CardContent>
