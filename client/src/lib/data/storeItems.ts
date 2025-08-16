@@ -12,6 +12,11 @@ export interface StoreItem {
   passiveIncome?: number;
   maintenanceCost?: number;
   appreciationRate?: number;
+  // Unique abilities and disabilities
+  abilities?: string[];
+  disabilities?: string[];
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  specialEffect?: string;
 }
 
 export const storeItems: StoreItem[] = [
@@ -25,6 +30,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 1500,
     maintenanceCost: 500,
     appreciationRate: 8.5,
+    abilities: ['Low maintenance', 'Easy to rent', 'Great for beginners'],
+    disabilities: ['Limited space', 'Lower rental yield'],
+    rarity: 'common',
+    specialEffect: 'Reduces stress by 2 when owned',
   },
   {
     id: 'luxury_villa',
@@ -36,6 +45,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 8000,
     maintenanceCost: 2000,
     appreciationRate: 10,
+    abilities: ['High appreciation', 'Luxury rental rates', 'Status symbol'],
+    disabilities: ['High maintenance', 'Market sensitive', 'Illiquid asset'],
+    rarity: 'epic',
+    specialEffect: 'Increases reputation by 5 points',
   },
   {
     id: 'coffee_shop',
@@ -47,6 +60,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 2500,
     maintenanceCost: 800,
     appreciationRate: 12,
+    abilities: ['Daily cash flow', 'Community building', 'Scalable franchise'],
+    disabilities: ['Weather dependent', 'High competition', 'Staff dependent'],
+    rarity: 'rare',
+    specialEffect: 'Generates random bonus income 20% of the time',
   },
   {
     id: 'delivery_van',
@@ -58,6 +75,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 1800,
     maintenanceCost: 600,
     appreciationRate: -10,
+    abilities: ['E-commerce ready', 'Large cargo space', 'Commercial licensing'],
+    disabilities: ['High fuel costs', 'Parking restrictions', 'Wear and tear'],
+    rarity: 'common',
+    specialEffect: 'Unlocks delivery business opportunities',
   },
   {
     id: 'motorbike',
@@ -80,6 +101,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 500,
     maintenanceCost: 100,
     appreciationRate: -20,
+    abilities: ['Remote work enabler', 'Skill development', 'Multiple income streams'],
+    disabilities: ['Rapid obsolescence', 'Fragile hardware', 'Power dependent'],
+    rarity: 'common',
+    specialEffect: 'Increases side income potential by 25%',
   },
   {
     id: 'arcade_machine',
@@ -91,6 +116,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 150,
     maintenanceCost: 50,
     appreciationRate: -5,
+    abilities: ['Nostalgic appeal', 'Social gathering', 'Gaming tournaments'],
+    disabilities: ['Space consuming', 'Mechanical issues', 'Limited audience'],
+    rarity: 'common',
+    specialEffect: 'Reduces stress by 1 point monthly',
   },
   {
     id: 'solar_power_plant',
@@ -102,6 +131,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 4500,
     maintenanceCost: 1000,
     appreciationRate: 8,
+    abilities: ['Government subsidies', 'Green energy credits', '25-year lifespan', 'Grid independence'],
+    disabilities: ['Weather dependent', 'High initial cost', 'Technology risk'],
+    rarity: 'epic',
+    specialEffect: 'Reduces electricity bills by 80% for all properties',
   },
   {
     id: 'fishing_boat',
@@ -124,6 +157,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 300,
     maintenanceCost: 80,
     appreciationRate: -25,
+    abilities: ['Aerial surveillance', 'Photography services', 'Emergency response'],
+    disabilities: ['Weather sensitive', 'Battery limited', 'Regulatory restrictions'],
+    rarity: 'rare',
+    specialEffect: 'Provides real-time market data for investments',
   },
   {
     id: 'fast_food_stall',
@@ -179,6 +216,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 1800,
     maintenanceCost: 500,
     appreciationRate: 12,
+    abilities: ['Cultural investment', 'Tax benefits', 'Art appreciation', 'Elite networking'],
+    disabilities: ['Market volatility', 'Authenticity risks', 'Storage requirements'],
+    rarity: 'epic',
+    specialEffect: 'Attracts high-net-worth investors, increasing all investment returns by 5%',
   },
   {
     id: 'car',
@@ -201,6 +242,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 45000,
     maintenanceCost: 5000,
     appreciationRate: 10,
+    abilities: ['Prime location', 'Corporate tenants', 'Long-term leases', 'Business networking'],
+    disabilities: ['Economic cycles', 'Remote work trend', 'High vacancy risk'],
+    rarity: 'legendary',
+    specialEffect: 'Increases credibility for business loans by 200 credit points',
   },
   {
     id: 'warehouse_facility',
@@ -234,6 +279,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 15000,
     maintenanceCost: 3000,
     appreciationRate: -8,
+    abilities: ['Eco-friendly', 'Self-driving', 'Premium ride sharing', 'Tech innovation'],
+    disabilities: ['Expensive repairs', 'Charging infrastructure', 'Battery degradation'],
+    rarity: 'legendary',
+    specialEffect: 'Reduces monthly fuel costs by ₹5,000 for all vehicles',
   },
   {
     id: 'restaurant',
@@ -245,6 +294,10 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 85000,
     maintenanceCost: 15000,
     appreciationRate: 12,
+    abilities: ['Brand recognition', 'Multiple revenue streams', 'Catering opportunities', 'Franchise potential'],
+    disabilities: ['High labor costs', 'Food waste risk', 'Health regulations', 'Economic sensitivity'],
+    rarity: 'legendary',
+    specialEffect: 'Generates celebrity endorsements worth ₹50,000 quarterly',
   },
 ];
 

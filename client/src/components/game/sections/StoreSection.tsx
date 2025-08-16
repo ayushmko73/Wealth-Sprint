@@ -43,7 +43,10 @@ import {
   Building,
   Calendar,
   Banknote,
-  Store
+  Store,
+  Shield,
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -71,6 +74,65 @@ const StoreSection: React.FC = () => {
     'Gadget': <Smartphone className="w-4 h-4" />,
     'Investment': <TrendingUp className="w-4 h-4" />,
     'Entertainment': <Gamepad2 className="w-4 h-4" />
+  };
+
+  const getCategoryColors = (category: string, isSelected: boolean) => {
+    const colorMap: Record<string, { bg: string, text: string, badge: string }> = {
+      'All': { 
+        bg: isSelected ? 'bg-white text-slate-800' : 'bg-white/10 text-white hover:bg-white/20', 
+        text: 'text-slate-800', 
+        badge: 'bg-slate-500' 
+      },
+      'Property': { 
+        bg: isSelected ? 'bg-white text-emerald-800' : 'bg-emerald-500/20 text-white hover:bg-emerald-500/30', 
+        text: 'text-emerald-800', 
+        badge: 'bg-emerald-600' 
+      },
+      'Vehicle': { 
+        bg: isSelected ? 'bg-white text-blue-800' : 'bg-blue-500/20 text-white hover:bg-blue-500/30', 
+        text: 'text-blue-800', 
+        badge: 'bg-blue-600' 
+      },
+      'Business': { 
+        bg: isSelected ? 'bg-white text-amber-800' : 'bg-amber-500/20 text-white hover:bg-amber-500/30', 
+        text: 'text-amber-800', 
+        badge: 'bg-amber-600' 
+      },
+      'Gadget': { 
+        bg: isSelected ? 'bg-white text-purple-800' : 'bg-purple-500/20 text-white hover:bg-purple-500/30', 
+        text: 'text-purple-800', 
+        badge: 'bg-purple-600' 
+      },
+      'Investment': { 
+        bg: isSelected ? 'bg-white text-teal-800' : 'bg-teal-500/20 text-white hover:bg-teal-500/30', 
+        text: 'text-teal-800', 
+        badge: 'bg-teal-600' 
+      },
+      'Entertainment': { 
+        bg: isSelected ? 'bg-white text-rose-800' : 'bg-rose-500/20 text-white hover:bg-rose-500/30', 
+        text: 'text-rose-800', 
+        badge: 'bg-rose-600' 
+      }
+    };
+    return colorMap[category] || colorMap['All'];
+  };
+
+  const getRarityColor = (rarity?: string) => {
+    switch (rarity) {
+      case 'legendary': return 'bg-gradient-to-r from-yellow-400 to-amber-500 text-white';
+      case 'epic': return 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white';
+      case 'rare': return 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white';
+      default: return 'bg-gradient-to-r from-gray-400 to-slate-500 text-white';
+    }
+  };
+
+  const getRarityIcon = (rarity?: string) => {
+    switch (rarity) {
+      case 'legendary': return <Crown className="w-3 h-3" />;
+      case 'epic': return <Gem className="w-3 h-3" />;
+      case 'rare': return <Sparkles className="w-3 h-3" />;
+      default: return <Star className="w-3 h-3" />;
+    }
   };
 
   const getItemIcon = (item: any) => {
@@ -257,7 +319,7 @@ const StoreSection: React.FC = () => {
           </div>
           <div>
             <p className="text-blue-200 text-xs">Available</p>
-            <p className="text-sm font-bold text-purple-400">{totalItems - purchasedItems.length}</p>
+            <p className="text-sm font-bold text-white">{totalItems - purchasedItems.length}</p>
           </div>
           <div>
             <p className="text-blue-200 text-xs">Categories</p>
@@ -272,16 +334,14 @@ const StoreSection: React.FC = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  selectedCategory === category
-                    ? 'bg-white text-blue-800 shadow-md'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap shadow-md ${
+                  getCategoryColors(category, selectedCategory === category).bg
                 }`}
               >
                 {categoryIcons[category]}
                 {category}
                 {category !== 'All' && (
-                  <Badge className="ml-1 bg-blue-500 text-white text-xs">
+                  <Badge className={`ml-1 ${getCategoryColors(category, false).badge} text-white text-xs`}>
                     {stats[category.toLowerCase()]?.count || 0}
                   </Badge>
                 )}
@@ -386,7 +446,73 @@ const StoreSection: React.FC = () => {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-slate-600 mb-4">{item.description}</p>
+                <p className="text-sm text-slate-600 mb-3">{item.description}</p>
+
+                {/* Rarity and Special Effect */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className={`text-xs px-2 py-1 ${getRarityColor(item.rarity)}`}>
+                      {getRarityIcon(item.rarity)}
+                      <span className="ml-1 capitalize">{item.rarity || 'common'}</span>
+                    </Badge>
+                  </div>
+                  
+                  {item.specialEffect && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2">
+                      <div className="flex items-start gap-2">
+                        <Zap className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-amber-800 font-medium">{item.specialEffect}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Abilities and Disabilities */}
+                {(item.abilities || item.disabilities) && (
+                  <div className="mb-4 space-y-2">
+                    {item.abilities && item.abilities.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <Shield className="w-3 h-3 text-green-600" />
+                          <span className="text-xs font-semibold text-green-700">Abilities:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {item.abilities.slice(0, 3).map((ability, idx) => (
+                            <Badge key={idx} className="text-[10px] bg-green-100 text-green-800 border-green-200">
+                              {ability}
+                            </Badge>
+                          ))}
+                          {item.abilities.length > 3 && (
+                            <Badge className="text-[10px] bg-green-100 text-green-600 border-green-200">
+                              +{item.abilities.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {item.disabilities && item.disabilities.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <AlertTriangle className="w-3 h-3 text-red-600" />
+                          <span className="text-xs font-semibold text-red-700">Risks:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {item.disabilities.slice(0, 2).map((disability, idx) => (
+                            <Badge key={idx} className="text-[10px] bg-red-100 text-red-800 border-red-200">
+                              {disability}
+                            </Badge>
+                          ))}
+                          {item.disabilities.length > 2 && (
+                            <Badge className="text-[10px] bg-red-100 text-red-600 border-red-200">
+                              +{item.disabilities.length - 2} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Financial Metrics */}
                 <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
@@ -414,7 +540,7 @@ const StoreSection: React.FC = () => {
                     onClick={() => handlePurchase(item)}
                     className={`w-full ${
                       canAfford 
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white' 
+                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                   >
@@ -495,7 +621,7 @@ const StoreSection: React.FC = () => {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                   onClick={() => confirmPurchase(showPurchaseModal)}
                 >
                   Confirm Purchase
