@@ -2,19 +2,48 @@ import React, { useState } from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { useStore } from '../../../lib/stores/useStore';
 import { formatMoney } from '../../../lib/utils/formatMoney';
-import { storeItems, getCategories } from '../../../lib/data/storeItems';
+import { storeItems, getCategories, getCategoryStats } from '../../../lib/data/storeItems';
+import { Card, CardContent } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
 import { 
+  ShoppingBag, 
   Home, 
   Car, 
   Building2, 
   Smartphone,
-  ShoppingBag,
+  TrendingUp,
+  Gamepad2,
   CheckCircle,
+  DollarSign,
   Star,
   X,
   Coins,
-  TrendingUp,
-  GamepadIcon
+  Zap,
+  ArrowUpRight,
+  ArrowDownRight,
+  ShoppingCart,
+  Target,
+  Crown,
+  Gem,
+  Laptop,
+  Coffee,
+  Truck,
+  Bike,
+  Joystick,
+  Sun,
+  Anchor,
+  Plane,
+  Utensils,
+  Dumbbell,
+  Watch,
+  MonitorSpeaker,
+  Palette,
+  Warehouse,
+  Building,
+  Calendar,
+  Banknote,
+  Store
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,13 +64,40 @@ const StoreSection: React.FC = () => {
   )];
   
   const categoryIcons: Record<string, React.ReactNode> = {
-    'All': <Star size={16} />,
-    'Property': <Home size={16} />,
-    'Vehicle': <Car size={16} />,
-    'Business': <Building2 size={16} />,
-    'Gadget': <Smartphone size={16} />,
-    'Investment': <TrendingUp size={16} />,
-    'Entertainment': <GamepadIcon size={16} />
+    'All': <Star className="w-4 h-4" />,
+    'Property': <Home className="w-4 h-4" />,
+    'Vehicle': <Car className="w-4 h-4" />,
+    'Business': <Building2 className="w-4 h-4" />,
+    'Gadget': <Smartphone className="w-4 h-4" />,
+    'Investment': <TrendingUp className="w-4 h-4" />,
+    'Entertainment': <Gamepad2 className="w-4 h-4" />
+  };
+
+  const getItemIcon = (item: any) => {
+    const iconMap: Record<string, React.ReactNode> = {
+      'small_apartment': <Home className="w-6 h-6" />,
+      'luxury_villa': <Crown className="w-6 h-6" />,
+      'coffee_shop': <Coffee className="w-6 h-6" />,
+      'delivery_van': <Truck className="w-6 h-6" />,
+      'motorbike': <Bike className="w-6 h-6" />,
+      'laptop': <Laptop className="w-6 h-6" />,
+      'arcade_machine': <Joystick className="w-6 h-6" />,
+      'solar_power_plant': <Sun className="w-6 h-6" />,
+      'fishing_boat': <Anchor className="w-6 h-6" />,
+      'drone': <Plane className="w-6 h-6" />,
+      'fast_food_stall': <Utensils className="w-6 h-6" />,
+      'gym_equipment': <Dumbbell className="w-6 h-6" />,
+      'smartwatch': <Watch className="w-6 h-6" />,
+      'advertising_billboard': <MonitorSpeaker className="w-6 h-6" />,
+      'art_gallery': <Palette className="w-6 h-6" />,
+      'car': <Car className="w-6 h-6" />,
+      'commercial_office': <Building className="w-6 h-6" />,
+      'warehouse_facility': <Warehouse className="w-6 h-6" />,
+      'delivery_fleet': <Truck className="w-6 h-6" />,
+      'tesla': <Zap className="w-6 h-6" />,
+      'restaurant': <Utensils className="w-6 h-6" />
+    };
+    return iconMap[item.id] || <ShoppingBag className="w-6 h-6" />;
   };
 
   const filteredItems = storeItems.filter(item => {
@@ -52,7 +108,7 @@ const StoreSection: React.FC = () => {
 
   const handlePurchase = (item: any) => {
     const currentCreditUsed = financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
-    const creditLimit = 500000; // ₹5 lakh credit limit
+    const creditLimit = 500000;
     const availableCredit = creditLimit - currentCreditUsed;
     
     if (financialData.bankBalance < item.price && availableCredit < item.price) {
@@ -67,13 +123,11 @@ const StoreSection: React.FC = () => {
       let paymentMethod = '';
       
       if (financialData.bankBalance >= item.price) {
-        // Pay with bank balance
         updateFinancialData({
           bankBalance: financialData.bankBalance - item.price,
         });
         paymentMethod = 'Bank Account';
       } else {
-        // Pay with credit card
         const success = chargeToCredit(item.price, item.name);
         if (!success) {
           toast.error('Credit limit exceeded');
@@ -82,7 +136,6 @@ const StoreSection: React.FC = () => {
         paymentMethod = 'Credit Card';
       }
 
-      // Add to both store purchases (for inventory tracking) and assets (for financial tracking)
       purchaseItem({
         id: item.id,
         name: item.name,
@@ -93,15 +146,14 @@ const StoreSection: React.FC = () => {
         passiveIncome: item.passiveIncome || 0
       });
 
-      // Add to assets with proper categorization
       const assetCategory = getCategoryMapping(item.category);
       addAsset({
         name: item.name,
         category: assetCategory,
-        value: item.price, // Asset value equals purchase price initially
+        value: item.price,
         purchasePrice: item.price,
         purchaseDate: new Date(),
-        monthlyIncome: item.passiveIncome || 0, // Use passiveIncome from store data
+        monthlyIncome: item.passiveIncome || 0,
         appreciationRate: item.appreciationRate || getAppreciationRate(item.category),
         maintenanceCost: item.maintenanceCost || getMaintenanceCost(item.category, item.price),
         description: item.description,
@@ -118,13 +170,12 @@ const StoreSection: React.FC = () => {
       });
 
       setShowPurchaseModal(null);
-      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}! Added to your assets.`);
+      toast.success(`Successfully purchased ${item.name} using ${paymentMethod}!`);
     } catch (error) {
       toast.error('Purchase failed. Please try again.');
     }
   };
 
-  // Helper functions for asset categorization
   const getCategoryMapping = (storeCategory: string): 'real_estate' | 'vehicles' | 'business' | 'gadget' | 'investment' | 'entertainment' => {
     switch (storeCategory) {
       case 'property': return 'real_estate';
@@ -138,293 +189,322 @@ const StoreSection: React.FC = () => {
 
   const getAppreciationRate = (category: string): number => {
     switch (category) {
-      case 'property': return 8.5; // Real estate typically appreciates 8-10% annually
-      case 'vehicle': return -10; // Vehicles depreciate
-      case 'business': return 15; // Businesses can appreciate with growth
-      case 'gadget': return -20; // Tech gadgets depreciate quickly
+      case 'property': return 8.5;
+      case 'vehicle': return -10;
+      case 'business': return 15;
+      case 'gadget': return -20;
       default: return 0;
     }
   };
 
   const getMaintenanceCost = (category: string, price: number): number => {
     switch (category) {
-      case 'property': return Math.floor(price * 0.01 / 12); // 1% annually as monthly cost
-      case 'vehicle': return Math.floor(price * 0.05 / 12); // 5% annually for vehicle maintenance
-      case 'business': return Math.floor(price * 0.02 / 12); // 2% annually for business expenses
-      case 'gadget': return Math.floor(price * 0.01 / 12); // 1% annually for tech maintenance
+      case 'property': return Math.floor(price * 0.01 / 12);
+      case 'vehicle': return Math.floor(price * 0.05 / 12);
+      case 'business': return Math.floor(price * 0.02 / 12);
+      case 'gadget': return Math.floor(price * 0.01 / 12);
       default: return 0;
     }
   };
 
   const purchasedItems = getPurchasedItems();
+  const stats = getCategoryStats();
+  const totalValue = storeItems.reduce((sum, item) => sum + item.price, 0);
+  const totalItems = storeItems.length;
+  const ownedValue = purchasedItems.reduce((sum, item) => {
+    const storeItem = storeItems.find(si => si.id === item.storeItemId);
+    return sum + (storeItem?.price || 0);
+  }, 0);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#faf8f3' }}>
-      
-      {/* Simple Header */}
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-6" style={{ color: '#3a3a3a' }}>
-          Store
-        </h1>
-
-        {/* Category Pills */}
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl whitespace-nowrap text-sm font-medium transition-all"
-              style={{
-                backgroundColor: selectedCategory === category ? '#4F9CF9' : '#ffffff',
-                color: selectedCategory === category ? 'white' : '#3a3a3a',
-                border: '1px solid #e8dcc6'
-              }}
-            >
-              {categoryIcons[category]}
-              {category}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Product Cards */}
-      <div className="px-4 pb-4">
-        {/* Owned Items Section */}
-        {purchasedItems.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-4" style={{ color: '#3a3a3a' }}>
-              Owned Assets
-            </h2>
-            <div 
-              className="rounded-xl p-4"
-              style={{ 
-                backgroundColor: '#ffffff',
-                border: '1px solid #e8dcc6',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="grid grid-cols-1 gap-3">
-                {purchasedItems.map((purchasedItem) => {
-                  const storeItem = storeItems.find(item => item.id === purchasedItem.storeItemId);
-                  if (!storeItem) return null;
-                  
-                  return (
-                    <div key={`owned-${purchasedItem.id}`} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-                          style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
-                        >
-                          {storeItem.icon}
-                        </div>
-                        <div>
-                          <div className="font-medium" style={{ color: '#3a3a3a' }}>
-                            {storeItem.name}
-                          </div>
-                          <div 
-                            className="text-sm px-2 py-1 rounded-full inline-block"
-                            style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
-                          >
-                            +{formatMoney(storeItem.passiveIncome || 0)}/month
-                          </div>
-                        </div>
-                      </div>
-                      <div 
-                        className="px-3 py-1.5 rounded-lg text-sm font-medium"
-                        style={{ backgroundColor: '#22C55E', color: '#ffffff' }}
-                      >
-                        Owned
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+    <div className="space-y-4 p-4">
+      {/* Store Header - Inspired by Stock Market/Banking Sections */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-800 text-white">
+        {/* Main Header Row */}
+        <div className="flex items-center justify-between p-4 pb-3">
+          <div className="flex items-center gap-2">
+            <Store className="w-5 h-5" />
+            <div>
+              <h1 className="text-lg font-bold">Wealth Store</h1>
+              <p className="text-purple-100 text-xs">Premium assets & investment opportunities • 24/7 marketplace</p>
             </div>
           </div>
-        )}
-
-        <div className="space-y-4">
-          {filteredItems.map((item) => {
-            const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
-            const canAfford = financialData.bankBalance >= item.price;
-            const roi = (((item.passiveIncome || 0) * 12) / item.price * 100);
-            
-            return (
-              <div
-                key={item.id}
-                className="rounded-xl p-4"
-                style={{ 
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e8dcc6',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                }}
+          <div className="text-right">
+            <p className="text-xs text-purple-200">Market Status</p>
+            <p className="text-sm font-bold text-green-400">OPEN</p>
+          </div>
+        </div>
+        
+        {/* Store Metrics */}
+        <div className="grid grid-cols-2 gap-3 mb-3 px-4">
+          <div>
+            <p className="text-purple-200 text-xs">TOTAL CATALOG: <span className="text-white font-bold">{formatMoney(totalValue)}</span> <span className="text-green-400">+{totalItems} items</span></p>
+          </div>
+          <div>
+            <p className="text-purple-200 text-xs">YOUR PORTFOLIO: <span className="text-white font-bold">{formatMoney(ownedValue)}</span></p>
+          </div>
+        </div>
+        
+        {/* Bottom Metrics */}
+        <div className="grid grid-cols-4 gap-2 text-center px-4 pb-3">
+          <div>
+            <p className="text-purple-200 text-xs">Balance</p>
+            <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
+          </div>
+          <div>
+            <p className="text-purple-200 text-xs">Owned</p>
+            <p className="text-sm font-bold text-green-400">{purchasedItems.length}</p>
+          </div>
+          <div>
+            <p className="text-purple-200 text-xs">Available</p>
+            <p className="text-sm font-bold text-blue-400">{totalItems - purchasedItems.length}</p>
+          </div>
+          <div>
+            <p className="text-purple-200 text-xs">Categories</p>
+            <p className="text-sm font-bold">{getCategories().length}</p>
+          </div>
+        </div>
+        
+        {/* Category Navigation */}
+        <div className="overflow-x-auto px-4 pb-4">
+          <div className="flex gap-2 min-w-max">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === category
+                    ? 'bg-white text-purple-800 shadow-md'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
               >
-                <div className="flex items-center gap-4">
-                  {/* Icon */}
-                  <div 
-                    className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6' }}
-                  >
-                    {item.icon}
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg" style={{ color: '#3a3a3a' }}>
-                          {item.name}
-                        </h3>
-                        <p className="text-sm" style={{ color: '#666' }}>
-                          {item.category}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-xl" style={{ color: '#3a3a3a' }}>
-                          {formatMoney(item.price)}
-                        </div>
-                        <div className="text-sm" style={{ color: '#22C55E' }}>
-                          {roi.toFixed(1)}% ROI
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Monthly Income Badge */}
-                    <div 
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium mb-3"
-                      style={{ backgroundColor: '#ffffff', color: '#9333EA', border: '1px solid #e8dcc6' }}
-                    >
-                      <Coins size={12} />
-                      {formatMoney(item.passiveIncome || 0)}/month
-                    </div>
-                    
-                    <p className="text-sm mb-4" style={{ color: '#666' }}>
-                      {item.description}
-                    </p>
-                    
-                    {/* Action Button */}
-                    {isPurchased ? (
-                      <div 
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg w-fit"
-                        style={{ backgroundColor: '#22C55E', color: '#ffffff' }}
-                      >
-                        <CheckCircle size={16} />
-                        <span className="font-medium">Owned</span>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handlePurchase(item)}
-                        disabled={!canAfford}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all"
-                        style={{
-                          backgroundColor: canAfford ? '#22C55E' : '#EF4444',
-                          color: 'white'
-                        }}
-                      >
-                        <ShoppingBag size={16} />
-                        {canAfford ? 'Purchase' : 'Insufficient Funds'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                {categoryIcons[category]}
+                {category}
+                {category !== 'All' && (
+                  <Badge className="ml-1 bg-purple-500 text-white text-xs">
+                    {stats[category.toLowerCase()]?.count || 0}
+                  </Badge>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Purchase Modal */}
+      {/* Owned Assets Section */}
+      {purchasedItems.length > 0 && (
+        <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200 shadow-md">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <CheckCircle className="w-5 h-5 text-emerald-600" />
+              <h2 className="text-lg font-bold text-emerald-800">Your Assets Portfolio</h2>
+              <Badge className="bg-emerald-600 text-white">{purchasedItems.length} items</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {purchasedItems.slice(0, 4).map((purchasedItem) => {
+                const storeItem = storeItems.find(item => item.id === purchasedItem.storeItemId);
+                if (!storeItem) return null;
+                
+                return (
+                  <div key={`owned-${purchasedItem.id}`} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-emerald-200">
+                    <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-lg text-emerald-600">
+                      {getItemIcon(storeItem)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-emerald-800">{storeItem.name}</div>
+                      <div className="text-xs text-emerald-600">+{formatMoney(storeItem.passiveIncome || 0)}/month</div>
+                    </div>
+                    <Badge className="bg-emerald-600 text-white text-xs">Owned</Badge>
+                  </div>
+                );
+              })}
+            </div>
+            {purchasedItems.length > 4 && (
+              <p className="text-center text-emerald-600 text-sm mt-2">+{purchasedItems.length - 4} more assets</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Store Items Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredItems.map((item) => {
+          const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
+          const canAfford = financialData.bankBalance >= item.price;
+          const roi = (((item.passiveIncome || 0) * 12) / item.price * 100);
+          
+          return (
+            <Card
+              key={item.id}
+              className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${
+                isPurchased 
+                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' 
+                  : 'bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 hover:border-purple-300'
+              }`}
+            >
+              <CardContent className="p-4">
+                {/* Item Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      isPurchased 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-purple-100 text-purple-600'
+                    }`}>
+                      {getItemIcon(item)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800">{item.name}</h3>
+                      <Badge className={`text-xs ${
+                        isPurchased 
+                          ? 'bg-green-100 text-green-700 border-green-200' 
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}>
+                        {item.category}
+                      </Badge>
+                    </div>
+                  </div>
+                  {isPurchased && <CheckCircle className="w-5 h-5 text-green-600" />}
+                </div>
+
+                {/* Price and ROI */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-right">
+                    <div className="text-xl font-bold text-slate-800">
+                      {formatMoney(item.price)}
+                    </div>
+                    <div className="text-sm text-purple-600 font-semibold">
+                      {roi.toFixed(1)}% Annual ROI
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                    <Coins className="w-3 h-3 text-amber-600" />
+                    <span className="text-xs font-semibold text-amber-700">
+                      {formatMoney(item.passiveIncome || 0)}/mo
+                    </span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-slate-600 mb-4">{item.description}</p>
+
+                {/* Financial Metrics */}
+                <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
+                  <div className="flex items-center gap-1">
+                    <ArrowUpRight className="w-3 h-3 text-green-500" />
+                    <span className="text-slate-600">Income: {formatMoney(item.passiveIncome || 0)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <ArrowDownRight className="w-3 h-3 text-red-500" />
+                    <span className="text-slate-600">Maintenance: {formatMoney(item.maintenanceCost || 0)}</span>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                {isPurchased ? (
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    disabled
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Owned
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handlePurchase(item)}
+                    className={`w-full ${
+                      canAfford 
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white' 
+                        : 'bg-red-500 hover:bg-red-600 text-white'
+                    }`}
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    {canAfford ? 'Purchase' : 'Insufficient Funds'}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Purchase Confirmation Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div 
-            className="rounded-xl p-6 max-w-sm w-full relative"
-            style={{ backgroundColor: '#ffffff', border: '1px solid #e8dcc6', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-          >
-            <button
-              onClick={() => setShowPurchaseModal(null)}
-              className="absolute top-4 right-4 p-2 rounded-full"
-              style={{ backgroundColor: '#e8dcc6', color: '#3a3a3a' }}
-            >
-              <X size={16} />
-            </button>
-            
-            <div className="text-center">
-              <div className="text-5xl mb-4">{showPurchaseModal.image}</div>
-              <h3 className="text-xl font-bold mb-2" style={{ color: '#3a3a3a' }}>
-                Confirm Purchase
-              </h3>
-              <p className="mb-4" style={{ color: '#666' }}>
-                {showPurchaseModal.name} for {formatMoney(showPurchaseModal.price)}
-              </p>
-              
-              {/* Payment Method Display */}
-              <div 
-                className="rounded-xl p-4 mb-4"
-                style={{ backgroundColor: '#f8f9fa' }}
-              >
-                <div className="text-sm mb-2" style={{ color: '#666' }}>Payment Method:</div>
+          <Card className="max-w-md w-full">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-slate-800">Confirm Purchase</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPurchaseModal(null)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-3 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                  {getItemIcon(showPurchaseModal)}
+                </div>
+                <h4 className="text-lg font-semibold text-slate-800 mb-2">
+                  {showPurchaseModal.name}
+                </h4>
+                <p className="text-2xl font-bold text-purple-600 mb-2">
+                  {formatMoney(showPurchaseModal.price)}
+                </p>
+                <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                  <Coins className="w-3 h-3 text-amber-600" />
+                  <span className="text-sm font-semibold text-amber-700">
+                    +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month
+                  </span>
+                </div>
+              </div>
+
+              {/* Payment Method */}
+              <div className="bg-slate-50 rounded-lg p-4 mb-6">
+                <div className="text-sm font-semibold text-slate-700 mb-2">Payment Method:</div>
                 {financialData.bankBalance >= showPurchaseModal.price ? (
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     <span className="font-semibold text-green-700">Bank Account</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="font-semibold text-blue-700">💳 Credit Card</span>
+                    <span className="font-semibold text-blue-700">Credit Card</span>
                   </div>
                 )}
                 
-                <div className="text-sm" style={{ color: '#666' }}>After purchase:</div>
-                {financialData.bankBalance >= showPurchaseModal.price ? (
-                  <div className="font-semibold" style={{ color: '#3a3a3a' }}>
-                    Bank Balance: {formatMoney(financialData.bankBalance - showPurchaseModal.price)}
-                  </div>
-                ) : (
-                  <div>
-                    <div className="font-semibold" style={{ color: '#3a3a3a' }}>
-                      Bank Balance: {formatMoney(financialData.bankBalance)}
-                    </div>
-                    <div className="font-semibold text-blue-700">
-                      Credit Used: {formatMoney((financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0) + showPurchaseModal.price)}
-                    </div>
-                  </div>
-                )}
-                <div className="text-sm mt-1" style={{ color: '#9333EA' }}>
-                  +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month income
+                <div className="text-sm text-slate-600 mt-2">
+                  After purchase: {formatMoney(
+                    financialData.bankBalance >= showPurchaseModal.price 
+                      ? financialData.bankBalance - showPurchaseModal.price 
+                      : financialData.bankBalance
+                  )} remaining
                 </div>
               </div>
-              
+
               <div className="flex gap-3">
-                <button
+                <Button
+                  variant="outline"
+                  className="flex-1"
                   onClick={() => setShowPurchaseModal(null)}
-                  className="flex-1 py-3 rounded-xl font-medium text-white"
-                  style={{ backgroundColor: '#EF4444' }}
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                   onClick={() => confirmPurchase(showPurchaseModal)}
-                  className="flex-1 py-3 rounded-xl font-medium text-white"
-                  style={{ backgroundColor: '#22C55E' }}
                 >
-                  Confirm
-                </button>
+                  Confirm Purchase
+                </Button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
-
-      <style>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };

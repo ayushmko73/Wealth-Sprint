@@ -22,6 +22,9 @@ export const storeItems: StoreItem[] = [
     description: 'Compact city home with one bedroom.',
     category: 'property',
     icon: '🏠',
+    passiveIncome: 1500,
+    maintenanceCost: 500,
+    appreciationRate: 8.5,
   },
   {
     id: 'luxury_villa',
@@ -30,15 +33,20 @@ export const storeItems: StoreItem[] = [
     description: 'Spacious estate with pool and garden.',
     category: 'property',
     icon: '🏖️',
+    passiveIncome: 8000,
+    maintenanceCost: 2000,
+    appreciationRate: 10,
   },
   {
     id: 'coffee_shop',
-    name: 'Coffee Shop Business',
+    name: 'Coffee Shop',
     price: 80000,
     description: 'A small café generating daily sales.',
     category: 'business',
     icon: '☕',
-    passiveIncome: 2500, // Monthly income
+    passiveIncome: 2500,
+    maintenanceCost: 800,
+    appreciationRate: 12,
   },
   {
     id: 'delivery_van',
@@ -47,6 +55,9 @@ export const storeItems: StoreItem[] = [
     description: 'Medium-sized van for transporting goods.',
     category: 'vehicle',
     icon: '🚐',
+    passiveIncome: 1800,
+    maintenanceCost: 600,
+    appreciationRate: -10,
   },
   {
     id: 'motorbike',
@@ -55,14 +66,20 @@ export const storeItems: StoreItem[] = [
     description: 'Two-wheeler for quick city travel.',
     category: 'vehicle',
     icon: '🏍️',
+    passiveIncome: 800,
+    maintenanceCost: 300,
+    appreciationRate: -15,
   },
   {
-    id: 'high_end_laptop',
-    name: 'High-End Laptop',
+    id: 'laptop',
+    name: 'Laptop',
     price: 3500,
     description: 'Boosts productivity for remote work.',
     category: 'gadget',
     icon: '💻',
+    passiveIncome: 500,
+    maintenanceCost: 100,
+    appreciationRate: -20,
   },
   {
     id: 'arcade_machine',
@@ -71,7 +88,9 @@ export const storeItems: StoreItem[] = [
     description: 'Fun gaming setup for home or rental.',
     category: 'entertainment',
     icon: '🕹️',
-    passiveIncome: 150, // Monthly rental income
+    passiveIncome: 150,
+    maintenanceCost: 50,
+    appreciationRate: -5,
   },
   {
     id: 'solar_power_plant',
@@ -80,7 +99,9 @@ export const storeItems: StoreItem[] = [
     description: 'Generates renewable electricity for resale.',
     category: 'investment',
     icon: '☀️',
-    passiveIncome: 4500, // Monthly income
+    passiveIncome: 4500,
+    maintenanceCost: 1000,
+    appreciationRate: 8,
   },
   {
     id: 'fishing_boat',
@@ -89,6 +110,9 @@ export const storeItems: StoreItem[] = [
     description: 'Ideal for fishing trips or small business.',
     category: 'vehicle',
     icon: '⛵',
+    passiveIncome: 2200,
+    maintenanceCost: 800,
+    appreciationRate: -8,
   },
   {
     id: 'drone',
@@ -97,15 +121,20 @@ export const storeItems: StoreItem[] = [
     description: 'Aerial photography and delivery potential.',
     category: 'gadget',
     icon: '🚁',
+    passiveIncome: 300,
+    maintenanceCost: 80,
+    appreciationRate: -25,
   },
   {
-    id: 'fast_food_franchise',
-    name: 'Fast Food Franchise',
+    id: 'fast_food_stall',
+    name: 'Fast Food Stall',
     price: 150000,
-    description: 'Popular chain outlet with steady income.',
+    description: 'Popular food stall with steady income.',
     category: 'business',
     icon: '🍔',
-    passiveIncome: 6000, // Monthly income
+    passiveIncome: 6000,
+    maintenanceCost: 1500,
+    appreciationRate: 15,
   },
   {
     id: 'gym_equipment',
@@ -114,15 +143,20 @@ export const storeItems: StoreItem[] = [
     description: 'Full setup for personal or commercial gym.',
     category: 'entertainment',
     icon: '🏋️',
-    passiveIncome: 300, // Monthly rental income
+    passiveIncome: 300,
+    maintenanceCost: 100,
+    appreciationRate: -10,
   },
   {
     id: 'smartwatch',
-    name: 'Smartwatch',
+    name: 'Smart Watch',
     price: 600,
     description: 'Tracks fitness and sends notifications.',
     category: 'gadget',
     icon: '⌚',
+    passiveIncome: 50,
+    maintenanceCost: 20,
+    appreciationRate: -30,
   },
   {
     id: 'advertising_billboard',
@@ -131,28 +165,31 @@ export const storeItems: StoreItem[] = [
     description: 'Earn revenue by renting ad space.',
     category: 'investment',
     icon: '📺',
-    passiveIncome: 450, // Monthly rental income
+    passiveIncome: 450,
+    maintenanceCost: 100,
+    appreciationRate: 5,
   },
   {
     id: 'art_gallery',
-    name: 'Art Gallery Collection',
+    name: 'Art Gallery',
     price: 70000,
     description: 'Display and sell high-value artwork.',
     category: 'investment',
     icon: '🎨',
-    passiveIncome: 1800, // Monthly income
+    passiveIncome: 1800,
+    maintenanceCost: 500,
+    appreciationRate: 12,
   },
-  // Real Estate Properties
   {
-    id: 'mumbai_2bhk',
-    name: '2BHK Apartment in Mumbai',
-    price: 7500000,
-    description: 'Prime location apartment generating rental income',
-    category: 'property',
-    icon: '🏠',
-    passiveIncome: 25000, // Monthly rental income
-    maintenanceCost: 3000,
-    appreciationRate: 8.5,
+    id: 'car',
+    name: 'Car',
+    price: 35000,
+    description: 'Personal vehicle for daily transportation.',
+    category: 'vehicle',
+    icon: '🚗',
+    passiveIncome: 1200,
+    maintenanceCost: 400,
+    appreciationRate: -12,
   },
   {
     id: 'commercial_office',
@@ -176,7 +213,6 @@ export const storeItems: StoreItem[] = [
     maintenanceCost: 2500,
     appreciationRate: 6,
   },
-  // Vehicle Fleet
   {
     id: 'delivery_fleet',
     name: 'Delivery Vehicle Fleet',
@@ -186,87 +222,29 @@ export const storeItems: StoreItem[] = [
     icon: '🚚',
     passiveIncome: 45000,
     maintenanceCost: 8000,
-    appreciationRate: -10, // Depreciation
+    appreciationRate: -10,
   },
   {
-    id: 'luxury_car',
-    name: 'Luxury Sedan',
+    id: 'tesla',
+    name: 'Tesla',
     price: 2500000,
-    description: 'Premium vehicle for executive transport service',
+    description: 'Premium electric vehicle with autopilot features',
     category: 'vehicle',
-    icon: '🚗',
-    passiveIncome: 12000,
-    maintenanceCost: 4000,
-    appreciationRate: -15,
-  },
-  // Business Investments
-  {
-    id: 'tech_startup',
-    name: 'Tech Startup Equity',
-    price: 1000000,
-    description: '15% stake in a growing fintech startup',
-    category: 'business',
-    icon: '🚀',
-    passiveIncome: 0,
-    maintenanceCost: 0,
-    appreciationRate: 25,
+    icon: '⚡',
+    passiveIncome: 15000,
+    maintenanceCost: 3000,
+    appreciationRate: -8,
   },
   {
-    id: 'restaurant_chain',
-    name: 'Restaurant Chain Franchise',
+    id: 'restaurant',
+    name: 'Restaurant',
     price: 3500000,
-    description: 'Multi-location food franchise with established brand',
+    description: 'Full-service restaurant with established brand',
     category: 'business',
     icon: '🍽️',
     passiveIncome: 85000,
     maintenanceCost: 15000,
     appreciationRate: 12,
-  },
-  // Investment Instruments
-  {
-    id: 'government_bonds',
-    name: 'Government Bonds Portfolio',
-    price: 500000,
-    description: 'Safe government securities with fixed returns',
-    category: 'investment',
-    icon: '🏛️',
-    passiveIncome: 3500,
-    maintenanceCost: 0,
-    appreciationRate: 0,
-  },
-  {
-    id: 'mutual_funds',
-    name: 'Equity Mutual Funds',
-    price: 250000,
-    description: 'Diversified equity portfolio managed by professionals',
-    category: 'investment',
-    icon: '📈',
-    passiveIncome: 1800,
-    maintenanceCost: 200,
-    appreciationRate: 12,
-  },
-  // Intellectual Property
-  {
-    id: 'online_course',
-    name: 'Online Course Revenue',
-    price: 50000,
-    description: 'Passive income from educational content',
-    category: 'business',
-    icon: '📚',
-    passiveIncome: 12000,
-    maintenanceCost: 1000,
-    appreciationRate: 15,
-  },
-  {
-    id: 'mobile_app',
-    name: 'Mobile App with Ads',
-    price: 150000,
-    description: 'Revenue-generating mobile application',
-    category: 'business',
-    icon: '📱',
-    passiveIncome: 8500,
-    maintenanceCost: 2000,
-    appreciationRate: 20,
   },
 ];
 
@@ -281,4 +259,17 @@ export const getItemsByCategory = (category: string): StoreItem[] => {
 
 export const getCategories = (): string[] => {
   return Array.from(new Set(storeItems.map(item => item.category)));
+};
+
+export const getCategoryStats = () => {
+  const stats = storeItems.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = { count: 0, totalValue: 0 };
+    }
+    acc[item.category].count += 1;
+    acc[item.category].totalValue += item.price;
+    return acc;
+  }, {} as Record<string, { count: number; totalValue: number }>);
+  
+  return stats;
 };
