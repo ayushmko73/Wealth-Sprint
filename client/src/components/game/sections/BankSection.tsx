@@ -125,47 +125,57 @@ const BankSection: React.FC = () => {
 
   return (
     <div className="space-y-4 p-4">
-      {/* Simple Banking Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 rounded-xl text-white shadow-lg">
-        {/* Main Header */}
-        <div className="flex items-center mb-4">
-          <div>
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              <Building2 className="w-5 h-5" />
-              Banking
-            </h1>
-            <p className="text-blue-100 text-xs">Professional Financial Services</p>
+      {/* Compact Banking Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-3 rounded-xl text-white shadow-lg">
+        {/* Main Header with Live Status */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4" />
+            <div>
+              <h1 className="text-lg font-bold">Banking Services</h1>
+              <p className="text-blue-100 text-xs">Real-time account management • Banking hours: 24/7</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-xs font-semibold bg-green-500 px-2 py-1 rounded text-white">LIVE</span>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-blue-200">Account Status</p>
+              <p className="text-sm font-bold text-green-400">ACTIVE</p>
+            </div>
           </div>
         </div>
 
-        {/* Compact Financial Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Monthly Income */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <ArrowUpRight className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">Monthly Income</p>
-            <p className="text-sm font-bold">{formatMoney(monthlyIncome)}</p>
+        {/* Compact Financial Metrics */}
+        <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+          <div className="grid grid-cols-2 gap-3 mb-2">
+            <div>
+              <p className="text-blue-200 text-xs">NET WORTH: <span className="text-white font-bold">{formatMoney(financialData.netWorth)}</span> <span className="text-green-400">+2.3%</span></p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">CREDIT SCORE: <span className="text-white font-bold">{creditScore}</span> <span className="text-yellow-400">+5</span></p>
+            </div>
           </div>
-
-          {/* Monthly Expenses */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <ArrowDownRight className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">Monthly Expenses</p>
-            <p className="text-sm font-bold">{formatMoney(monthlyExpenses)}</p>
-          </div>
-
-          {/* Cash Reserves */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <Banknote className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">Cash Reserves</p>
-            <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
-          </div>
-
-          {/* Risk Profile */}
-          <div className="text-center p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-            <AlertTriangle className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-            <p className="text-blue-100 text-xs mb-1">Risk Profile</p>
-            <p className="text-sm font-bold">{riskProfile}</p>
+          
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div>
+              <p className="text-blue-200 text-xs">Cash</p>
+              <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">Monthly In</p>
+              <p className="text-sm font-bold text-green-400">+{formatMoney(monthlyIncome)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">Monthly Out</p>
+              <p className="text-sm font-bold text-red-400">-{formatMoney(monthlyExpenses)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">Risk</p>
+              <p className="text-sm font-bold">{riskProfile}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -290,88 +300,102 @@ const BankSection: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="credit-card" className="space-y-3 mt-4">
-          {/* Compact Credit Card */}
-          <Card className="bg-gradient-to-br from-blue-800 to-blue-900 text-white border-0 shadow-lg">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-4">
+          {/* Enhanced Premium Credit Card */}
+          <Card className="bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900 text-white border-0 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12"></div>
+            <CardContent className="p-4 relative z-10">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="text-lg font-bold">WEALTH SPRINT</h3>
-                  <p className="text-xs opacity-80">PREMIUM ELITE</p>
+                  <h3 className="text-lg font-bold tracking-wide">WEALTH SPRINT</h3>
+                  <p className="text-xs opacity-90 tracking-wider">PREMIUM ELITE</p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-6 h-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-sm"></div>
-                  <CreditCard className="w-4 h-4" />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-5 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-sm shadow-md"></div>
+                  <div className="w-6 h-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-sm opacity-80"></div>
                 </div>
               </div>
               
-              <div className="font-mono text-base tracking-wider mb-4">
+              <div className="font-mono text-lg tracking-[0.3em] mb-4 text-center py-2">
                 •••• •••• •••• 1234
               </div>
               
               <div className="flex justify-between items-end text-xs">
                 <div>
-                  <p className="opacity-70">CARDHOLDER</p>
-                  <p className="font-semibold">WEALTH PLAYER</p>
+                  <p className="opacity-70 text-[10px] tracking-wider">CARDHOLDER</p>
+                  <p className="font-bold text-sm">WEALTH PLAYER</p>
                 </div>
                 <div>
-                  <p className="opacity-70">VALID THRU</p>
-                  <p className="font-semibold">12/29</p>
+                  <p className="opacity-70 text-[10px] tracking-wider">VALID THRU</p>
+                  <p className="font-bold text-sm">12/29</p>
                 </div>
                 <div className="text-right">
-                  <p className="opacity-70">LIMIT</p>
-                  <p className="font-bold text-yellow-400">{formatMoney(creditLimit)}</p>
+                  <p className="opacity-70 text-[10px] tracking-wider">CREDIT LIMIT</p>
+                  <p className="font-bold text-yellow-400 text-sm">{formatMoney(creditLimit)}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Compact Credit Analytics */}
+          {/* Compact Credit Dashboard */}
           <div className="grid grid-cols-3 gap-2">
-            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-md">
+            <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-0 shadow-lg">
               <CardContent className="p-3 text-center">
-                <DollarSign className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-                <p className="text-xs text-blue-100 mb-1">Available</p>
+                <div className="flex items-center justify-center mb-1">
+                  <DollarSign className="w-4 h-4 text-emerald-200" />
+                </div>
+                <p className="text-[10px] text-emerald-100 mb-1 tracking-wide">AVAILABLE</p>
                 <p className="text-sm font-bold">{formatMoney(availableCredit)}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-md">
+            <Card className="bg-gradient-to-br from-rose-500 to-red-600 text-white border-0 shadow-lg">
               <CardContent className="p-3 text-center">
-                <ArrowDownRight className="w-5 h-5 mx-auto mb-1 text-red-200" />
-                <p className="text-xs text-red-100 mb-1">Outstanding</p>
+                <div className="flex items-center justify-center mb-1">
+                  <ArrowDownRight className="w-4 h-4 text-rose-200" />
+                </div>
+                <p className="text-[10px] text-rose-100 mb-1 tracking-wide">OUTSTANDING</p>
                 <p className="text-sm font-bold">{formatMoney(outstandingCredit)}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white border-0 shadow-md">
+            <Card className="bg-gradient-to-br from-amber-500 to-orange-600 text-white border-0 shadow-lg">
               <CardContent className="p-3 text-center">
-                <Activity className="w-5 h-5 mx-auto mb-1 text-amber-200" />
-                <p className="text-xs text-amber-100 mb-1">Rate</p>
+                <div className="flex items-center justify-center mb-1">
+                  <Activity className="w-4 h-4 text-amber-200" />
+                </div>
+                <p className="text-[10px] text-amber-100 mb-1 tracking-wide">APR RATE</p>
                 <p className="text-sm font-bold">3.5%/mo</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Compact Credit Utilization & Payment */}
-          <Card className="bg-blue-50 border border-blue-200">
-            <CardContent className="p-3">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-blue-800 font-medium">Credit Utilization</span>
-                <span className="text-sm font-bold text-blue-900">{utilizationPercentage.toFixed(1)}%</span>
+          {/* Premium Credit Management */}
+          <Card className="bg-gradient-to-r from-slate-50 to-blue-50 border border-slate-200 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-sm text-slate-700 font-semibold">Credit Utilization</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-slate-800">{utilizationPercentage.toFixed(1)}%</span>
+                  <div className={`w-2 h-2 rounded-full ${
+                    utilizationPercentage <= 30 ? 'bg-green-500' :
+                    utilizationPercentage <= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                </div>
               </div>
-              <div className="w-full bg-blue-200 rounded-full h-2 mb-3">
+              
+              <div className="w-full bg-slate-200 rounded-full h-3 mb-4 overflow-hidden">
                 <div 
-                  className={`h-2 rounded-full transition-all duration-700 ${
-                    utilizationPercentage <= 30 ? 'bg-gradient-to-r from-green-400 to-green-500' :
-                    utilizationPercentage <= 60 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
-                    'bg-gradient-to-r from-red-400 to-red-500'
+                  className={`h-3 rounded-full transition-all duration-1000 shadow-sm ${
+                    utilizationPercentage <= 30 ? 'bg-gradient-to-r from-emerald-400 to-green-500' :
+                    utilizationPercentage <= 60 ? 'bg-gradient-to-r from-yellow-400 to-amber-500' :
+                    'bg-gradient-to-r from-red-400 to-rose-500'
                   }`}
                   style={{ width: `${Math.min(100, utilizationPercentage)}%` }}
                 ></div>
               </div>
               
               {outstandingCredit > 0 && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button
                     size="sm"
                     onClick={() => {
@@ -381,7 +405,7 @@ const BankSection: React.FC = () => {
                         useWealthSprintGame.getState().payCreditCardBill(minimumPayment);
                       }
                     }}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                    className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white shadow-md font-semibold"
                   >
                     Pay Minimum
                   </Button>
@@ -393,7 +417,7 @@ const BankSection: React.FC = () => {
                         useWealthSprintGame.getState().payCreditCardBill(creditCard.outstandingAmount);
                       }
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md font-semibold"
                   >
                     Pay Full
                   </Button>
