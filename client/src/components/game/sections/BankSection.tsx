@@ -143,10 +143,10 @@ const BankSection: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4">
       {/* Expanded Banking Header - Stock Market Style */}
       <div className="mx-2">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         {/* Header Content */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ const BankSection: React.FC = () => {
       </div>
 
       {/* Content based on selected category */}
-      <div className="mt-3">
+      <div className="mt-3 px-4">
         {selectedCategory === 'Account' && (
           <div className="space-y-3">
             {/* Primary Metrics Row */}

@@ -310,10 +310,10 @@ const StoreSection: React.FC = () => {
   });
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4">
       {/* Store Header - Inspired by Stock Market/Banking Sections */}
       <div className="mx-2">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         {/* Main Header Row */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
@@ -387,7 +387,7 @@ const StoreSection: React.FC = () => {
       {/* Owned Assets Section - Hidden to reduce clutter */}
 
       {/* Store Items Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
         {sortedItems.map((item) => {
           const isPurchased = purchasedItems.some(p => p.storeItemId === item.id);
           const canAfford = financialData.bankBalance >= item.price;
