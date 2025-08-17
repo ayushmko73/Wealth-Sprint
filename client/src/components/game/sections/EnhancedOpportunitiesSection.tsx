@@ -105,7 +105,6 @@ const EnhancedOpportunitiesSection: React.FC = () => {
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
   const [hoveredDeal, setHoveredDeal] = useState<string | null>(null);
 
-
   // Format currency helper
   const formatCurrency = (amount: number) => {
     if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(1)}Cr`;
@@ -405,246 +404,6 @@ const EnhancedOpportunitiesSection: React.FC = () => {
         aiInsight: 'Luxury e-commerce is experiencing rapid digital transformation. Platform\'s authentication technology addresses key market pain point. Management team has successful exits from previous luxury ventures. High growth potential with premium margins.',
         trending: true,
         featured: false
-      },
-      {
-        id: 'green_energy_startup_q2_fy26',
-        type: 'sector',
-        sector: 'renewable_energy',
-        title: 'Solar Energy Grid',
-        tagline: 'SUSTAINABLE POWER SOLUTIONS',
-        description: 'Revolutionary solar energy distribution network with smart grid technology and energy storage solutions.',
-        company: 'SolarTech Innovations',
-        investmentRequired: 8500000,
-        expectedROI: 42,
-        riskLevel: 'medium',
-        liquidity: 'high',
-        timeHorizon: 24,
-        cashflowMonthly: 350000,
-        status: 'available',
-        timelineStage: 'initiation',
-        timeline: 'Q2 FY26',
-        requirements: { 
-          minSectors: 1, 
-          specificSectors: ['renewable_energy'],
-          minNetWorth: 5000000,
-          minReputation: 70
-        },
-        benefits: [
-          'Government subsidies and tax incentives',
-          'Growing renewable energy market demand',
-          'Scalable technology platform',
-          'ESG compliance benefits'
-        ],
-        risks: [
-          'Regulatory changes in energy sector',
-          'Weather dependency for solar generation',
-          'Initial high capital expenditure',
-          'Technology obsolescence risk'
-        ],
-        keyFactors: { 
-          'Market Growth': '35% annual renewable energy adoption',
-          'Technology': 'Next-gen solar panels with 22% efficiency',
-          'Government Support': '40% subsidy on renewable projects',
-          'Environmental Impact': 'Carbon neutral within 18 months'
-        },
-        termsConditions: [
-          'Joint venture with 60-40 profit sharing',
-          'Technology licensing with 5% revenue share',
-          'Performance milestones tied to energy generation',
-          'Government compliance and certification required',
-          'Expansion rights for adjacent territories'
-        ],
-        financials: {
-          projections: [
-            { month: 6, revenue: 4200000, profit: 840000 },
-            { month: 12, revenue: 8400000, profit: 2520000 },
-            { month: 24, revenue: 16800000, profit: 6720000 }
-          ],
-          breakEvenMonths: 8
-        },
-        aiInsight: 'Renewable energy sector shows exceptional growth potential. Government backing provides stability. Technology differentiation creates competitive advantage. Strong ESG compliance attracts institutional investors.',
-        trending: false,
-        featured: true
-      },
-      {
-        id: 'fintech_platform_q3_fy26',
-        type: 'sector',
-        sector: 'tech',
-        title: 'Digital Banking Platform',
-        tagline: 'NEXT-GEN FINANCIAL SERVICES',
-        description: 'Comprehensive digital banking solution with AI-powered financial advisory and blockchain security.',
-        company: 'FinFlow Technologies',
-        investmentRequired: 12000000,
-        expectedROI: 55,
-        riskLevel: 'high',
-        liquidity: 'medium',
-        timeHorizon: 36,
-        cashflowMonthly: 480000,
-        status: 'available',
-        timelineStage: 'growth',
-        timeline: 'Q3 FY26',
-        requirements: { 
-          minSectors: 2, 
-          specificSectors: ['tech', 'ecommerce'],
-          minNetWorth: 10000000,
-          minReputation: 85
-        },
-        benefits: [
-          'Rapid fintech market expansion',
-          'AI-driven personalized services',
-          'Blockchain security technology',
-          'Recurring revenue model'
-        ],
-        risks: [
-          'Regulatory compliance complexity',
-          'Cybersecurity threats',
-          'Traditional banking competition',
-          'Customer acquisition costs'
-        ],
-        keyFactors: { 
-          'User Base': '2M+ active users projected year 1',
-          'Technology Stack': 'AI/ML with blockchain security',
-          'Regulatory': 'RBI sandbox approval obtained',
-          'Competition': 'First-mover advantage in rural banking'
-        },
-        termsConditions: [
-          'Equity investment: 25% stake with board seat',
-          'Milestone-based funding releases',
-          'Performance metrics tied to user growth',
-          'Technology IP sharing agreement',
-          'Exit strategy options after 36 months'
-        ],
-        financials: {
-          projections: [
-            { month: 12, revenue: 14400000, profit: 2880000 },
-            { month: 24, revenue: 28800000, profit: 8640000 },
-            { month: 36, revenue: 57600000, profit: 20736000 }
-          ],
-          breakEvenMonths: 14
-        },
-        aiInsight: 'Fintech disruption accelerating in India. Platform addresses underserved market segments. Strong technology moat with AI/blockchain integration. High scalability potential with attractive unit economics.',
-        trending: true,
-        featured: false
-      },
-      {
-        id: 'healthcare_chain_q4_fy26',
-        type: 'sector',
-        sector: 'healthcare',
-        title: 'Telemedicine Network',
-        tagline: 'ACCESSIBLE HEALTHCARE SOLUTIONS',
-        description: 'Comprehensive telemedicine platform connecting rural areas with specialist doctors using AI diagnostics.',
-        company: 'MediConnect Solutions',
-        investmentRequired: 6500000,
-        expectedROI: 38,
-        riskLevel: 'low',
-        liquidity: 'high',
-        timeHorizon: 18,
-        cashflowMonthly: 280000,
-        status: 'available',
-        timelineStage: 'initiation',
-        timeline: 'Q4 FY26',
-        requirements: { 
-          minSectors: 1, 
-          specificSectors: ['healthcare'],
-          minNetWorth: 4000000,
-          minReputation: 65
-        },
-        benefits: [
-          'Growing telemedicine adoption',
-          'Government healthcare initiatives',
-          'Scalable technology platform',
-          'Social impact investment'
-        ],
-        risks: [
-          'Doctor adoption challenges',
-          'Internet connectivity issues',
-          'Regulatory compliance',
-          'Patient trust building'
-        ],
-        keyFactors: { 
-          'Market Size': '₹800Cr telemedicine market by 2025',
-          'Technology': 'AI-powered preliminary diagnostics',
-          'Network': '500+ specialist doctors onboarded',
-          'Coverage': 'Targeting 1000+ rural locations'
-        },
-        termsConditions: [
-          'Strategic partnership: 70-30 revenue split',
-          'Technology development milestones',
-          'Doctor network expansion targets',
-          'Government compliance certification',
-          'Social impact measurement metrics'
-        ],
-        financials: {
-          projections: [
-            { month: 6, revenue: 1950000, profit: 390000 },
-            { month: 12, revenue: 3900000, profit: 1170000 },
-            { month: 18, revenue: 5850000, profit: 2340000 }
-          ],
-          breakEvenMonths: 9
-        },
-        aiInsight: 'Healthcare accessibility is a critical need in rural India. Government support for digital health initiatives. Platform approach enables rapid scaling. Strong social impact aligns with ESG trends.',
-        trending: false,
-        featured: false
-      },
-      {
-        id: 'food_delivery_expansion_q1_fy27',
-        type: 'sector',
-        sector: 'fast_food',
-        title: 'Cloud Kitchen Network',
-        tagline: 'SCALABLE FOOD DELIVERY',
-        description: 'Technology-enabled cloud kitchen network optimizing food delivery with AI demand forecasting.',
-        company: 'QuickBite Technologies',
-        investmentRequired: 4500000,
-        expectedROI: 48,
-        riskLevel: 'medium',
-        liquidity: 'high',
-        timeHorizon: 20,
-        cashflowMonthly: 225000,
-        status: 'available',
-        timelineStage: 'growth',
-        timeline: 'Q1 FY27',
-        requirements: { 
-          minSectors: 1, 
-          specificSectors: ['fast_food', 'tech'],
-          minNetWorth: 3000000,
-          minReputation: 60
-        },
-        benefits: [
-          'Lower operational costs vs traditional restaurants',
-          'Rapid scaling capability',
-          'Data-driven menu optimization',
-          'Multiple brand portfolio'
-        ],
-        risks: [
-          'High competition in food delivery',
-          'Delivery partner dependency',
-          'Food safety compliance',
-          'Customer retention challenges'
-        ],
-        keyFactors: { 
-          'Market Growth': '25% annual food delivery growth',
-          'Technology': 'AI-powered demand prediction',
-          'Efficiency': '40% lower costs vs traditional kitchens',
-          'Reach': 'Targeting 15 major cities'
-        },
-        termsConditions: [
-          'Franchise model: 50-50 revenue sharing',
-          'Technology platform licensing',
-          'Quality control and brand standards',
-          'Territory expansion milestones',
-          'Performance-based profit sharing'
-        ],
-        financials: {
-          projections: [
-            { month: 6, revenue: 2700000, profit: 540000 },
-            { month: 12, revenue: 5400000, profit: 1620000 },
-            { month: 20, revenue: 9000000, profit: 3600000 }
-          ],
-          breakEvenMonths: 7
-        },
-        aiInsight: 'Cloud kitchen model revolutionizing food service industry. Lower capital requirements with higher margins. Technology platform creates competitive moat. Strong consumer shift to online food ordering.',
-        trending: true,
-        featured: false
       }
     ];
 
@@ -705,8 +464,6 @@ const EnhancedOpportunitiesSection: React.FC = () => {
     );
   };
 
-
-
   // Export deals to CSV
   const exportDeals = () => {
     const csv = [
@@ -747,10 +504,11 @@ const EnhancedOpportunitiesSection: React.FC = () => {
     }
   };
 
-  // Enhanced Deal Card matching the provided screenshot design
+  // Enhanced Deal Card with micro-interactions
   const EnhancedDealCard = ({ deal }: { deal: Deal }) => {
     const sectorInfo = deal.sector ? sectorConfig[deal.sector] : null;
     const isSaved = savedDeals.includes(deal.id);
+    const isHovered = hoveredDeal === deal.id;
     
     return (
       <motion.div
@@ -759,102 +517,210 @@ const EnhancedOpportunitiesSection: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         whileHover={{ 
-          y: -4, 
+          y: -8, 
           scale: 1.02,
-          boxShadow: "0 12px 24px rgba(0, 0, 0, 0.1)"
+          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)"
         }}
-        className="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 w-full max-w-md mx-auto"
+        onHoverStart={() => setHoveredDeal(deal.id)}
+        onHoverEnd={() => setHoveredDeal(null)}
+        className={`relative rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden group ${
+          sectorInfo ? `bg-gradient-to-br ${sectorInfo.color}` : 'bg-gradient-to-br from-gray-100 to-white'
+        }`}
       >
-        {/* Header with Icon and Badge */}
-        <div className="flex items-start justify-between p-6">
-          <div className="flex items-center gap-4">
+        {/* Background overlay for better text readability */}
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />
+        
+        {/* Content */}
+        <div className="relative p-6">
+          {/* Header Section */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start gap-3">
+              <motion.div 
+                className={`w-12 h-12 rounded-xl ${sectorInfo ? sectorInfo.bgColor : 'bg-gray-100'} flex items-center justify-center shadow-lg`}
+                whileHover={{ rotate: 10, scale: 1.1 }}
+              >
+                {sectorInfo ? sectorInfo.icon : <Building2 className="w-6 h-6 text-gray-600" />}
+              </motion.div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  {deal.trending && (
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold"
+                    >
+                      <TrendingUp className="w-3 h-3" />
+                      TRENDING
+                    </motion.div>
+                  )}
+                  {deal.featured && (
+                    <div className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      <Star className="w-3 h-3" />
+                      FEATURED
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-bold text-xl leading-tight mb-1 text-gray-900">
+                  {deal.title}
+                </h3>
+                <p className="text-sm uppercase tracking-wide text-gray-600 font-medium">
+                  {deal.tagline}
+                </p>
+                <p className="text-sm text-gray-700 mt-1 opacity-80">
+                  {deal.company}
+                </p>
+              </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSaveDeal(deal.id);
+                }}
+                className={`p-2 rounded-lg transition-all ${
+                  isSaved 
+                    ? 'bg-yellow-500 text-white shadow-md' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  shareDeal(deal);
+                }}
+                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+              >
+                <Share2 className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Investment Amount */}
+          <div className="text-center mb-4">
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {formatCurrency(deal.investmentRequired)}
+            </div>
+            <div className="text-sm text-gray-600">Investment Required</div>
+          </div>
+
+          {/* Key Metrics Grid */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+              <div className="text-lg font-bold text-emerald-800">{deal.expectedROI}%</div>
+              <div className="text-xs text-emerald-600">Expected ROI</div>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <div className="text-lg font-bold text-blue-800">{formatCurrency(deal.cashflowMonthly)}</div>
+              <div className="text-xs text-blue-600">Monthly Cashflow</div>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+              <div className="text-lg font-bold text-purple-800">{deal.timeHorizon}m</div>
+              <div className="text-xs text-purple-600">Time Horizon</div>
+            </div>
+            <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+              <div className="text-lg font-bold text-orange-800 capitalize">{deal.liquidity}</div>
+              <div className="text-xs text-orange-600">Liquidity</div>
+            </div>
+          </div>
+
+          {/* Risk and Timeline */}
+          <div className="flex justify-between items-center mb-4">
+            <Badge className={`px-3 py-1 font-semibold ${getRiskColor(deal.riskLevel)}`}>
+              {deal.riskLevel.toUpperCase()} RISK
+            </Badge>
+            <div className="text-sm text-gray-600 flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {deal.timeline}
+            </div>
+          </div>
+
+          {/* AI Insight */}
+          {deal.aiInsight && (
             <motion.div 
-              className={`w-12 h-12 rounded-xl ${sectorInfo ? sectorInfo.bgColor : 'bg-gray-100'} flex items-center justify-center`}
-              whileHover={{ rotate: 10, scale: 1.1 }}
+              className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 rounded-lg border border-indigo-200 mb-4"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: isHovered ? 1 : 0.7, height: 'auto' }}
             >
-              {sectorInfo ? sectorInfo.icon : <Building2 className="w-6 h-6 text-gray-600" />}
+              <div className="flex items-start gap-2">
+                <Brain className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="text-xs font-semibold text-indigo-800 mb-1">AI INSIGHT</div>
+                  <p className="text-xs text-indigo-700 leading-relaxed">
+                    {deal.aiInsight}
+                  </p>
+                </div>
+              </div>
             </motion.div>
-            <div className="flex-1">
-              <h3 className="font-bold text-xl leading-tight text-gray-900 mb-1">
-                {deal.title}
-              </h3>
-              <p className="text-sm text-gray-600 capitalize">
-                {deal.sector?.replace('_', ' ') || 'Technology'}
-              </p>
-            </div>
-          </div>
-          
-          {/* Badge */}
-          {deal.featured && (
-            <Badge className="text-xs bg-purple-600 text-white px-3 py-1 font-bold rounded-full">
-              epic
-            </Badge>
           )}
-          {deal.trending && !deal.featured && (
-            <Badge className="text-xs bg-orange-500 text-white px-3 py-1 font-bold rounded-full">
-              rare
-            </Badge>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex-1"
+            >
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                onClick={() => {
+                  setSelectedDeal(deal);
+                  setShowModal(true);
+                }}
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Invest Now
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button 
+                variant="outline" 
+                className="px-4 py-3 rounded-xl border-2 border-gray-300 hover:border-gray-400 transition-all"
+                onClick={() => {
+                  setSelectedDeal(deal);
+                  setShowDeepDive(true);
+                }}
+              >
+                <Calculator className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          </div>
+
+          {/* Timeline Progress */}
+          <div className="flex justify-center mt-4 gap-2">
+            {['initiation', 'growth', 'maturity', 'exit'].map((stage, index) => (
+              <motion.div 
+                key={stage}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  stage === deal.timelineStage ? 'bg-blue-600 shadow-lg scale-125' : 'bg-gray-300'
+                }`}
+                whileHover={{ scale: 1.5 }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Hover overlay */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm"
+            />
           )}
-        </div>
-
-        {/* Investment Amount and ROI */}
-        <div className="px-6 pb-4">
-          <div className="text-3xl font-bold text-gray-900 mb-2">
-            {formatCurrency(deal.investmentRequired)}
-          </div>
-          <div className="text-lg font-bold text-blue-600">
-            {deal.expectedROI}% ROI
-          </div>
-        </div>
-
-        {/* Monthly Income Banner */}
-        <div className="mx-6 mb-4 bg-gradient-to-r from-yellow-200 to-yellow-300 rounded-lg px-4 py-2 flex items-center justify-center">
-          <span className="text-sm font-semibold text-gray-800">💰 {formatCurrency(deal.cashflowMonthly)}/mo</span>
-        </div>
-
-        {/* Abilities Section */}
-        <div className="px-6 mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Star className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm font-bold text-gray-700">Abilities</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="text-xs bg-green-100 text-green-800 px-3 py-2 rounded-lg font-medium">
-              AI-powered automation
-            </div>
-            <div className="text-xs bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-medium">
-              Predictive analytics
-            </div>
-          </div>
-        </div>
-
-        {/* Risks Section */}
-        <div className="px-6 mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-orange-500" />
-            <span className="text-sm font-bold text-gray-700">Risks</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="text-xs bg-red-100 text-red-800 px-3 py-2 rounded-lg font-medium">
-              High competition
-            </div>
-            <div className="text-xs bg-orange-100 text-orange-800 px-3 py-2 rounded-lg font-medium">
-              Technology disruption
-            </div>
-          </div>
-        </div>
-
-        {/* Income and Cost Stats */}
-        <div className="px-6 mb-6 grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Income: {formatCurrency(deal.cashflowMonthly * 12)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Cost: {formatCurrency(deal.investmentRequired / 20)}</span>
-          </div>
-        </div>
+        </AnimatePresence>
       </motion.div>
     );
   };
@@ -1058,7 +924,7 @@ const EnhancedOpportunitiesSection: React.FC = () => {
 
         {/* Deals Grid */}
         <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           layout
         >
           <AnimatePresence>

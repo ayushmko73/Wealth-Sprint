@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
+import EnhancedOpportunitiesSection from './EnhancedOpportunitiesSection';
 import { 
   Handshake, 
   TrendingUp, 
@@ -79,14 +80,6 @@ const DealsSection: React.FC = () => {
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showDeepDive, setShowDeepDive] = useState(false);
-  
-  // State for opportunities section
-  const [selectedOpportunity, setSelectedOpportunity] = useState<Deal | null>(null);
-  const [showPurchasePanel, setShowPurchasePanel] = useState(false);
-  
-  // State for purchase panel
-  const [investmentAmount, setInvestmentAmount] = useState(0);
-  const [investmentType, setInvestmentType] = useState<'full' | 'partial'>('full');
 
   // Categories for navigation
   const categories = ['Overview', 'Opportunities', 'Global Business', 'Financials'];
@@ -543,7 +536,15 @@ const DealsSection: React.FC = () => {
     );
   };
 
-
+  const renderOpportunitiesContent = () => {
+    return (
+      <div className="grid gap-4">
+        {qualifiedDeals.filter(deal => deal.status === 'available').map(deal => (
+          <DealCard key={deal.id} deal={deal} />
+        ))}
+      </div>
+    );
+  };
 
   const renderGlobalBusinessContent = () => {
     const globalDeals = qualifiedDeals.filter(deal => 
@@ -909,351 +910,10 @@ const DealsSection: React.FC = () => {
     );
   };
 
-  // New Opportunities Section Component
-  const renderOpportunitiesContent = () => {
-    // Filter deals for opportunities
-    const opportunityDeals = allDeals.filter(deal => deal.type === 'sector');
-
-    const handleInvestClick = (deal: Deal) => {
-      setSelectedOpportunity(deal);
-      setInvestmentAmount(deal.investmentRequired);
-      setInvestmentType('full');
-      setShowPurchasePanel(true);
-    };
-
-    return (
-      <div className="space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-            <div className="text-sm text-blue-600">Available</div>
-            <div className="text-2xl font-bold text-blue-700">{opportunityDeals.length}</div>
-          </div>
-          <div className="bg-green-50 p-4 rounded-xl border border-green-200">
-            <div className="text-sm text-green-600">Avg ROI</div>
-            <div className="text-2xl font-bold text-green-700">
-              {Math.round(opportunityDeals.reduce((acc, deal) => acc + deal.expectedROI, 0) / opportunityDeals.length)}%
-            </div>
-          </div>
-          <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
-            <div className="text-sm text-purple-600">Min Investment</div>
-            <div className="text-2xl font-bold text-purple-700">
-              {formatCurrency(Math.min(...opportunityDeals.map(d => d.investmentRequired)))}
-            </div>
-          </div>
-          <div className="bg-orange-50 p-4 rounded-xl border border-orange-200">
-            <div className="text-sm text-orange-600">Total Value</div>
-            <div className="text-2xl font-bold text-orange-700">
-              {formatCurrency(opportunityDeals.reduce((acc, deal) => acc + deal.investmentRequired, 0))}
-            </div>
-          </div>
-        </div>
-
-        {/* Opportunities Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {opportunityDeals.map((deal) => {
-            const sectorInfo = sectorConfig[deal.sector as keyof typeof sectorConfig];
-            
-            return (
-              <div
-                key={deal.id}
-                className="bg-white rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-              >
-                {/* Card Header */}
-                <div className={`bg-gradient-to-r ${sectorInfo?.color} p-4 text-white`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {sectorInfo?.icon}
-                      <div>
-                        <h3 className="font-bold text-lg">{deal.title}</h3>
-                        <p className="text-sm opacity-90">{deal.tagline}</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-white/20 text-white border-white/30">
-                      {deal.sector?.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Card Content */}
-                <div className="p-6 space-y-4">
-                  {/* Investment & ROI */}
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-sm text-gray-500">Investment Required</div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {formatCurrency(deal.investmentRequired)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500">Expected ROI</div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {deal.expectedROI}%
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Monthly Income Banner */}
-                  <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <DollarSign className="w-4 h-4 text-yellow-700" />
-                      <span className="text-sm font-semibold text-yellow-800">
-                        Monthly Income: {formatCurrency(deal.cashflowMonthly)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {deal.description}
-                  </p>
-
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-2 bg-gray-50 rounded-lg">
-                      <div className="text-xs text-gray-500">Risk</div>
-                      <div className={`text-sm font-bold ${
-                        deal.riskLevel === 'low' ? 'text-green-600' :
-                        deal.riskLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {deal.riskLevel.toUpperCase()}
-                      </div>
-                    </div>
-                    <div className="text-center p-2 bg-gray-50 rounded-lg">
-                      <div className="text-xs text-gray-500">Timeline</div>
-                      <div className="text-sm font-bold text-blue-600">
-                        {deal.timeHorizon}m
-                      </div>
-                    </div>
-                    <div className="text-center p-2 bg-gray-50 rounded-lg">
-                      <div className="text-xs text-gray-500">Liquidity</div>
-                      <div className={`text-sm font-bold ${
-                        deal.liquidity === 'high' ? 'text-green-600' :
-                        deal.liquidity === 'medium' ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {deal.liquidity.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4 border-t">
-                    <Button
-                      onClick={() => handleInvestClick(deal)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl"
-                    >
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      Invest Now
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSelectedDeal(deal);
-                        setShowModal(true);
-                      }}
-                      className="px-4 py-3 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
-                    >
-                      <Calculator className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="px-4 py-3 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50"
-                    >
-                      <Bookmark className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Purchase Panel Modal */}
-        {showPurchasePanel && selectedOpportunity && (
-          <PurchasePanel
-            deal={selectedOpportunity}
-            onClose={() => {
-              setShowPurchasePanel(false);
-              setSelectedOpportunity(null);
-            }}
-            onPurchase={(deal, amount) => {
-              // Handle purchase logic here
-              alert(`Successfully invested ${formatCurrency(amount)} in ${deal.title}`);
-              setShowPurchasePanel(false);
-              setSelectedOpportunity(null);
-            }}
-          />
-        )}
-      </div>
-    );
-  };
-
-  // Purchase Panel Component
-  const PurchasePanel = ({ 
-    deal, 
-    onClose, 
-    onPurchase 
-  }: { 
-    deal: Deal; 
-    onClose: () => void; 
-    onPurchase: (deal: Deal, amount: number) => void;
-  }) => {
-    const canAfford = financialData.bankBalance >= investmentAmount;
-    const monthlyReturn = (investmentAmount * deal.expectedROI / 100) / 12;
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div 
-          className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="p-6 border-b">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Investment Purchase</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                <div className="w-6 h-6 flex items-center justify-center">×</div>
-              </button>
-            </div>
-            <p className="text-gray-600 text-sm mt-1">{deal.title}</p>
-          </div>
-
-          {/* Investment Options */}
-          <div className="p-6 space-y-6">
-            {/* Investment Type Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Investment Type</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => {
-                    setInvestmentType('full');
-                    setInvestmentAmount(deal.investmentRequired);
-                  }}
-                  className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                    investmentType === 'full'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                  }`}
-                >
-                  Full Investment
-                  <div className="text-xs mt-1">{formatCurrency(deal.investmentRequired)}</div>
-                </button>
-                <button
-                  onClick={() => {
-                    setInvestmentType('partial');
-                    setInvestmentAmount(Math.floor(deal.investmentRequired * 0.5));
-                  }}
-                  className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                    investmentType === 'partial'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                  }`}
-                >
-                  Partial Investment
-                  <div className="text-xs mt-1">Custom Amount</div>
-                </button>
-              </div>
-            </div>
-
-            {/* Custom Amount Input */}
-            {investmentType === 'partial' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Investment Amount</label>
-                <input
-                  type="number"
-                  value={investmentAmount}
-                  onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                  min={Math.floor(deal.investmentRequired * 0.1)}
-                  max={deal.investmentRequired}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter amount"
-                />
-                <div className="text-xs text-gray-500 mt-1">
-                  Min: {formatCurrency(Math.floor(deal.investmentRequired * 0.1))} | 
-                  Max: {formatCurrency(deal.investmentRequired)}
-                </div>
-              </div>
-            )}
-
-            {/* Investment Summary */}
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-              <h3 className="font-semibold text-gray-800">Investment Summary</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Investment Amount:</span>
-                  <span className="font-semibold">{formatCurrency(investmentAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Expected Monthly Return:</span>
-                  <span className="font-semibold text-green-600">{formatCurrency(monthlyReturn)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Annual ROI:</span>
-                  <span className="font-semibold text-blue-600">{deal.expectedROI}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Risk Level:</span>
-                  <span className={`font-semibold ${
-                    deal.riskLevel === 'low' ? 'text-green-600' :
-                    deal.riskLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
-                    {deal.riskLevel.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Balance Check */}
-            <div className={`p-4 rounded-lg border ${
-              canAfford 
-                ? 'bg-green-50 border-green-200' 
-                : 'bg-red-50 border-red-200'
-            }`}>
-              <div className="flex items-center gap-2">
-                {canAfford ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
-                )}
-                <div>
-                  <div className="font-semibold text-sm">
-                    {canAfford ? 'Sufficient Balance' : 'Insufficient Balance'}
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    Current Balance: {formatCurrency(financialData.bankBalance)}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={onClose}
-                className="flex-1 py-3 rounded-xl"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => onPurchase(deal, investmentAmount)}
-                disabled={!canAfford}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <DollarSign className="w-4 h-4 mr-2" />
-                Confirm Purchase
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const renderCategoryContent = () => {
     switch (selectedCategory) {
       case 'Overview': return renderOverviewContent();
-      case 'Opportunities': return renderOpportunitiesContent();
+      case 'Opportunities': return <EnhancedOpportunitiesSection />;
       case 'Global Business': return renderGlobalBusinessContent();
       case 'Financials': return renderFinancialsContent();
       default: return renderOverviewContent();
