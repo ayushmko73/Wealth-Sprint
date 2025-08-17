@@ -47,7 +47,8 @@ const SimpleOpportunitiesSection: React.FC = () => {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'bank' | 'credit_card'>('bank');
-  const [emiDuration, setEmiDuration] = useState<'2' | '6' | '12' | '60'>('6');
+  const [emiDuration, setEmiDuration] = useState<'2' | '6' | '12' | '60' | 'full'>('6');
+  const [rejectedDeals, setRejectedDeals] = useState<Set<string>>(new Set());
 
   // Format currency helper
   const formatCurrency = (amount: number) => {
@@ -206,8 +207,16 @@ const SimpleOpportunitiesSection: React.FC = () => {
     }
   ], []);
 
+  // Get current credit card usage and limit
+  const getCreditCardInfo = () => {
+    const currentCreditUsed = financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+    const creditLimit = 500000; // ₹5 lakh credit limit
+    const availableCredit = creditLimit - currentCreditUsed;
+    return { currentCreditUsed, creditLimit, availableCredit };
+  };
+
   // Handle investment purchase
-  const handlePurchase = (deal: Deal) => {
+  const handlePurchase = (deal: Deal, isEMI: boolean = false) => {
     if (paymentMethod === 'bank') {
       const canAfford = financialData.bankBalance >= deal.investmentRequired;
       
@@ -239,16 +248,19 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
       toast.success(`Successfully invested ${formatCurrency(deal.investmentRequired)} in ${deal.title} using Bank Account!`);
     } else {
-      // Credit Card EMI Purchase
-      const months = parseInt(emiDuration);
-      const monthlyRate = 0.035;
-      const emiAmount = Math.ceil((deal.investmentRequired * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)));
+      // Credit Card Purchase (EMI or Full Payment)
+      const { availableCredit } = getCreditCardInfo();
       
+      if (availableCredit < deal.investmentRequired) {
+        toast.error(`Credit card limit insufficient. Available: ${formatCurrency(availableCredit)}, Required: ${formatCurrency(deal.investmentRequired)}`);
+        return;
+      }
+
       // Use credit card for the purchase
       const creditCardSuccess = useWealthSprintGame.getState().chargeToCredit?.(deal.investmentRequired, `Investment: ${deal.title}`);
       
       if (!creditCardSuccess) {
-        toast.error('Credit card limit exceeded. Please try a smaller amount or use bank payment.');
+        toast.error('Credit card transaction failed. Please try again.');
         return;
       }
 
@@ -263,7 +275,14 @@ const SimpleOpportunitiesSection: React.FC = () => {
         }
       }));
 
-      toast.success(`Investment of ${formatCurrency(deal.investmentRequired)} approved! EMI: ${formatCurrency(emiAmount)}/month for ${months} months`);
+      if (isEMI) {
+        const months = parseInt(emiDuration);
+        const monthlyRate = 0.035;
+        const emiAmount = Math.ceil((deal.investmentRequired * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months)));
+        toast.success(`Investment approved with EMI! ${formatCurrency(emiAmount)}/month for ${months} months`);
+      } else {
+        toast.success(`Investment of ${formatCurrency(deal.investmentRequired)} approved using Credit Card!`);
+      }
     }
     
     setShowModal(false);
@@ -271,21 +290,36 @@ const SimpleOpportunitiesSection: React.FC = () => {
     setEmiDuration('6'); // Reset to default
   };
 
-  // Compact Deal Card Component
-  const CompactCard = ({ deal }: { deal: Deal }) => {
+  // Handle reject deal with slide animation
+  const handleRejectDeal = (dealId: string) => {
+    setRejectedDeals(prev => new Set(prev).add(dealId));
+    setTimeout(() => {
+      setRejectedDeals(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(dealId);
+        return newSet;
+      });
+    }, 500); // Remove from rejected list after animation
+  };
+
+  // Organized Deal Card Component
+  const OrganizedCard = ({ deal }: { deal: Deal }) => {
     const sectorInfo = deal.sector ? sectorConfig[deal.sector] : null;
     const canAfford = financialData.bankBalance >= deal.investmentRequired;
+    const isRejected = rejectedDeals.has(deal.id);
     
     return (
-      <Card className="bg-white border border-gray-200 hover:shadow-md transition-all h-48 w-80">
-        <div className="p-3 h-full flex flex-col">
+      <Card className={`bg-white border border-gray-200 hover:shadow-md transition-all duration-500 h-64 w-72 ${
+        isRejected ? 'transform -translate-x-full opacity-0' : 'transform translate-x-0 opacity-100'
+      }`}>
+        <div className="p-4 h-full flex flex-col">
           {/* Header Row */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{sectorInfo?.icon || '💼'}</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{sectorInfo?.icon || '💼'}</span>
               <div>
-                <h3 className="font-semibold text-sm text-gray-900 leading-tight">{deal.title}</h3>
-                <span className="text-xs text-gray-500">{sectorInfo?.label}</span>
+                <h3 className="font-semibold text-base text-gray-900 leading-tight">{deal.title}</h3>
+                <span className="text-sm text-gray-500">{sectorInfo?.label}</span>
               </div>
             </div>
             <Badge className={`text-xs ${getRarityColor(deal.rarity)}`}>
@@ -294,33 +328,33 @@ const SimpleOpportunitiesSection: React.FC = () => {
           </div>
 
           {/* Price & ROI Row */}
-          <div className="flex justify-between items-center mb-2">
-            <div className="text-lg font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
-            <div className="text-xs text-blue-600 font-medium">{deal.expectedROI}% ROI</div>
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-xl font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
+            <div className="text-sm text-blue-600 font-medium">{deal.expectedROI}% ROI</div>
           </div>
 
           {/* Income Badge */}
-          <div className="bg-yellow-50 px-2 py-1 rounded text-center mb-2">
-            <span className="text-xs text-yellow-800 font-medium">💰 {formatCurrency(deal.cashflowMonthly)}/mo</span>
+          <div className="bg-yellow-50 px-3 py-2 rounded text-center mb-3">
+            <span className="text-sm text-yellow-800 font-medium">💰 {formatCurrency(deal.cashflowMonthly)}/mo</span>
           </div>
 
           {/* Abilities & Risks Row */}
-          <div className="grid grid-cols-2 gap-2 mb-2 flex-1">
+          <div className="grid grid-cols-2 gap-3 mb-3 flex-1">
             <div>
-              <div className="text-xs font-semibold text-gray-700 mb-1">⭐ Abilities</div>
+              <div className="text-xs font-semibold text-gray-700 mb-2">⭐ Abilities</div>
               <div className="space-y-1">
                 {deal.abilities.slice(0, 2).map((ability, index) => (
-                  <Badge key={index} className="text-xs bg-green-100 text-green-800 block">
+                  <Badge key={index} className="text-xs bg-green-100 text-green-800 block text-center py-1">
                     {ability}
                   </Badge>
                 ))}
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold text-gray-700 mb-1">⚠️ Risks</div>
+              <div className="text-xs font-semibold text-gray-700 mb-2">⚠️ Risks</div>
               <div className="space-y-1">
                 {deal.risks.slice(0, 2).map((risk, index) => (
-                  <Badge key={index} className="text-xs bg-red-100 text-red-800 block">
+                  <Badge key={index} className="text-xs bg-red-100 text-red-800 block text-center py-1">
                     {risk}
                   </Badge>
                 ))}
@@ -329,38 +363,46 @@ const SimpleOpportunitiesSection: React.FC = () => {
           </div>
 
           {/* Financial Details Row */}
-          <div className="grid grid-cols-2 gap-1 text-xs mb-2">
+          <div className="grid grid-cols-2 gap-2 text-sm mb-3">
             <div className="flex items-center gap-1">
-              <TrendingUp className="w-3 h-3 text-green-600" />
-              <span>{formatCurrency(deal.monthlyIncome)}</span>
+              <TrendingUp className="w-4 h-4 text-green-600" />
+              <span>Income: {formatCurrency(deal.monthlyIncome)}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Settings className="w-3 h-3 text-red-600" />
-              <span>{formatCurrency(deal.maintenanceCost)}</span>
+              <Settings className="w-4 h-4 text-red-600" />
+              <span>Cost: {formatCurrency(deal.maintenanceCost)}</span>
             </div>
           </div>
 
-          {/* Purchase Button */}
-          <Button
-            onClick={() => {
-              setSelectedDeal(deal);
-              setShowModal(true);
-            }}
-            className={`w-full h-8 text-xs ${canAfford 
-              ? 'bg-green-600 hover:bg-green-700 text-white' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-            disabled={!canAfford}
-          >
-            <ShoppingCart className="w-3 h-3 mr-1" />
-            {canAfford ? 'Purchase' : 'Insufficient Funds'}
-          </Button>
+          {/* Action Buttons Row */}
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleRejectDeal(deal.id)}
+              className="bg-red-500 hover:bg-red-600 text-white h-9 text-sm px-4"
+            >
+              Reject
+            </Button>
+            <Button
+              onClick={() => {
+                setSelectedDeal(deal);
+                setShowModal(true);
+              }}
+              className={`flex-1 h-9 text-sm ${canAfford 
+                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={!canAfford}
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              {canAfford ? 'Purchase' : 'Insufficient Funds'}
+            </Button>
+          </div>
         </div>
       </Card>
     );
   };
 
-  // Enhanced Investment Modal with Payment Options
+  // Compact Investment Modal with Payment Options
   const InvestmentModal = () => {
     const calculateEMI = (amount: number, months: number) => {
       const monthlyRate = 0.035; // 3.5% monthly for credit card
@@ -374,47 +416,50 @@ const SimpleOpportunitiesSection: React.FC = () => {
       { value: '60', label: '5 years', months: 60 }
     ];
 
+    const { availableCredit, creditLimit, currentCreditUsed } = getCreditCardInfo();
+    const canUseCredit = availableCredit >= (selectedDeal?.investmentRequired || 0);
+
     return (
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-md bg-white">
+        <DialogContent className="max-w-sm bg-white">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-blue-600" />
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-blue-600" />
               {selectedDeal?.title}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs">
               Confirm your investment details
             </DialogDescription>
           </DialogHeader>
 
           {selectedDeal && (
-            <div className="space-y-3">
-              {/* Investment Summary - Compact */}
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="space-y-2">
+              {/* Investment Summary - Ultra Compact */}
+              <div className="bg-blue-50 p-2 rounded">
+                <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <div className="text-blue-600 font-medium text-xs">Investment Amount</div>
-                    <div className="text-base font-bold">{formatCurrency(selectedDeal.investmentRequired)}</div>
+                    <div className="text-blue-600 font-medium">Investment Amount</div>
+                    <div className="text-sm font-bold">{formatCurrency(selectedDeal.investmentRequired)}</div>
                   </div>
                   <div>
-                    <div className="text-blue-600 font-medium text-xs">Expected ROI</div>
-                    <div className="text-base font-bold text-green-600">{selectedDeal.expectedROI}%</div>
+                    <div className="text-blue-600 font-medium">Expected ROI</div>
+                    <div className="text-sm font-bold text-green-600">{selectedDeal.expectedROI}%</div>
                   </div>
                   <div>
-                    <div className="text-blue-600 font-medium text-xs">Monthly Cashflow</div>
-                    <div className="text-base font-bold">{formatCurrency(selectedDeal.cashflowMonthly)}</div>
+                    <div className="text-blue-600 font-medium">Monthly Cashflow</div>
+                    <div className="text-sm font-bold">{formatCurrency(selectedDeal.cashflowMonthly)}</div>
                   </div>
                   <div>
-                    <div className="text-blue-600 font-medium text-xs">Timeline</div>
-                    <div className="text-base font-bold">{selectedDeal.timeHorizon} months</div>
+                    <div className="text-blue-600 font-medium">Timeline</div>
+                    <div className="text-sm font-bold">{selectedDeal.timeHorizon} months</div>
                   </div>
                 </div>
               </div>
 
               {/* Payment Method Selection */}
-              <div className="bg-white border border-gray-200 p-3 rounded-lg">
-                <div className="text-sm font-semibold text-gray-700 mb-2">Payment Method</div>
-                <div className="space-y-2">
+              <div className="bg-white border border-gray-200 p-2 rounded">
+                <div className="text-xs font-semibold text-gray-700 mb-1">Payment Method</div>
+                <div className="space-y-1">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
@@ -424,7 +469,7 @@ const SimpleOpportunitiesSection: React.FC = () => {
                       onChange={(e) => setPaymentMethod(e.target.value as 'bank')}
                       className="text-blue-600"
                     />
-                    <span className="text-sm">Bank Account (Full Payment)</span>
+                    <span className="text-xs">Bank Account (Full Payment)</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -434,21 +479,44 @@ const SimpleOpportunitiesSection: React.FC = () => {
                       checked={paymentMethod === 'credit_card'}
                       onChange={(e) => setPaymentMethod(e.target.value as 'credit_card')}
                       className="text-blue-600"
+                      disabled={!canUseCredit}
                     />
-                    <span className="text-sm">Credit Card (EMI Available)</span>
+                    <span className={`text-xs ${!canUseCredit ? 'text-gray-400' : ''}`}>
+                      Credit Card {!canUseCredit ? '(Insufficient Limit)' : '(EMI Available)'}
+                    </span>
                   </label>
                 </div>
               </div>
 
-              {/* EMI Duration (Only for Credit Card) */}
+              {/* Credit Card Info */}
               {paymentMethod === 'credit_card' && (
-                <div className="bg-white border border-gray-200 p-3 rounded-lg">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">EMI Duration</div>
+                <div className="bg-gray-50 p-2 rounded">
+                  <div className="text-xs text-gray-600 mb-1">Credit Card Limit:</div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-gray-500">Available:</span>
+                      <span className={`font-bold ml-1 ${canUseCredit ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatCurrency(availableCredit)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Used:</span>
+                      <span className="font-bold ml-1 text-gray-700">{formatCurrency(currentCreditUsed)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* EMI Duration (Only for Credit Card) */}
+              {paymentMethod === 'credit_card' && canUseCredit && (
+                <div className="bg-white border border-gray-200 p-2 rounded">
+                  <div className="text-xs font-semibold text-gray-700 mb-1">Payment Type</div>
                   <select
                     value={emiDuration}
-                    onChange={(e) => setEmiDuration(e.target.value as '2' | '6' | '12' | '60')}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                    onChange={(e) => setEmiDuration(e.target.value as '2' | '6' | '12' | '60' | 'full')}
+                    className="w-full p-1 border border-gray-300 rounded text-xs"
                   >
+                    <option value="full">Full Payment (No EMI)</option>
                     {emiDurationOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label} - EMI: {formatCurrency(calculateEMI(selectedDeal.investmentRequired, option.months))}
@@ -456,57 +524,63 @@ const SimpleOpportunitiesSection: React.FC = () => {
                     ))}
                   </select>
                   <div className="text-xs text-gray-500 mt-1">
-                    Interest Rate: 3.5% per month
+                    Interest Rate: 3.5% per month (EMI only)
                   </div>
                 </div>
               )}
 
               {/* Current Balance */}
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">Current Bank Balance:</span>
-                  <span className="font-bold">{formatCurrency(financialData.bankBalance)}</span>
+              <div className="bg-gray-50 p-2 rounded">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-gray-600">Bank Balance:</span>
+                    <div className="font-bold">{formatCurrency(financialData.bankBalance)}</div>
+                  </div>
+                  {paymentMethod === 'bank' && (
+                    <div>
+                      <span className="text-gray-600">After Investment:</span>
+                      <div className={`font-bold ${financialData.bankBalance - selectedDeal.investmentRequired >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatCurrency(financialData.bankBalance - selectedDeal.investmentRequired)}
+                      </div>
+                    </div>
+                  )}
+                  {paymentMethod === 'credit_card' && emiDuration !== 'full' && (
+                    <div>
+                      <span className="text-gray-600">Monthly EMI:</span>
+                      <div className="font-bold text-orange-600">
+                        {formatCurrency(calculateEMI(selectedDeal.investmentRequired, parseInt(emiDuration as string)))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {paymentMethod === 'bank' && (
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">After Investment:</span>
-                    <span className={`font-bold ${financialData.bankBalance - selectedDeal.investmentRequired >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(financialData.bankBalance - selectedDeal.investmentRequired)}
-                    </span>
-                  </div>
-                )}
-                {paymentMethod === 'credit_card' && (
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Monthly EMI:</span>
-                    <span className="font-bold text-orange-600">
-                      {formatCurrency(calculateEMI(selectedDeal.investmentRequired, parseInt(emiDuration)))}
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Risk Warning */}
-              <div className="bg-yellow-50 p-2 rounded border border-yellow-200">
-                <div className="flex items-center gap-2">
+              <div className="bg-yellow-50 p-1 rounded border border-yellow-200">
+                <div className="flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3 text-yellow-600" />
                   <span className="text-xs font-medium text-yellow-800">Risk: {selectedDeal.riskLevel}</span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 pt-1">
                 <Button
-                  onClick={() => handlePurchase(selectedDeal)}
-                  className="flex-1 bg-green-600 hover:bg-green-700 h-9 text-sm"
-                  disabled={paymentMethod === 'bank' && financialData.bankBalance < selectedDeal.investmentRequired}
+                  onClick={() => handlePurchase(selectedDeal, emiDuration !== 'full')}
+                  className="flex-1 bg-green-600 hover:bg-green-700 h-8 text-xs"
+                  disabled={
+                    (paymentMethod === 'bank' && financialData.bankBalance < selectedDeal.investmentRequired) ||
+                    (paymentMethod === 'credit_card' && !canUseCredit)
+                  }
                 >
                   <PlayCircle className="w-3 h-3 mr-1" />
-                  {paymentMethod === 'bank' ? 'Pay Full Amount' : 'Start EMI'}
+                  {paymentMethod === 'bank' ? 'Pay Full Amount' : 
+                   emiDuration === 'full' ? 'Pay Full (Credit)' : 'Start EMI'}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setShowModal(false)}
-                  className="px-4 h-9 text-sm"
+                  className="px-3 h-8 text-xs"
                 >
                   Cancel
                 </Button>
@@ -520,10 +594,10 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Compact Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {/* Organized Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {allDeals.map((deal) => (
-          <CompactCard key={deal.id} deal={deal} />
+          <OrganizedCard key={deal.id} deal={deal} />
         ))}
       </div>
 
