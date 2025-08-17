@@ -23,7 +23,11 @@ import {
   PieChart,
   LineChart,
   Activity,
-  Brain
+  Brain,
+  CreditCard,
+  Coins,
+  Droplets,
+  Eye
 } from 'lucide-react';
 
 interface Deal {
@@ -327,91 +331,264 @@ const DealsSection: React.FC = () => {
     );
   };
 
+  // Get deal type icon
+  const getDealIcon = (deal: Deal) => {
+    const iconMap: Record<string, JSX.Element> = {
+      'sector': <Building2 className="w-6 h-6" />,
+      'stock': <TrendingUp className="w-6 h-6" />,
+      'acquisition': <Handshake className="w-6 h-6" />,
+      'joint_venture': <Users className="w-6 h-6" />,
+      'banking': <CreditCard className="w-6 h-6" />,
+      'crypto': <Coins className="w-6 h-6" />
+    };
+    return iconMap[deal.type] || <Target className="w-6 h-6" />;
+  };
+
+  // Get sector color scheme
+  const getSectorColors = (sector: string | undefined) => {
+    const colorMap: Record<string, { bg: string, border: string, text: string, icon: string }> = {
+      'fast_food': { bg: 'from-orange-50 to-red-50', border: 'border-orange-200', text: 'text-orange-600', icon: 'bg-orange-100' },
+      'tech': { bg: 'from-blue-50 to-indigo-50', border: 'border-blue-200', text: 'text-blue-600', icon: 'bg-blue-100' },
+      'healthcare': { bg: 'from-green-50 to-emerald-50', border: 'border-green-200', text: 'text-green-600', icon: 'bg-green-100' },
+      'finance': { bg: 'from-purple-50 to-violet-50', border: 'border-purple-200', text: 'text-purple-600', icon: 'bg-purple-100' },
+      'real_estate': { bg: 'from-amber-50 to-yellow-50', border: 'border-amber-200', text: 'text-amber-600', icon: 'bg-amber-100' },
+    };
+    return colorMap[sector || 'default'] || { bg: 'from-slate-50 to-blue-50', border: 'border-slate-200', text: 'text-slate-600', icon: 'bg-slate-100' };
+  };
+
+  // Get rarity color for deals based on investment size
+  const getDealRarity = (investmentRequired: number) => {
+    if (investmentRequired >= 2000000) return { rarity: 'epic', color: 'bg-purple-100 text-purple-800 border-purple-200' };
+    if (investmentRequired >= 1000000) return { rarity: 'rare', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+    if (investmentRequired >= 500000) return { rarity: 'uncommon', color: 'bg-green-100 text-green-800 border-green-200' };
+    return { rarity: 'common', color: 'bg-gray-100 text-gray-800 border-gray-200' };
+  };
+
   const renderOpportunitiesContent = () => {
+    const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
+    
     return (
-      <div className="space-y-4">
-        {qualifiedDeals.filter(deal => deal.status === 'available').map(deal => (
-          <Card key={deal.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg">{deal.title}</h3>
-                <p className="text-gray-600 text-sm">{deal.description}</p>
-                <p className="text-blue-600 text-sm font-medium">{deal.company}</p>
-              </div>
-              <div className="text-right">
-                <div className="text-lg font-bold">{formatCurrency(deal.investmentRequired)}</div>
-                <div className="text-sm text-gray-500">Investment Required</div>
-              </div>
-            </div>
-            
-            <div className="flex gap-2 mb-3">
-              <Badge className={`text-xs px-2 py-1 ${getRiskColor(deal.riskLevel)}`}>
-                Risk: {deal.riskLevel}
-              </Badge>
-              <Badge className="text-xs px-2 py-1 bg-green-50 text-green-600 border-green-200">
-                ROI: {deal.expectedROI}%
-              </Badge>
-              <Badge className="text-xs px-2 py-1 bg-blue-50 text-blue-600 border-blue-200">
-                {deal.timeHorizon}m horizon
-              </Badge>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="text-sm text-gray-600">
-                Monthly: {formatCurrency(deal.cashflowMonthly)}
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
-                >
-                  Details
-                </Button>
-                <Button size="sm">Invest</Button>
-              </div>
-            </div>
-
-            {expandedDeal === deal.id && (
-              <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Benefits</h4>
-                  <ul className="text-sm text-green-700 space-y-1">
-                    {deal.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 text-green-500" />
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-red-800 mb-2">Risks</h4>
-                  <ul className="text-sm text-red-700 space-y-1">
-                    {deal.risks.map((risk, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <AlertTriangle className="w-3 h-3 mt-1 text-red-500" />
-                        {risk}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Key Factors</h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {Object.entries(deal.keyFactors).map(([key, value]) => (
-                      <Badge key={key} variant="outline" className="text-xs">
-                        {key}: {value}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {availableDeals.map(deal => {
+          const colors = getSectorColors(deal.sector);
+          const rarity = getDealRarity(deal.investmentRequired);
+          const canAfford = financialData.bankBalance >= deal.investmentRequired;
+          const monthlyReturn = (deal.investmentRequired * deal.expectedROI / 100) / 12;
+          
+          return (
+            <Card 
+              key={deal.id} 
+              className={`overflow-hidden transition-all duration-300 hover:shadow-lg bg-gradient-to-br ${colors.bg} ${colors.border} hover:border-blue-300`}
+            >
+              <CardContent className="p-4">
+                {/* Deal Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors.icon} ${colors.text}`}>
+                      {getDealIcon(deal)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800">{deal.title}</h3>
+                      <Badge className={`text-xs ${colors.text.replace('text-', 'bg-').replace('600', '100')} ${colors.text} ${colors.border}`}>
+                        {deal.sector?.replace('_', ' ') || deal.type}
                       </Badge>
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </Card>
-        ))}
+
+                {/* Investment Amount and ROI */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-left">
+                    <div className="text-xl font-bold text-slate-800">
+                      {formatCurrency(deal.investmentRequired)}
+                    </div>
+                    <div className={`text-sm ${colors.text} font-semibold`}>
+                      {deal.expectedROI}% Annual ROI
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
+                    <Coins className="w-3 h-3 text-amber-600" />
+                    <span className="text-xs font-semibold text-amber-700">
+                      {formatCurrency(deal.cashflowMonthly)}/mo
+                    </span>
+                  </div>
+                </div>
+
+                {/* Company and Description */}
+                <div className="mb-3">
+                  <p className={`text-sm font-medium ${colors.text} mb-1`}>{deal.company}</p>
+                  <p className="text-sm text-slate-600">{deal.description}</p>
+                </div>
+
+                {/* Deal Rarity and Type */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className={`text-xs px-2 py-1 ${rarity.color}`}>
+                      <span className="capitalize">{rarity.rarity} Deal</span>
+                    </Badge>
+                    <Badge className={`text-xs px-2 py-1 ${getRiskColor(deal.riskLevel)}`}>
+                      {deal.riskLevel} risk
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-blue-500" />
+                    <span className="text-slate-600">{deal.timeHorizon}m horizon</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Droplets className="w-3 h-3 text-green-500" />
+                    <span className="text-slate-600 capitalize">{deal.liquidity} liquidity</span>
+                  </div>
+                </div>
+
+                {/* Benefits and Risks Preview */}
+                {(deal.benefits.length > 0 || deal.risks.length > 0) && (
+                  <div className="mb-4 space-y-2">
+                    {deal.benefits.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <CheckCircle className="w-3 h-3 text-green-600" />
+                          <span className="text-xs font-semibold text-green-700">Key Benefits:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {deal.benefits.slice(0, 2).map((benefit, idx) => (
+                            <Badge key={idx} className="text-[10px] bg-green-100 text-green-800 border-green-200">
+                              {benefit}
+                            </Badge>
+                          ))}
+                          {deal.benefits.length > 2 && (
+                            <Badge className="text-[10px] bg-green-100 text-green-600 border-green-200">
+                              +{deal.benefits.length - 2} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {deal.risks.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <AlertTriangle className="w-3 h-3 text-red-600" />
+                          <span className="text-xs font-semibold text-red-700">Key Risks:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {deal.risks.slice(0, 2).map((risk, idx) => (
+                            <Badge key={idx} className="text-[10px] bg-red-100 text-red-800 border-red-200">
+                              {risk}
+                            </Badge>
+                          ))}
+                          {deal.risks.length > 2 && (
+                            <Badge className="text-[10px] bg-red-100 text-red-600 border-red-200">
+                              +{deal.risks.length - 2} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    Details
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    className={`flex-1 ${
+                      canAfford 
+                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
+                        : 'bg-red-500 hover:bg-red-600 text-white'
+                    }`}
+                  >
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    {canAfford ? 'Invest' : 'Insufficient'}
+                  </Button>
+                </div>
+
+                {/* Expanded Details */}
+                {expandedDeal === deal.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                    {/* Full Benefits List */}
+                    <div>
+                      <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        All Benefits
+                      </h4>
+                      <ul className="text-sm text-green-700 space-y-1">
+                        {deal.benefits.map((benefit, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Full Risks List */}
+                    <div>
+                      <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4" />
+                        All Risks
+                      </h4>
+                      <ul className="text-sm text-red-700 space-y-1">
+                        {deal.risks.map((risk, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="w-1 h-1 bg-red-500 rounded-full mt-2 flex-shrink-0" />
+                            {risk}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Key Factors */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        Key Investment Factors
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {Object.entries(deal.keyFactors).map(([key, value]) => (
+                          <div key={key} className="text-center p-2 bg-gray-50 rounded">
+                            <div className="text-xs text-gray-600">{key}</div>
+                            <div className="text-sm font-semibold text-gray-800">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Financial Projections */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                        <Calculator className="w-4 h-4" />
+                        Financial Projections
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-blue-600">Monthly Return:</span>
+                          <div className="font-semibold text-blue-800">{formatCurrency(monthlyReturn)}</div>
+                        </div>
+                        <div>
+                          <span className="text-blue-600">Break-even:</span>
+                          <div className="font-semibold text-blue-800">{Math.round(12/deal.expectedROI*100)} months</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     );
   };
