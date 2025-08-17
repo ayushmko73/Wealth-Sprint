@@ -27,7 +27,8 @@ import {
   CreditCard,
   Coins,
   Droplets,
-  Eye
+  Eye,
+  X
 } from 'lucide-react';
 
 interface Deal {
@@ -60,6 +61,10 @@ const DealsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Overview');
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState<Deal | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'bank' | 'credit'>('bank');
+  const [paymentType, setPaymentType] = useState<'full' | 'emi'>('full');
+  const [emiDuration, setEmiDuration] = useState<number>(3);
 
   // Categories for navigation
   const categories = ['Overview', 'Opportunities', 'Global Business', 'Financials'];
@@ -344,16 +349,15 @@ const DealsSection: React.FC = () => {
     return iconMap[deal.type] || <Target className="w-6 h-6" />;
   };
 
-  // Get sector color scheme
+  // Get sector color scheme - all blue now as requested
   const getSectorColors = (sector: string | undefined) => {
-    const colorMap: Record<string, { bg: string, border: string, text: string, icon: string }> = {
-      'fast_food': { bg: 'from-orange-50 to-red-50', border: 'border-orange-200', text: 'text-orange-600', icon: 'bg-orange-100' },
-      'tech': { bg: 'from-blue-50 to-indigo-50', border: 'border-blue-200', text: 'text-blue-600', icon: 'bg-blue-100' },
-      'healthcare': { bg: 'from-green-50 to-emerald-50', border: 'border-green-200', text: 'text-green-600', icon: 'bg-green-100' },
-      'finance': { bg: 'from-purple-50 to-violet-50', border: 'border-purple-200', text: 'text-purple-600', icon: 'bg-purple-100' },
-      'real_estate': { bg: 'from-amber-50 to-yellow-50', border: 'border-amber-200', text: 'text-amber-600', icon: 'bg-amber-100' },
+    // All cards use blue background as requested
+    return { 
+      bg: 'from-blue-50 to-blue-100', 
+      border: 'border-blue-200', 
+      text: 'text-blue-600', 
+      icon: 'bg-blue-100' 
     };
-    return colorMap[sector || 'default'] || { bg: 'from-slate-50 to-blue-50', border: 'border-slate-200', text: 'text-slate-600', icon: 'bg-slate-100' };
   };
 
   // Get rarity color for deals based on investment size
@@ -496,7 +500,7 @@ const DealsSection: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500"
                     onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
                   >
                     <Eye className="w-4 h-4 mr-1" />
@@ -509,6 +513,7 @@ const DealsSection: React.FC = () => {
                         ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
+                    onClick={() => setShowPurchaseModal(deal)}
                   >
                     <TrendingUp className="w-4 h-4 mr-1" />
                     {canAfford ? 'Invest' : 'Insufficient'}
@@ -789,6 +794,215 @@ const DealsSection: React.FC = () => {
       <div className="px-4">
         {renderCategoryContent()}
       </div>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <Card className="max-w-md w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-6 bg-white rounded-lg">
+              {/* Header with Close Button */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-800">Investment Purchase</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType('full');
+                    setEmiDuration(3);
+                  }}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Deal Info */}
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 text-2xl">
+                  {getDealIcon(showPurchaseModal)}
+                </div>
+                <h4 className="font-bold text-slate-800 text-lg mb-2">
+                  {showPurchaseModal.title}
+                </h4>
+                <p className="text-blue-600 text-sm font-medium mb-2">
+                  {showPurchaseModal.company}
+                </p>
+              </div>
+
+              {/* Key Investment Information */}
+              <div className="space-y-3 mb-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h5 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    Key Investment Information
+                  </h5>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-blue-600">Investment Amount:</span>
+                      <div className="font-bold text-blue-800">{formatCurrency(showPurchaseModal.investmentRequired)}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600">Expected ROI:</span>
+                      <div className="font-bold text-green-800">{showPurchaseModal.expectedROI}%</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600">Monthly Earnings:</span>
+                      <div className="font-bold text-green-800">{formatCurrency(showPurchaseModal.cashflowMonthly)}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600">Time Horizon:</span>
+                      <div className="font-bold text-blue-800">{showPurchaseModal.timeHorizon} months</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600">Risk Level:</span>
+                      <div className={`font-bold capitalize ${
+                        showPurchaseModal.riskLevel === 'low' ? 'text-green-600' :
+                        showPurchaseModal.riskLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
+                      }`}>{showPurchaseModal.riskLevel}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600">Liquidity:</span>
+                      <div className="font-bold text-blue-800 capitalize">{showPurchaseModal.liquidity}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Method Selection */}
+              <div className="mb-4">
+                <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  Payment Method
+                </h5>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      setPaymentMethod('bank');
+                      setPaymentType('full');
+                    }}
+                    className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                      paymentMethod === 'bank'
+                        ? 'bg-blue-100 border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 justify-center">
+                      <Building2 className="w-4 h-4" />
+                      Banking
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod('credit')}
+                    className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                      paymentMethod === 'credit'
+                        ? 'bg-blue-100 border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 justify-center">
+                      <CreditCard className="w-4 h-4" />
+                      Credit Card
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Credit Card Options */}
+              {paymentMethod === 'credit' && (
+                <div className="mb-4 relative">
+                  <h5 className="font-semibold text-slate-800 mb-2">Payment Options</h5>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setPaymentType('full')}
+                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                        paymentType === 'full'
+                          ? 'bg-green-100 border-green-300 text-green-800'
+                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      Full Payment
+                    </button>
+                    <button
+                      onClick={() => setPaymentType('emi')}
+                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                        paymentType === 'emi'
+                          ? 'bg-orange-100 border-orange-300 text-orange-800'
+                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      EMI
+                    </button>
+                  </div>
+
+                  {/* EMI Duration Selection - Overlay Menu */}
+                  {paymentType === 'emi' && (
+                    <div className="absolute top-16 left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-3">
+                      <h6 className="font-semibold text-slate-700 mb-2 text-sm">Choose Duration</h6>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[3, 6, 12, 24, 36, 60].map((months) => (
+                          <button
+                            key={months}
+                            onClick={() => setEmiDuration(months)}
+                            className={`p-2 rounded text-xs font-medium transition-all ${
+                              emiDuration === months
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}
+                          </button>
+                        ))}
+                      </div>
+                      {paymentType === 'emi' && (
+                        <div className="mt-2 p-2 bg-orange-50 rounded text-xs text-orange-700">
+                          EMI: {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/month
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500"
+                  onClick={() => {
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType('full');
+                    setEmiDuration(3);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                  onClick={() => {
+                    // Handle purchase logic here
+                    console.log('Purchase:', {
+                      deal: showPurchaseModal.title,
+                      amount: showPurchaseModal.investmentRequired,
+                      paymentMethod,
+                      paymentType,
+                      emiDuration: paymentType === 'emi' ? emiDuration : null
+                    });
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType('full');
+                    setEmiDuration(3);
+                  }}
+                >
+                  Purchase
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
