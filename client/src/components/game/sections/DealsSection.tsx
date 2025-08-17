@@ -28,7 +28,9 @@ import {
   Coins,
   Droplets,
   Eye,
-  X
+  X,
+  Briefcase,
+  ChevronDown
 } from 'lucide-react';
 
 interface Deal {
@@ -338,7 +340,7 @@ const DealsSection: React.FC = () => {
                     <div className="text-sm font-medium text-gray-800">{asset.name}</div>
                     <div className="text-xs text-gray-500">
                       Invested {formatCurrency(asset.purchasePrice)} • {
-                        Math.floor((new Date().getTime() - asset.purchaseDate.getTime()) / (1000 * 60 * 60 * 24))
+                        Math.floor((new Date().getTime() - new Date(asset.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
                       } days ago
                     </div>
                   </div>
@@ -992,12 +994,12 @@ const DealsSection: React.FC = () => {
 
               {/* Compact Credit Card Options */}
               {paymentMethod === 'credit' && (
-                <div className="mb-3 relative">
+                <div className="mb-3">
                   <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex gap-2">
                     <button
                       onClick={() => setPaymentType('full')}
-                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
+                      className={`flex-1 p-2 rounded-lg border text-xs font-medium transition-all ${
                         paymentType === 'full'
                           ? 'bg-green-100 border-green-300 text-green-800'
                           : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -1005,47 +1007,44 @@ const DealsSection: React.FC = () => {
                     >
                       Full Payment
                     </button>
-                    <button
-                      onClick={() => setPaymentType('emi')}
-                      className={`p-2 rounded-lg border text-xs font-medium transition-all relative ${
-                        paymentType === 'emi'
-                          ? 'bg-orange-100 border-orange-300 text-orange-800'
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                      }`}
-                    >
-                      EMI
+                    <div className="relative flex-1">
+                      <button
+                        onClick={() => setPaymentType('emi')}
+                        className={`w-full p-2 rounded-lg border text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                          paymentType === 'emi'
+                            ? 'bg-white border-gray-300 text-gray-800'
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        EMI {emiDuration < 12 ? `${emiDuration}m` : `${emiDuration/12}y`}
+                        {paymentType === 'emi' && <ChevronDown className="w-3 h-3" />}
+                      </button>
+
+                      {/* Compact EMI Duration Menu - Small dropdown next to button */}
                       {paymentType === 'emi' && (
-                        <div className="text-xs text-orange-600 mt-1">
-                          {emiDuration < 12 ? `${emiDuration}m` : `${emiDuration/12}y`}
+                        <div className="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-1">
+                          <div className="max-h-32 overflow-y-auto">
+                            {[3, 6, 12, 24, 36].map((months) => (
+                              <button
+                                key={months}
+                                onClick={() => setEmiDuration(months)}
+                                className={`w-full p-1.5 rounded text-xs font-medium transition-all flex justify-between items-center ${
+                                  emiDuration === months
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
+                                <span className="text-xs text-gray-500">
+                                  {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / months))}/mo
+                                </span>
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       )}
-                    </button>
-                  </div>
-
-                  {/* Vertical EMI Duration Menu - Overlay opening upward */}
-                  {paymentType === 'emi' && (
-                    <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-orange-300 rounded-lg shadow-lg z-20 p-2">
-                      <h6 className="font-semibold text-slate-700 mb-2 text-xs text-center">Choose Duration</h6>
-                      <div className="space-y-1">
-                        {[3, 6, 12, 24, 36, 60].map((months) => (
-                          <button
-                            key={months}
-                            onClick={() => setEmiDuration(months)}
-                            className={`w-full p-2 rounded text-xs font-medium transition-all flex justify-between items-center ${
-                              emiDuration === months
-                                ? 'bg-orange-500 text-white'
-                                : 'bg-gray-50 text-gray-700 hover:bg-orange-100'
-                            }`}
-                          >
-                            <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
-                            <span className="text-xs">
-                              {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/mo
-                            </span>
-                          </button>
-                        ))}
-                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
 
