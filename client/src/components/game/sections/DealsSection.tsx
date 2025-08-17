@@ -79,6 +79,14 @@ const DealsSection: React.FC = () => {
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showDeepDive, setShowDeepDive] = useState(false);
+  
+  // State for opportunities section
+  const [selectedOpportunity, setSelectedOpportunity] = useState<Deal | null>(null);
+  const [showPurchasePanel, setShowPurchasePanel] = useState(false);
+  
+  // State for purchase panel
+  const [investmentAmount, setInvestmentAmount] = useState(0);
+  const [investmentType, setInvestmentType] = useState<'full' | 'partial'>('full');
 
   // Categories for navigation
   const categories = ['Overview', 'Opportunities', 'Global Business', 'Financials'];
@@ -903,14 +911,13 @@ const DealsSection: React.FC = () => {
 
   // New Opportunities Section Component
   const renderOpportunitiesContent = () => {
-    const [selectedOpportunity, setSelectedOpportunity] = useState<Deal | null>(null);
-    const [showPurchasePanel, setShowPurchasePanel] = useState(false);
-
     // Filter deals for opportunities
     const opportunityDeals = allDeals.filter(deal => deal.type === 'sector');
 
     const handleInvestClick = (deal: Deal) => {
       setSelectedOpportunity(deal);
+      setInvestmentAmount(deal.investmentRequired);
+      setInvestmentType('full');
       setShowPurchasePanel(true);
     };
 
@@ -1091,10 +1098,6 @@ const DealsSection: React.FC = () => {
     onClose: () => void; 
     onPurchase: (deal: Deal, amount: number) => void;
   }) => {
-    const [investmentAmount, setInvestmentAmount] = useState(deal.investmentRequired);
-    const [investmentType, setInvestmentType] = useState<'full' | 'partial'>('full');
-    const { financialData } = useWealthSprintGame();
-    
     const canAfford = financialData.bankBalance >= investmentAmount;
     const monthlyReturn = (investmentAmount * deal.expectedROI / 100) / 12;
 
