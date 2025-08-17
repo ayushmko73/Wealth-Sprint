@@ -57,7 +57,7 @@ interface Deal {
 }
 
 const DealsSection: React.FC = () => {
-  const { playerStats, financialData } = useWealthSprintGame();
+  const { playerStats, financialData, purchaseDeal } = useWealthSprintGame();
   const [selectedCategory, setSelectedCategory] = useState('Overview');
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
@@ -265,9 +265,14 @@ const DealsSection: React.FC = () => {
   };
 
   const renderOverviewContent = () => {
-    const activeDeals = qualifiedDeals.filter(deal => deal.status === 'active');
-    const completedDeals = qualifiedDeals.filter(deal => deal.status === 'completed');
-    const pendingDeals = qualifiedDeals.filter(deal => deal.status === 'pending');
+    // Get actual investment data from game store
+    const investmentAssets = financialData.assets.filter(asset => asset.category === 'investment');
+    const portfolioValue = investmentAssets.reduce((total, asset) => total + asset.value, 0);
+    const monthlyIncome = investmentAssets.reduce((total, asset) => total + (asset.monthlyIncome || 0), 0);
+    const activeDealCount = investmentAssets.length;
+    const averageROI = activeDealCount > 0 
+      ? investmentAssets.reduce((total, asset) => total + ((asset.appreciationRate || 0) * 12 * 100), 0) / activeDealCount 
+      : 0;
 
     return (
       <div className="space-y-6">
@@ -275,19 +280,19 @@ const DealsSection: React.FC = () => {
           <div className="bg-gradient-to-r from-blue-50 to-sky-50 p-4 rounded-lg border border-blue-200">
             <div className="flex items-center gap-2 mb-2">
               <Activity className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-800">Active Deals</span>
+              <span className="text-sm font-semibold text-blue-800">Active Investments</span>
             </div>
-            <div className="text-xl font-bold text-blue-700">{activeDeals.length}</div>
+            <div className="text-xl font-bold text-blue-700">{activeDealCount}</div>
             <div className="text-xs text-blue-600">Currently Running</div>
           </div>
           
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <span className="text-sm font-semibold text-green-800">Completed</span>
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-semibold text-green-800">Monthly Income</span>
             </div>
-            <div className="text-xl font-bold text-green-700">{completedDeals.length}</div>
-            <div className="text-xs text-green-600">Successfully Closed</div>
+            <div className="text-xl font-bold text-green-700">{formatCurrency(monthlyIncome)}</div>
+            <div className="text-xs text-green-600">From Investments</div>
           </div>
         </div>
 
@@ -299,37 +304,115 @@ const DealsSection: React.FC = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Investment</span>
-              <span className="font-semibold">{formatCurrency(1500000)}</span>
+              <span className="font-semibold">{formatCurrency(financialData.investments.stocks)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Expected ROI</span>
-              <span className="font-semibold text-green-600">24.5%</span>
+              <span className="text-sm text-gray-600">Portfolio Value</span>
+              <span className="font-semibold">{formatCurrency(portfolioValue)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Average ROI</span>
+              <span className="font-semibold text-green-600">{averageROI.toFixed(1)}%</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Monthly Cashflow</span>
-              <span className="font-semibold text-blue-600">{formatCurrency(35000)}</span>
+              <span className="font-semibold text-blue-600">{formatCurrency(monthlyIncome)}</span>
             </div>
           </div>
         </Card>
 
+        {/* Investment Portfolio */}
+        {investmentAssets.length > 0 ? (
+          <Card className="p-4">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-blue-600" />
+              Your Investment Portfolio
+            </h3>
+            <div className="space-y-3">
+              {investmentAssets.map((asset) => (
+                <div key={asset.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-sm">{asset.icon}</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-800">{asset.name}</div>
+                    <div className="text-xs text-gray-500">
+                      Invested {formatCurrency(asset.purchasePrice)} • {
+                        Math.floor((new Date().getTime() - asset.purchaseDate.getTime()) / (1000 * 60 * 60 * 24))
+                      } days ago
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-gray-800">
+                      {formatCurrency(asset.value)}
+                    </div>
+                    <div className="text-xs text-green-600">
+                      +{((asset.appreciationRate || 0) * 12 * 100).toFixed(1)}% ROI
+                    </div>
+                    <div className="text-xs text-blue-600">
+                      {formatCurrency(asset.monthlyIncome || 0)}/month
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ) : (
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-center">
+            <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+              <Briefcase className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-2">No Investments Yet</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Start building your investment portfolio by exploring opportunities in the other categories.
+            </p>
+            <Button 
+              size="sm" 
+              onClick={() => setSelectedCategory('Opportunities')}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Explore Opportunities
+            </Button>
+          </div>
+        )}
+
         <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
           <h4 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
             <Lightbulb className="w-4 h-4" />
-            Deal Insights
+            Investment Insights
           </h4>
           <ul className="space-y-2 text-sm text-amber-700">
-            <li className="flex items-start gap-2">
-              <span className="text-amber-500">•</span>
-              Your portfolio shows strong diversification across sectors
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-500">•</span>
-              Consider higher-yield opportunities as your reputation grows
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-500">•</span>
-              Balance high-risk, high-reward deals with stable investments
-            </li>
+            {activeDealCount === 0 ? (
+              <>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Start with sector-specific opportunities to unlock higher-tier deals
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Diversify across different investment types for better risk management
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Consider both bank and credit card payment methods based on cash flow
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Your portfolio shows {activeDealCount > 3 ? 'good' : 'growing'} diversification
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Consider reinvesting monthly returns for compound growth
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-500">•</span>
+                  Balance high-yield opportunities with stable long-term investments
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -911,7 +994,7 @@ const DealsSection: React.FC = () => {
               {paymentMethod === 'credit' && (
                 <div className="mb-3 relative">
                   <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
-                  <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setPaymentType('full')}
                       className={`p-2 rounded-lg border text-xs font-medium transition-all ${
@@ -924,37 +1007,42 @@ const DealsSection: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setPaymentType('emi')}
-                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
+                      className={`p-2 rounded-lg border text-xs font-medium transition-all relative ${
                         paymentType === 'emi'
                           ? 'bg-orange-100 border-orange-300 text-orange-800'
                           : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                       }`}
                     >
                       EMI
+                      {paymentType === 'emi' && (
+                        <div className="text-xs text-orange-600 mt-1">
+                          {emiDuration < 12 ? `${emiDuration}m` : `${emiDuration/12}y`}
+                        </div>
+                      )}
                     </button>
                   </div>
 
-                  {/* Compact EMI Duration - Always visible when EMI selected */}
+                  {/* Vertical EMI Duration Menu - Overlay opening upward */}
                   {paymentType === 'emi' && (
-                    <div className="bg-white border border-orange-300 rounded-lg p-2">
-                      <h6 className="font-semibold text-slate-700 mb-1 text-xs">Choose Duration</h6>
-                      <div className="grid grid-cols-3 gap-1 mb-2">
+                    <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-orange-300 rounded-lg shadow-lg z-20 p-2">
+                      <h6 className="font-semibold text-slate-700 mb-2 text-xs text-center">Choose Duration</h6>
+                      <div className="space-y-1">
                         {[3, 6, 12, 24, 36, 60].map((months) => (
                           <button
                             key={months}
                             onClick={() => setEmiDuration(months)}
-                            className={`p-1 rounded text-xs font-medium transition-all ${
+                            className={`w-full p-2 rounded text-xs font-medium transition-all flex justify-between items-center ${
                               emiDuration === months
                                 ? 'bg-orange-500 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-gray-50 text-gray-700 hover:bg-orange-100'
                             }`}
                           >
-                            {months < 12 ? `${months}m` : `${months/12}y`}
+                            <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
+                            <span className="text-xs">
+                              {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/mo
+                            </span>
                           </button>
                         ))}
-                      </div>
-                      <div className="p-1 bg-orange-50 rounded text-xs text-orange-700 text-center">
-                        EMI: {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/month
                       </div>
                     </div>
                   )}
@@ -979,17 +1067,29 @@ const DealsSection: React.FC = () => {
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-2"
                   onClick={() => {
                     // Handle purchase logic here
-                    console.log('Purchase:', {
-                      deal: showPurchaseModal.title,
-                      amount: showPurchaseModal.investmentRequired,
+                    const result = purchaseDeal(
+                      showPurchaseModal,
                       paymentMethod,
                       paymentType,
-                      emiDuration: paymentType === 'emi' ? emiDuration : null
-                    });
-                    setShowPurchaseModal(null);
-                    setPaymentMethod('bank');
-                    setPaymentType('full');
-                    setEmiDuration(3);
+                      paymentType === 'emi' ? emiDuration : undefined
+                    );
+                    
+                    if (result?.success) {
+                      console.log('Purchase successful:', {
+                        deal: showPurchaseModal.title,
+                        amount: showPurchaseModal.investmentRequired,
+                        paymentMethod,
+                        paymentType,
+                        emiDuration: paymentType === 'emi' ? emiDuration : null
+                      });
+                      setShowPurchaseModal(null);
+                      setPaymentMethod('bank');
+                      setPaymentType('full');
+                      setEmiDuration(3);
+                    } else {
+                      console.error('Purchase failed:', result?.message);
+                      alert(`Purchase failed: ${result?.message || 'Unknown error'}`);
+                    }
                   }}
                 >
                   Purchase

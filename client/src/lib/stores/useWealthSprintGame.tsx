@@ -265,6 +265,9 @@ interface WealthSprintGameState {
   getLiabilities: () => Liability[];
   updateAssetValues: () => void;
   calculateNetWorth: () => number;
+  
+  // Deal investment functions
+  purchaseDeal: (deal: any, paymentMethod: 'bank' | 'credit', paymentType: 'full' | 'emi', emiDuration?: number) => { success: boolean; message: string };
 }
 
 // Initial state values
@@ -1180,6 +1183,125 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           transactionHistory: [newTransaction, ...state.financialData.transactionHistory].slice(0, 100) // Keep last 100 transactions
         }
       }));
+    },
+
+    // Deal investment functionality
+    purchaseDeal: (deal: any, paymentMethod: 'bank' | 'credit', paymentType: 'full' | 'emi', emiDuration?: number) => {
+      const state = get();
+      const amount = deal.investmentRequired;
+      
+      // Check if purchase is possible
+      if (paymentMethod === 'bank' && state.financialData.bankBalance < amount) {
+        return { success: false, message: 'Insufficient bank balance' };
+      }
+      
+      if (paymentMethod === 'credit') {
+        const currentCreditUsed = state.financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+        const creditLimit = 500000;
+        
+        if (currentCreditUsed + amount > creditLimit) {
+          return { success: false, message: 'Credit limit exceeded' };
+        }
+      }
+      
+      // Process payment
+      if (paymentMethod === 'bank') {
+        // Direct bank payment
+        set((state) => ({
+          financialData: {
+            ...state.financialData,
+            bankBalance: state.financialData.bankBalance - amount,
+            investments: {
+              ...state.financialData.investments,
+              stocks: state.financialData.investments.stocks + amount
+            }
+          }
+        }));
+        
+        get().addTransaction({
+          type: 'investment',
+          amount: -amount,
+          description: `Investment: ${deal.title} - Bank Payment`,
+          fromAccount: 'bank',
+          toAccount: 'business'
+        });
+      } else {
+        // Credit card payment
+        if (paymentType === 'full') {
+          get().chargeToCredit(amount, `Investment: ${deal.title} - Full Payment`);
+        } else {
+          // EMI - charge to credit and add EMI liability
+          get().chargeToCredit(amount, `Investment: ${deal.title} - EMI (${emiDuration} months)`);
+          
+          // Add EMI liability
+          const monthlyEmi = Math.ceil(amount / (emiDuration || 12));
+          const emiLiability: Liability = {
+            id: `emi_${Date.now()}`,
+            name: `${deal.title} EMI`,
+            category: 'personal_loan',
+            outstandingAmount: amount,
+            originalAmount: amount,
+            interestRate: 1.5, // 1.5% monthly for EMI
+            emi: monthlyEmi,
+            tenure: emiDuration || 12,
+            remainingMonths: emiDuration || 12,
+            description: `EMI for ${deal.title}`,
+            icon: '💳'
+          };
+          
+          set((state) => ({
+            financialData: {
+              ...state.financialData,
+              liabilities: [...state.financialData.liabilities, emiLiability],
+              totalLiabilities: state.financialData.totalLiabilities + amount
+            }
+          }));
+        }
+        
+        set((state) => ({
+          financialData: {
+            ...state.financialData,
+            investments: {
+              ...state.financialData.investments,
+              stocks: state.financialData.investments.stocks + amount
+            }
+          }
+        }));
+      }
+      
+      // Add deal as asset
+      const newAsset: Asset = {
+        id: `deal_${Date.now()}`,
+        name: deal.title,
+        category: 'investment',
+        value: amount,
+        purchasePrice: amount,
+        purchaseDate: new Date(),
+        monthlyIncome: deal.cashflowMonthly || 0,
+        appreciationRate: (deal.expectedROI || 0) / 100 / 12, // Monthly appreciation
+        description: deal.description || `Investment in ${deal.title}`,
+        icon: '📈',
+        storeItemId: deal.id
+      };
+      
+      set((state) => ({
+        financialData: {
+          ...state.financialData,
+          assets: [...state.financialData.assets, newAsset],
+          totalAssets: state.financialData.totalAssets + amount
+        }
+      }));
+      
+      // Add success event
+      get().addGameEvent({
+        id: `deal_purchase_${Date.now()}`,
+        type: 'achievement',
+        title: 'Investment Completed',
+        description: `Successfully invested ₹${amount.toLocaleString()} in ${deal.title}. Expected monthly return: ₹${deal.cashflowMonthly?.toLocaleString() || '0'}`,
+        timestamp: new Date(),
+      });
+      
+      return { success: true, message: 'Investment completed successfully' };
     },
 
     // Business sector management functions
