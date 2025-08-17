@@ -3,29 +3,23 @@ import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Input } from '../../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../ui/dialog';
 import { 
-  Search,
-  Filter,
-  Calculator,
-  TrendingUp,
   Building2,
-  DollarSign,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
   Heart,
   Home,
   Laptop,
   ShoppingCart,
   MapPin,
   Leaf,
-  X,
   PlayCircle,
-  Info
+  Settings,
+  TrendingUp,
+  DollarSign,
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Deal {
   id: string;
@@ -40,13 +34,15 @@ interface Deal {
   timeHorizon: number;
   cashflowMonthly: number;
   status: 'available' | 'active' | 'completed' | 'pending';
+  abilities: string[];
+  risks: string[];
+  monthlyIncome: number;
+  maintenanceCost: number;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
 const SimpleOpportunitiesSection: React.FC = () => {
-  const { playerStats, financialData } = useWealthSprintGame();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('roi');
-  const [filterRisk, setFilterRisk] = useState('all');
+  const { playerStats, financialData, addTransaction } = useWealthSprintGame();
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -60,123 +56,24 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
   // Sector configuration
   const sectorConfig = {
-    'fast_food': { icon: <Home className="w-5 h-5" />, label: 'Fast Food', color: 'bg-orange-100 text-orange-800' },
-    'tech': { icon: <Laptop className="w-5 h-5" />, label: 'Technology', color: 'bg-blue-100 text-blue-800' },
-    'healthcare': { icon: <Heart className="w-5 h-5" />, label: 'Healthcare', color: 'bg-green-100 text-green-800' },
-    'ecommerce': { icon: <ShoppingCart className="w-5 h-5" />, label: 'E-commerce', color: 'bg-purple-100 text-purple-800' },
-    'real_estate': { icon: <MapPin className="w-5 h-5" />, label: 'Real Estate', color: 'bg-gray-100 text-gray-800' },
-    'renewable_energy': { icon: <Leaf className="w-5 h-5" />, label: 'Renewable Energy', color: 'bg-emerald-100 text-emerald-800' }
+    'fast_food': { icon: '☕', label: 'Fast Food', color: 'bg-orange-100 text-orange-800' },
+    'tech': { icon: '💻', label: 'Technology', color: 'bg-blue-100 text-blue-800' },
+    'healthcare': { icon: '🏥', label: 'Healthcare', color: 'bg-green-100 text-green-800' },
+    'ecommerce': { icon: '🛒', label: 'E-commerce', color: 'bg-purple-100 text-purple-800' },
+    'real_estate': { icon: '🏢', label: 'Real Estate', color: 'bg-gray-100 text-gray-800' },
+    'renewable_energy': { icon: '🌱', label: 'Renewable Energy', color: 'bg-emerald-100 text-emerald-800' }
   };
 
-  // Mock deals data
-  const allDeals: Deal[] = useMemo(() => [
-    {
-      id: 'premium_restaurant',
-      type: 'sector',
-      sector: 'fast_food',
-      title: 'Premium Restaurant Chain',
-      description: 'Upscale dining expansion opportunity with modern presentation and affluent target market.',
-      company: 'Gourmet Express Holdings',
-      investmentRequired: 7500000,
-      expectedROI: 28,
-      riskLevel: 'medium',
-      timeHorizon: 18,
-      cashflowMonthly: 425000,
-      status: 'available'
-    },
-    {
-      id: 'ai_saas_platform',
-      type: 'sector',
-      sector: 'tech',
-      title: 'AI-Powered SaaS Platform',
-      description: 'Revolutionary AI platform automating business processes for SMEs with predictive analytics.',
-      company: 'NeuralFlow Technologies',
-      investmentRequired: 12000000,
-      expectedROI: 45,
-      riskLevel: 'high',
-      timeHorizon: 36,
-      cashflowMonthly: 180000,
-      status: 'available'
-    },
-    {
-      id: 'telemedicine_network',
-      type: 'sector',
-      sector: 'healthcare',
-      title: 'Telemedicine Network',
-      description: 'Digital healthcare platform connecting rural areas with specialist doctors and AI diagnosis.',
-      company: 'HealthBridge Digital',
-      investmentRequired: 9500000,
-      expectedROI: 32,
-      riskLevel: 'medium',
-      timeHorizon: 24,
-      cashflowMonthly: 315000,
-      status: 'available'
-    },
-    {
-      id: 'luxury_ecommerce',
-      type: 'sector',
-      sector: 'ecommerce',
-      title: 'Luxury E-commerce Platform',
-      description: 'Curated luxury marketplace with authenticated designer goods and AI styling recommendations.',
-      company: 'LuxeVault Commerce',
-      investmentRequired: 15000000,
-      expectedROI: 38,
-      riskLevel: 'high',
-      timeHorizon: 30,
-      cashflowMonthly: 225000,
-      status: 'available'
-    },
-    {
-      id: 'solar_energy_farms',
-      type: 'sector',
-      sector: 'renewable_energy',
-      title: 'Solar Energy Farms',
-      description: 'Large-scale solar installations with government backing and long-term power purchase agreements.',
-      company: 'SunPower Industries',
-      investmentRequired: 20000000,
-      expectedROI: 25,
-      riskLevel: 'low',
-      timeHorizon: 48,
-      cashflowMonthly: 350000,
-      status: 'available'
-    },
-    {
-      id: 'commercial_real_estate',
-      type: 'sector',
-      sector: 'real_estate',
-      title: 'Commercial Real Estate',
-      description: 'Prime office spaces in tier-1 cities with established tenants and stable rental income.',
-      company: 'MetroSpaces Realty',
-      investmentRequired: 25000000,
-      expectedROI: 22,
-      riskLevel: 'low',
-      timeHorizon: 60,
-      cashflowMonthly: 450000,
-      status: 'available'
+  // Get rarity color
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common': return 'bg-gray-100 text-gray-800';
+      case 'rare': return 'bg-blue-100 text-blue-800';
+      case 'epic': return 'bg-purple-100 text-purple-800';
+      case 'legendary': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-  ], []);
-
-  // Filter and sort deals
-  const filteredAndSortedDeals = useMemo(() => {
-    let filtered = allDeals.filter(deal => {
-      const matchesSearch = deal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           deal.company.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesRisk = filterRisk === 'all' || deal.riskLevel === filterRisk;
-      return matchesSearch && matchesRisk;
-    });
-
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'roi': return b.expectedROI - a.expectedROI;
-        case 'investment': return a.investmentRequired - b.investmentRequired;
-        case 'cashflow': return b.cashflowMonthly - a.cashflowMonthly;
-        case 'timeline': return a.timeHorizon - b.timeHorizon;
-        default: return 0;
-      }
-    });
-
-    return filtered;
-  }, [allDeals, searchTerm, sortBy, filterRisk]);
+  };
 
   // Get risk color
   const getRiskColor = (risk: string) => {
@@ -188,70 +85,267 @@ const SimpleOpportunitiesSection: React.FC = () => {
     }
   };
 
-  // Global Business Card Component (similar to the reference design)
-  const GlobalBusinessCard = ({ deal }: { deal: Deal }) => {
+  // Mock deals data (store-style)
+  const allDeals: Deal[] = useMemo(() => [
+    {
+      id: 'ai_saas_platform',
+      type: 'sector',
+      sector: 'tech',
+      title: 'AI SaaS Platform',
+      description: 'Revolutionary AI platform automating business processes for SMEs.',
+      company: 'NeuralFlow Technologies',
+      investmentRequired: 12000000,
+      expectedROI: 45,
+      riskLevel: 'high',
+      timeHorizon: 36,
+      cashflowMonthly: 180000,
+      monthlyIncome: 250000,
+      maintenanceCost: 50000,
+      status: 'available',
+      rarity: 'epic',
+      abilities: ['AI-powered automation', 'Predictive analytics', 'Scalable architecture'],
+      risks: ['High competition', 'Technology disruption', 'Market volatility']
+    },
+    {
+      id: 'premium_restaurant',
+      type: 'sector',
+      sector: 'fast_food',
+      title: 'Premium Restaurant Chain',
+      description: 'Upscale dining expansion with modern presentation.',
+      company: 'Gourmet Express Holdings',
+      investmentRequired: 7500000,
+      expectedROI: 28,
+      riskLevel: 'medium',
+      timeHorizon: 18,
+      cashflowMonthly: 425000,
+      monthlyIncome: 180000,
+      maintenanceCost: 80000,
+      status: 'available',
+      rarity: 'rare',
+      abilities: ['Premium brand recognition', 'High customer loyalty', 'Franchise opportunities'],
+      risks: ['Economic downturns', 'Food safety regulations', 'Seasonal fluctuations']
+    },
+    {
+      id: 'telemedicine_network',
+      type: 'sector',
+      sector: 'healthcare',
+      title: 'Telemedicine Network',
+      description: 'Digital healthcare platform connecting rural areas with specialists.',
+      company: 'HealthBridge Digital',
+      investmentRequired: 9500000,
+      expectedROI: 32,
+      riskLevel: 'medium',
+      timeHorizon: 24,
+      cashflowMonthly: 315000,
+      monthlyIncome: 220000,
+      maintenanceCost: 60000,
+      status: 'available',
+      rarity: 'rare',
+      abilities: ['Government partnerships', 'Rural market penetration', 'AI diagnosis integration'],
+      risks: ['Regulatory changes', 'Technology adoption barriers', 'Data privacy concerns']
+    },
+    {
+      id: 'luxury_ecommerce',
+      type: 'sector',
+      sector: 'ecommerce',
+      title: 'Luxury E-commerce Platform',
+      description: 'Curated luxury marketplace with authenticated designer goods.',
+      company: 'LuxeVault Commerce',
+      investmentRequired: 15000000,
+      expectedROI: 38,
+      riskLevel: 'high',
+      timeHorizon: 30,
+      cashflowMonthly: 225000,
+      monthlyIncome: 320000,
+      maintenanceCost: 90000,
+      status: 'available',
+      rarity: 'legendary',
+      abilities: ['Luxury brand partnerships', 'Authentication technology', 'High-end customer base'],
+      risks: ['Counterfeit challenges', 'Economic sensitivity', 'Brand reputation risks']
+    },
+    {
+      id: 'solar_energy_farms',
+      type: 'sector',
+      sector: 'renewable_energy',
+      title: 'Solar Energy Farms',
+      description: 'Large-scale solar installations with government backing.',
+      company: 'SunPower Industries',
+      investmentRequired: 20000000,
+      expectedROI: 25,
+      riskLevel: 'low',
+      timeHorizon: 48,
+      cashflowMonthly: 350000,
+      monthlyIncome: 400000,
+      maintenanceCost: 70000,
+      status: 'available',
+      rarity: 'epic',
+      abilities: ['Government subsidies', 'Long-term contracts', 'Environmental benefits'],
+      risks: ['Weather dependency', 'Policy changes', 'Technology obsolescence']
+    },
+    {
+      id: 'commercial_real_estate',
+      type: 'sector',
+      sector: 'real_estate',
+      title: 'Commercial Real Estate',
+      description: 'Prime office spaces in tier-1 cities with established tenants.',
+      company: 'MetroSpaces Realty',
+      investmentRequired: 25000000,
+      expectedROI: 22,
+      riskLevel: 'low',
+      timeHorizon: 60,
+      cashflowMonthly: 450000,
+      monthlyIncome: 500000,
+      maintenanceCost: 100000,
+      status: 'available',
+      rarity: 'rare',
+      abilities: ['Prime locations', 'Stable rental income', 'Property appreciation'],
+      risks: ['Market downturns', 'Tenant defaults', 'Maintenance costs']
+    }
+  ], []);
+
+  // Handle investment purchase
+  const handlePurchase = (deal: Deal) => {
+    const canAfford = financialData.bankBalance >= deal.investmentRequired;
+    
+    if (!canAfford) {
+      toast.error(`Insufficient funds. You need ${formatCurrency(deal.investmentRequired)} but only have ${formatCurrency(financialData.bankBalance)}`);
+      return;
+    }
+
+    // Update bank balance by deducting investment amount
+    useWealthSprintGame.setState((state) => ({
+      financialData: {
+        ...state.financialData,
+        bankBalance: state.financialData.bankBalance - deal.investmentRequired,
+        investments: {
+          ...state.financialData.investments,
+          realEstate: state.financialData.investments.realEstate + deal.investmentRequired
+        }
+      }
+    }));
+    
+    // Add transaction record
+    addTransaction({
+      type: 'investment',
+      amount: -deal.investmentRequired,
+      description: `Investment: ${deal.title}`,
+      fromAccount: 'bank',
+      toAccount: 'business'
+    });
+
+    toast.success(`Successfully invested ${formatCurrency(deal.investmentRequired)} in ${deal.title}!`);
+    setShowModal(false);
+  };
+
+  // Store-style Deal Card Component
+  const StoreStyleCard = ({ deal }: { deal: Deal }) => {
     const sectorInfo = deal.sector ? sectorConfig[deal.sector] : null;
+    const canAfford = financialData.bankBalance >= deal.investmentRequired;
     
     return (
-      <Card 
-        className="p-4 border-2 border-gray-200 rounded-xl hover:shadow-lg transition-all cursor-pointer"
-        onClick={() => {
-          setSelectedDeal(deal);
-          setShowModal(true);
-        }}
-      >
+      <Card className="p-4 bg-white border border-gray-200 hover:shadow-lg transition-all">
         <div className="space-y-4">
-          {/* Header with Icon and Company */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                {sectorInfo ? sectorInfo.icon : <Building2 className="w-5 h-5 text-gray-600" />}
+          {/* Header with Icon and Title */}
+          <div className="flex items-center gap-3">
+            <div className="text-3xl">
+              {sectorInfo?.icon || '💼'}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg text-gray-900">{deal.title}</h3>
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                {sectorInfo?.label}
+                {sectorInfo && (
+                  <Badge className={`text-xs ${sectorInfo.color}`}>
+                    {sectorInfo.label}
+                  </Badge>
+                )}
               </div>
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">{deal.title}</h3>
-                <p className="text-gray-600 text-sm">{deal.company}</p>
-              </div>
             </div>
-            <Clock className="w-5 h-5 text-gray-400" />
           </div>
 
-          {/* Category Badge */}
-          {sectorInfo && (
-            <Badge className={`text-xs ${sectorInfo.color} w-fit`}>
-              {sectorInfo.label}
+          {/* Investment Amount */}
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
+            <div className="text-sm text-blue-600 font-medium">{deal.expectedROI}% Annual ROI</div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-gray-600 line-clamp-2">{deal.description}</p>
+
+          {/* Rarity Badge */}
+          <div className="flex justify-center">
+            <Badge className={`text-xs ${getRarityColor(deal.rarity)} capitalize`}>
+              {deal.rarity}
             </Badge>
-          )}
-
-          {/* Investment Amount - Large Display */}
-          <div className="text-center py-3">
-            <div className="text-3xl font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
-            <div className="text-sm text-gray-600">Investment Required</div>
           </div>
 
-          {/* Metrics Row */}
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-lg font-bold text-green-600">{deal.expectedROI}%</div>
-              <div className="text-xs text-gray-600">Expected ROI</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-blue-600">high</div>
-              <div className="text-xs text-gray-600">Liquidity</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-purple-600">{deal.timeHorizon}m</div>
-              <div className="text-xs text-gray-600">Timeline</div>
+          {/* Bonus Income */}
+          <div className="bg-yellow-50 p-2 rounded text-center">
+            <div className="text-xs text-yellow-800 font-medium">
+              💰 {formatCurrency(deal.cashflowMonthly)}/mo
             </div>
           </div>
 
-          {/* Bottom Row - Risk and Action */}
-          <div className="flex items-center justify-between pt-2">
-            <Badge className={`text-xs ${getRiskColor(deal.riskLevel)}`}>
-              {deal.riskLevel} risk
-            </Badge>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white px-4">
-              Deep Dive
-            </Button>
+          {/* Abilities */}
+          <div>
+            <div className="text-xs font-semibold text-gray-700 mb-1">⭐ Abilities:</div>
+            <div className="flex flex-wrap gap-1">
+              {deal.abilities.slice(0, 3).map((ability, index) => (
+                <Badge key={index} className="text-xs bg-green-100 text-green-800">
+                  {ability}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Risks */}
+          <div>
+            <div className="text-xs font-semibold text-gray-700 mb-1">⚠️ Risks:</div>
+            <div className="flex flex-wrap gap-1">
+              {deal.risks.slice(0, 2).map((risk, index) => (
+                <Badge key={index} className="text-xs bg-red-100 text-red-800">
+                  {risk}
+                </Badge>
+              ))}
+              {deal.risks.length > 2 && (
+                <Badge className="text-xs bg-red-100 text-red-800">
+                  +{deal.risks.length - 2} more
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Financial Details */}
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-3 h-3 text-green-600" />
+              <span>Income: {formatCurrency(deal.monthlyIncome)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Settings className="w-3 h-3 text-red-600" />
+              <span>Maintenance: {formatCurrency(deal.maintenanceCost)}</span>
+            </div>
+          </div>
+
+          {/* Purchase Button */}
+          <Button
+            onClick={() => {
+              setSelectedDeal(deal);
+              setShowModal(true);
+            }}
+            className={`w-full ${canAfford 
+              ? 'bg-green-600 hover:bg-green-700 text-white' 
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+            disabled={!canAfford}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            {canAfford ? 'Purchase' : 'Insufficient Funds'}
+          </Button>
+
+          {/* Settings Icon */}
+          <div className="absolute top-2 right-2">
+            <Settings className="w-4 h-4 text-gray-400" />
           </div>
         </div>
       </Card>
@@ -261,67 +355,75 @@ const SimpleOpportunitiesSection: React.FC = () => {
   // Investment Modal
   const InvestmentModal = () => (
     <Dialog open={showModal} onOpenChange={setShowModal}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Building2 className="w-6 h-6 text-blue-600" />
             {selectedDeal?.title}
           </DialogTitle>
+          <DialogDescription>
+            Confirm your investment details
+          </DialogDescription>
         </DialogHeader>
 
         {selectedDeal && (
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div><span className="font-medium">Company:</span> {selectedDeal.company}</div>
-                <div><span className="font-medium">Investment:</span> {formatCurrency(selectedDeal.investmentRequired)}</div>
-                <div><span className="font-medium">Expected ROI:</span> {selectedDeal.expectedROI}%</div>
-              </div>
-              <div className="space-y-2">
-                <div><span className="font-medium">Monthly Cashflow:</span> {formatCurrency(selectedDeal.cashflowMonthly)}</div>
-                <div><span className="font-medium">Timeline:</span> {selectedDeal.timeHorizon} months</div>
-                <div>
-                  <span className="font-medium">Risk Level:</span> 
-                  <Badge className={`ml-2 ${getRiskColor(selectedDeal.riskLevel)}`}>
-                    {selectedDeal.riskLevel}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <h4 className="font-semibold mb-2">Description</h4>
-              <p className="text-gray-700">{selectedDeal.description}</p>
-            </div>
-
-            {/* Financial Summary */}
+          <div className="space-y-4">
+            {/* Investment Summary */}
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-800 mb-3">Financial Summary</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="text-blue-600">Annual Return (Expected)</div>
-                  <div className="font-bold">{formatCurrency(selectedDeal.investmentRequired * (selectedDeal.expectedROI / 100))}</div>
+                  <div className="text-blue-600 font-medium">Investment Amount</div>
+                  <div className="text-lg font-bold">{formatCurrency(selectedDeal.investmentRequired)}</div>
                 </div>
                 <div>
-                  <div className="text-blue-600">Annual Cashflow</div>
-                  <div className="font-bold">{formatCurrency(selectedDeal.cashflowMonthly * 12)}</div>
+                  <div className="text-blue-600 font-medium">Expected Annual ROI</div>
+                  <div className="text-lg font-bold text-green-600">{selectedDeal.expectedROI}%</div>
+                </div>
+                <div>
+                  <div className="text-blue-600 font-medium">Monthly Cashflow</div>
+                  <div className="text-lg font-bold">{formatCurrency(selectedDeal.cashflowMonthly)}</div>
+                </div>
+                <div>
+                  <div className="text-blue-600 font-medium">Timeline</div>
+                  <div className="text-lg font-bold">{selectedDeal.timeHorizon} months</div>
                 </div>
               </div>
+            </div>
+
+            {/* Current Balance */}
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Current Bank Balance:</span>
+                <span className="font-bold">{formatCurrency(financialData.bankBalance)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">After Investment:</span>
+                <span className={`font-bold ${financialData.bankBalance - selectedDeal.investmentRequired >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(financialData.bankBalance - selectedDeal.investmentRequired)}
+                </span>
+              </div>
+            </div>
+
+            {/* Risk Warning */}
+            <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                <span className="text-sm font-medium text-yellow-800">Investment Risk: {selectedDeal.riskLevel}</span>
+              </div>
+              <p className="text-xs text-yellow-700">
+                All investments carry risk. Expected returns are not guaranteed and actual performance may vary.
+              </p>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4 border-t">
               <Button
-                onClick={() => {
-                  alert(`Investment successful! You have invested ${formatCurrency(selectedDeal.investmentRequired)} in ${selectedDeal.title}`);
-                  setShowModal(false);
-                }}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                onClick={() => handlePurchase(selectedDeal)}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+                disabled={financialData.bankBalance < selectedDeal.investmentRequired}
               >
                 <PlayCircle className="w-4 h-4 mr-2" />
-                Invest {formatCurrency(selectedDeal.investmentRequired)}
+                Confirm Investment
               </Button>
               <Button
                 variant="outline"
@@ -339,72 +441,12 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Title | Category Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-900">Investment Opportunities</h1>
-            <div className="text-gray-400">|</div>
-            <span className="text-lg text-gray-600">Premium Investment</span>
-          </div>
-        </div>
-        <p className="text-gray-600 mt-2">Discover premium investment opportunities curated by AI and expert analysis</p>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="flex gap-4 items-center">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search deals, companies, or sectors..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-2"
-            />
-          </div>
-        </div>
-        <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-40 border-2">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="roi">Expected ROI</SelectItem>
-            <SelectItem value="investment">Investment Amount</SelectItem>
-            <SelectItem value="cashflow">Monthly Cashflow</SelectItem>
-            <SelectItem value="timeline">Timeline</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterRisk} onValueChange={setFilterRisk}>
-          <SelectTrigger className="w-32 border-2">
-            <SelectValue placeholder="Risk" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Risk</SelectItem>
-            <SelectItem value="low">Low Risk</SelectItem>
-            <SelectItem value="medium">Medium Risk</SelectItem>
-            <SelectItem value="high">High Risk</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Cards Grid */}
+      {/* Simple Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAndSortedDeals.map((deal) => (
-          <GlobalBusinessCard key={deal.id} deal={deal} />
+        {allDeals.map((deal) => (
+          <StoreStyleCard key={deal.id} deal={deal} />
         ))}
       </div>
-
-      {/* No Results */}
-      {filteredAndSortedDeals.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-2">
-            <Search className="w-12 h-12 mx-auto" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No deals found</h3>
-          <p className="text-gray-600">Try adjusting your search or filters</p>
-        </div>
-      )}
 
       {/* Modal */}
       <InvestmentModal />
