@@ -104,6 +104,7 @@ const EnhancedOpportunitiesSection: React.FC = () => {
   const [showTutorial, setShowTutorial] = useState(false);
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
   const [hoveredDeal, setHoveredDeal] = useState<string | null>(null);
+  const [rejectedDeals, setRejectedDeals] = useState<string[]>([]);
 
   // Format currency helper
   const formatCurrency = (amount: number) => {
@@ -419,8 +420,9 @@ const EnhancedOpportunitiesSection: React.FC = () => {
       
       const matchesRisk = filterRisk === 'all' || deal.riskLevel === filterRisk;
       const matchesSector = filterSector === 'all' || deal.sector === filterSector;
+      const notRejected = !rejectedDeals.includes(deal.id);
       
-      return matchesSearch && matchesRisk && matchesSector;
+      return matchesSearch && matchesRisk && matchesSector && notRejected;
     });
 
     // Sort deals
@@ -443,7 +445,7 @@ const EnhancedOpportunitiesSection: React.FC = () => {
     });
 
     return filtered;
-  }, [allDeals, searchTerm, sortBy, filterRisk, filterSector]);
+  }, [allDeals, searchTerm, sortBy, filterRisk, filterSector, rejectedDeals]);
 
   // Get risk color
   const getRiskColor = (risk: string) => {
@@ -462,6 +464,15 @@ const EnhancedOpportunitiesSection: React.FC = () => {
         ? prev.filter(id => id !== dealId)
         : [...prev, dealId]
     );
+  };
+
+  // Reject deal with animation
+  const handleRejectDeal = (dealId: string) => {
+    setRejectedDeals(prev => [...prev, dealId]);
+    // Remove from view after animation completes
+    setTimeout(() => {
+      setRejectedDeals(prev => prev.filter(id => id !== dealId));
+    }, 3000); // Keep for 3 seconds to show the animation
   };
 
   // Export deals to CSV
@@ -504,223 +515,185 @@ const EnhancedOpportunitiesSection: React.FC = () => {
     }
   };
 
-  // Enhanced Deal Card with micro-interactions
+  // Enhanced Deal Card with micro-interactions and compact design
   const EnhancedDealCard = ({ deal }: { deal: Deal }) => {
     const sectorInfo = deal.sector ? sectorConfig[deal.sector] : null;
     const isSaved = savedDeals.includes(deal.id);
     const isHovered = hoveredDeal === deal.id;
+    const isRejected = rejectedDeals.includes(deal.id);
     
     return (
       <motion.div
         layout
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        whileHover={{ 
-          y: -8, 
-          scale: 1.02,
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)"
+        animate={{ 
+          opacity: isRejected ? 0 : 1, 
+          x: isRejected ? -300 : 0,
+          y: 0,
+          scale: isRejected ? 0.8 : 1
         }}
-        onHoverStart={() => setHoveredDeal(deal.id)}
+        exit={{ opacity: 0, x: -300, scale: 0.8 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        whileHover={isRejected ? {} : { 
+          y: -4, 
+          scale: 1.02,
+          boxShadow: "0 12px 24px rgba(0, 0, 0, 0.1)"
+        }}
+        onHoverStart={() => !isRejected && setHoveredDeal(deal.id)}
         onHoverEnd={() => setHoveredDeal(null)}
-        className={`relative rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden group ${
-          sectorInfo ? `bg-gradient-to-br ${sectorInfo.color}` : 'bg-gradient-to-br from-gray-100 to-white'
-        }`}
+        className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
       >
-        {/* Background overlay for better text readability */}
-        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />
-        
-        {/* Content */}
-        <div className="relative p-6">
-          {/* Header Section */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-start gap-3">
-              <motion.div 
-                className={`w-12 h-12 rounded-xl ${sectorInfo ? sectorInfo.bgColor : 'bg-gray-100'} flex items-center justify-center shadow-lg`}
-                whileHover={{ rotate: 10, scale: 1.1 }}
-              >
-                {sectorInfo ? sectorInfo.icon : <Building2 className="w-6 h-6 text-gray-600" />}
-              </motion.div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  {deal.trending && (
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ repeat: Infinity, duration: 2 }}
-                      className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold"
-                    >
-                      <TrendingUp className="w-3 h-3" />
-                      TRENDING
-                    </motion.div>
-                  )}
-                  {deal.featured && (
-                    <div className="flex items-center gap-1 bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                      <Star className="w-3 h-3" />
-                      FEATURED
-                    </div>
-                  )}
-                </div>
-                <h3 className="font-bold text-xl leading-tight mb-1 text-gray-900">
-                  {deal.title}
-                </h3>
-                <p className="text-sm uppercase tracking-wide text-gray-600 font-medium">
-                  {deal.tagline}
-                </p>
-                <p className="text-sm text-gray-700 mt-1 opacity-80">
-                  {deal.company}
-                </p>
-              </div>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-2">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSaveDeal(deal.id);
-                }}
-                className={`p-2 rounded-lg transition-all ${
-                  isSaved 
-                    ? 'bg-yellow-500 text-white shadow-md' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  shareDeal(deal);
-                }}
-                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
-              >
-                <Share2 className="w-4 h-4" />
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Investment Amount */}
-          <div className="text-center mb-4">
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {formatCurrency(deal.investmentRequired)}
-            </div>
-            <div className="text-sm text-gray-600">Investment Required</div>
-          </div>
-
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-              <div className="text-lg font-bold text-emerald-800">{deal.expectedROI}%</div>
-              <div className="text-xs text-emerald-600">Expected ROI</div>
-            </div>
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <div className="text-lg font-bold text-blue-800">{formatCurrency(deal.cashflowMonthly)}</div>
-              <div className="text-xs text-blue-600">Monthly Cashflow</div>
-            </div>
-            <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-              <div className="text-lg font-bold text-purple-800">{deal.timeHorizon}m</div>
-              <div className="text-xs text-purple-600">Time Horizon</div>
-            </div>
-            <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-              <div className="text-lg font-bold text-orange-800 capitalize">{deal.liquidity}</div>
-              <div className="text-xs text-orange-600">Liquidity</div>
-            </div>
-          </div>
-
-          {/* Risk and Timeline */}
-          <div className="flex justify-between items-center mb-4">
-            <Badge className={`px-3 py-1 font-semibold ${getRiskColor(deal.riskLevel)}`}>
-              {deal.riskLevel.toUpperCase()} RISK
-            </Badge>
-            <div className="text-sm text-gray-600 flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              {deal.timeline}
-            </div>
-          </div>
-
-          {/* AI Insight */}
-          {deal.aiInsight && (
+        {/* Header with Icon and Badge */}
+        <div className="flex items-start justify-between p-4 border-b border-gray-50">
+          <div className="flex items-center gap-3">
             <motion.div 
-              className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 rounded-lg border border-indigo-200 mb-4"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0.7, height: 'auto' }}
+              className={`w-10 h-10 rounded-xl ${sectorInfo ? sectorInfo.bgColor : 'bg-gray-100'} flex items-center justify-center`}
+              whileHover={{ rotate: 10, scale: 1.1 }}
             >
-              <div className="flex items-start gap-2">
-                <Brain className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="text-xs font-semibold text-indigo-800 mb-1">AI INSIGHT</div>
-                  <p className="text-xs text-indigo-700 leading-relaxed">
-                    {deal.aiInsight}
-                  </p>
-                </div>
+              {sectorInfo ? sectorInfo.icon : <Building2 className="w-5 h-5 text-gray-600" />}
+            </motion.div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                {deal.featured && (
+                  <Badge className="text-xs bg-purple-500 text-white px-2 py-0.5">
+                    EPIC
+                  </Badge>
+                )}
+                {deal.trending && (
+                  <Badge className="text-xs bg-orange-500 text-white px-2 py-0.5">
+                    RARE
+                  </Badge>
+                )}
               </div>
-            </motion.div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-1"
-            >
-              <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
-                onClick={() => {
-                  setSelectedDeal(deal);
-                  setShowModal(true);
-                }}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Invest Now
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                variant="outline" 
-                className="px-4 py-3 rounded-xl border-2 border-gray-300 hover:border-gray-400 transition-all"
-                onClick={() => {
-                  setSelectedDeal(deal);
-                  setShowDeepDive(true);
-                }}
-              >
-                <Calculator className="w-4 h-4" />
-              </Button>
-            </motion.div>
+              <h3 className="font-bold text-lg leading-tight text-gray-900">
+                {deal.title}
+              </h3>
+              <p className="text-sm text-gray-600 capitalize">
+                {deal.sector?.replace('_', ' ') || 'General'}
+              </p>
+            </div>
           </div>
+          
+          {/* Save button */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSaveDeal(deal.id);
+            }}
+            className={`p-2 rounded-lg transition-all ${
+              isSaved 
+                ? 'bg-yellow-500 text-white shadow-md' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+          </motion.button>
+        </div>
 
-          {/* Timeline Progress */}
-          <div className="flex justify-center mt-4 gap-2">
-            {['initiation', 'growth', 'maturity', 'exit'].map((stage, index) => (
-              <motion.div 
-                key={stage}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  stage === deal.timelineStage ? 'bg-blue-600 shadow-lg scale-125' : 'bg-gray-300'
-                }`}
-                whileHover={{ scale: 1.5 }}
-              />
-            ))}
+        {/* Investment Amount */}
+        <div className="px-4 py-3 text-center">
+          <div className="text-2xl font-bold text-gray-900">
+            {formatCurrency(deal.investmentRequired)}
+          </div>
+          <div className="text-lg font-bold text-emerald-600 flex items-center justify-center gap-1">
+            <TrendingUp className="w-4 h-4" />
+            {deal.expectedROI}% ROI
           </div>
         </div>
 
-        {/* Hover overlay */}
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm"
-            />
-          )}
-        </AnimatePresence>
+        {/* Key Metrics - Compact Row */}
+        <div className="px-4 py-2 bg-gray-50">
+          <div className="flex justify-between text-xs text-gray-600">
+            <div>Income: {formatCurrency(deal.cashflowMonthly)}</div>
+            <div>Cost: {formatCurrency(deal.investmentRequired / 10)}</div>
+          </div>
+        </div>
+
+        {/* Abilities and Risks */}
+        <div className="px-4 py-3 space-y-2">
+          {/* Abilities */}
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <Star className="w-3 h-3 text-yellow-500" />
+              <span className="text-xs font-semibold text-gray-700">Abilities</span>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                AI-powered automation
+              </div>
+              <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                Predictive analytics
+              </div>
+            </div>
+          </div>
+
+          {/* Risks */}
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <AlertTriangle className="w-3 h-3 text-orange-500" />
+              <span className="text-xs font-semibold text-gray-700">Risks</span>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                High competition
+              </div>
+              <div className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
+                Technology disruption
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 p-4 border-t border-gray-50">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex-1"
+          >
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-sm"
+              onClick={() => {
+                setSelectedDeal(deal);
+                setShowModal(true);
+              }}
+            >
+              Invest Now
+            </Button>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button 
+              variant="outline" 
+              className="px-3 py-2 rounded-lg border border-gray-300 hover:border-gray-400 text-sm"
+              onClick={() => {
+                setSelectedDeal(deal);
+                setShowDeepDive(true);
+              }}
+            >
+              <Eye className="w-4 h-4" />
+            </Button>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button 
+              variant="outline" 
+              className="px-3 py-2 rounded-lg border border-red-300 hover:border-red-400 text-red-600 hover:bg-red-50 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRejectDeal(deal.id);
+              }}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </motion.div>
+        </div>
       </motion.div>
     );
   };
@@ -924,7 +897,7 @@ const EnhancedOpportunitiesSection: React.FC = () => {
 
         {/* Deals Grid */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
           layout
         >
           <AnimatePresence>
