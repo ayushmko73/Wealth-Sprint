@@ -16,7 +16,10 @@ import {
   Zap,
   TrendingDown,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Heart,
+  Brain,
+  Scale
 } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
@@ -25,7 +28,7 @@ const RevenueSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Overview');
 
   // Categories for the horizontal menu
-  const categories = ['Overview', 'Income Streams', 'Investments', 'Expenses', 'Growth Trends'];
+  const categories = ['Overview', 'Income Streams', 'Investments', 'Expenses', 'Growth Trends', 'Emotions'];
 
   // Category icons mapping
   const categoryIcons: Record<string, JSX.Element> = {
@@ -33,7 +36,8 @@ const RevenueSection: React.FC = () => {
     'Income Streams': <DollarSign className="w-4 h-4" />,
     'Investments': <TrendingUp className="w-4 h-4" />,
     'Expenses': <CreditCard className="w-4 h-4" />,
-    'Growth Trends': <Activity className="w-4 h-4" />
+    'Growth Trends': <Activity className="w-4 h-4" />,
+    'Emotions': <Heart className="w-4 h-4" />
   };
 
   // Generate 5-year revenue data based on current game state
@@ -101,6 +105,45 @@ const RevenueSection: React.FC = () => {
 
   const fiveYearData = generate5YearData();
 
+  // Generate 5-year emotion data based on current game state
+  const generate5YearEmotionData = () => {
+    const data = [];
+    const { timeEngine } = useWealthSprintGame.getState();
+    const currentGameYear = timeEngine.currentGameYear;
+    
+    for (let i = 0; i < 5; i++) {
+      const yearNumber = i + 1;
+      const yearLabel = `${yearNumber} year${yearNumber > 1 ? 's' : ''}`;
+      
+      // Only show actual data for years the player has reached
+      if (yearNumber <= currentGameYear) {
+        // Base progression with some fluctuation
+        const emotionTrend = Math.max(0, Math.min(100, playerStats.emotion + (i * 2) + Math.random() * 10 - 5));
+        const logicTrend = Math.max(0, Math.min(100, playerStats.logic + (i * 3) + Math.random() * 8 - 4));
+        const karmaTrend = Math.max(0, Math.min(100, playerStats.karma + (i * 1.5) + Math.random() * 6 - 3));
+        
+        data.push({
+          year: yearLabel,
+          emotion: Math.round(emotionTrend),
+          logic: Math.round(logicTrend),
+          karma: Math.round(karmaTrend)
+        });
+      } else {
+        // Show 0 data for future years
+        data.push({
+          year: yearLabel,
+          emotion: 0,
+          logic: 0,
+          karma: 0
+        });
+      }
+    }
+    
+    return data;
+  };
+
+  const fiveYearEmotionData = generate5YearEmotionData();
+
   // Color scheme inspired by banking, store, and stock market sections
   const colors = {
     primary: '#3b82f6', // Blue from banking
@@ -121,13 +164,14 @@ const RevenueSection: React.FC = () => {
   // Get category colors for navigation - Updated to blue and white theme
   const getCategoryColors = (category: string, isSelected: boolean) => {
     const baseColors: Record<string, string> = {
-      'Overview': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
-      'Income Streams': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
-      'Investments': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
-      'Expenses': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
-      'Growth Trends': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'
+      'Overview': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Income Streams': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Investments': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Expenses': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Growth Trends': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Emotions': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
     };
-    return baseColors[category] || 'bg-white text-blue-600 border border-blue-200';
+    return baseColors[category] || 'bg-blue-600 text-white';
   };
 
   // Calculate key metrics
@@ -501,6 +545,84 @@ const RevenueSection: React.FC = () => {
     );
   };
 
+  const renderEmotionsContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-lg border border-pink-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Heart className="w-5 h-5 text-pink-600" />
+              <span className="text-sm font-semibold text-pink-800">Emotion</span>
+            </div>
+            <div className="text-xl font-bold text-pink-700">{playerStats.emotion}</div>
+            <div className="text-xs text-pink-600">Current Level</div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-blue-50 to-sky-50 p-4 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Brain className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-800">Logic</span>
+            </div>
+            <div className="text-xl font-bold text-blue-700">{playerStats.logic}</div>
+            <div className="text-xs text-blue-600">Current Level</div>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Scale className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-semibold text-green-800">Karma</span>
+            </div>
+            <div className="text-xl font-bold text-green-700">{playerStats.karma}</div>
+            <div className="text-xs text-green-600">Current Level</div>
+          </div>
+        </div>
+
+        <Card className="p-4">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Heart className="w-5 h-5 text-pink-600" />
+            Emotional Stats History
+          </h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={fiveYearEmotionData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip />
+              <Line type="monotone" dataKey="emotion" stroke="#ec4899" strokeWidth={3} name="Emotion" />
+              <Line type="monotone" dataKey="logic" stroke="#3b82f6" strokeWidth={3} name="Logic" />
+              <Line type="monotone" dataKey="karma" stroke="#10b981" strokeWidth={3} name="Karma" />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+          <h4 className="font-semibold text-pink-800 mb-3 flex items-center gap-2">
+            <Heart className="w-4 h-4" />
+            Emotional Balance Tips
+          </h4>
+          <ul className="space-y-2 text-sm text-pink-700">
+            <li className="flex items-start gap-2">
+              <span className="text-pink-500">•</span>
+              Maintain work-life balance to improve emotional stability
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-500">•</span>
+              Make logical decisions during high-stress periods
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-500">•</span>
+              Build karma through positive business relationships
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-pink-500">•</span>
+              Track emotional patterns to identify improvement areas
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
   const renderCategoryContent = () => {
     switch (selectedCategory) {
       case 'Overview': return renderOverviewContent();
@@ -508,6 +630,7 @@ const RevenueSection: React.FC = () => {
       case 'Investments': return renderInvestmentsContent();
       case 'Expenses': return renderExpensesContent();
       case 'Growth Trends': return renderGrowthTrendsContent();
+      case 'Emotions': return renderEmotionsContent();
       default: return renderOverviewContent();
     }
   };

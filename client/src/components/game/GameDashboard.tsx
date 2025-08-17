@@ -55,7 +55,6 @@ import StrategyHubSection from './sections/StrategyHubSection';
 import AssetsSection from './sections/AssetsSection';
 import SettingsSection from './sections/SettingsSection';
 import RevenueSection from './sections/RevenueSection';
-import EmotionHistorySection from './sections/EmotionHistorySection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
@@ -112,7 +111,6 @@ const GameDashboard: React.FC = () => {
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
-    { id: 'emotion_history', label: 'Emotion History', icon: Heart },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
     { id: 'store', label: 'Store', icon: ShoppingCart },
 
@@ -137,8 +135,6 @@ const GameDashboard: React.FC = () => {
         return <BondsSection />;
       case 'revenue':
         return <RevenueSection />;
-      case 'emotion_history':
-        return <EmotionHistorySection />;
       case 'bank':
         return <BankSection />;
       case 'store':
