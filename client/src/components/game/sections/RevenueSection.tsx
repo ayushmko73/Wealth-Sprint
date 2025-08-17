@@ -161,15 +161,15 @@ const RevenueSection: React.FC = () => {
     return `₹${amount}`;
   };
 
-  // Get category colors for navigation - Updated to blue and white theme
+  // Get category colors for navigation - Updated to blue and white theme with selection logic
   const getCategoryColors = (category: string, isSelected: boolean) => {
     const baseColors: Record<string, string> = {
-      'Overview': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
-      'Income Streams': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
-      'Investments': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
-      'Expenses': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
-      'Growth Trends': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700',
-      'Emotions': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+      'Overview': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Income Streams': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Investments': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Expenses': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Growth Trends': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700',
+      'Emotions': isSelected ? 'bg-white text-blue-600 border border-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700'
     };
     return baseColors[category] || 'bg-blue-600 text-white';
   };
@@ -208,13 +208,56 @@ const RevenueSection: React.FC = () => {
         </h3>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={fiveYearData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis tickFormatter={formatCurrency} />
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
-            <Area type="monotone" dataKey="totalIncome" stackId="1" stroke={colors.primary} fill={colors.primary} fillOpacity={0.6} />
-            <Area type="monotone" dataKey="passiveIncome" stackId="1" stroke={colors.teal} fill={colors.teal} fillOpacity={0.6} />
-            <Area type="monotone" dataKey="businessIncome" stackId="1" stroke={colors.secondary} fill={colors.secondary} fillOpacity={0.6} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis 
+              dataKey="year" 
+              axisLine={{ stroke: '#9ca3af' }}
+              tickLine={{ stroke: '#9ca3af' }}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
+            <YAxis 
+              tickFormatter={formatCurrency}
+              axisLine={{ stroke: '#9ca3af' }}
+              tickLine={{ stroke: '#9ca3af' }}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
+            <Tooltip 
+              formatter={(value: number) => formatCurrency(value)}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+              labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+            />
+            <Area 
+              type="monotone" 
+              dataKey="totalIncome" 
+              stackId="1" 
+              stroke={colors.primary} 
+              fill={colors.primary} 
+              fillOpacity={0.6}
+              name="Total Income"
+            />
+            <Area 
+              type="monotone" 
+              dataKey="passiveIncome" 
+              stackId="1" 
+              stroke={colors.teal} 
+              fill={colors.teal} 
+              fillOpacity={0.6}
+              name="Passive Income"
+            />
+            <Area 
+              type="monotone" 
+              dataKey="businessIncome" 
+              stackId="1" 
+              stroke={colors.secondary} 
+              fill={colors.secondary} 
+              fillOpacity={0.6}
+              name="Business Income"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </Card>
@@ -584,13 +627,55 @@ const RevenueSection: React.FC = () => {
           </h3>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={fiveYearEmotionData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Line type="monotone" dataKey="emotion" stroke="#ec4899" strokeWidth={3} name="Emotion" />
-              <Line type="monotone" dataKey="logic" stroke="#3b82f6" strokeWidth={3} name="Logic" />
-              <Line type="monotone" dataKey="karma" stroke="#10b981" strokeWidth={3} name="Karma" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis 
+                dataKey="year" 
+                axisLine={{ stroke: '#9ca3af' }}
+                tickLine={{ stroke: '#9ca3af' }}
+                tick={{ fill: '#6b7280', fontSize: 12 }}
+              />
+              <YAxis 
+                domain={[0, 100]} 
+                axisLine={{ stroke: '#9ca3af' }}
+                tickLine={{ stroke: '#9ca3af' }}
+                tick={{ fill: '#6b7280', fontSize: 12 }}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
+                labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="emotion" 
+                stroke="#ec4899" 
+                strokeWidth={3} 
+                name="Emotion"
+                dot={{ fill: '#ec4899', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#ec4899', strokeWidth: 2 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="logic" 
+                stroke="#3b82f6" 
+                strokeWidth={3} 
+                name="Logic"
+                dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="karma" 
+                stroke="#10b981" 
+                strokeWidth={3} 
+                name="Karma"
+                dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </Card>
