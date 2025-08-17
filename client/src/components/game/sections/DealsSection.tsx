@@ -795,14 +795,14 @@ const DealsSection: React.FC = () => {
         {renderCategoryContent()}
       </div>
 
-      {/* Purchase Modal */}
+      {/* Compact Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full bg-white shadow-2xl border-0">
-            <CardContent className="p-6 bg-white rounded-lg">
-              {/* Header with Close Button */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-800">Investment Purchase</h3>
+          <Card className="max-w-sm w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-4 bg-white rounded-lg">
+              {/* Compact Header */}
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-slate-800">Investment Purchase</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -812,111 +812,109 @@ const DealsSection: React.FC = () => {
                     setPaymentType('full');
                     setEmiDuration(3);
                   }}
-                  className="h-6 w-6 p-0"
+                  className="h-5 w-5 p-0"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
-              {/* Deal Info */}
-              <div className="text-center mb-4">
-                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 text-2xl">
+              {/* Compact Deal Info */}
+              <div className="text-center mb-3">
+                <div className="w-12 h-12 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                   {getDealIcon(showPurchaseModal)}
                 </div>
-                <h4 className="font-bold text-slate-800 text-lg mb-2">
+                <h4 className="font-bold text-slate-800 text-sm mb-1">
                   {showPurchaseModal.title}
                 </h4>
-                <p className="text-blue-600 text-sm font-medium mb-2">
+                <p className="text-blue-600 text-xs font-medium">
                   {showPurchaseModal.company}
                 </p>
               </div>
 
-              {/* Key Investment Information */}
-              <div className="space-y-3 mb-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h5 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                    <Calculator className="w-4 h-4" />
-                    Key Investment Information
-                  </h5>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-blue-600">Investment Amount:</span>
-                      <div className="font-bold text-blue-800">{formatCurrency(showPurchaseModal.investmentRequired)}</div>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Expected ROI:</span>
-                      <div className="font-bold text-green-800">{showPurchaseModal.expectedROI}%</div>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Monthly Earnings:</span>
-                      <div className="font-bold text-green-800">{formatCurrency(showPurchaseModal.cashflowMonthly)}</div>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Time Horizon:</span>
-                      <div className="font-bold text-blue-800">{showPurchaseModal.timeHorizon} months</div>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Risk Level:</span>
-                      <div className={`font-bold capitalize ${
-                        showPurchaseModal.riskLevel === 'low' ? 'text-green-600' :
-                        showPurchaseModal.riskLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
-                      }`}>{showPurchaseModal.riskLevel}</div>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Liquidity:</span>
-                      <div className="font-bold text-blue-800 capitalize">{showPurchaseModal.liquidity}</div>
-                    </div>
+              {/* Compact Investment Information */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                <div className="flex items-center gap-1 mb-2">
+                  <Calculator className="w-3 h-3 text-blue-600" />
+                  <h5 className="font-semibold text-blue-800 text-xs">Key Investment Information</h5>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-blue-600">Investment Amount:</span>
+                    <div className="font-bold text-blue-800">{formatCurrency(showPurchaseModal.investmentRequired)}</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Expected ROI:</span>
+                    <div className="font-bold text-green-800">{showPurchaseModal.expectedROI}%</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Monthly Earnings:</span>
+                    <div className="font-bold text-green-800">{formatCurrency(showPurchaseModal.cashflowMonthly)}</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Time Horizon:</span>
+                    <div className="font-bold text-blue-800">{showPurchaseModal.timeHorizon} months</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Risk Level:</span>
+                    <div className={`font-bold capitalize text-xs ${
+                      showPurchaseModal.riskLevel === 'low' ? 'text-green-600' :
+                      showPurchaseModal.riskLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
+                    }`}>{showPurchaseModal.riskLevel}</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Liquidity:</span>
+                    <div className="font-bold text-blue-800 capitalize text-xs">{showPurchaseModal.liquidity}</div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Method Selection */}
-              <div className="mb-4">
-                <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  Payment Method
-                </h5>
+              {/* Compact Payment Method */}
+              <div className="mb-3">
+                <div className="flex items-center gap-1 mb-2">
+                  <CreditCard className="w-3 h-3 text-slate-600" />
+                  <h5 className="font-semibold text-slate-800 text-xs">Payment Method</h5>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => {
                       setPaymentMethod('bank');
                       setPaymentType('full');
                     }}
-                    className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                    className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                       paymentMethod === 'bank'
                         ? 'bg-blue-100 border-blue-300 text-blue-800'
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <Building2 className="w-4 h-4" />
+                    <div className="flex items-center gap-1 justify-center">
+                      <Building2 className="w-3 h-3" />
                       Banking
                     </div>
                   </button>
                   <button
                     onClick={() => setPaymentMethod('credit')}
-                    className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                    className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                       paymentMethod === 'credit'
                         ? 'bg-blue-100 border-blue-300 text-blue-800'
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <CreditCard className="w-4 h-4" />
+                    <div className="flex items-center gap-1 justify-center">
+                      <CreditCard className="w-3 h-3" />
                       Credit Card
                     </div>
                   </button>
                 </div>
               </div>
 
-              {/* Credit Card Options */}
+              {/* Compact Credit Card Options */}
               {paymentMethod === 'credit' && (
-                <div className="mb-4 relative">
-                  <h5 className="font-semibold text-slate-800 mb-2">Payment Options</h5>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="mb-3 relative">
+                  <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
                     <button
                       onClick={() => setPaymentType('full')}
-                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                         paymentType === 'full'
                           ? 'bg-green-100 border-green-300 text-green-800'
                           : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -926,7 +924,7 @@ const DealsSection: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setPaymentType('emi')}
-                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${
+                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                         paymentType === 'emi'
                           ? 'bg-orange-100 border-orange-300 text-orange-800'
                           : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -936,40 +934,38 @@ const DealsSection: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* EMI Duration Selection - Overlay Menu */}
+                  {/* Compact EMI Duration - Always visible when EMI selected */}
                   {paymentType === 'emi' && (
-                    <div className="absolute top-16 left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-3">
-                      <h6 className="font-semibold text-slate-700 mb-2 text-sm">Choose Duration</h6>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-white border border-orange-300 rounded-lg p-2">
+                      <h6 className="font-semibold text-slate-700 mb-1 text-xs">Choose Duration</h6>
+                      <div className="grid grid-cols-3 gap-1 mb-2">
                         {[3, 6, 12, 24, 36, 60].map((months) => (
                           <button
                             key={months}
                             onClick={() => setEmiDuration(months)}
-                            className={`p-2 rounded text-xs font-medium transition-all ${
+                            className={`p-1 rounded text-xs font-medium transition-all ${
                               emiDuration === months
                                 ? 'bg-orange-500 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                           >
-                            {months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}
+                            {months < 12 ? `${months}m` : `${months/12}y`}
                           </button>
                         ))}
                       </div>
-                      {paymentType === 'emi' && (
-                        <div className="mt-2 p-2 bg-orange-50 rounded text-xs text-orange-700">
-                          EMI: {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/month
-                        </div>
-                      )}
+                      <div className="p-1 bg-orange-50 rounded text-xs text-orange-700 text-center">
+                        EMI: {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / emiDuration))}/month
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 mt-6">
+              {/* Compact Action Buttons */}
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500"
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500 text-xs py-2"
                   onClick={() => {
                     setShowPurchaseModal(null);
                     setPaymentMethod('bank');
@@ -980,7 +976,7 @@ const DealsSection: React.FC = () => {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-2"
                   onClick={() => {
                     // Handle purchase logic here
                     console.log('Purchase:', {
