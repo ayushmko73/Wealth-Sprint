@@ -680,7 +680,11 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       get().advanceGameTime();
     },
 
-    // Background Time Engine (24× Speed)
+    // Background Time Engine with proper timing
+    // 1 real day = 24 game days
+    // 7 game days = 1 week  
+    // 4 weeks = 1 month
+    // 12 months = 1 year
     advanceGameTime: () => {
       set((state) => {
         const { timeEngine } = state;
@@ -695,8 +699,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         let newGameYear = timeEngine.currentGameYear;
         let newDaysSinceLastScenario = timeEngine.daysSinceLastScenario + 1;
         
-        // Advance month if day exceeds 30
-        if (newGameDay > 30) {
+        // Advance month after 28 days (4 weeks * 7 days)
+        if (newGameDay > 28) {
           newGameDay = 1;
           newGameMonth += 1;
           
@@ -1046,6 +1050,10 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           blackoutTurnsLeft: 0,
           turnsWithoutBreak: 0,
           lastAutoSaveTurn: 0,
+          isBankrupt: false,
+          isInJail: false,
+          jailTurnsLeft: 0,
+          bankruptcyReason: '',
         },
         playerStats: { ...initialPlayerStats },
         financialData: { ...initialFinancialData },
@@ -2128,11 +2136,11 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       });
       
       if (newOutstanding === 0) {
-        // Increase credit score by 5 points when loan is fully paid
+        // Boost karma when loan is fully paid
         set((state) => ({
           playerStats: {
             ...state.playerStats,
-            creditScore: Math.min(900, (state.playerStats.creditScore || 720) + 5)
+            karma: Math.min(100, state.playerStats.karma + 5)
           }
         }));
         
@@ -2140,7 +2148,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           id: `loan_paid_off_${Date.now()}`,
           type: 'achievement',
           title: 'Loan Paid Off!',
-          description: `Congratulations! You have fully paid off your ${loan.name}. Credit score increased by 5 points!`,
+          description: `Congratulations! You have fully paid off your ${loan.name}. Karma increased by 5 points!`,
           timestamp: new Date()
         });
       }
@@ -2191,11 +2199,11 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       });
       
       if (newOutstanding === 0) {
-        // Increase credit score by 5 points when loan is fully paid
+        // Boost karma when loan is fully paid
         set((state) => ({
           playerStats: {
             ...state.playerStats,
-            creditScore: Math.min(900, (state.playerStats.creditScore || 720) + 5)
+            karma: Math.min(100, state.playerStats.karma + 5)
           }
         }));
         
@@ -2203,7 +2211,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           id: `loan_custom_paid_off_${Date.now()}`,
           type: 'achievement',
           title: 'Loan Paid Off!',
-          description: `Congratulations! You have fully paid off your ${loan.name} with custom payment. Credit score increased by 5 points!`,
+          description: `Congratulations! You have fully paid off your ${loan.name} with custom payment. Karma increased by 5 points!`,
           timestamp: new Date()
         });
       }
@@ -2244,7 +2252,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           if (currentGameDay > loan.lastPaymentDue!) {
             const missedPayments = (loan.missedPayments || 0) + 1;
             
-            if (missedPayments === 1 && (!loan.penaltyLevel || loan.penaltyLevel === 0)) {
+            if (missedPayments === 1 && (!loan.penaltyLevel || loan.penaltyLevel !== 1)) {
               // First penalty: 5% additional interest
               get().applyLoanPenalty(loan.id, 1);
             } else if (missedPayments >= 2 && loan.penaltyLevel !== 2) {

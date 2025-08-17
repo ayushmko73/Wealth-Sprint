@@ -38,38 +38,62 @@ const RevenueSection: React.FC = () => {
 
   // Generate 5-year revenue data based on current game state
   const generate5YearData = () => {
-    const currentYear = new Date().getFullYear();
     const data = [];
+    const { timeEngine } = useWealthSprintGame.getState();
+    const currentGameYear = timeEngine.currentGameYear;
     
     for (let i = 0; i < 5; i++) {
-      const year = currentYear + i;
-      const baseIncome = financialData.mainIncome * 12;
-      const growth = Math.pow(1.12, i); // 12% annual growth
-      const logicBonus = (playerStats.logic / 100) * 0.05; // Logic impacts growth
-      const reputationBonus = (playerStats.reputation / 100) * 0.03; // Reputation impacts income
+      const yearNumber = i + 1;
+      const yearLabel = `${yearNumber} year${yearNumber > 1 ? 's' : ''}`;
       
-      const totalIncome = Math.round(baseIncome * growth * (1 + logicBonus + reputationBonus));
-      const passiveIncome = 0 * 12 * growth; // Simplified for now
-      const businessIncome = Math.round(totalIncome * 0.3 * growth);
-      const investmentReturns = Math.round(financialData.investments.stocks * 0.08 * growth);
-      const totalExpenses = Math.round(financialData.monthlyExpenses * 12 * Math.pow(1.06, i)); // 6% expense growth
-      
-      data.push({
-        year: year.toString(),
-        totalIncome,
-        salaryIncome: Math.round(totalIncome * 0.6),
-        passiveIncome: Math.round(passiveIncome),
-        businessIncome,
-        investmentReturns,
-        totalExpenses,
-        netProfit: totalIncome + passiveIncome + businessIncome + investmentReturns - totalExpenses,
-        expenses: {
-          living: Math.round(totalExpenses * 0.4),
-          entertainment: Math.round(totalExpenses * 0.2),
-          taxes: Math.round(totalExpenses * 0.25),
-          investments: Math.round(totalExpenses * 0.15)
-        }
-      });
+      // Only show actual data for years the player has reached
+      if (yearNumber <= currentGameYear) {
+        const baseIncome = financialData.mainIncome * 12;
+        const growth = Math.pow(1.12, i); // 12% annual growth
+        const logicBonus = (playerStats.logic / 100) * 0.05; // Logic impacts growth
+        const reputationBonus = (playerStats.reputation / 100) * 0.03; // Reputation impacts income
+        
+        const totalIncome = Math.round(baseIncome * growth * (1 + logicBonus + reputationBonus));
+        const passiveIncome = 0 * 12 * growth; // Simplified for now
+        const businessIncome = Math.round(totalIncome * 0.3 * growth);
+        const investmentReturns = Math.round(financialData.investments.stocks * 0.08 * growth);
+        const totalExpenses = Math.round(financialData.monthlyExpenses * 12 * Math.pow(1.06, i)); // 6% expense growth
+        
+        data.push({
+          year: yearLabel,
+          totalIncome,
+          salaryIncome: Math.round(totalIncome * 0.6),
+          passiveIncome: Math.round(passiveIncome),
+          businessIncome,
+          investmentReturns,
+          totalExpenses,
+          netProfit: totalIncome + passiveIncome + businessIncome + investmentReturns - totalExpenses,
+          expenses: {
+            living: Math.round(totalExpenses * 0.4),
+            entertainment: Math.round(totalExpenses * 0.2),
+            taxes: Math.round(totalExpenses * 0.25),
+            investments: Math.round(totalExpenses * 0.15)
+          }
+        });
+      } else {
+        // Show 0 data for future years
+        data.push({
+          year: yearLabel,
+          totalIncome: 0,
+          salaryIncome: 0,
+          passiveIncome: 0,
+          businessIncome: 0,
+          investmentReturns: 0,
+          totalExpenses: 0,
+          netProfit: 0,
+          expenses: {
+            living: 0,
+            entertainment: 0,
+            taxes: 0,
+            investments: 0
+          }
+        });
+      }
     }
     
     return data;
@@ -94,16 +118,16 @@ const RevenueSection: React.FC = () => {
     return `₹${amount}`;
   };
 
-  // Get category colors for navigation
+  // Get category colors for navigation - Updated to blue and white theme
   const getCategoryColors = (category: string, isSelected: boolean) => {
     const baseColors: Record<string, string> = {
-      'Overview': isSelected ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-200',
-      'Income Streams': isSelected ? 'bg-green-600 text-white' : 'bg-green-100 text-green-700 hover:bg-green-200',
-      'Investments': isSelected ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-700 hover:bg-purple-200',
-      'Expenses': isSelected ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700 hover:bg-red-200',
-      'Growth Trends': isSelected ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+      'Overview': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
+      'Income Streams': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
+      'Investments': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
+      'Expenses': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200',
+      'Growth Trends': isSelected ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'
     };
-    return baseColors[category] || 'bg-gray-100 text-gray-700';
+    return baseColors[category] || 'bg-white text-blue-600 border border-blue-200';
   };
 
   // Calculate key metrics
