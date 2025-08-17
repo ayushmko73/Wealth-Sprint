@@ -188,50 +188,55 @@ const SimpleOpportunitiesSection: React.FC = () => {
     }
   };
 
-  // Deal Card Component
-  const DealCard = ({ deal }: { deal: Deal }) => {
+  // Global Business Card Component (similar to the reference design)
+  const GlobalBusinessCard = ({ deal }: { deal: Deal }) => {
     const sectorInfo = deal.sector ? sectorConfig[deal.sector] : null;
     
     return (
       <Card 
-        className="p-4 hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-blue-300"
+        className="p-4 border-2 border-gray-200 rounded-xl hover:shadow-lg transition-all cursor-pointer"
         onClick={() => {
           setSelectedDeal(deal);
           setShowModal(true);
         }}
       >
         <div className="space-y-4">
-          {/* Header */}
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              {sectorInfo ? sectorInfo.icon : <Building2 className="w-5 h-5 text-gray-600" />}
+          {/* Header with Icon and Company */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                {sectorInfo ? sectorInfo.icon : <Building2 className="w-5 h-5 text-gray-600" />}
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg text-gray-900">{deal.title}</h3>
+                <p className="text-gray-600 text-sm">{deal.company}</p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg">{deal.title}</h3>
-              <p className="text-gray-600 text-sm">{deal.company}</p>
-              {sectorInfo && (
-                <Badge className={`text-xs mt-1 ${sectorInfo.color}`}>
-                  {sectorInfo.label}
-                </Badge>
-              )}
-            </div>
+            <Clock className="w-5 h-5 text-gray-400" />
           </div>
 
-          {/* Investment Amount */}
-          <div className="text-center bg-gray-50 p-3 rounded-lg">
-            <div className="text-2xl font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
+          {/* Category Badge */}
+          {sectorInfo && (
+            <Badge className={`text-xs ${sectorInfo.color} w-fit`}>
+              {sectorInfo.label}
+            </Badge>
+          )}
+
+          {/* Investment Amount - Large Display */}
+          <div className="text-center py-3">
+            <div className="text-3xl font-bold text-gray-900">{formatCurrency(deal.investmentRequired)}</div>
             <div className="text-sm text-gray-600">Investment Required</div>
           </div>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-3 gap-2 text-center">
+          {/* Metrics Row */}
+          <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-lg font-bold text-green-600">{deal.expectedROI}%</div>
-              <div className="text-xs text-gray-600">ROI</div>
+              <div className="text-xs text-gray-600">Expected ROI</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-blue-600">{formatCurrency(deal.cashflowMonthly)}</div>
-              <div className="text-xs text-gray-600">Monthly</div>
+              <div className="text-lg font-bold text-blue-600">high</div>
+              <div className="text-xs text-gray-600">Liquidity</div>
             </div>
             <div>
               <div className="text-lg font-bold text-purple-600">{deal.timeHorizon}m</div>
@@ -239,13 +244,13 @@ const SimpleOpportunitiesSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Risk Level */}
-          <div className="flex justify-between items-center">
-            <Badge className={`${getRiskColor(deal.riskLevel)}`}>
-              {deal.riskLevel.toUpperCase()} RISK
+          {/* Bottom Row - Risk and Action */}
+          <div className="flex items-center justify-between pt-2">
+            <Badge className={`text-xs ${getRiskColor(deal.riskLevel)}`}>
+              {deal.riskLevel} risk
             </Badge>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              View Details
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white px-4">
+              Deep Dive
             </Button>
           </div>
         </div>
@@ -334,81 +339,65 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Investment Opportunities</h1>
-        <p className="text-gray-600">Discover premium investment opportunities</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card className="p-3 text-center">
-          <div className="text-xl font-bold text-blue-600">{filteredAndSortedDeals.length}</div>
-          <div className="text-sm text-gray-600">Available</div>
-        </Card>
-        <Card className="p-3 text-center">
-          <div className="text-xl font-bold text-green-600">32.5%</div>
-          <div className="text-sm text-gray-600">Avg ROI</div>
-        </Card>
-        <Card className="p-3 text-center">
-          <div className="text-xl font-bold text-purple-600">{formatCurrency(287500)}</div>
-          <div className="text-sm text-gray-600">Avg Cashflow</div>
-        </Card>
-        <Card className="p-3 text-center">
-          <div className="text-xl font-bold text-orange-600">24</div>
-          <div className="text-sm text-gray-600">Avg Months</div>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex gap-4 items-center">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search deals or companies..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      {/* Title | Category Header */}
+      <div className="border-b border-gray-200 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-gray-900">Investment Opportunities</h1>
+            <div className="text-gray-400">|</div>
+            <span className="text-lg text-gray-600">Premium Investment</span>
           </div>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="roi">Expected ROI</SelectItem>
-              <SelectItem value="investment">Investment Amount</SelectItem>
-              <SelectItem value="cashflow">Monthly Cashflow</SelectItem>
-              <SelectItem value="timeline">Timeline</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={filterRisk} onValueChange={setFilterRisk}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Risk" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Risk</SelectItem>
-              <SelectItem value="low">Low Risk</SelectItem>
-              <SelectItem value="medium">Medium Risk</SelectItem>
-              <SelectItem value="high">High Risk</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
-      </Card>
+        <p className="text-gray-600 mt-2">Discover premium investment opportunities curated by AI and expert analysis</p>
+      </div>
 
-      {/* Deals Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Search and Filters */}
+      <div className="flex gap-4 items-center">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Search deals, companies, or sectors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 border-2"
+            />
+          </div>
+        </div>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-40 border-2">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="roi">Expected ROI</SelectItem>
+            <SelectItem value="investment">Investment Amount</SelectItem>
+            <SelectItem value="cashflow">Monthly Cashflow</SelectItem>
+            <SelectItem value="timeline">Timeline</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterRisk} onValueChange={setFilterRisk}>
+          <SelectTrigger className="w-32 border-2">
+            <SelectValue placeholder="Risk" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Risk</SelectItem>
+            <SelectItem value="low">Low Risk</SelectItem>
+            <SelectItem value="medium">Medium Risk</SelectItem>
+            <SelectItem value="high">High Risk</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredAndSortedDeals.map((deal) => (
-          <DealCard key={deal.id} deal={deal} />
+          <GlobalBusinessCard key={deal.id} deal={deal} />
         ))}
       </div>
 
       {/* No Results */}
       {filteredAndSortedDeals.length === 0 && (
-        <div className="text-center py-8">
+        <div className="text-center py-12">
           <div className="text-gray-400 mb-2">
             <Search className="w-12 h-12 mx-auto" />
           </div>
