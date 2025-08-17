@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
-import EnhancedOpportunitiesSection from './EnhancedOpportunitiesSection';
+import SimpleOpportunitiesSection from './SimpleOpportunitiesSection';
 import { 
   Handshake, 
   TrendingUp, 
@@ -913,7 +913,7 @@ const DealsSection: React.FC = () => {
   const renderCategoryContent = () => {
     switch (selectedCategory) {
       case 'Overview': return renderOverviewContent();
-      case 'Opportunities': return <EnhancedOpportunitiesSection />;
+      case 'Opportunities': return <SimpleOpportunitiesSection />;
       case 'Global Business': return renderGlobalBusinessContent();
       case 'Financials': return renderFinancialsContent();
       default: return renderOverviewContent();
