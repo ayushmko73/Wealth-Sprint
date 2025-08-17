@@ -50,7 +50,7 @@ import StocksSection from './sections/StocksSection';
 import BondsSection from './sections/BondsSection';
 import BankSection from './sections/BankSection';
 
-import BusinessDealsSection from './sections/BusinessDealsSection';
+import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
 import AssetsSection from './sections/AssetsSection';
 import SettingsSection from './sections/SettingsSection';
@@ -152,7 +152,7 @@ const GameDashboard: React.FC = () => {
       case 'strategy_cards':
         return <StrategyCardsSection />;
       case 'business_deals':
-        return <BusinessDealsSection />;
+        return <DealsSection />;
       case 'strategy_hub':
         return <StrategyHubSection />;
       case 'assets':
