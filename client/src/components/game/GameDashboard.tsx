@@ -66,6 +66,7 @@ import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
 import SageAI from './GorkAI';
+import NewSettings from './NewSettings';
 
 const GameDashboard: React.FC = () => {
   const { financialData, playerStats, currentWeek, currentDay, gameStarted, advanceTime } = useWealthSprintGame();
@@ -121,6 +122,7 @@ const GameDashboard: React.FC = () => {
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
     { id: 'assets', label: 'Assets', icon: TrendingUp },
     { id: 'analytics', label: 'Analytics', icon: Activity },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const renderMainContent = () => {
@@ -159,6 +161,8 @@ const GameDashboard: React.FC = () => {
         return <AssetsSection />;
       case 'analytics':
         return <PerformanceAnalyticsSection />;
+      case 'settings':
+        return <NewSettings onClose={() => setActiveSection('dashboard')} />;
       default:
         return (
           <div className="space-y-6">
