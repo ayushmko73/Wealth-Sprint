@@ -17,12 +17,12 @@ const StrategyHubSection: React.FC = () => {
   const [pendingDecisions, setPendingDecisions] = useState<TeamScenario[]>(availableScenarios.slice(0, 3));
 
   // Strategy categories for horizontal navigation
-  const categories = ['Performance', 'Team Dynamics', 'Market Position', 'Financial Health', 'Risk Analysis'];
+  const categories = ['Performance', 'Team Suggestions', 'Meeting Room', 'Financial Health', 'Risk Analysis'];
   
   const categoryIcons: Record<string, React.ReactNode> = {
     'Performance': <BarChart3 className="w-4 h-4" />,
-    'Team Dynamics': <Users className="w-4 h-4" />,
-    'Market Position': <Target className="w-4 h-4" />,
+    'Team Suggestions': <Users className="w-4 h-4" />,
+    'Meeting Room': <Target className="w-4 h-4" />,
     'Financial Health': <DollarSign className="w-4 h-4" />,
     'Risk Analysis': <Shield className="w-4 h-4" />
   };
@@ -200,7 +200,7 @@ const StrategyHubSection: React.FC = () => {
           </div>
         )}
 
-        {selectedCategory === 'Team Dynamics' && (
+        {selectedCategory === 'Team Suggestions' && (
           <div className="space-y-4">
             {teamMembers.length > 0 ? (
               <>
@@ -274,44 +274,13 @@ const StrategyHubSection: React.FC = () => {
           </div>
         )}
 
-        {selectedCategory === 'Market Position' && (
+        {selectedCategory === 'Meeting Room' && (
           <div className="space-y-4">
-            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-yellow-700">Current Market Standing</p>
-                    <p className="text-2xl font-bold text-yellow-800">{metrics.marketPosition}%</p>
-                    <p className="text-xs text-yellow-600">Based on reputation & strategy</p>
-                  </div>
-                  <Trophy className="text-yellow-600" size={24} />
-                </div>
-              </CardContent>
-            </Card>
-
             <Card>
-              <CardHeader>
-                <CardTitle>Market Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span>Reputation Score</span>
-                    <Badge variant={playerStats.reputation >= 70 ? "default" : "secondary"}>
-                      {playerStats.reputation}/100
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Business Experience</span>
-                    <Badge variant="outline">Week {currentWeek}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Financial Stability</span>
-                    <Badge variant={metrics.financialStability >= 60 ? "default" : "destructive"}>
-                      {metrics.financialStability}%
-                    </Badge>
-                  </div>
-                </div>
+              <CardContent className="text-center py-12">
+                <Target size={48} className="mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500 font-medium mb-2">Meeting Room Coming Soon</p>
+                <p className="text-sm text-gray-400">This feature is under development</p>
               </CardContent>
             </Card>
           </div>
