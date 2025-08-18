@@ -21,11 +21,11 @@ const AssetsSection: React.FC = () => {
     addTransaction
   } = useWealthSprintGame();
   
-  const [selectedCategory, setSelectedCategory] = useState<string>('Overview');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Assets');
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
 
-  const categories = ['Overview', 'Assets', 'Liabilities', 'Analysis'];
+  const categories = ['Assets', 'Liabilities', 'Analysis'];
 
   // Get assets and liabilities from the global game state
   const assets = getAssets() || [];
@@ -126,7 +126,6 @@ const AssetsSection: React.FC = () => {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'Overview': return <PiggyBank className="w-4 h-4" />;
       case 'Assets': return <TrendingUp className="w-4 h-4" />;
       case 'Liabilities': return <CreditCard className="w-4 h-4" />;
       case 'Analysis': return <Briefcase className="w-4 h-4" />;
@@ -143,50 +142,6 @@ const AssetsSection: React.FC = () => {
 
   const renderContent = () => {
     switch (selectedCategory) {
-      case 'Overview':
-        return (
-          <div className="space-y-4">
-            {/* New Overview UI - 3 Main Cards */}
-            <div className="space-y-4">
-              {/* Total Assets Card */}
-              <Card className="border border-gray-200 rounded-xl">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Total Assets</h3>
-                  <div className="text-3xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
-                  <div className="text-sm text-gray-500 mt-1">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</div>
-                </CardContent>
-              </Card>
-
-              {/* Total Liabilities Card */}
-              <Card className="border border-gray-200 rounded-xl">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Total Liabilities</h3>
-                  <div className="text-3xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
-                  <div className="text-sm text-gray-500 mt-1">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</div>
-                </CardContent>
-              </Card>
-
-              {/* Net Worth Card with Visual Indicator */}
-              <Card className="border border-gray-200 rounded-xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Net Worth</h3>
-                      <div className={`text-3xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        ₹{netWorth.toLocaleString()}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">Assets - Liabilities</div>
-                    </div>
-                    <div className="w-16 h-16 rounded-full border-4 border-blue-200 flex items-center justify-center">
-                      <div className="text-2xl">🏛️</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        );
-
       case 'Assets':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -478,6 +433,32 @@ const AssetsSection: React.FC = () => {
               <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                 ₹{netWorth.toLocaleString()}
               </div>
+            </div>
+          </div>
+
+          {/* Overview Data - 3 Cards in Header */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {/* Total Assets */}
+            <div className="bg-white bg-opacity-15 rounded-lg p-3">
+              <div className="text-blue-100 text-sm mb-1">Total Assets</div>
+              <div className="text-white text-xl font-bold">₹{totalAssetValue.toLocaleString()}</div>
+              <div className="text-blue-200 text-xs">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</div>
+            </div>
+
+            {/* Total Liabilities */}
+            <div className="bg-white bg-opacity-15 rounded-lg p-3">
+              <div className="text-blue-100 text-sm mb-1">Total Liabilities</div>
+              <div className="text-red-200 text-xl font-bold">₹{totalLiabilityValue.toLocaleString()}</div>
+              <div className="text-blue-200 text-xs">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</div>
+            </div>
+
+            {/* Net Cashflow */}
+            <div className="bg-white bg-opacity-15 rounded-lg p-3">
+              <div className="text-blue-100 text-sm mb-1">Net Cashflow</div>
+              <div className={`text-xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-200' : 'text-red-200'}`}>
+                ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
+              </div>
+              <div className="text-blue-200 text-xs">Monthly Net Income</div>
             </div>
           </div>
         </div>
