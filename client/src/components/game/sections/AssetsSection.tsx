@@ -6,7 +6,7 @@ import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
-import { Home, TrendingUp, Car, Briefcase, Minus, Plus, AlertTriangle } from 'lucide-react';
+import { Home, TrendingUp, Car, Briefcase, Minus, Plus, AlertTriangle, Building2, CreditCard, PiggyBank, Wallet } from 'lucide-react';
 
 const AssetsSection: React.FC = () => {
   const { 
@@ -20,9 +20,12 @@ const AssetsSection: React.FC = () => {
     updateLiability,
     addTransaction
   } = useWealthSprintGame();
-  const [activeTab, setActiveTab] = useState<'assets' | 'liabilities'>('assets');
+  
+  const [selectedCategory, setSelectedCategory] = useState<string>('Overview');
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
+
+  const categories = ['Overview', 'Real Estate', 'Investments', 'Vehicles', 'Liabilities', 'Analysis'];
 
   // Get assets and liabilities from the global game state
   const assets = getAssets() || [];
@@ -89,7 +92,7 @@ const AssetsSection: React.FC = () => {
     }
   };
 
-  const getCategoryIcon = (category: string) => {
+  const getAssetCategoryIcon = (category: string) => {
     switch (category) {
       case 'real_estate': return '🏠';
       case 'stocks': return '📈';
@@ -121,84 +124,104 @@ const AssetsSection: React.FC = () => {
     return { level: 'Low', color: 'text-green-600' };
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#3a3a3a]">Assets & Liabilities</h1>
-        <div className="flex items-center gap-6">
-          <div className="text-sm">
-            <span className="text-gray-600">Net Worth: </span>
-            <span className={`font-semibold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ₹{netWorth.toLocaleString()}
-            </span>
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Overview': return <PiggyBank className="w-4 h-4" />;
+      case 'Real Estate': return <Home className="w-4 h-4" />;
+      case 'Investments': return <TrendingUp className="w-4 h-4" />;
+      case 'Vehicles': return <Car className="w-4 h-4" />;
+      case 'Liabilities': return <CreditCard className="w-4 h-4" />;
+      case 'Analysis': return <Briefcase className="w-4 h-4" />;
+      default: return <Wallet className="w-4 h-4" />;
+    }
+  };
+
+  const filterAssetsByCategory = (category: string) => {
+    if (category === 'Real Estate') return assets.filter(asset => asset.category === 'real_estate');
+    if (category === 'Investments') return assets.filter(asset => asset.category === 'investment' || asset.category === 'business');
+    if (category === 'Vehicles') return assets.filter(asset => asset.category === 'vehicles');
+    return assets;
+  };
+
+  const renderContent = () => {
+    switch (selectedCategory) {
+      case 'Overview':
+        return (
+          <div className="space-y-6">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
+                  <p className="text-xs text-gray-500">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
+                  <p className="text-xs text-gray-500">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Net Worth</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ₹{netWorth.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-gray-500">Assets - Liabilities</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
+                  </div>
+                  <p className="text-xs text-gray-500">Monthly Net Income</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Asset Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {assets.slice(0, 6).map(asset => (
+                <Card key={asset.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-sm">
+                      <span className="text-lg">{asset.icon}</span>
+                      {asset.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="text-lg font-semibold">₹{asset.value.toLocaleString()}</div>
+                    <div className="text-sm text-green-600">+₹{asset.monthlyIncome.toLocaleString()}/month</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
+        );
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
-            <p className="text-xs text-gray-500">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
-            <p className="text-xs text-gray-500">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Net Worth</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ₹{netWorth.toLocaleString()}
-            </div>
-            <p className="text-xs text-gray-500">Assets - Liabilities</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
-            </div>
-            <p className="text-xs text-gray-500">Monthly Net Income</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'assets' | 'liabilities')}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="assets" className="flex items-center gap-2">
-            <TrendingUp size={16} />
-            Assets ({assets.length})
-          </TabsTrigger>
-          <TabsTrigger value="liabilities" className="flex items-center gap-2">
-            <Minus size={16} />
-            Liabilities ({liabilities.length})
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Assets Tab */}
-        <TabsContent value="assets" className="space-y-4">
+      case 'Real Estate':
+      case 'Investments':
+      case 'Vehicles':
+        const filteredAssets = filterAssetsByCategory(selectedCategory);
+        return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {assets.map(asset => (
+            {filteredAssets.map(asset => (
               <Card key={asset.id} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -252,10 +275,10 @@ const AssetsSection: React.FC = () => {
               </Card>
             ))}
           </div>
-        </TabsContent>
+        );
 
-        {/* Liabilities Tab */}
-        <TabsContent value="liabilities" className="space-y-4">
+      case 'Liabilities':
+        return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {liabilities.map(liability => {
               const progress = ((liability.tenure - liability.remainingMonths) / liability.tenure) * 100;
@@ -337,24 +360,142 @@ const AssetsSection: React.FC = () => {
               );
             })}
           </div>
-        </TabsContent>
-      </Tabs>
+        );
 
-      {/* Financial Health Alert */}
-      {(totalLiabilityValue / totalAssetValue) > 0.7 && (
-        <Card className="border-yellow-500 bg-yellow-50">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle size={20} className="text-yellow-600" />
-              <h3 className="font-semibold text-yellow-800">High Debt-to-Asset Ratio</h3>
+      case 'Analysis':
+        const assetAllocation = {
+          'Real Estate': assets.filter(a => a.category === 'real_estate').reduce((sum, a) => sum + a.value, 0),
+          'Investments': assets.filter(a => ['stocks', 'bonds', 'investment'].includes(a.category)).reduce((sum, a) => sum + a.value, 0),
+          'Vehicles': assets.filter(a => a.category === 'vehicles').reduce((sum, a) => sum + a.value, 0),
+          'Other': assets.filter(a => !['real_estate', 'stocks', 'bonds', 'investment', 'vehicles'].includes(a.category)).reduce((sum, a) => sum + a.value, 0)
+        };
+
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Asset Allocation</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {Object.entries(assetAllocation).map(([category, value]) => (
+                    <div key={category} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{category}</span>
+                      <div className="text-right">
+                        <div className="font-semibold">₹{value.toLocaleString()}</div>
+                        <div className="text-xs text-gray-500">
+                          {totalAssetValue > 0 ? ((value / totalAssetValue) * 100).toFixed(1) : 0}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Financial Health</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Debt-to-Asset Ratio</span>
+                    <span className={`font-semibold ${(totalLiabilityValue / totalAssetValue) > 0.5 ? 'text-red-600' : 'text-green-600'}`}>
+                      {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : 0}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">Monthly Cashflow Coverage</span>
+                    <span className={`font-semibold ${monthlyAssetIncome >= monthlyLiabilityPayment ? 'text-green-600' : 'text-red-600'}`}>
+                      {monthlyLiabilityPayment > 0 ? ((monthlyAssetIncome / monthlyLiabilityPayment) * 100).toFixed(1) : 100}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">Asset Quality</span>
+                    <span className="font-semibold text-blue-600">
+                      {assets.filter(a => a.monthlyIncome > 0).length}/{assets.length} Income Generating
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <p className="text-sm text-yellow-700">
-              Your debt-to-asset ratio is {((totalLiabilityValue / totalAssetValue) * 100).toFixed(1)}%. 
-              Consider reducing liabilities or increasing assets to improve financial health.
-            </p>
-          </CardContent>
-        </Card>
-      )}
+
+            {/* Financial Health Alert */}
+            {(totalLiabilityValue / totalAssetValue) > 0.7 && (
+              <Card className="border-yellow-500 bg-yellow-50">
+                <CardContent className="pt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={20} className="text-yellow-600" />
+                    <h3 className="font-semibold text-yellow-800">High Debt-to-Asset Ratio</h3>
+                  </div>
+                  <p className="text-sm text-yellow-700">
+                    Your debt-to-asset ratio is {((totalLiabilityValue / totalAssetValue) * 100).toFixed(1)}%. 
+                    Consider reducing liabilities or increasing assets to improve financial health.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        );
+
+      default:
+        return <div>Select a category to view details</div>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header - Blue background with professional styling */}
+      <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            {/* Title Section */}
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white bg-opacity-15 rounded-lg">
+                <Building2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Assets & Liabilities</h1>
+                <p className="text-blue-100 text-sm">Portfolio Management & Financial Overview</p>
+              </div>
+            </div>
+            
+            {/* Net Worth Display */}
+            <div className="text-right text-white">
+              <div className="text-sm text-blue-200">Net Worth</div>
+              <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                ₹{netWorth.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Horizontal Scrollable Menu */}
+      <div className="w-full bg-blue-600 border-t border-blue-500">
+        <div className="px-4 py-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all duration-200 ${
+                  selectedCategory === category
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'bg-transparent text-white hover:bg-blue-500'
+                }`}
+              >
+                {getCategoryIcon(category)}
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area */}
+      <div className="p-6">
+        {renderContent()}
+      </div>
     </div>
   );
 };
