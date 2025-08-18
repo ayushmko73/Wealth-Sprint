@@ -107,6 +107,26 @@ const NewSettingsSection: React.FC = () => {
 
   const handleVolumeChange = (newValue: number[]) => {
     setVolume(newValue[0]);
+    console.log('Volume changed to:', newValue[0]);
+  };
+
+  const handlePlayBackgroundMusic = () => {
+    console.log('Play background music clicked');
+    playBackgroundMusic();
+  };
+
+  const handleStopBackgroundMusic = () => {
+    console.log('Stop background music clicked');
+    stopBackgroundMusic();
+  };
+
+  const handleToggleBackgroundMusic = () => {
+    console.log('Toggle background music clicked, currently playing:', isBackgroundPlaying);
+    if (isBackgroundPlaying) {
+      stopBackgroundMusic();
+    } else {
+      playBackgroundMusic();
+    }
   };
 
   const handleExportSave = () => {
@@ -324,8 +344,9 @@ const NewSettingsSection: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
+                onClick={handleToggleBackgroundMusic}
                 disabled={isMuted}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500 hover:border-yellow-600 font-medium"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
@@ -337,7 +358,7 @@ const NewSettingsSection: React.FC = () => {
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-32 bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -354,9 +375,15 @@ const NewSettingsSection: React.FC = () => {
                 <h4 className="font-medium text-gray-800">Background Music</h4>
                 <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
               </div>
-              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded border">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500 hover:border-yellow-600 font-medium"
+                onClick={handleToggleBackgroundMusic}
+                disabled={isMuted}
+              >
                 Calm Business Lo-Fi
-              </div>
+              </Button>
             </div>
           </div>
         );
