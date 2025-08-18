@@ -65,7 +65,7 @@ const DealsSection: React.FC = () => {
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState<Deal | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'bank' | 'credit'>('bank');
-  const [paymentType, setPaymentType] = useState<'full' | 'emi'>('full');
+  const [paymentType, setPaymentType] = useState<'full' | 'emi' | null>(null); // Default unselected
   const [emiDuration, setEmiDuration] = useState<number>(3);
   const [showEmiDropdown, setShowEmiDropdown] = useState(false);
 
@@ -904,7 +904,7 @@ const DealsSection: React.FC = () => {
                   onClick={() => {
                     setShowPurchaseModal(null);
                     setPaymentMethod('bank');
-                    setPaymentType('full');
+                    setPaymentType(null);
                     setEmiDuration(3);
                     setShowEmiDropdown(false);
                   }}
@@ -988,7 +988,10 @@ const DealsSection: React.FC = () => {
                     </div>
                   </button>
                   <button
-                    onClick={() => setPaymentMethod('credit')}
+                    onClick={() => {
+                      setPaymentMethod('credit');
+                      setPaymentType(null); // Reset to unselected when switching to credit card
+                    }}
                     className={`p-1.5 rounded text-xs font-medium transition-all ${
                       paymentMethod === 'credit'
                         ? 'bg-blue-100 border border-blue-300 text-blue-800'
@@ -1024,7 +1027,7 @@ const DealsSection: React.FC = () => {
                       }`}
                       disabled={!getCreditInfo().canPayFull}
                     >
-                      {getCreditInfo().canPayFull ? "Full Payment" : "Credit Limit Exceeded - Can't Pay"}
+                      {getCreditInfo().canPayFull ? "Full Payment" : "Limit exceeded"}
                     </button>
 
                     {/* EMI Button */}
@@ -1099,7 +1102,7 @@ const DealsSection: React.FC = () => {
                   onClick={() => {
                     setShowPurchaseModal(null);
                     setPaymentMethod('bank');
-                    setPaymentType('full');
+                    setPaymentType(null);
                     setEmiDuration(3);
                     setShowEmiDropdown(false);
                   }}
@@ -1109,12 +1112,18 @@ const DealsSection: React.FC = () => {
                 <Button
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-1.5"
                   onClick={() => {
-                    // Handle purchase logic here
+                    // Handle purchase logic here - check if paymentType is selected
+                    if (!paymentType && paymentMethod === 'credit') {
+                      alert('Please select a payment option (Full Payment or EMI)');
+                      return;
+                    }
+                    
+                    const finalPaymentType = paymentType || 'full';
                     const result = purchaseDeal(
                       showPurchaseModal,
                       paymentMethod,
-                      paymentType,
-                      paymentType === 'emi' ? emiDuration : undefined
+                      finalPaymentType,
+                      finalPaymentType === 'emi' ? emiDuration : undefined
                     );
                     
                     if (result?.success) {
@@ -1127,7 +1136,7 @@ const DealsSection: React.FC = () => {
                       });
                       setShowPurchaseModal(null);
                       setPaymentMethod('bank');
-                      setPaymentType('full');
+                      setPaymentType(null);
                       setEmiDuration(3);
                       setShowEmiDropdown(false);
                     } else {

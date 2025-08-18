@@ -1196,10 +1196,14 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       }
       
       if (paymentMethod === 'credit') {
-        const currentCreditUsed = state.financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
+        // Check credit limit - total purchase amount should be within available limit
+        const currentCreditUsed = state.financialData.liabilities
+          .filter(l => l.category === 'credit_card')
+          .reduce((sum, l) => sum + l.outstandingAmount, 0);
         const creditLimit = 500000;
+        const availableCredit = creditLimit - currentCreditUsed;
         
-        if (currentCreditUsed + amount > creditLimit) {
+        if (amount > availableCredit) {
           return { success: false, message: 'Credit limit exceeded' };
         }
       }
@@ -1228,20 +1232,19 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       } else {
         // Credit card payment
         if (paymentType === 'full') {
+          // Full payment - charge entire amount to credit card immediately
           get().chargeToCredit(amount, `Investment: ${deal.title} - Full Payment`);
         } else {
-          // EMI - charge to credit and add EMI liability
-          get().chargeToCredit(amount, `Investment: ${deal.title} - EMI (${emiDuration} months)`);
-          
-          // Add EMI liability
+          // EMI - create EMI liability which blocks credit limit for total amount
+          // but monthly payments will gradually free up the limit
           const monthlyEmi = Math.ceil(amount / (emiDuration || 12));
           const emiLiability: Liability = {
             id: `emi_${Date.now()}`,
             name: `${deal.title} EMI`,
-            category: 'personal_loan',
-            outstandingAmount: amount,
+            category: 'credit_card',
+            outstandingAmount: amount, // Total amount blocks credit limit
             originalAmount: amount,
-            interestRate: 1.5, // 1.5% monthly for EMI
+            interestRate: 3.5, // 3.5% monthly interest on credit card EMI
             emi: monthlyEmi,
             tenure: emiDuration || 12,
             remainingMonths: emiDuration || 12,
@@ -1256,6 +1259,15 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
               totalLiabilities: state.financialData.totalLiabilities + amount
             }
           }));
+          
+          // Add transaction for EMI setup
+          get().addTransaction({
+            type: 'investment',
+            amount: amount,
+            description: `EMI Setup: ${deal.title} - ${emiDuration} months @ ₹${monthlyEmi.toLocaleString()}/month`,
+            fromAccount: 'bank',
+            toAccount: 'business'
+          });
         }
         
         set((state) => ({
