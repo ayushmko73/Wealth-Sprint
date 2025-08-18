@@ -61,7 +61,7 @@ const NewSettingsSection: React.FC = () => {
   });
 
   const [playerProfile, setPlayerProfile] = useState({
-    avatar: 'businessman',
+    avatar: 'entrepreneur', // Default to entrepreneur since businessman was removed
     roleTitle: 'Founder',
     tagline: 'Everything begins with one decision.',
     displayName: 'Player',
@@ -72,20 +72,6 @@ const NewSettingsSection: React.FC = () => {
 
   // Avatar options with icons
   const avatarOptions = [
-    {
-      id: 'businessman', 
-      src: '/avatars/Professional_businessman_avatar_bb7d28c5.png',
-      alt: 'Business Leader',
-      icon: Crown,
-      color: 'from-blue-500 to-blue-600'
-    },
-    {
-      id: 'businesswoman', 
-      src: '/avatars/Professional_businesswoman_avatar_530f5b0d.png',
-      alt: 'Executive',
-      icon: Users,
-      color: 'from-purple-500 to-purple-600'
-    },
     {
       id: 'entrepreneur',
       src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
@@ -212,7 +198,7 @@ const NewSettingsSection: React.FC = () => {
             {/* Avatar Selection */}
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">Choose Your Avatar</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {avatarOptions.map(avatar => {
                   const IconComponent = avatar.icon;
                   const isSelected = playerProfile.avatar === avatar.id;
