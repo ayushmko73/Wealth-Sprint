@@ -11,19 +11,17 @@ import { formatIndianCurrency } from '../../../lib/utils';
 const StrategyHubSection: React.FC = () => {
   const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent, currentWeek } = useWealthSprintGame();
   const { teamMembers, removeTeamMember } = useTeamManagement();
-  const [selectedCategory, setSelectedCategory] = useState<string>('Performance');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Team Suggestions');
   
   const availableScenarios = getTeamScenarios(teamMembers);
   const [pendingDecisions, setPendingDecisions] = useState<TeamScenario[]>(availableScenarios.slice(0, 3));
 
   // Strategy categories for horizontal navigation
-  const categories = ['Performance', 'Team Suggestions', 'Meeting Room', 'Financial Health', 'Risk Analysis'];
+  const categories = ['Team Suggestions', 'Meeting Room', 'Risk Analysis'];
   
   const categoryIcons: Record<string, React.ReactNode> = {
-    'Performance': <BarChart3 className="w-4 h-4" />,
     'Team Suggestions': <Users className="w-4 h-4" />,
     'Meeting Room': <Target className="w-4 h-4" />,
-    'Financial Health': <DollarSign className="w-4 h-4" />,
     'Risk Analysis': <Shield className="w-4 h-4" />
   };
 
@@ -135,142 +133,15 @@ const StrategyHubSection: React.FC = () => {
 
       {/* Content based on selected category */}
       <div className="mt-3 px-4">
-        {selectedCategory === 'Performance' && (
-          <div className="space-y-4">
-            {/* Performance Metrics Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-green-700">Efficiency Score</p>
-                      <p className="text-2xl font-bold text-green-800">{metrics.efficiency}%</p>
-                      <p className="text-xs text-green-600">Logic + Energy Average</p>
-                    </div>
-                    <Activity className="text-green-600" size={24} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-purple-700">Market Position</p>
-                      <p className="text-2xl font-bold text-purple-800">{metrics.marketPosition}%</p>
-                      <p className="text-xs text-purple-600">Reputation + Logic</p>
-                    </div>
-                    <Target className="text-purple-600" size={24} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Performance Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 size={20} />
-                  Performance Breakdown
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Logic</span>
-                    <span className="font-bold">{playerStats.logic}/100</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Energy</span>
-                    <span className="font-bold">{playerStats.energy}/100</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Reputation</span>
-                    <span className="font-bold">{playerStats.reputation}/100</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Stress Level</span>
-                    <span className={`font-bold ${playerStats.stress > 70 ? 'text-red-600' : playerStats.stress > 40 ? 'text-yellow-600' : 'text-green-600'}`}>
-                      {playerStats.stress}/100
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
         {selectedCategory === 'Team Suggestions' && (
           <div className="space-y-4">
-            {teamMembers.length > 0 ? (
-              <>
-                {/* Team Effectiveness Card */}
-                <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-blue-700">Team Effectiveness</p>
-                        <p className="text-2xl font-bold text-blue-800">{metrics.teamEffectiveness}%</p>
-                        <p className="text-xs text-blue-600">Average Team Performance</p>
-                      </div>
-                      <Users className="text-blue-600" size={24} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Team Members List */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users size={20} />
-                      Team Members ({teamMembers.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {teamMembers.map(member => {
-                        const loyalty = member.stats?.loyalty || 75;
-                        return (
-                          <div 
-                            key={member.id} 
-                            className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-3"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 rounded-full">
-                                  <User size={16} className="text-blue-600" />
-                                </div>
-                                <div>
-                                  <h3 className="font-semibold text-gray-800">{member.name}</h3>
-                                  <p className="text-sm text-gray-600">{member.role}</p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-sm font-medium text-gray-700">Performance</p>
-                                <p className={`text-lg font-bold ${
-                                  loyalty >= 80 ? 'text-green-600' : 
-                                  loyalty >= 60 ? 'text-yellow-600' : 'text-red-600'
-                                }`}>
-                                  {loyalty}%
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            ) : (
-              <Card>
-                <CardContent className="text-center py-8">
-                  <Users size={48} className="mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-500 font-medium mb-2">No team members hired yet</p>
-                  <p className="text-sm text-gray-400">Visit the Team Management section to hire your first employees</p>
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardContent className="text-center py-12">
+                <Users size={48} className="mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500 font-medium mb-2">Team Suggestions Coming Soon</p>
+                <p className="text-sm text-gray-400">This feature is under development</p>
+              </CardContent>
+            </Card>
           </div>
         )}
 
@@ -286,52 +157,7 @@ const StrategyHubSection: React.FC = () => {
           </div>
         )}
 
-        {selectedCategory === 'Financial Health' && (
-          <div className="space-y-4">
-            <Card className="bg-gradient-to-r from-green-50 to-teal-50 border-green-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-green-700">Financial Stability</p>
-                    <p className="text-2xl font-bold text-green-800">{metrics.financialStability}%</p>
-                    <p className="text-xs text-green-600">Cash runway vs expenses</p>
-                  </div>
-                  <DollarSign className="text-green-600" size={24} />
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Financial Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span>Bank Balance</span>
-                    <span className="font-bold">{formatIndianCurrency(financialData.bankBalance)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Monthly Income</span>
-                    <span className="font-bold text-green-600">+{formatIndianCurrency(financialData.mainIncome)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Monthly Expenses</span>
-                    <span className="font-bold text-red-600">-{formatIndianCurrency(financialData.monthlyExpenses)}</span>
-                  </div>
-                  <div className="flex justify-between items-center border-t pt-2">
-                    <span className="font-medium">Net Monthly</span>
-                    <span className={`font-bold ${
-                      (financialData.mainIncome - financialData.monthlyExpenses) >= 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {formatIndianCurrency(financialData.mainIncome - financialData.monthlyExpenses)}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {selectedCategory === 'Risk Analysis' && (
           <div className="space-y-4">
