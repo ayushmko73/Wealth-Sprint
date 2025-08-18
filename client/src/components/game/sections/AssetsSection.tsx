@@ -25,7 +25,7 @@ const AssetsSection: React.FC = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
 
-  const categories = ['Overview', 'Real Estate', 'Investments', 'Vehicles', 'Liabilities', 'Analysis'];
+  const categories = ['Overview', 'Assets', 'Liabilities', 'Analysis'];
 
   // Get assets and liabilities from the global game state
   const assets = getAssets() || [];
@@ -127,9 +127,7 @@ const AssetsSection: React.FC = () => {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Overview': return <PiggyBank className="w-4 h-4" />;
-      case 'Real Estate': return <Home className="w-4 h-4" />;
-      case 'Investments': return <TrendingUp className="w-4 h-4" />;
-      case 'Vehicles': return <Car className="w-4 h-4" />;
+      case 'Assets': return <TrendingUp className="w-4 h-4" />;
       case 'Liabilities': return <CreditCard className="w-4 h-4" />;
       case 'Analysis': return <Briefcase className="w-4 h-4" />;
       default: return <Wallet className="w-4 h-4" />;
@@ -147,81 +145,52 @@ const AssetsSection: React.FC = () => {
     switch (selectedCategory) {
       case 'Overview':
         return (
-          <div className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
-                  <p className="text-xs text-gray-500">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</p>
+          <div className="space-y-4">
+            {/* New Overview UI - 3 Main Cards */}
+            <div className="space-y-4">
+              {/* Total Assets Card */}
+              <Card className="border border-gray-200 rounded-xl">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Total Assets</h3>
+                  <div className="text-3xl font-bold text-green-600">₹{totalAssetValue.toLocaleString()}</div>
+                  <div className="text-sm text-gray-500 mt-1">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
-                  <p className="text-xs text-gray-500">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</p>
+              {/* Total Liabilities Card */}
+              <Card className="border border-gray-200 rounded-xl">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Total Liabilities</h3>
+                  <div className="text-3xl font-bold text-red-600">₹{totalLiabilityValue.toLocaleString()}</div>
+                  <div className="text-sm text-gray-500 mt-1">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Net Worth</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ₹{netWorth.toLocaleString()}
+              {/* Net Worth Card with Visual Indicator */}
+              <Card className="border border-gray-200 rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Net Worth</h3>
+                      <div className={`text-3xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ₹{netWorth.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">Assets - Liabilities</div>
+                    </div>
+                    <div className="w-16 h-16 rounded-full border-4 border-blue-200 flex items-center justify-center">
+                      <div className="text-2xl">🏛️</div>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500">Assets - Liabilities</p>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Net Cashflow</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className={`text-2xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
-                  </div>
-                  <p className="text-xs text-gray-500">Monthly Net Income</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Asset Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {assets.slice(0, 6).map(asset => (
-                <Card key={asset.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <span className="text-lg">{asset.icon}</span>
-                      {asset.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="text-lg font-semibold">₹{asset.value.toLocaleString()}</div>
-                    <div className="text-sm text-green-600">+₹{asset.monthlyIncome.toLocaleString()}/month</div>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </div>
         );
 
-      case 'Real Estate':
-      case 'Investments':
-      case 'Vehicles':
-        const filteredAssets = filterAssetsByCategory(selectedCategory);
+      case 'Assets':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredAssets.map(asset => (
+            {assets.map(asset => (
               <Card key={asset.id} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -365,63 +334,107 @@ const AssetsSection: React.FC = () => {
       case 'Analysis':
         const assetAllocation = {
           'Real Estate': assets.filter(a => a.category === 'real_estate').reduce((sum, a) => sum + a.value, 0),
-          'Investments': assets.filter(a => ['stocks', 'bonds', 'investment'].includes(a.category)).reduce((sum, a) => sum + a.value, 0),
+          'Investments': assets.filter(a => a.category === 'investment' || a.category === 'business').reduce((sum, a) => sum + a.value, 0),
           'Vehicles': assets.filter(a => a.category === 'vehicles').reduce((sum, a) => sum + a.value, 0),
-          'Other': assets.filter(a => !['real_estate', 'stocks', 'bonds', 'investment', 'vehicles'].includes(a.category)).reduce((sum, a) => sum + a.value, 0)
+          'Other': assets.filter(a => !['real_estate', 'investment', 'business', 'vehicles'].includes(a.category)).reduce((sum, a) => sum + a.value, 0)
         };
 
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Asset Allocation</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {Object.entries(assetAllocation).map(([category, value]) => (
-                    <div key={category} className="flex justify-between items-center">
-                      <span className="text-sm font-medium">{category}</span>
-                      <div className="text-right">
-                        <div className="font-semibold">₹{value.toLocaleString()}</div>
-                        <div className="text-xs text-gray-500">
-                          {totalAssetValue > 0 ? ((value / totalAssetValue) * 100).toFixed(1) : 0}%
+            {/* Asset Allocation Chart Placeholder */}
+            <Card className="border border-gray-200 rounded-xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Asset Allocation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Simple Visual Chart */}
+                <div className="space-y-4">
+                  {Object.entries(assetAllocation).map(([category, value]) => {
+                    const percentage = totalAssetValue > 0 ? (value / totalAssetValue) * 100 : 0;
+                    return (
+                      <div key={category} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">{category}</span>
+                          <div className="text-right">
+                            <div className="font-semibold">₹{value.toLocaleString()}</div>
+                            <div className="text-xs text-gray-500">{percentage.toFixed(1)}%</div>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${percentage}%` }}
+                          ></div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Financial Health</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Debt-to-Asset Ratio</span>
+            {/* Financial Health Card */}
+            <Card className="border border-gray-200 rounded-xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Financial Health</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Debt-to-Asset Ratio</span>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${(totalLiabilityValue / totalAssetValue) > 0.5 ? 'bg-red-500' : 'bg-green-500'}`}></div>
                     <span className={`font-semibold ${(totalLiabilityValue / totalAssetValue) > 0.5 ? 'text-red-600' : 'text-green-600'}`}>
                       {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : 0}%
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Monthly Cashflow Coverage</span>
-                    <span className={`font-semibold ${monthlyAssetIncome >= monthlyLiabilityPayment ? 'text-green-600' : 'text-red-600'}`}>
-                      {monthlyLiabilityPayment > 0 ? ((monthlyAssetIncome / monthlyLiabilityPayment) * 100).toFixed(1) : 100}%
-                    </span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Monthly Cashflow Coverage</span>
+                  <span className={`font-semibold ${monthlyAssetIncome >= monthlyLiabilityPayment ? 'text-green-600' : 'text-red-600'}`}>
+                    {monthlyLiabilityPayment > 0 ? ((monthlyAssetIncome / monthlyLiabilityPayment) * 100).toFixed(1) : 100}%
+                  </span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Asset Quality</span>
+                  <span className="font-semibold text-blue-600">
+                    {assets.filter(a => a.monthlyIncome > 0).length}/{assets.length} Income Generating
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Key Financial Terms */}
+            <Card className="border border-gray-200 rounded-xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Key Financial Terms</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-semibold text-sm text-blue-600">Net Worth</h4>
+                    <p className="text-xs text-gray-600">Total assets minus total liabilities. Measures your overall financial position.</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Asset Quality</span>
-                    <span className="font-semibold text-blue-600">
-                      {assets.filter(a => a.monthlyIncome > 0).length}/{assets.length} Income Generating
-                    </span>
+                  <div>
+                    <h4 className="font-semibold text-sm text-blue-600">Debt-to-Asset Ratio</h4>
+                    <p className="text-xs text-gray-600">Percentage of your assets financed by debt. Lower is generally better.</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-blue-600">Cashflow Coverage</h4>
+                    <p className="text-xs text-gray-600">How well your asset income covers your debt payments. Above 100% is ideal.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-blue-600">Asset Quality</h4>
+                    <p className="text-xs text-gray-600">The proportion of your assets that generate regular income.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Financial Health Alert */}
             {(totalLiabilityValue / totalAssetValue) > 0.7 && (
-              <Card className="border-yellow-500 bg-yellow-50">
+              <Card className="border-yellow-500 bg-yellow-50 rounded-xl">
                 <CardContent className="pt-4">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle size={20} className="text-yellow-600" />
