@@ -893,11 +893,11 @@ const DealsSection: React.FC = () => {
       {/* Compact Purchase Modal */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <Card className="max-w-sm w-full bg-white shadow-2xl border-0">
-            <CardContent className="p-4 bg-white rounded-lg">
+          <Card className="max-w-xs w-full bg-white shadow-2xl border-0">
+            <CardContent className="p-3 bg-white rounded-lg">
               {/* Compact Header */}
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-slate-800">Investment Purchase</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-bold text-slate-800">Investment Purchase</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -908,15 +908,15 @@ const DealsSection: React.FC = () => {
                     setEmiDuration(3);
                     setShowEmiDropdown(false);
                   }}
-                  className="h-5 w-5 p-0"
+                  className="h-4 w-4 p-0"
                 >
                   <X className="w-3 h-3" />
                 </Button>
               </div>
 
               {/* Compact Deal Info */}
-              <div className="text-center mb-3">
-                <div className="w-12 h-12 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+              <div className="text-center mb-2">
+                <div className="w-10 h-10 mx-auto mb-1 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                   {getDealIcon(showPurchaseModal)}
                 </div>
                 <h4 className="font-bold text-slate-800 text-sm mb-1">
@@ -928,12 +928,12 @@ const DealsSection: React.FC = () => {
               </div>
 
               {/* Compact Investment Information */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
-                <div className="flex items-center gap-1 mb-2">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                <div className="flex items-center gap-1 mb-1">
                   <Calculator className="w-3 h-3 text-blue-600" />
                   <h5 className="font-semibold text-blue-800 text-xs">Key Investment Information</h5>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-2 gap-1 text-xs">
                   <div>
                     <span className="text-blue-600">Investment Amount:</span>
                     <div className="font-bold text-blue-800">{formatCurrency(showPurchaseModal.investmentRequired)}</div>
@@ -965,21 +965,21 @@ const DealsSection: React.FC = () => {
               </div>
 
               {/* Compact Payment Method */}
-              <div className="mb-3">
-                <div className="flex items-center gap-1 mb-2">
+              <div className="mb-2">
+                <div className="flex items-center gap-1 mb-1">
                   <CreditCard className="w-3 h-3 text-slate-600" />
                   <h5 className="font-semibold text-slate-800 text-xs">Payment Method</h5>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1">
                   <button
                     onClick={() => {
                       setPaymentMethod('bank');
                       setPaymentType('full');
                     }}
-                    className={`p-2 rounded-lg border text-xs font-medium transition-all ${
+                    className={`p-1.5 rounded text-xs font-medium transition-all ${
                       paymentMethod === 'bank'
-                        ? 'bg-blue-100 border-blue-300 text-blue-800'
-                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center gap-1 justify-center">
@@ -989,10 +989,10 @@ const DealsSection: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setPaymentMethod('credit')}
-                    className={`p-2 rounded-lg border text-xs font-medium transition-all ${
+                    className={`p-1.5 rounded text-xs font-medium transition-all ${
                       paymentMethod === 'credit'
-                        ? 'bg-blue-100 border-blue-300 text-blue-800'
-                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center gap-1 justify-center">
@@ -1005,81 +1005,89 @@ const DealsSection: React.FC = () => {
 
               {/* Credit Card Payment Options */}
               {paymentMethod === 'credit' && (
-                <div className="mb-3">
-                  <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
+                <div className="mb-2">
+                  <h5 className="font-semibold text-slate-800 mb-1 text-xs">Payment Options</h5>
                   
                   {/* Horizontal Payment Options */}
-                  <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="grid grid-cols-2 gap-1 mb-2">
                     {/* Full Payment Button */}
                     <button
                       onClick={() => {
                         setPaymentType('full');
                       }}
-                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
-                        !getCreditInfo().canPayFull
-                          ? 'bg-red-100 border-red-300 text-red-800 cursor-not-allowed opacity-60'
-                          : 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200'
+                      className={`p-1.5 rounded text-xs font-medium transition-all ${
+                        paymentType === 'full'
+                          ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                          : !getCreditInfo().canPayFull
+                            ? 'bg-red-100 border border-red-300 text-red-800 cursor-not-allowed opacity-60'
+                            : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
                       }`}
                       disabled={!getCreditInfo().canPayFull}
                     >
                       {getCreditInfo().canPayFull ? "Full Payment" : "Credit Limit Exceeded - Can't Pay"}
                     </button>
 
-                    {/* EMI 3M Button */}
+                    {/* EMI Button */}
                     <button
                       onClick={() => {
                         setPaymentType('emi');
                         setEmiDuration(3);
                       }}
-                      className="p-2 rounded-lg border text-xs font-medium transition-all bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200"
+                      className={`p-1.5 rounded text-xs font-medium transition-all ${
+                        paymentType === 'emi'
+                          ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                          : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                      }`}
                     >
                       EMI 3M
                     </button>
                   </div>
 
-                  {/* EMI Duration Selector */}
-                  <div className="relative">
-                    <label className="text-xs text-gray-600 mb-1 block">EMI Duration</label>
-                    <button
-                      onClick={() => setShowEmiDropdown(!showEmiDropdown)}
-                      className="w-full p-2 rounded-lg border border-gray-300 text-xs font-medium transition-all bg-white hover:bg-gray-50 flex items-center justify-between"
-                    >
-                      <span>{emiDuration < 12 ? `${emiDuration} months` : `${emiDuration/12} year${emiDuration/12 > 1 ? 's' : ''}`}</span>
-                      <ChevronDown className={`w-3 h-3 transition-transform ${showEmiDropdown ? 'rotate-180' : ''}`} />
-                    </button>
+                  {/* EMI Duration Selector - Only show when EMI is selected */}
+                  {paymentType === 'emi' && (
+                    <div className="relative">
+                      <label className="text-xs text-gray-600 mb-1 block">EMI Duration</label>
+                      <button
+                        onClick={() => setShowEmiDropdown(!showEmiDropdown)}
+                        className="w-full p-1.5 rounded border border-gray-300 text-xs font-medium transition-all bg-white hover:bg-gray-50 flex items-center justify-between"
+                      >
+                        <span>{emiDuration < 12 ? `${emiDuration} months` : `${emiDuration/12} year${emiDuration/12 > 1 ? 's' : ''}`}</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${showEmiDropdown ? 'rotate-180' : ''}`} />
+                      </button>
 
-                    {/* Upward Opening Dropdown */}
-                    {showEmiDropdown && (
-                      <>
-                        {/* Overlay to close on outside click */}
-                        <div 
-                          className="fixed inset-0 z-10" 
-                          onClick={() => setShowEmiDropdown(false)}
-                        />
-                        <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
-                          {[3, 6, 12, 24, 60].map((months) => (
-                            <button
-                              key={months}
-                              onClick={() => {
-                                setEmiDuration(months);
-                                setShowEmiDropdown(false);
-                              }}
-                              className={`w-full p-2.5 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
-                                emiDuration === months
-                                  ? 'bg-blue-50 text-blue-800'
-                                  : 'text-gray-700 hover:bg-gray-50'
-                              }`}
-                            >
-                              <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
-                              <span className="text-xs text-gray-500">
-                                ₹{Math.ceil(showPurchaseModal.investmentRequired / months).toLocaleString()}/mo
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                      {/* Upward Opening Dropdown */}
+                      {showEmiDropdown && (
+                        <>
+                          {/* Overlay to close on outside click */}
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setShowEmiDropdown(false)}
+                          />
+                          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded shadow-lg z-20 overflow-hidden">
+                            {[3, 6, 12, 24, 60].map((months) => (
+                              <button
+                                key={months}
+                                onClick={() => {
+                                  setEmiDuration(months);
+                                  setShowEmiDropdown(false);
+                                }}
+                                className={`w-full p-2 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
+                                  emiDuration === months
+                                    ? 'bg-blue-50 text-blue-800'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
+                                <span className="text-xs text-gray-500">
+                                  ₹{Math.ceil(showPurchaseModal.investmentRequired / months).toLocaleString()}/mo
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1087,7 +1095,7 @@ const DealsSection: React.FC = () => {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500 text-xs py-2"
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500 text-xs py-1.5"
                   onClick={() => {
                     setShowPurchaseModal(null);
                     setPaymentMethod('bank');
@@ -1099,7 +1107,7 @@ const DealsSection: React.FC = () => {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-2"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-1.5"
                   onClick={() => {
                     // Handle purchase logic here
                     const result = purchaseDeal(
