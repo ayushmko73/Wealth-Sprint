@@ -69,6 +69,15 @@ const DealsSection: React.FC = () => {
   const [emiDuration, setEmiDuration] = useState<number>(3);
   const [showEmiDropdown, setShowEmiDropdown] = useState(false);
 
+  // Credit limit calculation helper
+  const getCreditInfo = () => {
+    const totalLiabilities = financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const creditLimit = 500000; // ₹5 lakh credit limit
+    const availableCredit = creditLimit - totalLiabilities;
+    const canPayFull = totalLiabilities < creditLimit && showPurchaseModal && showPurchaseModal.investmentRequired <= availableCredit;
+    return { totalLiabilities, creditLimit, availableCredit, canPayFull };
+  };
+
   // Categories for navigation
   const categories = ['Overview', 'Opportunities', 'Global Business', 'Financials'];
 
@@ -999,6 +1008,23 @@ const DealsSection: React.FC = () => {
                 <div className="mb-3">
                   <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
                   
+                  {/* Full Payment Button */}
+                  <div className="mb-2">
+                    <button
+                      onClick={() => {
+                        setPaymentType('full');
+                      }}
+                      className={`w-full p-2 rounded-lg border text-xs font-medium transition-all ${
+                        !getCreditInfo().canPayFull
+                          ? 'bg-red-100 border-red-300 text-red-800 cursor-not-allowed opacity-60'
+                          : 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200'
+                      }`}
+                      disabled={!getCreditInfo().canPayFull}
+                    >
+                      {getCreditInfo().canPayFull ? "Full Payment" : "Credit Limit Exceeded - Can't Pay"}
+                    </button>
+                  </div>
+
                   {/* EMI 3M Button */}
                   <div className="mb-2">
                     <button
@@ -1032,7 +1058,7 @@ const DealsSection: React.FC = () => {
                           onClick={() => setShowEmiDropdown(false)}
                         />
                         <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
-                          {[3, 6, 12, 24, 36].map((months) => (
+                          {[3, 6, 12, 24, 60].map((months) => (
                             <button
                               key={months}
                               onClick={() => {
@@ -1076,15 +1102,12 @@ const DealsSection: React.FC = () => {
                 <Button
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-2"
                   onClick={() => {
-                    // For credit card, always use EMI
-                    const finalPaymentType = paymentMethod === 'credit' ? 'emi' : paymentType;
-                    
                     // Handle purchase logic here
                     const result = purchaseDeal(
                       showPurchaseModal,
                       paymentMethod,
-                      finalPaymentType,
-                      finalPaymentType === 'emi' ? emiDuration : undefined
+                      paymentType,
+                      paymentType === 'emi' ? emiDuration : undefined
                     );
                     
                     if (result?.success) {
@@ -1092,8 +1115,8 @@ const DealsSection: React.FC = () => {
                         deal: showPurchaseModal.title,
                         amount: showPurchaseModal.investmentRequired,
                         paymentMethod,
-                        paymentType: finalPaymentType,
-                        emiDuration: finalPaymentType === 'emi' ? emiDuration : null
+                        paymentType,
+                        emiDuration: paymentType === 'emi' ? emiDuration : null
                       });
                       setShowPurchaseModal(null);
                       setPaymentMethod('bank');
