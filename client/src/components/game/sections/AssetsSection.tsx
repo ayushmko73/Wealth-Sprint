@@ -412,53 +412,51 @@ const AssetsSection: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header - Blue background with professional styling */}
+      {/* Header - Compact Blue background */}
       <div className="w-full bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
-        <div className="p-4">
+        <div className="px-4 py-3">
+          {/* Title and Net Worth Row */}
           <div className="flex items-center justify-between mb-3">
-            {/* Title Section */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white bg-opacity-15 rounded-lg">
-                <Building2 className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-white bg-opacity-15 rounded-lg">
+                <Building2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Assets & Liabilities</h1>
-                <p className="text-blue-100 text-sm">Portfolio Management & Financial Overview</p>
+                <h1 className="text-xl font-bold text-white">Assets & Liabilities</h1>
+                <p className="text-blue-100 text-xs">Portfolio Management & Financial Overview</p>
               </div>
             </div>
-            
-            {/* Net Worth Display */}
             <div className="text-right text-white">
-              <div className="text-sm text-blue-200">Net Worth</div>
-              <div className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+              <div className="text-xs text-blue-200">Net Worth</div>
+              <div className={`text-xl font-bold ${netWorth >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                 ₹{netWorth.toLocaleString()}
               </div>
             </div>
           </div>
 
-          {/* Overview Data - 3 Cards in Header */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {/* Compact Overview Data - Single Row */}
+          <div className="grid grid-cols-3 gap-3">
             {/* Total Assets */}
-            <div className="bg-white bg-opacity-15 rounded-lg p-3">
-              <div className="text-blue-100 text-sm mb-1">Total Assets</div>
-              <div className="text-white text-xl font-bold">₹{totalAssetValue.toLocaleString()}</div>
-              <div className="text-blue-200 text-xs">Monthly Income: ₹{monthlyAssetIncome.toLocaleString()}</div>
+            <div className="bg-white bg-opacity-10 rounded-lg p-2.5">
+              <div className="text-blue-100 text-xs mb-1">Total Assets</div>
+              <div className="text-white text-lg font-bold">₹{totalAssetValue.toLocaleString()}</div>
+              <div className="text-blue-200 text-xs">Income: ₹{monthlyAssetIncome.toLocaleString()}</div>
             </div>
 
             {/* Total Liabilities */}
-            <div className="bg-white bg-opacity-15 rounded-lg p-3">
-              <div className="text-blue-100 text-sm mb-1">Total Liabilities</div>
-              <div className="text-red-200 text-xl font-bold">₹{totalLiabilityValue.toLocaleString()}</div>
-              <div className="text-blue-200 text-xs">Monthly EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</div>
+            <div className="bg-white bg-opacity-10 rounded-lg p-2.5">
+              <div className="text-blue-100 text-xs mb-1">Total Liabilities</div>
+              <div className="text-red-200 text-lg font-bold">₹{totalLiabilityValue.toLocaleString()}</div>
+              <div className="text-blue-200 text-xs">EMI: ₹{monthlyLiabilityPayment.toLocaleString()}</div>
             </div>
 
             {/* Net Cashflow */}
-            <div className="bg-white bg-opacity-15 rounded-lg p-3">
-              <div className="text-blue-100 text-sm mb-1">Net Cashflow</div>
-              <div className={`text-xl font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-200' : 'text-red-200'}`}>
+            <div className="bg-white bg-opacity-10 rounded-lg p-2.5">
+              <div className="text-blue-100 text-xs mb-1">Net Cashflow</div>
+              <div className={`text-lg font-bold ${(monthlyAssetIncome - monthlyLiabilityPayment) >= 0 ? 'text-green-200' : 'text-red-200'}`}>
                 ₹{(monthlyAssetIncome - monthlyLiabilityPayment).toLocaleString()}
               </div>
-              <div className="text-blue-200 text-xs">Monthly Net Income</div>
+              <div className="text-blue-200 text-xs">Monthly</div>
             </div>
           </div>
         </div>
@@ -487,7 +485,7 @@ const AssetsSection: React.FC = () => {
       </div>
 
       {/* Content Area */}
-      <div className="p-6">
+      <div className="p-4">
         {renderContent()}
       </div>
     </div>
