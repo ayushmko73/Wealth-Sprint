@@ -741,20 +741,18 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
             newGameMonth = 1;
             newGameYear += 1;
             
-            // Check if game should end after 5 years
+            // Continue indefinitely - no year limit
+            // Game continues beyond 5 years with escalating challenges
+            
+            // Add yearly milestone events for progression beyond 5 years
             if (newGameYear > 5) {
-              return {
-                ...state,
-                timeEngine: {
-                  ...timeEngine,
-                  currentGameDay: 30,
-                  currentGameMonth: 12,
-                  currentGameYear: 5,
-                  daysSinceLastScenario: newDaysSinceLastScenario,
-                  isGameEnded: true,
-                },
-                financialData: newFinancialData,
-              };
+              get().addGameEvent({
+                id: `year_milestone_${newGameYear}`,
+                type: 'info',
+                title: `Year ${newGameYear} Milestone`,
+                description: `Congratulations! You've reached year ${newGameYear}. New challenges and opportunities await!`,
+                timestamp: new Date(),
+              });
             }
           }
           
@@ -879,11 +877,18 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
 
     checkBankruptcy: () => {
       const state = get();
+      // Bankruptcy no longer ends the game - players can recover
+      // Log warning for negative balance but continue playing
       if (state.financialData.bankBalance < -100000) {
-        get().endGame('failure');
-        return true;
+        get().addGameEvent({
+          id: `debt_warning_${Date.now()}`,
+          type: 'warning',
+          title: '⚠️ High Debt Warning',
+          description: 'Your balance is significantly negative. Focus on increasing income and reducing expenses.',
+          timestamp: new Date(),
+        });
       }
-      return false;
+      return false; // Never trigger game end
     },
 
     checkReputationAccess: () => {
@@ -928,10 +933,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       // Process bond maturity
       get().processBondMaturity();
       
-      // Check bankruptcy (ends game if true)
-      if (get().checkBankruptcy()) {
-        return;
-      }
+      // Bankruptcy checks removed - game continues indefinitely
+      // Players can recover from negative balances
       
       // Update turn counters
       set((state) => ({
@@ -2459,8 +2462,27 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           });
           
         } else {
-          // Insufficient assets - Bankruptcy and jail
-          get().triggerBankruptcy(`Loan default: Unable to cover ₹${totalLoanAmount.toLocaleString()} loan with assets worth ₹${totalAssetValue.toLocaleString()}`);
+          // Insufficient assets - Heavy penalties but game continues
+          // Clear all liabilities but add large negative balance instead of ending game
+          set((state) => ({
+            financialData: {
+              ...state.financialData,
+              bankBalance: state.financialData.bankBalance - totalLoanAmount,
+              assets: [], // Assets still seized
+              liabilities: [], // All debts cleared
+              totalAssets: 0,
+              totalLiabilities: 0,
+              netWorth: state.financialData.bankBalance - totalLoanAmount
+            }
+          }));
+          
+          get().addGameEvent({
+            id: `severe_debt_penalty_${Date.now()}`,
+            type: 'warning',
+            title: '🚨 Severe Financial Crisis!',
+            description: `Unable to cover ₹${totalLoanAmount.toLocaleString()} loan. All assets seized, massive debt added. You can still recover!`,
+            timestamp: new Date()
+          });
         }
         
         get().updateLiability(loanId, {
@@ -2469,37 +2491,33 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       }
     },
     
-    // Trigger bankruptcy and jail
+    // Severe financial crisis but game continues
     triggerBankruptcy: (reason: string) => {
+      // Instead of ending game, apply severe penalties but allow recovery
       set((state) => ({
         gameState: {
           ...state.gameState,
-          isBankrupt: true,
-          isInJail: true,
-          jailTurnsLeft: 30, // 30 game days in jail
-          bankruptcyReason: reason
+          isBankrupt: false, // No longer sets bankruptcy flag
+          isInJail: false, // No jail mechanics
+          bankruptcyReason: undefined
         },
-        financialData: {
-          ...state.financialData,
-          bankBalance: 0,
-          assets: [], // All assets seized
-          liabilities: [], // All debts cleared through bankruptcy
-          totalAssets: 0,
-          totalLiabilities: 0,
-          netWorth: 0
+        playerStats: {
+          ...state.playerStats,
+          stress: Math.min(100, state.playerStats.stress + 30),
+          emotion: Math.max(0, state.playerStats.emotion - 20),
+          reputation: Math.max(0, state.playerStats.reputation - 40)
         }
       }));
       
       get().addGameEvent({
-        id: `bankruptcy_${Date.now()}`,
+        id: `financial_crisis_${Date.now()}`,
         type: 'warning',
-        title: '💸 BANKRUPTCY & JAIL!',
-        description: `${reason}. You have been declared bankrupt and sentenced to 30 days in jail. All assets seized, all debts cleared.`,
+        title: '💸 SEVERE FINANCIAL CRISIS!',
+        description: `${reason}. Heavy penalties applied but you can still recover. Focus on rebuilding!`,
         timestamp: new Date()
       });
       
-      // End the game with failure
-      get().endGame('failure');
+      // Game continues - no ending
     },
   }))
 );

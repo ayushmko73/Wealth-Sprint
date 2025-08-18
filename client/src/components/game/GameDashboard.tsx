@@ -173,38 +173,8 @@ const GameDashboard: React.FC = () => {
     return <StartScreen />;
   }
 
-  // Check for financial independence
-  if (financialData.sideIncome >= financialData.monthlyExpenses) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#d4af37] to-[#f0ead6] flex items-center justify-center p-4">
-        <div className="text-center p-4 md:p-8 bg-[#f0ead6] rounded-lg shadow-2xl max-w-2xl w-full">
-          <h1 className="text-2xl md:text-4xl font-bold text-[#3a3a3a] mb-4">
-            🎉 Game Over – You have achieved Financial Independence!
-          </h1>
-          <p className="text-lg md:text-xl text-[#3a3a3a] mb-8">
-            Your side income of ₹{financialData.sideIncome.toLocaleString()} now covers your monthly expenses of ₹{financialData.monthlyExpenses.toLocaleString()}.
-          </p>
-          <p className="text-base md:text-lg text-[#3a3a3a] mb-8">
-            Do you want to continue to the next level of life mastery?
-          </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <button 
-              className="bg-[#d4af37] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#b8941f] transition-colors"
-              onClick={() => {/* Handle challenge mode */}}
-            >
-              YES – Challenge Mode
-            </button>
-            <button 
-              className="bg-[#3a3a3a] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#2a2a2a] transition-colors"
-              onClick={() => {/* Handle restart */}}
-            >
-              NO – Restart Journey
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Financial independence is now just a milestone, not game end
+  // Game continues with new challenges and opportunities
 
   return (
     <div className="h-screen bg-white flex flex-col">
