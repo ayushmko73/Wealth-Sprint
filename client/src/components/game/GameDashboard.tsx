@@ -53,7 +53,7 @@ import BankSection from './sections/BankSection';
 import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
 import AssetsSection from './sections/AssetsSection';
-import SettingsSection from './sections/SettingsSection';
+import NewSettingsSection from './sections/NewSettingsSection';
 import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
@@ -158,7 +158,7 @@ const GameDashboard: React.FC = () => {
       case 'assets':
         return <AssetsSection />;
       case 'settings':
-        return <SettingsSection />;
+        return <NewSettingsSection />;
       default:
         return (
           <div className="space-y-6">

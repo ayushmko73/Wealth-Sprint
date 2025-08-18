@@ -8,29 +8,23 @@ import { Badge } from '../../ui/badge';
 import { Switch } from '../../ui/switch';
 import { Slider } from '../../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../ui/alert-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { Label } from '../../ui/label';
 import { 
   Settings, 
-  Palette, 
+  User, 
   Volume2, 
-  VolumeX, 
   Clock, 
   Shield, 
-  User, 
-  Download, 
-  Upload, 
+  VolumeX,
   RotateCcw, 
   Trash2,
   Github,
+  Download,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// APK Download component removed
-
-const SettingsSection: React.FC = () => {
+const NewSettingsSection: React.FC = () => {
   const { 
     playerStats, 
     financialData, 
@@ -52,9 +46,9 @@ const SettingsSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [localSettings, setLocalSettings] = useState({
     theme: 'light',
-    soundEnabled: true, // Default ON
-    musicEnabled: true, // Default ON
-    gameSpeed: 'auto24x', // Default to 24x faster auto cycle
+    soundEnabled: true,
+    musicEnabled: true,
+    gameSpeed: 'auto24x',
     notifications: true,
     autoSave: true,
     hapticFeedback: true,
@@ -68,18 +62,40 @@ const SettingsSection: React.FC = () => {
   });
 
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const [exportData, setExportData] = useState('');
   const [isGithubPushing, setIsGithubPushing] = useState(false);
-  // Clean repository functionality removed as per user request
-  // Password dialog removed as per user request
 
+  // Avatar options
+  const avatarOptions = [
+    {
+      id: 'businessman', 
+      src: '/avatars/Professional_businessman_avatar_bb7d28c5.png',
+      alt: 'Business Leader'
+    },
+    {
+      id: 'businesswoman', 
+      src: '/avatars/Professional_businesswoman_avatar_530f5b0d.png',
+      alt: 'Executive'
+    },
+    {
+      id: 'entrepreneur',
+      src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
+      alt: 'Innovator'
+    },
+    {
+      id: 'tech_dev',
+      src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
+      alt: 'Tech Visionary'
+    }
+  ];
 
+  const roleTitleOptions = ['Founder', 'Visionary', 'CXO', 'Capital Architect', 'Entrepreneur', 'Innovator'];
 
-  // Check for unlockable features based on game progress
-  const hasAdvancedFeatures = financialData.netWorth >= 10000000; // 1 Cr net worth
-  const hasCustomThemes = financialData.netWorth >= 50000000; // 5 Cr net worth
-  const hasControllerSupport = playerStats.logic >= 80;
-  const hasScenarioTuner = currentWeek >= 52; // 1 year of gameplay
+  const menuTabs = [
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'audio', label: 'Audio', icon: Volume2 },
+    { id: 'gameplay', label: 'Gameplay', icon: Clock },
+    { id: 'data', label: 'Data & Privacy', icon: Shield }
+  ];
 
   const handleThemeChange = (theme: 'light' | 'dark' | 'cyber') => {
     setLocalSettings(prev => ({ ...prev, theme }));
@@ -105,7 +121,6 @@ const SettingsSection: React.FC = () => {
     };
 
     const dataString = JSON.stringify(gameData, null, 2);
-    setExportData(dataString);
 
     // Create download
     const blob = new Blob([dataString], { type: 'application/json' });
@@ -124,90 +139,22 @@ const SettingsSection: React.FC = () => {
     setShowResetDialog(false);
   };
 
-  const handleSaveGame = () => {
-    // Auto-save functionality 
-    console.log('Game saved');
-  };
-
-  const handleLoadGame = () => {
-    // Auto-load functionality
-    console.log('Game loaded');
-  };
-
   const handleClearCache = () => {
     try {
       localStorage.clear();
       sessionStorage.clear();
       if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => {
-            caches.delete(name);
+        caches.keys().then(cacheNames => {
+          cacheNames.forEach(cacheName => {
+            caches.delete(cacheName);
           });
         });
       }
-      toast.success('Cache cleared successfully! Reload the page to see changes.');
+      toast.success('Cache cleared successfully!');
     } catch (error) {
-      toast.error('Failed to clear cache. Please try again.');
+      console.error('Error clearing cache:', error);
+      toast.error('Failed to clear cache');
     }
-  };
-
-  const handleSoundToggle = () => {
-    toggleMute();
-    setLocalSettings(prev => ({ ...prev, soundEnabled: !prev.soundEnabled }));
-  };
-
-  const handleMusicToggle = () => {
-    toggleMute();
-    setLocalSettings(prev => ({ ...prev, musicEnabled: !prev.musicEnabled }));
-    if (localSettings.musicEnabled) {
-      stopBackgroundMusic();
-    } else {
-      playBackgroundMusic();
-    }
-  };
-
-  const avatarOptions = [
-    {
-      id: 'businessman',
-      src: '/avatars/Professional_businessman_avatar_65fb4ef4.png',
-      alt: 'Business Leader'
-    },
-    {
-      id: 'businesswoman', 
-      src: '/avatars/Professional_businesswoman_avatar_530f5b0d.png',
-      alt: 'Executive'
-    },
-    {
-      id: 'entrepreneur',
-      src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
-      alt: 'Innovator'
-    },
-    {
-      id: 'tech_dev',
-      src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
-      alt: 'Tech Visionary'
-    }
-  ];
-  const roleTitleOptions = ['Founder', 'Visionary', 'CXO', 'Capital Architect', 'Entrepreneur', 'Innovator'];
-
-  const menuTabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'audio', label: 'Audio', icon: Volume2 },
-    { id: 'gameplay', label: 'Gameplay', icon: Clock },
-    { id: 'data', label: 'Data & Privacy', icon: Shield }
-  ];
-
-  // Time Engine Debug Console
-  const handleTimeEngineDebug = () => {
-    console.log("⏱️ Game Time Engine Active: 24× faster than real world time");
-    console.log("🕰️ 1 real-world hour = 1 in-game day. 5 in-game years = ~75 real hours.");
-    console.table({ 
-      currentGameDay: timeEngine.currentGameDay,
-      currentGameMonth: timeEngine.currentGameMonth, 
-      currentGameYear: timeEngine.currentGameYear,
-      daysSinceLastScenario: timeEngine.daysSinceLastScenario,
-      isGameEnded: timeEngine.isGameEnded
-    });
   };
 
   const handlePushToGithub = async () => {
@@ -243,15 +190,11 @@ const SettingsSection: React.FC = () => {
     }
   };
 
-  // Removed unused authentication and cleanup functions
-
-
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
+          <div className="p-6 bg-white rounded-lg space-y-6">
             {/* Avatar Selection */}
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">Choose Your Avatar</h3>
@@ -260,14 +203,14 @@ const SettingsSection: React.FC = () => {
                   <button
                     key={avatar.id}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
-                    className={`relative group p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                    className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
                       playerProfile.avatar === avatar.id 
-                        ? 'border-blue-500 bg-white shadow-lg shadow-blue-500/20' 
-                        : 'border-gray-200 hover:border-gray-300 bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg'
+                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-300 bg-white shadow-md hover:shadow-lg'
                     }`}
                   >
                     <div className="flex flex-col items-center space-y-2">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                         <img 
                           src={avatar.src} 
                           alt={avatar.alt} 
@@ -297,9 +240,9 @@ const SettingsSection: React.FC = () => {
                     key={role}
                     variant={playerProfile.roleTitle === role ? "default" : "outline"}
                     onClick={() => setPlayerProfile(prev => ({ ...prev, roleTitle: role }))}
-                    className={`h-12 rounded-2xl font-medium transition-all ${playerProfile.roleTitle === role 
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 text-white" 
-                      : "hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 border-2 border-gray-200"
+                    className={`h-12 rounded-xl font-medium transition-all ${playerProfile.roleTitle === role 
+                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                      : "hover:bg-gray-50 border-gray-200"
                     }`}
                   >
                     {role}
@@ -317,7 +260,7 @@ const SettingsSection: React.FC = () => {
                   onChange={(e) => setPlayerProfile(prev => ({ ...prev, tagline: e.target.value }))}
                   placeholder="Enter your personal motto"
                   maxLength={50}
-                  className="pr-16 h-12 text-base bg-white border-2 border-white"
+                  className="pr-16 h-12 text-base"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                   {playerProfile.tagline.length}/50
@@ -329,49 +272,31 @@ const SettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
+          <div className="p-6 bg-white rounded-lg space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-medium text-black">Master Volume</h4>
                 <p className="text-sm text-gray-500">Overall audio level</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleMute}
-                className="w-12 h-10 bg-white hover:bg-gray-50 border-2 border-white"
-              >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-              </Button>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Volume</span>
-                <span className="text-sm text-gray-500">{volume}%</span>
-              </div>
-              <div className="relative">
-                <div className="h-1 bg-gray-300 rounded-full relative">
-                  {/* Track line with dashes */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-full h-0.5 bg-gray-400" style={{
-                      backgroundImage: 'repeating-linear-gradient(to right, transparent, transparent 2px, #9ca3af 2px, #9ca3af 6px, transparent 6px, transparent 8px)',
-                    }}></div>
-                  </div>
-                  {/* Progress line */}
-                  <div 
-                    className="h-full bg-blue-500 rounded-full"
-                    style={{ width: `${volume}%` }}
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleMute}
+                  className="p-2"
+                >
+                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </Button>
+                <div className="w-32">
+                  <Slider
+                    value={[volume]}
+                    onValueChange={handleVolumeChange}
+                    max={100}
+                    step={1}
+                    disabled={isMuted}
                   />
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={(e) => handleVolumeChange([parseInt(e.target.value)])}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
+                <span className="text-sm text-gray-500 w-12">{Math.round(volume)}%</span>
               </div>
             </div>
 
@@ -385,7 +310,6 @@ const SettingsSection: React.FC = () => {
                 size="sm"
                 onClick={isBackgroundPlaying ? stopBackgroundMusic : playBackgroundMusic}
                 disabled={isMuted}
-                className="bg-white hover:bg-gray-50 border-2 border-white"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
@@ -397,10 +321,10 @@ const SettingsSection: React.FC = () => {
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32 bg-white border-2 border-white">
+                <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-gray-200">
+                <SelectContent>
                   <SelectItem value="off">Off</SelectItem>
                   <SelectItem value="subtle">Subtle Beep</SelectItem>
                   <SelectItem value="typewriter">Typewriter</SelectItem>
@@ -414,7 +338,7 @@ const SettingsSection: React.FC = () => {
                 <h4 className="font-medium text-gray-800">Background Music</h4>
                 <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
               </div>
-              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded border border-gray-200">
+              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded border">
                 Calm Business Lo-Fi
               </div>
             </div>
@@ -423,8 +347,8 @@ const SettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-2xl border border-blue-200 shadow-inner">
+          <div className="p-6 bg-white rounded-lg space-y-6">
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
               <h4 className="font-semibold text-black mb-2">Game Speed: 24× Faster</h4>
               <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
               <p className="text-xs text-gray-500">This setting cannot be changed</p>
@@ -453,7 +377,7 @@ const SettingsSection: React.FC = () => {
 
       case 'data':
         return (
-          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg border border-blue-100 space-y-6">
+          <div className="p-6 bg-white rounded-lg space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -475,7 +399,7 @@ const SettingsSection: React.FC = () => {
             <div className="space-y-3">
               <Button 
                 variant="outline"
-                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50 bg-white border-2"
+                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
                 onClick={handlePushToGithub}
                 disabled={isGithubPushing}
               >
@@ -483,7 +407,7 @@ const SettingsSection: React.FC = () => {
                 {isGithubPushing ? 'Pushing...' : 'Push Full Project to GitHub'}
               </Button>
 
-              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 shadow-inner">
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <p className="text-sm text-gray-600 text-center">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.
                 </p>
@@ -493,7 +417,7 @@ const SettingsSection: React.FC = () => {
                 <AlertDialogTrigger asChild>
                   <Button 
                     variant="outline"
-                    className="w-full text-red-600 border-red-300 hover:bg-red-50 bg-white border-2"
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
                   >
                     <RotateCcw size={16} className="mr-2" />
                     Reset Game Progress
@@ -518,7 +442,7 @@ const SettingsSection: React.FC = () => {
               <Button 
                 variant="outline"
                 onClick={handleClearCache}
-                className="w-full h-14 text-red-700 border-red-300/60 hover:bg-red-50 bg-white backdrop-blur-sm rounded-3xl font-semibold transition-all duration-300 transform hover:scale-105 border-2"
+                className="w-full text-red-700 border-red-300 hover:bg-red-50"
               >
                 <Trash2 size={16} className="mr-2" />
                 Clear Cache
@@ -533,52 +457,51 @@ const SettingsSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-white via-blue-50/30 to-indigo-50/20 border-b border-indigo-200/30 px-6 py-6 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+    <div className="space-y-0">
+      {/* Header - Blue background inspired by Banking/Bonds/Stocks sections */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        {/* Header Content */}
+        <div className="flex items-center justify-between p-4 pb-3">
+          <div className="flex items-center gap-2">
+            <Settings className="w-5 h-5" />
             <div>
-              <h1 className="text-3xl font-bold text-black">Settings</h1>
-              <p className="text-sm text-gray-600 mt-1 font-medium">Customize your Wealth Sprint experience</p>
+              <h1 className="text-lg font-bold">Settings</h1>
+              <p className="text-blue-100 text-xs">Customize your Wealth Sprint experience</p>
             </div>
-            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 text-sm font-semibold rounded-2xl shadow-lg">
-              v4.0
-            </Badge>
           </div>
-
-          {/* Horizontal Scrollable Menu */}
-          <div className="overflow-x-auto">
-            <div className="flex space-x-3 min-w-max pb-2">
-              {menuTabs.map(tab => {
-                const IconComponent = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30'
-                        : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200/60 shadow-md'
-                    }`}
-                  >
-                    <IconComponent size={18} />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="text-right">
+            <p className="text-xs text-blue-200">Version</p>
+            <p className="text-sm font-bold text-white">v4.0</p>
+          </div>
+        </div>
+        
+        {/* Menu Navigation - Horizontal categories with blue background */}
+        <div className="px-4 pb-4">
+          <div className="flex gap-2 overflow-x-auto">
+            {menuTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-white text-blue-600 shadow-md'
+                    : 'bg-blue-700 text-white hover:bg-blue-600'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto">
         {renderTabContent()}
       </div>
     </div>
   );
 };
 
-export default SettingsSection;
+export default NewSettingsSection;
