@@ -21,10 +21,11 @@ import {
   Trash2,
   Github,
   Download,
-  TrendingUp,
+  Briefcase,
   Users,
   Lightbulb,
   Monitor,
+  TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -74,7 +75,7 @@ const NewSettingsSection: React.FC = () => {
       id: 'businessman', 
       src: '/avatars/Professional_businessman_avatar_bb7d28c5.png',
       alt: 'Business Leader',
-      icon: TrendingUp,
+      icon: Briefcase,
       color: 'from-blue-500 to-blue-600'
     },
     {
@@ -233,8 +234,8 @@ const NewSettingsSection: React.FC = () => {
                           />
                           {/* Icon overlay for selected avatar */}
                           {isSelected && (
-                            <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${avatar.color} rounded-full flex items-center justify-center shadow-lg`}>
-                              <IconComponent className="w-3 h-3 text-white" />
+                            <div className={`absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-gradient-to-r ${avatar.color} rounded-full flex items-center justify-center shadow-lg border-2 border-white`}>
+                              <IconComponent className="w-4 h-4 text-white" />
                             </div>
                           )}
                         </div>
@@ -246,7 +247,7 @@ const NewSettingsSection: React.FC = () => {
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
@@ -321,6 +322,7 @@ const NewSettingsSection: React.FC = () => {
                     max={100}
                     step={1}
                     disabled={isMuted}
+                    className="[&>span:first-child]:h-2 [&>span:first-child]:bg-gradient-to-r [&>span:first-child]:from-gray-200 [&>span:first-child]:to-gray-300 [&>span:first-child]:rounded-full [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:bg-blue-600 [&_[role=slider]]:border-2 [&_[role=slider]]:border-white [&_[role=slider]]:shadow-lg"
                   />
                 </div>
                 <span className="text-sm text-gray-500 w-12">{Math.round(volume)}%</span>
