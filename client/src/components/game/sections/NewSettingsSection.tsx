@@ -346,7 +346,6 @@ const NewSettingsSection: React.FC = () => {
                 size="sm"
                 onClick={handleToggleBackgroundMusic}
                 disabled={isMuted}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500 hover:border-yellow-600 font-medium"
               >
                 {isBackgroundPlaying ? 'Stop' : 'Play'}
               </Button>
@@ -358,7 +357,7 @@ const NewSettingsSection: React.FC = () => {
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
               <Select defaultValue="subtle">
-                <SelectTrigger className="w-32 bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500">
+                <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -378,7 +377,6 @@ const NewSettingsSection: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500 hover:border-yellow-600 font-medium"
                 onClick={handleToggleBackgroundMusic}
                 disabled={isMuted}
               >
