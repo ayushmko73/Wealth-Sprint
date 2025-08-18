@@ -143,7 +143,7 @@ const AssetsSection: React.FC = () => {
   const renderContent = () => {
     switch (selectedCategory) {
       case 'Assets':
-        return (
+        return assets.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {assets.map(asset => (
               <Card key={asset.id} className="hover:shadow-md transition-shadow">
@@ -199,10 +199,18 @@ const AssetsSection: React.FC = () => {
               </Card>
             ))}
           </div>
+        ) : (
+          <Card>
+            <CardContent className="text-center py-12">
+              <TrendingUp size={48} className="mx-auto mb-4 text-gray-400" />
+              <p className="text-gray-500 font-medium mb-2">No Assets Available</p>
+              <p className="text-sm text-gray-400">Visit the Store section to purchase your first assets</p>
+            </CardContent>
+          </Card>
         );
 
       case 'Liabilities':
-        return (
+        return liabilities.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {liabilities.map(liability => {
               const progress = ((liability.tenure - liability.remainingMonths) / liability.tenure) * 100;
@@ -284,6 +292,14 @@ const AssetsSection: React.FC = () => {
               );
             })}
           </div>
+        ) : (
+          <Card>
+            <CardContent className="text-center py-12">
+              <CreditCard size={48} className="mx-auto mb-4 text-gray-400" />
+              <p className="text-gray-500 font-medium mb-2">No Liabilities Available</p>
+              <p className="text-sm text-gray-400">You have no outstanding debts or loans</p>
+            </CardContent>
+          </Card>
         );
 
       case 'Analysis':
@@ -463,7 +479,7 @@ const AssetsSection: React.FC = () => {
       </div>
 
       {/* Horizontal Scrollable Menu */}
-      <div className="w-full bg-blue-600 border-t border-blue-500">
+      <div className="w-full bg-blue-600">
         <div className="overflow-x-auto px-4 py-3">
           <div className="flex gap-2 min-w-max">
             {categories.map((category) => (
