@@ -53,7 +53,7 @@ import BankSection from './sections/BankSection';
 import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
 import AssetsSection from './sections/AssetsSection';
-import PerformanceAnalyticsSection from './sections/PerformanceAnalyticsSection';
+import SettingsSection from './sections/SettingsSection';
 import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
@@ -66,7 +66,6 @@ import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
 import SageAI from './GorkAI';
-import NewSettings from './NewSettings';
 
 const GameDashboard: React.FC = () => {
   const { financialData, playerStats, currentWeek, currentDay, gameStarted, advanceTime } = useWealthSprintGame();
@@ -121,7 +120,6 @@ const GameDashboard: React.FC = () => {
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
     { id: 'assets', label: 'Assets', icon: TrendingUp },
-    { id: 'analytics', label: 'Analytics', icon: Activity },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -159,10 +157,8 @@ const GameDashboard: React.FC = () => {
         return <StrategyHubSection />;
       case 'assets':
         return <AssetsSection />;
-      case 'analytics':
-        return <PerformanceAnalyticsSection />;
       case 'settings':
-        return <NewSettings onClose={() => setActiveSection('dashboard')} />;
+        return <SettingsSection />;
       default:
         return (
           <div className="space-y-6">
