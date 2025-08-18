@@ -464,16 +464,16 @@ const AssetsSection: React.FC = () => {
 
       {/* Horizontal Scrollable Menu */}
       <div className="w-full bg-blue-600 border-t border-blue-500">
-        <div className="px-4 py-2">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+        <div className="overflow-x-auto px-4 py-3">
+          <div className="flex gap-2 min-w-max">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap shadow-md ${
                   selectedCategory === category
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'bg-transparent text-white hover:bg-blue-500'
+                    ? 'bg-white text-blue-800 shadow-md'
+                    : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
                 {getCategoryIcon(category)}
