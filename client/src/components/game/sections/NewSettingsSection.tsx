@@ -26,6 +26,7 @@ import {
   Lightbulb,
   Monitor,
   TrendingUp,
+  Crown,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -75,7 +76,7 @@ const NewSettingsSection: React.FC = () => {
       id: 'businessman', 
       src: '/avatars/Professional_businessman_avatar_bb7d28c5.png',
       alt: 'Business Leader',
-      icon: Briefcase,
+      icon: Crown,
       color: 'from-blue-500 to-blue-600'
     },
     {
@@ -234,8 +235,8 @@ const NewSettingsSection: React.FC = () => {
                           />
                           {/* Icon overlay for selected avatar */}
                           {isSelected && (
-                            <div className={`absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-gradient-to-r ${avatar.color} rounded-full flex items-center justify-center shadow-lg border-2 border-white`}>
-                              <IconComponent className="w-4 h-4 text-white" />
+                            <div className={`absolute -bottom-0.5 -right-0.5 w-8 h-8 bg-gradient-to-r ${avatar.color} rounded-full flex items-center justify-center shadow-xl border-3 border-white`}>
+                              <IconComponent className="w-5 h-5 text-white font-bold" strokeWidth={2.5} />
                             </div>
                           )}
                         </div>
@@ -300,7 +301,7 @@ const NewSettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-gradient-to-br from-green-50/30 to-emerald-50/50 rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50/30 to-indigo-50/50 rounded-lg space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-medium text-black">Master Volume</h4>
@@ -376,7 +377,7 @@ const NewSettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-gradient-to-br from-yellow-50/30 to-amber-50/50 rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50/30 to-indigo-50/50 rounded-lg space-y-6">
             <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
               <h4 className="font-semibold text-black mb-2">Game Speed: 24× Faster</h4>
               <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
