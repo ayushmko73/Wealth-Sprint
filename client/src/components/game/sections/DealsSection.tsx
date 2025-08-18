@@ -67,6 +67,7 @@ const DealsSection: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'bank' | 'credit'>('bank');
   const [paymentType, setPaymentType] = useState<'full' | 'emi'>('full');
   const [emiDuration, setEmiDuration] = useState<number>(3);
+  const [showEmiDropdown, setShowEmiDropdown] = useState(false);
 
   // Categories for navigation
   const categories = ['Overview', 'Opportunities', 'Global Business', 'Financials'];
@@ -896,6 +897,7 @@ const DealsSection: React.FC = () => {
                     setPaymentMethod('bank');
                     setPaymentType('full');
                     setEmiDuration(3);
+                    setShowEmiDropdown(false);
                   }}
                   className="h-5 w-5 p-0"
                 >
@@ -992,58 +994,66 @@ const DealsSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Compact Credit Card Options */}
+              {/* Credit Card Payment Options */}
               {paymentMethod === 'credit' && (
                 <div className="mb-3">
                   <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
-                  <div className="flex gap-2">
+                  
+                  {/* EMI 3M Button */}
+                  <div className="mb-2">
                     <button
-                      onClick={() => setPaymentType('full')}
-                      className={`flex-1 p-2 rounded-lg border text-xs font-medium transition-all ${
-                        paymentType === 'full'
-                          ? 'bg-green-100 border-green-300 text-green-800'
-                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                      }`}
+                      onClick={() => {
+                        setPaymentType('emi');
+                        setEmiDuration(3);
+                      }}
+                      className="w-full p-2 rounded-lg border text-xs font-medium transition-all bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200"
                     >
-                      Full Payment
+                      EMI 3M
                     </button>
-                    <div className="relative flex-1">
-                      <button
-                        onClick={() => setPaymentType('emi')}
-                        className={`w-full p-2 rounded-lg border text-xs font-medium transition-all flex items-center justify-center gap-1 ${
-                          paymentType === 'emi'
-                            ? 'bg-white border-gray-300 text-gray-800'
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                        }`}
-                      >
-                        EMI {emiDuration < 12 ? `${emiDuration}m` : `${emiDuration/12}y`}
-                        {paymentType === 'emi' && <ChevronDown className="w-3 h-3" />}
-                      </button>
+                  </div>
 
-                      {/* Compact EMI Duration Menu - Small dropdown next to button */}
-                      {paymentType === 'emi' && (
-                        <div className="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-1">
-                          <div className="max-h-32 overflow-y-auto">
-                            {[3, 6, 12, 24, 36].map((months) => (
-                              <button
-                                key={months}
-                                onClick={() => setEmiDuration(months)}
-                                className={`w-full p-1.5 rounded text-xs font-medium transition-all flex justify-between items-center ${
-                                  emiDuration === months
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'text-gray-700 hover:bg-gray-50'
-                                }`}
-                              >
-                                <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
-                                <span className="text-xs text-gray-500">
-                                  {formatCurrency(Math.ceil(showPurchaseModal.investmentRequired / months))}/mo
-                                </span>
-                              </button>
-                            ))}
-                          </div>
+                  {/* EMI Duration Selector */}
+                  <div className="relative">
+                    <label className="text-xs text-gray-600 mb-1 block">EMI Duration</label>
+                    <button
+                      onClick={() => setShowEmiDropdown(!showEmiDropdown)}
+                      className="w-full p-2 rounded-lg border border-gray-300 text-xs font-medium transition-all bg-white hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <span>{emiDuration < 12 ? `${emiDuration} months` : `${emiDuration/12} year${emiDuration/12 > 1 ? 's' : ''}`}</span>
+                      <ChevronDown className={`w-3 h-3 transition-transform ${showEmiDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Upward Opening Dropdown */}
+                    {showEmiDropdown && (
+                      <>
+                        {/* Overlay to close on outside click */}
+                        <div 
+                          className="fixed inset-0 z-10" 
+                          onClick={() => setShowEmiDropdown(false)}
+                        />
+                        <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+                          {[3, 6, 12, 24, 36].map((months) => (
+                            <button
+                              key={months}
+                              onClick={() => {
+                                setEmiDuration(months);
+                                setShowEmiDropdown(false);
+                              }}
+                              className={`w-full p-2.5 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
+                                emiDuration === months
+                                  ? 'bg-blue-50 text-blue-800'
+                                  : 'text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
+                              <span className="text-xs text-gray-500">
+                                ₹{Math.ceil(showPurchaseModal.investmentRequired / months).toLocaleString()}/mo
+                              </span>
+                            </button>
+                          ))}
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -1058,6 +1068,7 @@ const DealsSection: React.FC = () => {
                     setPaymentMethod('bank');
                     setPaymentType('full');
                     setEmiDuration(3);
+                    setShowEmiDropdown(false);
                   }}
                 >
                   Cancel
@@ -1065,12 +1076,15 @@ const DealsSection: React.FC = () => {
                 <Button
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-2"
                   onClick={() => {
+                    // For credit card, always use EMI
+                    const finalPaymentType = paymentMethod === 'credit' ? 'emi' : paymentType;
+                    
                     // Handle purchase logic here
                     const result = purchaseDeal(
                       showPurchaseModal,
                       paymentMethod,
-                      paymentType,
-                      paymentType === 'emi' ? emiDuration : undefined
+                      finalPaymentType,
+                      finalPaymentType === 'emi' ? emiDuration : undefined
                     );
                     
                     if (result?.success) {
@@ -1078,13 +1092,14 @@ const DealsSection: React.FC = () => {
                         deal: showPurchaseModal.title,
                         amount: showPurchaseModal.investmentRequired,
                         paymentMethod,
-                        paymentType,
-                        emiDuration: paymentType === 'emi' ? emiDuration : null
+                        paymentType: finalPaymentType,
+                        emiDuration: finalPaymentType === 'emi' ? emiDuration : null
                       });
                       setShowPurchaseModal(null);
                       setPaymentMethod('bank');
                       setPaymentType('full');
                       setEmiDuration(3);
+                      setShowEmiDropdown(false);
                     } else {
                       console.error('Purchase failed:', result?.message);
                       alert(`Purchase failed: ${result?.message || 'Unknown error'}`);
