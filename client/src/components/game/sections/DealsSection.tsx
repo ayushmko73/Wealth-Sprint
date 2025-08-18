@@ -1008,13 +1008,14 @@ const DealsSection: React.FC = () => {
                 <div className="mb-3">
                   <h5 className="font-semibold text-slate-800 mb-2 text-xs">Payment Options</h5>
                   
-                  {/* Full Payment Button */}
-                  <div className="mb-2">
+                  {/* Horizontal Payment Options */}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    {/* Full Payment Button */}
                     <button
                       onClick={() => {
                         setPaymentType('full');
                       }}
-                      className={`w-full p-2 rounded-lg border text-xs font-medium transition-all ${
+                      className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                         !getCreditInfo().canPayFull
                           ? 'bg-red-100 border-red-300 text-red-800 cursor-not-allowed opacity-60'
                           : 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200'
@@ -1023,16 +1024,14 @@ const DealsSection: React.FC = () => {
                     >
                       {getCreditInfo().canPayFull ? "Full Payment" : "Credit Limit Exceeded - Can't Pay"}
                     </button>
-                  </div>
 
-                  {/* EMI 3M Button */}
-                  <div className="mb-2">
+                    {/* EMI 3M Button */}
                     <button
                       onClick={() => {
                         setPaymentType('emi');
                         setEmiDuration(3);
                       }}
-                      className="w-full p-2 rounded-lg border text-xs font-medium transition-all bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200"
+                      className="p-2 rounded-lg border text-xs font-medium transition-all bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200"
                     >
                       EMI 3M
                     </button>
