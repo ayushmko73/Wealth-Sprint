@@ -189,45 +189,191 @@ const DealsSection: React.FC = () => {
       });
     }
 
-    // Global Business deals (always available)
-    deals.push(
+    // Global Business deals - Progressive high-value investments
+    const globalBusinessDeals = [
+      // Level 1: 50L - 1Cr deals (entry level)
       {
-        id: 'stock_market_entry',
-        type: 'stock',
-        title: 'Blue Chip Portfolio',
-        description: 'Diversified portfolio of established companies',
-        company: 'Premium Equities',
-        investmentRequired: 100000,
-        expectedROI: 12,
-        riskLevel: 'low',
-        liquidity: 'high',
-        timeHorizon: 12,
-        cashflowMonthly: 1200,
+        id: 'global_manufacturing_1',
+        type: 'acquisition',
+        title: 'Industrial Manufacturing Plant',
+        description: 'Acquire majority stake in established steel manufacturing facility',
+        company: 'Steel Tech Industries',
+        investmentRequired: 7500000, // 75L
+        expectedROI: 18,
+        riskLevel: 'medium',
+        liquidity: 'low',
+        timeHorizon: 48,
+        cashflowMonthly: 125000,
         status: 'available',
-        requirements: { minSectors: 0, minNetWorth: 80000 },
-        benefits: ['High liquidity', 'Diversified risk', 'Dividend income'],
-        risks: ['Market volatility', 'Economic cycles'],
-        keyFactors: { 'Liquidity': 'High', 'Volatility': 'Low', 'Growth': 'Conservative' }
+        requirements: { minSectors: 0, minNetWorth: 5000000 },
+        benefits: ['Established market presence', 'Steady industrial demand', 'Asset-backed value'],
+        risks: ['Capital intensive operations', 'Environmental regulations', 'Commodity price volatility'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Industrial' }
       },
       {
-        id: 'acquisition_target',
+        id: 'global_telecom_1',
+        type: 'joint_venture',
+        title: 'Telecom Infrastructure JV',
+        description: 'Joint venture in 5G tower installation across tier-2 cities',
+        company: 'Connect India Networks',
+        investmentRequired: 8500000, // 85L
+        expectedROI: 22,
+        riskLevel: 'medium',
+        liquidity: 'medium',
+        timeHorizon: 36,
+        cashflowMonthly: 180000,
+        status: 'available',
+        requirements: { minSectors: 0, minNetWorth: 6000000 },
+        benefits: ['Government backing', 'Future-ready technology', 'Recurring revenue model'],
+        risks: ['Technology obsolescence', 'Regulatory changes', 'High competition'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Technology' }
+      },
+      
+      // Level 2: 1Cr - 10Cr deals
+      {
+        id: 'global_pharma_2',
         type: 'acquisition',
-        title: '50% Acquisition Deal',
-        description: 'Acquire controlling stake in profitable logistics company',
-        company: 'Swift Logistics',
-        investmentRequired: 2000000,
+        title: 'Pharmaceutical Distribution Network',
+        description: 'Complete acquisition of regional pharmaceutical distribution company',
+        company: 'MediCare Distribution Ltd',
+        investmentRequired: 35000000, // 3.5Cr
+        expectedROI: 25,
+        riskLevel: 'low',
+        liquidity: 'medium',
+        timeHorizon: 60,
+        cashflowMonthly: 750000,
+        status: 'available',
+        requirements: { minSectors: 1, minNetWorth: 25000000 },
+        benefits: ['Essential service sector', 'Stable demand', 'Government contracts'],
+        risks: ['Regulatory compliance', 'Supply chain disruptions', 'Price controls'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Low', 'Growth': 'Healthcare' }
+      },
+      {
+        id: 'global_energy_2',
+        type: 'acquisition',
+        title: 'Renewable Energy Portfolio',
+        description: 'Acquire wind and solar farm portfolio across multiple states',
+        company: 'GreenPower Solutions',
+        investmentRequired: 65000000, // 6.5Cr
         expectedROI: 28,
         riskLevel: 'medium',
         liquidity: 'low',
-        timeHorizon: 60,
-        cashflowMonthly: 45000,
+        timeHorizon: 84,
+        cashflowMonthly: 1450000,
         status: 'available',
-        requirements: { minSectors: 1, minNetWorth: 1500000 },
-        benefits: ['Controlling stake', 'Proven profitability', 'Market position'],
-        risks: ['Integration complexity', 'Management challenges'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Controlled' }
+        requirements: { minSectors: 1, minNetWorth: 45000000 },
+        benefits: ['Government incentives', 'Long-term contracts', 'ESG compliance'],
+        risks: ['Weather dependency', 'Technology changes', 'Grid stability issues'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Sustainable' }
+      },
+      
+      // Level 3: 10Cr - 100Cr deals
+      {
+        id: 'global_banking_3',
+        type: 'acquisition',
+        title: 'Regional Banking Institution',
+        description: 'Majority stake acquisition in profitable regional bank',
+        company: 'Capital Trust Bank',
+        investmentRequired: 250000000, // 25Cr
+        expectedROI: 20,
+        riskLevel: 'medium',
+        liquidity: 'medium',
+        timeHorizon: 72,
+        cashflowMonthly: 4200000,
+        status: 'available',
+        requirements: { minSectors: 2, minNetWorth: 180000000 },
+        benefits: ['Financial sector expertise', 'Regulatory moat', 'Diversified income'],
+        risks: ['Regulatory scrutiny', 'Credit risk exposure', 'Economic cycles'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Financial' }
+      },
+      {
+        id: 'global_ports_3',
+        type: 'acquisition',
+        title: 'Maritime Port Operations',
+        description: 'Strategic acquisition of container port terminal operations',
+        company: 'Ocean Gateway Terminals',
+        investmentRequired: 450000000, // 45Cr
+        expectedROI: 24,
+        riskLevel: 'medium',
+        liquidity: 'low',
+        timeHorizon: 120,
+        cashflowMonthly: 8750000,
+        status: 'available',
+        requirements: { minSectors: 2, minNetWorth: 320000000 },
+        benefits: ['Strategic infrastructure', 'Trade growth exposure', 'High barriers to entry'],
+        risks: ['Capital intensive', 'Global trade volatility', 'Environmental concerns'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'High', 'Growth': 'Infrastructure' }
+      },
+      
+      // Level 4: 100Cr - 500Cr deals (ultra high-value)
+      {
+        id: 'global_airline_4',
+        type: 'acquisition',
+        title: 'National Airline Acquisition',
+        description: 'Complete acquisition of established domestic airline with international routes',
+        company: 'Skyways International',
+        investmentRequired: 1500000000, // 150Cr
+        expectedROI: 22,
+        riskLevel: 'high',
+        liquidity: 'medium',
+        timeHorizon: 96,
+        cashflowMonthly: 28000000,
+        status: 'available',
+        requirements: { minSectors: 3, minNetWorth: 1000000000 },
+        benefits: ['Market leadership', 'International exposure', 'Brand recognition'],
+        risks: ['Fuel price volatility', 'Economic sensitivity', 'Regulatory complexity'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Aviation' }
+      },
+      {
+        id: 'global_mining_4',
+        type: 'acquisition',
+        title: 'Mineral Extraction Conglomerate',
+        description: 'Acquisition of diversified mining operations across iron ore, coal, and rare metals',
+        company: 'Bharat Mining Corporation',
+        investmentRequired: 2800000000, // 280Cr
+        expectedROI: 26,
+        riskLevel: 'high',
+        liquidity: 'low',
+        timeHorizon: 144,
+        cashflowMonthly: 65000000,
+        status: 'available',
+        requirements: { minSectors: 3, minNetWorth: 2000000000 },
+        benefits: ['Resource control', 'Global demand exposure', 'Strategic materials'],
+        risks: ['Commodity cycles', 'Environmental regulations', 'Geopolitical risks'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Commodities' }
+      },
+      {
+        id: 'global_media_4',
+        type: 'acquisition',
+        title: 'Media & Entertainment Empire',
+        description: 'Complete acquisition of integrated media conglomerate with TV, film, and digital assets',
+        company: 'Universal Entertainment Group',
+        investmentRequired: 4200000000, // 420Cr
+        expectedROI: 30,
+        riskLevel: 'high',
+        liquidity: 'medium',
+        timeHorizon: 108,
+        cashflowMonthly: 95000000,
+        status: 'available',
+        requirements: { minSectors: 4, minNetWorth: 3000000000 },
+        benefits: ['Brand portfolio', 'Content creation capabilities', 'Digital transformation'],
+        risks: ['Changing consumer preferences', 'Technology disruption', 'Content creation risks'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Entertainment' }
       }
-    );
+    ];
+
+    // Add Global Business deals based on player's progression level
+    const playerLevel = Math.min(Math.floor(sectorCount / 1) + Math.floor(financialData.bankBalance / 50000000), 4);
+    
+    globalBusinessDeals.forEach(deal => {
+      const dealLevel = deal.investmentRequired <= 10000000 ? 1 : 
+                        deal.investmentRequired <= 100000000 ? 2 : 
+                        deal.investmentRequired <= 1000000000 ? 3 : 4;
+      
+      if (dealLevel <= playerLevel + 1) { // Show current level + 1 level ahead
+        deals.push(deal);
+      }
+    });
 
     return deals;
   }, []);
