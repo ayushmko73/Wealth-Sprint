@@ -21,6 +21,10 @@ import {
   Trash2,
   Github,
   Download,
+  TrendingUp,
+  Users,
+  Lightbulb,
+  Monitor,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -64,27 +68,35 @@ const NewSettingsSection: React.FC = () => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isGithubPushing, setIsGithubPushing] = useState(false);
 
-  // Avatar options
+  // Avatar options with icons
   const avatarOptions = [
     {
       id: 'businessman', 
       src: '/avatars/Professional_businessman_avatar_bb7d28c5.png',
-      alt: 'Business Leader'
+      alt: 'Business Leader',
+      icon: TrendingUp,
+      color: 'from-blue-500 to-blue-600'
     },
     {
       id: 'businesswoman', 
       src: '/avatars/Professional_businesswoman_avatar_530f5b0d.png',
-      alt: 'Executive'
+      alt: 'Executive',
+      icon: Users,
+      color: 'from-purple-500 to-purple-600'
     },
     {
       id: 'entrepreneur',
       src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
-      alt: 'Innovator'
+      alt: 'Innovator',
+      icon: Lightbulb,
+      color: 'from-yellow-500 to-orange-500'
     },
     {
       id: 'tech_dev',
       src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
-      alt: 'Tech Visionary'
+      alt: 'Tech Visionary',
+      icon: Monitor,
+      color: 'from-green-500 to-green-600'
     }
   ];
 
@@ -194,40 +206,55 @@ const NewSettingsSection: React.FC = () => {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="p-6 bg-white rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-blue-50/30 to-indigo-50/50 rounded-lg space-y-6">
             {/* Avatar Selection */}
             <div>
               <h3 className="text-lg font-semibold text-black mb-4">Choose Your Avatar</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {avatarOptions.map(avatar => (
-                  <button
-                    key={avatar.id}
-                    onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
-                    className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
-                      playerProfile.avatar === avatar.id 
-                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                        : 'border-gray-200 hover:border-gray-300 bg-white shadow-md hover:shadow-lg'
-                    }`}
-                  >
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                        <img 
-                          src={avatar.src} 
-                          alt={avatar.alt} 
-                          className="w-full h-full object-cover"
-                        />
+                {avatarOptions.map(avatar => {
+                  const IconComponent = avatar.icon;
+                  const isSelected = playerProfile.avatar === avatar.id;
+                  return (
+                    <button
+                      key={avatar.id}
+                      onClick={() => setPlayerProfile(prev => ({ ...prev, avatar: avatar.id }))}
+                      className={`relative group p-4 rounded-xl border-2 transition-all hover:scale-105 ${
+                        isSelected 
+                          ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg shadow-blue-500/20' 
+                          : 'border-gray-200 hover:border-gray-300 bg-white shadow-md hover:shadow-lg'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                          <img 
+                            src={avatar.src} 
+                            alt={avatar.alt} 
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Icon overlay for selected avatar */}
+                          {isSelected && (
+                            <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${avatar.color} rounded-full flex items-center justify-center shadow-lg`}>
+                              <IconComponent className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <span className="text-xs font-medium text-gray-600">{avatar.alt}</span>
+                          {isSelected && (
+                            <div className="text-xs text-blue-600 font-semibold mt-1">Selected</div>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-xs font-medium text-gray-600">{avatar.alt}</span>
-                    </div>
-                    {playerProfile.avatar === avatar.id && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                ))}
+                      {isSelected && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -272,7 +299,7 @@ const NewSettingsSection: React.FC = () => {
 
       case 'audio':
         return (
-          <div className="p-6 bg-white rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-green-50/30 to-emerald-50/50 rounded-lg space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-medium text-black">Master Volume</h4>
@@ -347,7 +374,7 @@ const NewSettingsSection: React.FC = () => {
 
       case 'gameplay':
         return (
-          <div className="p-6 bg-white rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-yellow-50/30 to-amber-50/50 rounded-lg space-y-6">
             <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
               <h4 className="font-semibold text-black mb-2">Game Speed: 24× Faster</h4>
               <p className="text-sm text-gray-600 mb-1">1 real hour = 1 in-game day</p>
@@ -377,7 +404,7 @@ const NewSettingsSection: React.FC = () => {
 
       case 'data':
         return (
-          <div className="p-6 bg-white rounded-lg space-y-6">
+          <div className="p-6 bg-gradient-to-br from-purple-50/30 to-violet-50/50 rounded-lg space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
