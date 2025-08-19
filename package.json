@@ -45,6 +45,7 @@
     "gl-matrix": "^3.4.3",
     "gsap": "^3.12.5",
     "howler": "^2.2.4",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.453.0",
     "memorystore": "^1.6.7",
     "meshline": "^3.3.1",

@@ -7,6 +7,7 @@ import { Badge } from '../../ui/badge';
 import { Target, Users, Brain, TrendingUp, AlertCircle, CheckCircle, XCircle, User, Trash2, X, BarChart3, Trophy, Zap, Shield, DollarSign, Activity } from 'lucide-react';
 import { getTeamScenarios, TeamScenario } from '../../../lib/data/teamScenarios';
 import { formatIndianCurrency } from '../../../lib/utils';
+import MeetingRoomView from '../MeetingRoomView';
 
 const StrategyHubSection: React.FC = () => {
   const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent, currentWeek } = useWealthSprintGame();
@@ -147,13 +148,7 @@ const StrategyHubSection: React.FC = () => {
 
         {selectedCategory === 'Meeting Room' && (
           <div className="space-y-4">
-            <Card>
-              <CardContent className="text-center py-12">
-                <Target size={48} className="mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-500 font-medium mb-2">Meeting Room Coming Soon</p>
-                <p className="text-sm text-gray-400">This feature is under development</p>
-              </CardContent>
-            </Card>
+            <MeetingRoomView />
           </div>
         )}
 
