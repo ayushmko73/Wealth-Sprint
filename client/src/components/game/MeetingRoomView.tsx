@@ -1,4 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,19 +29,51 @@ interface Executive {
   color: string;
 }
 
+const executiveColors = [
+  '#3B82F6', // Blue
+  '#10B981', // Green
+  '#8B5CF6', // Purple
+  '#F59E0B', // Orange
+  '#EF4444'  // Red
+];
+
+// 3D Meeting Room Component
+const MeetingRoom3D: React.FC<{ executiveCount: number }> = ({ executiveCount }) => {
+  const modelPath = `/meeting-room-${Math.min(executiveCount, 5)}.glb`;
+  const { scene } = useGLTF(modelPath);
+  
+  return <primitive object={scene} scale={2.5} position={[0, -2, 0]} />;
+};
+
 const MeetingRoomView: React.FC = () => {
   const { teamMembers } = useTeamManagement();
-  const [executives, setExecutives] = useState<Executive[]>([
-    { id: '1', name: 'Sarah Chen', shares: 4, role: 'CTO', color: '#3B82F6' },
-    { id: '2', name: 'Marcus Rodriguez', shares: 3, role: 'COO', color: '#10B981' },
-    { id: '3', name: 'Jennifer Liu', shares: 3, role: 'CFO', color: '#8B5CF6' }
-  ]);
-  const [mode, setMode] = useState<'slider' | 'data'>('data');
-  const [sliderValue, setSliderValue] = useState([2]);
+  const [mode, setMode] = useState<'team' | 'simulation'>('team');
+  const [sliderValue, setSliderValue] = useState([0]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingExec, setEditingExec] = useState<Executive | null>(null);
   const [newExec, setNewExec] = useState({ name: '', shares: 3, role: '', color: '#3B82F6' });
   const meetingRoomRef = useRef<HTMLDivElement>(null);
+
+  // Convert team members to executives for display
+  const actualExecutives: Executive[] = teamMembers
+    .filter(member => member.role && ['CTO', 'COO', 'CFO', 'CMO', 'CHRO'].includes(member.role))
+    .slice(0, 5) // Maximum 5 executives
+    .map((member, index) => ({
+      id: member.id,
+      name: member.name,
+      shares: 3 + Math.floor(Math.random() * 3), // Random shares between 3-5%
+      role: member.role || 'Executive',
+      color: executiveColors[index % executiveColors.length]
+    }));
+
+  // Get simulation executives for slider mode
+  const simulationExecutives: Executive[] = Array.from({ length: sliderValue[0] }, (_, index) => ({
+    id: `sim-${index}`,
+    name: ['Alex Chen', 'Jordan Smith', 'Taylor Brown', 'Morgan Davis', 'Casey Wilson'][index],
+    shares: 3 + (index % 3),
+    role: ['CTO', 'COO', 'CFO', 'CMO', 'CHRO'][index],
+    color: executiveColors[index % executiveColors.length]
+  }));
 
   // Colors for different executives
   const executiveColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -65,40 +99,33 @@ const MeetingRoomView: React.FC = () => {
     return { x, y };
   };
 
+  // Determine which executives to show based on mode
+  const activeExecutives = mode === 'team' ? actualExecutives : simulationExecutives;
+
   const handleAddExecutive = () => {
-    if (newExec.name.trim() && newExec.role.trim()) {
-      const executive: Executive = {
-        ...newExec,
-        id: Date.now().toString(),
-        color: executiveColors[executives.length % executiveColors.length]
-      };
-      setExecutives([...executives, executive]);
-      setNewExec({ name: '', shares: 3, role: '', color: '#3B82F6' });
+    // This feature is disabled when using team mode - executives come from team management
+    if (mode === 'simulation') {
       setShowAddModal(false);
     }
   };
 
   const handleEditExecutive = (exec: Executive) => {
-    setEditingExec(exec);
-    setNewExec({ name: exec.name, shares: exec.shares, role: exec.role, color: exec.color });
-    setShowAddModal(true);
-  };
-
-  const handleUpdateExecutive = () => {
-    if (editingExec && newExec.name.trim() && newExec.role.trim()) {
-      setExecutives(executives.map(exec => 
-        exec.id === editingExec.id 
-          ? { ...exec, ...newExec }
-          : exec
-      ));
-      setEditingExec(null);
-      setNewExec({ name: '', shares: 3, role: '', color: '#3B82F6' });
-      setShowAddModal(false);
+    // This feature is disabled when using team mode
+    if (mode === 'simulation') {
+      setEditingExec(exec);
+      setNewExec({ name: exec.name, shares: exec.shares, role: exec.role, color: exec.color });
+      setShowAddModal(true);
     }
   };
 
+  const handleUpdateExecutive = () => {
+    // This feature is disabled when using team mode
+    setShowAddModal(false);
+  };
+
   const handleRemoveExecutive = (id: string) => {
-    setExecutives(executives.filter(exec => exec.id !== id));
+    // This feature is disabled when using team mode
+    console.log('Remove executive:', id);
   };
 
   const exportToPNG = async () => {
@@ -120,9 +147,7 @@ const MeetingRoomView: React.FC = () => {
     }
   };
 
-  const activeExecutives = mode === 'slider' 
-    ? executives.slice(0, sliderValue[0])
-    : executives;
+
 
   const radius = 120;
   const centerX = 200;
@@ -142,23 +167,23 @@ const MeetingRoomView: React.FC = () => {
           {/* Mode Toggle */}
           <div className="flex gap-2">
             <Button 
-              variant={mode === 'slider' ? 'default' : 'outline'}
-              onClick={() => setMode('slider')}
+              variant={mode === 'simulation' ? 'default' : 'outline'}
+              onClick={() => setMode('simulation')}
               size="sm"
             >
               Quick Demo
             </Button>
             <Button 
-              variant={mode === 'data' ? 'default' : 'outline'}
-              onClick={() => setMode('data')}
+              variant={mode === 'team' ? 'default' : 'outline'}
+              onClick={() => setMode('team')}
               size="sm"
             >
               Team Data
             </Button>
           </div>
 
-          {/* Slider Mode */}
-          {mode === 'slider' && (
+          {/* Simulation Mode */}
+          {mode === 'simulation' && (
             <div className="space-y-2">
               <Label>Number of Executives: {sliderValue[0]}</Label>
               <Slider
@@ -172,8 +197,15 @@ const MeetingRoomView: React.FC = () => {
             </div>
           )}
 
-          {/* Data Mode Controls */}
-          {mode === 'data' && (
+          {/* Team Data Display */}
+          {mode === 'team' && (
+            <div className="text-sm text-muted-foreground">
+              Showing {actualExecutives.length} executives from your team management
+            </div>
+          )}
+
+          {/* Simulation Mode Controls */}
+          {mode === 'simulation' && (
             <div className="flex gap-2">
               <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
                 <DialogTrigger asChild>
@@ -243,193 +275,159 @@ const MeetingRoomView: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Meeting Room Visualization */}
+      {/* Professional 3D Meeting Room Visualization */}
       <Card>
         <CardContent className="p-6">
-          <div 
-            ref={meetingRoomRef}
-            className="relative w-full max-w-lg mx-auto aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden shadow-lg"
-            style={{
-              backgroundImage: `url('/meeting-room.webp')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          >
-            <div className="absolute inset-0 bg-black/10 rounded-xl"></div>
+          <div ref={meetingRoomRef} className="w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
+            <Canvas camera={{ position: [0, 5, 8], fov: 50 }}>
+              <ambientLight intensity={0.6} />
+              <directionalLight position={[10, 10, 5]} intensity={1} />
+              <pointLight position={[-10, -10, -5]} intensity={0.5} />
+              
+              <Suspense fallback={null}>
+                <MeetingRoom3D executiveCount={activeExecutives.length} />
+              </Suspense>
+              
+              <OrbitControls 
+                enablePan={false} 
+                enableZoom={true} 
+                enableRotate={true}
+                maxPolarAngle={Math.PI / 2}
+                minDistance={5}
+                maxDistance={15}
+              />
+            </Canvas>
             
-            {/* Founder Position - Bottom Center */}
-            <div 
-              className="absolute flex flex-col items-center transform -translate-x-1/2"
-              style={{ 
-                left: '50%', 
-                bottom: '5%'
-              }}
-            >
-              <div className="relative mb-1">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 shadow-2xl border-4 border-white flex items-center justify-center">
-                  <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center">
-                    <Crown className="w-7 h-7 text-white" />
-                  </div>
-                </div>
-                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-600 to-green-700 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg border-2 border-white">
-                  FOUNDER
-                </div>
-              </div>
-              <div className="bg-white/96 px-4 py-2 rounded-lg shadow-xl border border-gray-200 backdrop-blur-sm">
-                <p className="text-sm font-bold text-gray-900">You</p>
-                <p className="text-xs font-medium text-emerald-700">CEO & Owner</p>
-              </div>
-            </div>
-
-            {/* Executive Positions */}
-            {activeExecutives.map((exec, index) => {
-              const position = calculateSeatPosition(index, activeExecutives.length, 130);
-              const seatX = 50 + (position.x / 300) * 100; // Convert to percentage with better scaling
-              const seatY = 50 + (position.y / 300) * 100; // Convert to percentage with better scaling
-              
-              // Professional avatar styles based on role
-              const getAvatarStyle = (role: string) => {
-                const styles = {
-                  'CTO': { bg: 'from-blue-500 to-blue-700', icon: 'tech' },
-                  'COO': { bg: 'from-green-500 to-green-700', icon: 'ops' },
-                  'CFO': { bg: 'from-purple-500 to-purple-700', icon: 'finance' },
-                  'CMO': { bg: 'from-pink-500 to-pink-700', icon: 'marketing' },
-                  'CHRO': { bg: 'from-orange-500 to-orange-700', icon: 'hr' }
-                };
-                return styles[role as keyof typeof styles] || { bg: 'from-gray-500 to-gray-700', icon: 'exec' };
-              };
-
-              const avatarStyle = getAvatarStyle(exec.role);
-              
-              return (
-                <div 
-                  key={exec.id}
-                  className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
-                  style={{ 
-                    left: `${seatX}%`, 
-                    top: `${seatY}%`
-                  }}
-                >
-                  <div className="relative mb-1">
-                    <div 
-                      className={`w-16 h-16 rounded-full shadow-xl border-4 border-white bg-gradient-to-br ${avatarStyle.bg} flex items-center justify-center`}
-                    >
-                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                    <div className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg border-2 border-white">
-                      {exec.shares}%
-                    </div>
-                  </div>
-                  <div className="bg-white/96 px-3 py-2 rounded-lg shadow-lg border border-gray-200 text-center min-w-max backdrop-blur-sm">
-                    <p className="text-sm font-bold text-gray-900">{exec.name.split(' ')[0]}</p>
-                    <p className="text-xs font-medium text-blue-700">{exec.role}</p>
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Empty Seat Placeholders */}
-            {mode === 'data' && activeExecutives.length < 5 && 
-              Array.from({ length: 5 - activeExecutives.length }).map((_, index) => {
-                const totalIndex = activeExecutives.length + index;
-                const position = calculateSeatPosition(totalIndex, 5, 130);
-                const seatX = 50 + (position.x / 300) * 100;
-                const seatY = 50 + (position.y / 300) * 100;
-                
-                return (
-                  <div 
-                    key={`empty-${index}`}
-                    className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 opacity-50 hover:opacity-80 transition-opacity cursor-pointer"
-                    style={{ 
-                      left: `${seatX}%`, 
-                      top: `${seatY}%`
-                    }}
-                  >
-                    <div className="w-14 h-14 rounded-full border-3 border-dashed border-gray-400 bg-white/70 flex items-center justify-center mb-1 hover:border-blue-400 transition-colors">
-                      <Plus className="w-6 h-6 text-gray-500" />
-                    </div>
-                    <div className="bg-white/80 px-2 py-1 rounded text-center shadow-sm">
-                      <p className="text-xs text-gray-600 font-medium">Open Seat</p>
-                    </div>
-                  </div>
-                );
-              })
-            }
-
-            {/* Meeting Table Label */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="bg-white/95 px-5 py-3 rounded-xl shadow-lg border border-gray-200 backdrop-blur-sm">
-                <div className="text-center">
-                  <p className="text-lg font-bold text-gray-900 mb-1">Executive Board</p>
-                  <p className="text-sm text-blue-700 font-medium">Strategic Planning</p>
-                  <div className="mt-2 flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <p className="text-xs text-gray-600">Meeting in Session</p>
-                  </div>
-                </div>
+            {/* Status Overlay */}
+            <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <p className="text-sm font-medium text-gray-700">
+                  {activeExecutives.length} Executive{activeExecutives.length !== 1 ? 's' : ''} Present
+                </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Executive List */}
-      {mode === 'data' && executives.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Executive Team</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {executives.map((exec) => (
-                <div key={exec.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: exec.color }}
-                    >
-                      <UserCheck className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{exec.name}</p>
-                      <p className="text-sm text-gray-600">{exec.role}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{exec.shares}% shares</Badge>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => handleEditExecutive(exec)}
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => handleRemoveExecutive(exec.id)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
+      {/* Board Composition */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Board Composition
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            {/* Founder Card */}
+            <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-white" />
                 </div>
-              ))}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-gray-900">You (Founder)</p>
+                    <Badge className="bg-emerald-600 text-white">CEO & Owner</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600">Controlling interest & leadership</p>
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Usage Instructions */}
+            {/* Executive Cards */}
+            {activeExecutives.length > 0 ? (
+              <div className="space-y-3">
+                <h4 className="font-medium text-gray-700">Executive Team ({activeExecutives.length}/5)</h4>
+                {activeExecutives.map((exec, index) => {
+                  const getRoleColor = (role: string) => {
+                    const colors = {
+                      'CTO': 'bg-blue-100 text-blue-800 border-blue-200',
+                      'COO': 'bg-green-100 text-green-800 border-green-200',
+                      'CFO': 'bg-purple-100 text-purple-800 border-purple-200',
+                      'CMO': 'bg-pink-100 text-pink-800 border-pink-200',
+                      'CHRO': 'bg-orange-100 text-orange-800 border-orange-200'
+                    };
+                    return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
+                  };
+
+                  return (
+                    <div key={exec.id} className={`p-3 border rounded-lg ${getRoleColor(exec.role)}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                            style={{ backgroundColor: exec.color }}
+                          >
+                            {exec.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <div>
+                            <p className="font-semibold">{exec.name}</p>
+                            <p className="text-sm opacity-75">{exec.role}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">{exec.shares}%</p>
+                          <p className="text-xs opacity-75">shares</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-gray-500">
+                <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="font-medium">No executives hired yet</p>
+                <p className="text-sm">Hire executives from Team Management to populate the board</p>
+              </div>
+            )}
+
+            {/* Summary Stats */}
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-600">{activeExecutives.length + 1}</p>
+                <p className="text-xs text-gray-600">Total Members</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-600">
+                  {activeExecutives.reduce((sum, exec) => sum + exec.shares, 0)}%
+                </p>
+                <p className="text-xs text-gray-600">Executive Shares</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-purple-600">{5 - activeExecutives.length}</p>
+                <p className="text-xs text-gray-600">Open Positions</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Professional Features */}
       <Card>
         <CardContent className="p-4">
-          <div className="text-sm text-gray-600 space-y-2">
-            <p><strong>Quick Demo Mode:</strong> Use the slider to simulate different team sizes</p>
-            <p><strong>Team Data Mode:</strong> Add, edit, and manage your actual executive team</p>
-            <p><strong>Export:</strong> Download the meeting room visualization as a high-resolution PNG</p>
-            <p><strong>Founder Position:</strong> Always shown at the bottom as the company owner</p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-gray-700">Meeting Room Features</h4>
+              <Button size="sm" variant="outline" onClick={exportToPNG}>
+                <Download className="w-4 h-4 mr-2" />
+                Export PNG
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div>
+                <p><strong>Professional 3D Models:</strong> Dynamic meeting rooms (0-5 executives)</p>
+                <p><strong>Interactive View:</strong> Rotate, zoom, and explore the boardroom</p>
+              </div>
+              <div>
+                <p><strong>Team Integration:</strong> Automatically syncs with hired executives</p>
+                <p><strong>Real-time Updates:</strong> Board composition updates as team changes</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
