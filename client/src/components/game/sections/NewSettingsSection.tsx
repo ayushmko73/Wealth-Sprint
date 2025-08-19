@@ -499,24 +499,24 @@ const NewSettingsSection: React.FC = () => {
 
   return (
     <div className="space-y-0">
-      {/* Header - Blue background inspired by Banking/Bonds/Stocks sections */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      {/* Header - White background with black text */}
+      <div className="bg-white text-black border-b border-gray-200">
         {/* Header Content */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
             <div>
               <h1 className="text-lg font-bold">Settings</h1>
-              <p className="text-blue-100 text-xs">Customize your Wealth Sprint experience</p>
+              <p className="text-gray-600 text-xs">Customize your Wealth Sprint experience</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-blue-200">Version</p>
-            <p className="text-sm font-bold text-white">v4.0</p>
+            <p className="text-xs text-gray-600">Version</p>
+            <p className="text-sm font-bold text-black">v4.0</p>
           </div>
         </div>
         
-        {/* Menu Navigation - Horizontal categories with blue background */}
+        {/* Menu Navigation - Horizontal categories with white background */}
         <div className="px-4 pb-4">
           <div className="flex gap-2 overflow-x-auto">
             {menuTabs.map((tab) => (
@@ -525,8 +525,8 @@ const NewSettingsSection: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-white text-blue-600 shadow-md'
-                    : 'bg-blue-700 text-white hover:bg-blue-600'
+                    ? 'bg-white text-black shadow-md border border-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
