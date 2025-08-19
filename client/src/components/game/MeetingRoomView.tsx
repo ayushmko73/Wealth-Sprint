@@ -40,27 +40,54 @@ interface ChatMessage {
   isSystem?: boolean;
 }
 
-// Text-to-Speech utility function
-const speakText = (text: string, rate: number = 0.9): Promise<void> => {
+// Enhanced Text-to-Speech utility function
+const speakText = async (text: string): Promise<void> => {
   return new Promise((resolve) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      // Cancel any existing speech
+      // Cancel any existing speech first
       window.speechSynthesis.cancel();
       
-      // Wait a bit for cancellation to complete
+      // Wait a moment for cancellation to complete, then start new speech
       setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = rate;
-        utterance.pitch = 1.0;
-        utterance.volume = 0.8;
-        utterance.onend = () => resolve();
-        utterance.onerror = () => resolve(); // Resolve on error too
-        
-        window.speechSynthesis.speak(utterance);
-      }, 100);
+        try {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.85; // Slightly slower for clarity
+          utterance.pitch = 1.0;
+          utterance.volume = 0.9; // Slightly louder
+          
+          // Set a professional voice if available
+          const voices = window.speechSynthesis.getVoices();
+          const professionalVoice = voices.find(voice => 
+            voice.name.includes('Microsoft') || 
+            voice.name.includes('Google') ||
+            voice.lang.includes('en-US')
+          );
+          if (professionalVoice) {
+            utterance.voice = professionalVoice;
+          }
+          
+          utterance.onend = () => {
+            console.log('✓ Speech completed:', text.slice(0, 30) + '...');
+            resolve();
+          };
+          
+          utterance.onerror = (error) => {
+            console.error('Speech synthesis error:', error);
+            resolve(); // Still resolve to continue the flow
+          };
+          
+          console.log('🎤 Speaking:', text.slice(0, 30) + '...');
+          window.speechSynthesis.speak(utterance);
+          
+        } catch (error) {
+          console.error('Speech synthesis failed:', error);
+          resolve();
+        }
+      }, 200); // Increased delay for more reliable cancellation
     } else {
-      // Fallback - just resolve after a short delay to simulate speech
-      setTimeout(resolve, 1000);
+      console.log('Speech synthesis not available, simulating...');
+      // Simulate speech duration based on text length
+      setTimeout(resolve, Math.max(1000, text.length * 50));
     }
   });
 };
@@ -124,7 +151,7 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
       
       {/* CEO/Founder position (positioned at the head of the table - top center) */}
       <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-4 border-yellow-400 shadow-xl flex items-center justify-center text-white font-bold text-sm"
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-yellow-400 shadow-lg flex items-center justify-center text-white font-bold text-sm"
         style={{
           left: '50%',
           top: '25%',
@@ -133,7 +160,7 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
         }}
         title="You - CEO & Founder"
       >
-        <Crown className="w-7 h-7" />
+        <Crown className="w-5 h-5" />
       </div>
     </div>
   );
@@ -253,9 +280,7 @@ const MeetingChatInterface: React.FC<{
             {executives.length} Officers Present
           </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="w-4 h-4" />
-        </Button>
+
       </div>
 
       {/* Chat Messages */}
@@ -418,21 +443,20 @@ const MeetingRoomView: React.FC = () => {
 
   // Calculate seat positions in a circle around the table
   const calculateSeatPosition = (index: number, total: number, radius: number) => {
-    // Distribute executives evenly around the circle, avoiding the bottom position (reserved for founder)
-    const totalPositions = Math.max(5, total); // Always plan for 5 positions
-    const angleStep = (2 * Math.PI) / totalPositions;
+    // Create fixed positions around the table, avoiding top center (reserved for founder)
+    const fixedPositions = [
+      { angle: Math.PI / 6, label: 'top-right' },        // 30 degrees
+      { angle: Math.PI / 2, label: 'right' },            // 90 degrees  
+      { angle: 5 * Math.PI / 6, label: 'bottom-right' }, // 150 degrees
+      { angle: 7 * Math.PI / 6, label: 'bottom-left' },  // 210 degrees
+      { angle: 3 * Math.PI / 2, label: 'left' },         // 270 degrees
+      { angle: 11 * Math.PI / 6, label: 'top-left' }     // 330 degrees
+    ];
     
-    // Start from top and go clockwise, but skip the bottom position
-    let angle = -Math.PI / 2; // Start from top (-90 degrees)
-    
-    // Map index to actual position, skipping bottom
-    const positionMap = [0, 1, 2, 4, 3]; // Skip position 3 which would be bottom
-    const actualIndex = positionMap[index % 5];
-    
-    angle = -Math.PI / 2 + (actualIndex * angleStep);
-    
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    // Use the position based on index
+    const position = fixedPositions[index % fixedPositions.length];
+    const x = Math.cos(position.angle) * radius;
+    const y = Math.sin(position.angle) * radius;
     
     return { x, y };
   };
@@ -447,7 +471,12 @@ const MeetingRoomView: React.FC = () => {
     }
     
     // Stop background music using the audio store
-    stopBackgroundMusic();
+    try {
+      stopBackgroundMusic();
+      console.log('Background music stopped successfully');
+    } catch (error) {
+      console.error('Failed to stop background music:', error);
+    }
     setIsMeetingActive(true);
   };
 
