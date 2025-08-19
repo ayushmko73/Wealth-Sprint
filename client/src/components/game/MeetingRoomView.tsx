@@ -1,4 +1,4 @@
-import React, { useState, useRef, Suspense } from 'react';
+import React, { useState, useRef, Suspense, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,9 +14,14 @@ import {
   Download, 
   User,
   Crown,
-  UserCheck
+  UserCheck,
+  MessageCircle,
+  Send,
+  X,
+  Play
 } from 'lucide-react';
 import { useTeamManagement } from '@/lib/stores/useTeamManagement';
+import { useAudio } from '@/lib/stores/useAudio';
 import html2canvas from 'html2canvas';
 
 interface Executive {
@@ -26,6 +31,30 @@ interface Executive {
   role: string;
   color: string;
 }
+
+interface ChatMessage {
+  id: string;
+  sender: string;
+  message: string;
+  timestamp: Date;
+  isSystem?: boolean;
+}
+
+// Text-to-Speech utility function
+const speakText = (text: string, rate: number = 0.9): Promise<void> => {
+  return new Promise((resolve) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = rate;
+      utterance.pitch = 1.0;
+      utterance.volume = 0.8;
+      utterance.onend = () => resolve();
+      speechSynthesis.speak(utterance);
+    } else {
+      resolve();
+    }
+  });
+};
 
 const executiveColors = [
   '#3B82F6', // Blue
@@ -101,19 +130,254 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
   );
 };
 
+// Meeting Chat Component
+const MeetingChatInterface: React.FC<{ 
+  executives: Executive[], 
+  onClose: () => void,
+  isActive: boolean 
+}> = ({ executives, onClose, isActive }) => {
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isGreeting, setIsGreeting] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isActive && executives.length > 0 && chatMessages.length === 0) {
+      startMeetingGreetings();
+    }
+  }, [isActive, executives]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const startMeetingGreetings = async () => {
+    setIsGreeting(true);
+    
+    // Add system message
+    const welcomeMessage: ChatMessage = {
+      id: 'welcome',
+      sender: 'System',
+      message: 'Meeting started. Officers are joining...',
+      timestamp: new Date(),
+      isSystem: true
+    };
+    setChatMessages([welcomeMessage]);
+
+    // Greetings from each executive
+    for (let i = 0; i < executives.length; i++) {
+      const exec = executives[i];
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const greeting: ChatMessage = {
+        id: `greeting-${exec.id}`,
+        sender: exec.name,
+        message: `Hello Sir! ${exec.name}, ${exec.role} reporting for duty.`,
+        timestamp: new Date()
+      };
+      
+      setChatMessages(prev => [...prev, greeting]);
+      await speakText(greeting.message);
+    }
+
+    // Final agenda question
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const agendaMessage: ChatMessage = {
+      id: 'agenda',
+      sender: executives[0]?.name || 'Executive',
+      message: "Sir, what's today's agenda for the meeting?",
+      timestamp: new Date()
+    };
+    
+    setChatMessages(prev => [...prev, agendaMessage]);
+    await speakText(agendaMessage.message);
+    setIsGreeting(false);
+  };
+
+  const sendMessage = () => {
+    if (inputMessage.trim()) {
+      const newMessage: ChatMessage = {
+        id: `user-${Date.now()}`,
+        sender: 'CEO (You)',
+        message: inputMessage,
+        timestamp: new Date()
+      };
+      
+      setChatMessages(prev => [...prev, newMessage]);
+      setInputMessage('');
+      
+      // Simulate executive response
+      setTimeout(() => {
+        const responses = [
+          "Understood, sir. We'll implement this immediately.",
+          "That's a great point, sir. Let me take note of that.",
+          "Excellent strategy, sir. I'll coordinate with my team.",
+          "Yes sir, we can definitely work on that.",
+          "Good thinking, sir. This aligns with our goals."
+        ];
+        
+        const randomExec = executives[Math.floor(Math.random() * executives.length)];
+        const response = responses[Math.floor(Math.random() * responses.length)];
+        
+        const replyMessage: ChatMessage = {
+          id: `reply-${Date.now()}`,
+          sender: randomExec.name,
+          message: response,
+          timestamp: new Date()
+        };
+        
+        setChatMessages(prev => [...prev, replyMessage]);
+        speakText(response);
+      }, 2000);
+    }
+  };
+
+  return (
+    <div className="h-96 flex flex-col">
+      {/* Chat Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-blue-50">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-blue-600" />
+          <h3 className="font-semibold text-blue-800">Executive Meeting</h3>
+          <Badge variant="outline" className="bg-green-100 text-green-700">
+            {executives.length} Officers Present
+          </Badge>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
+
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+        {chatMessages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex ${msg.sender === 'CEO (You)' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                msg.isSystem
+                  ? 'bg-gray-200 text-gray-700 text-center mx-auto'
+                  : msg.sender === 'CEO (You)'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-800 shadow-sm border'
+              }`}
+            >
+              <div className="flex flex-col">
+                {!msg.isSystem && (
+                  <div className="text-xs opacity-70 mb-1">
+                    {msg.sender}
+                  </div>
+                )}
+                <div className="text-sm">{msg.message}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* Chat Input */}
+      <div className="p-4 border-t bg-white">
+        <div className="flex gap-2">
+          <Input
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder={isGreeting ? "Officers are greeting..." : "Type your message..."}
+            disabled={isGreeting}
+            className="flex-1"
+          />
+          <Button 
+            onClick={sendMessage} 
+            disabled={isGreeting || !inputMessage.trim()}
+            size="sm"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MeetingRoomView: React.FC = () => {
-  const { teamMembers } = useTeamManagement();
+  const { teamMembers, addTeamMember } = useTeamManagement();
+  const { stopBackgroundMusic } = useAudio();
   const [mode, setMode] = useState<'team' | 'simulation'>('team');
   const [sliderValue, setSliderValue] = useState([0]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingExec, setEditingExec] = useState<Executive | null>(null);
   const [newExec, setNewExec] = useState({ name: '', shares: 3, role: '', color: '#3B82F6' });
+  const [isMeetingActive, setIsMeetingActive] = useState(false);
   const meetingRoomRef = useRef<HTMLDivElement>(null);
+
+  // Initialize with 3 executive officers for testing
+  useEffect(() => {
+    const initializeExecutives = () => {
+      const existingExecutives = teamMembers.filter(member => 
+        member.role && ['CTO', 'COO', 'CFO', 'CMO', 'CHRO'].includes(member.role)
+      );
+
+      if (existingExecutives.length < 3) {
+        const executiveRoles = [
+          { name: 'Sarah Johnson', role: 'CTO', salary: 180000 },
+          { name: 'Michael Chen', role: 'COO', salary: 170000 },
+          { name: 'Emma Rodriguez', role: 'CFO', salary: 165000 }
+        ];
+
+        executiveRoles.forEach((exec, index) => {
+          if (!teamMembers.find(member => member.role === exec.role)) {
+            addTeamMember({
+              id: `exec-${exec.role.toLowerCase()}`,
+              name: exec.name,
+              role: exec.role,
+              department: 'Executive',
+              salary: exec.salary,
+              experience: 8 + index,
+              avatar: `👔`,
+              stats: {
+                loyalty: 85 + (index * 5),
+                impact: 80 + (index * 3),
+                energy: 90,
+                mood: 'motivated'
+              },
+              joinDate: new Date(),
+              skills: ['Leadership', 'Strategic Planning', 'Team Management'],
+              achievements: [`Senior ${exec.role}`, 'Strategic Leadership'],
+              personality: {
+                type: 'Professional Executive',
+                motivationTriggers: ['Company Growth', 'Strategic Success'],
+                weakSpots: ['Perfectionism', 'High Pressure']
+              },
+              emotionalTrait: 'Calm under pressure',
+              loopVulnerability: 'none',
+              clarityContribution: 80,
+              hiddenDynamics: {
+                trustWithFounder: 85,
+                creativeFulfillment: 75,
+                burnoutRisk: 20,
+                isHidingStruggles: false
+              },
+              seniority: 'Chief',
+              status: 'Neutral',
+              assignedSector: '',
+              promotionHistory: [],
+              isCEO: false
+            });
+          }
+        });
+      }
+    };
+
+    initializeExecutives();
+  }, [teamMembers, addTeamMember]);
 
   // Convert team members to executives for display
   const actualExecutives: Executive[] = teamMembers
     .filter(member => member.role && ['CTO', 'COO', 'CFO', 'CMO', 'CHRO'].includes(member.role))
-    .slice(0, 5) // Maximum 5 executives
+    .slice(0, 3) // Maximum 3 executives as requested
     .map((member, index) => ({
       id: member.id,
       name: member.name,
@@ -131,8 +395,7 @@ const MeetingRoomView: React.FC = () => {
     color: executiveColors[index % executiveColors.length]
   }));
 
-  // Colors for different executives
-  const executiveColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+
 
   // Calculate seat positions in a circle around the table
   const calculateSeatPosition = (index: number, total: number, radius: number) => {
@@ -157,6 +420,23 @@ const MeetingRoomView: React.FC = () => {
 
   // Determine which executives to show based on mode
   const activeExecutives = mode === 'team' ? actualExecutives : simulationExecutives;
+
+  const startMeeting = () => {
+    if (activeExecutives.length === 0) {
+      alert('No executives available for the meeting. Please hire executives from Team Management first.');
+      return;
+    }
+    
+    // Stop background music
+    stopBackgroundMusic();
+    setIsMeetingActive(true);
+  };
+
+  const endMeeting = () => {
+    // Stop any ongoing speech synthesis
+    speechSynthesis.cancel();
+    setIsMeetingActive(false);
+  };
 
   const handleAddExecutive = () => {
     // This feature is disabled when using team mode - executives come from team management
@@ -211,23 +491,63 @@ const MeetingRoomView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Start Meeting Button - positioned below header and above image */}
+      <Card>
+        <CardContent className="p-4 text-center">
+          {!isMeetingActive ? (
+            <Button 
+              onClick={startMeeting}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+              disabled={activeExecutives.length === 0}
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Start Meeting
+            </Button>
+          ) : (
+            <Button 
+              onClick={endMeeting}
+              variant="destructive"
+              size="lg"
+              className="px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+            >
+              <X className="w-5 h-5 mr-2" />
+              End Meeting
+            </Button>
+          )}
+          
+          {activeExecutives.length === 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              No executives available. Please check Team Management section.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Professional Meeting Room Visualization */}
+      {/* Meeting Room Visualization or Chat Interface */}
       <Card>
         <CardContent className="p-6">
-          <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
-            <MeetingRoom2D executives={activeExecutives} />
-            
-            {/* Status Overlay */}
-            <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="text-sm font-medium text-gray-700">
-                  {activeExecutives.length} Executive{activeExecutives.length !== 1 ? 's' : ''} Present
-                </p>
+          {isMeetingActive ? (
+            <MeetingChatInterface 
+              executives={activeExecutives} 
+              onClose={endMeeting}
+              isActive={isMeetingActive}
+            />
+          ) : (
+            <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
+              <MeetingRoom2D executives={activeExecutives} />
+              
+              {/* Status Overlay */}
+              <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <p className="text-sm font-medium text-gray-700">
+                    {activeExecutives.length} Executive{activeExecutives.length !== 1 ? 's' : ''} Present
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
