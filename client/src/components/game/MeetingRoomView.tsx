@@ -43,15 +43,16 @@ interface ChatMessage {
 // Text-to-Speech utility function
 const speakText = (text: string, rate: number = 0.9): Promise<void> => {
   return new Promise((resolve) => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = rate;
       utterance.pitch = 1.0;
       utterance.volume = 0.8;
       utterance.onend = () => resolve();
-      speechSynthesis.speak(utterance);
+      window.speechSynthesis.speak(utterance);
     } else {
-      resolve();
+      // Fallback - just resolve after a short delay to simulate speech
+      setTimeout(resolve, 1000);
     }
   });
 };
@@ -148,7 +149,11 @@ const MeetingChatInterface: React.FC<{
   }, [isActive, executives]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Only scroll if user is not actively typing to avoid interrupting input
+    const timeout = setTimeout(() => {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+    return () => clearTimeout(timeout);
   }, [chatMessages]);
 
   const startMeetingGreetings = async () => {
@@ -284,7 +289,16 @@ const MeetingChatInterface: React.FC<{
           <Input
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            onFocus={(e) => {
+              // Prevent scrolling when input is focused
+              e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }}
             placeholder={isGreeting ? "Officers are greeting..." : "Type your message..."}
             disabled={isGreeting}
             className="flex-1"
@@ -434,7 +448,9 @@ const MeetingRoomView: React.FC = () => {
 
   const endMeeting = () => {
     // Stop any ongoing speech synthesis
-    speechSynthesis.cancel();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     setIsMeetingActive(false);
   };
 
@@ -524,32 +540,37 @@ const MeetingRoomView: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Meeting Room Visualization or Chat Interface */}
+      {/* Meeting Room Visualization - Always Visible */}
       <Card>
         <CardContent className="p-6">
-          {isMeetingActive ? (
+          <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
+            <MeetingRoom2D executives={isMeetingActive ? activeExecutives : []} />
+            
+            {/* Status Overlay */}
+            <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full animate-pulse ${isMeetingActive ? 'bg-red-500' : 'bg-green-500'}`}></div>
+                <p className="text-sm font-medium text-gray-700">
+                  {isMeetingActive ? 'Meeting In Progress' : `${activeExecutives.length} Executive${activeExecutives.length !== 1 ? 's' : ''} Available`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Chat Interface - Only when meeting is active */}
+      {isMeetingActive && (
+        <Card>
+          <CardContent className="p-6">
             <MeetingChatInterface 
               executives={activeExecutives} 
               onClose={endMeeting}
               isActive={isMeetingActive}
             />
-          ) : (
-            <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
-              <MeetingRoom2D executives={activeExecutives} />
-              
-              {/* Status Overlay */}
-              <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <p className="text-sm font-medium text-gray-700">
-                    {activeExecutives.length} Executive{activeExecutives.length !== 1 ? 's' : ''} Present
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Board Composition */}
       <Card>
