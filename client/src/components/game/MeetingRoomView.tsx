@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
@@ -31,7 +31,8 @@ const MeetingRoomView: React.FC = () => {
   const { teamMembers } = useTeamManagement();
   const [executives, setExecutives] = useState<Executive[]>([
     { id: '1', name: 'Sarah Chen', shares: 4, role: 'CTO', color: '#3B82F6' },
-    { id: '2', name: 'Marcus Rodriguez', shares: 3, role: 'COO', color: '#10B981' }
+    { id: '2', name: 'Marcus Rodriguez', shares: 3, role: 'COO', color: '#10B981' },
+    { id: '3', name: 'Jennifer Liu', shares: 3, role: 'CFO', color: '#8B5CF6' }
   ]);
   const [mode, setMode] = useState<'slider' | 'data'>('data');
   const [sliderValue, setSliderValue] = useState([2]);
@@ -43,12 +44,20 @@ const MeetingRoomView: React.FC = () => {
   // Colors for different executives
   const executiveColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
-  // Calculate seat positions in a circle
+  // Calculate seat positions in a circle around the table
   const calculateSeatPosition = (index: number, total: number, radius: number) => {
-    // Start from bottom (270 degrees) and go clockwise, skip bottom position for founder
-    const startAngle = -Math.PI / 2; // -90 degrees (bottom)
-    const angleStep = (2 * Math.PI) / (total + 1); // +1 to account for founder seat
-    const angle = startAngle + (index + 1) * angleStep; // +1 to skip founder position
+    // Distribute executives evenly around the circle, avoiding the bottom position (reserved for founder)
+    const totalPositions = Math.max(5, total); // Always plan for 5 positions
+    const angleStep = (2 * Math.PI) / totalPositions;
+    
+    // Start from top and go clockwise, but skip the bottom position
+    let angle = -Math.PI / 2; // Start from top (-90 degrees)
+    
+    // Map index to actual position, skipping bottom
+    const positionMap = [0, 1, 2, 4, 3]; // Skip position 3 which would be bottom
+    const actualIndex = positionMap[index % 5];
+    
+    angle = -Math.PI / 2 + (actualIndex * angleStep);
     
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
@@ -181,6 +190,9 @@ const MeetingRoomView: React.FC = () => {
                     <DialogTitle>
                       {editingExec ? 'Edit Executive' : 'Add New Executive'}
                     </DialogTitle>
+                    <DialogDescription>
+                      {editingExec ? 'Modify the executive details below.' : 'Add a new executive to your board meeting.'}
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
@@ -236,105 +248,130 @@ const MeetingRoomView: React.FC = () => {
         <CardContent className="p-6">
           <div 
             ref={meetingRoomRef}
-            className="relative w-full max-w-md mx-auto aspect-square bg-gray-50 rounded-lg overflow-hidden"
+            className="relative w-full max-w-lg mx-auto aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden shadow-lg"
+            style={{
+              backgroundImage: `url('/meeting-room.webp')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
           >
-            <svg width="400" height="400" className="w-full h-full">
-              {/* Room Background */}
-              <circle 
-                cx={centerX} 
-                cy={centerY} 
-                r="180" 
-                fill="#f1f5f9" 
-                stroke="#e2e8f0" 
-                strokeWidth="2"
-              />
-              
-              {/* Meeting Table */}
-              <circle 
-                cx={centerX} 
-                cy={centerY} 
-                r="80" 
-                fill="#d97706" 
-                stroke="#92400e" 
-                strokeWidth="3"
-              />
-              
-              {/* Table Center Hole */}
-              <circle 
-                cx={centerX} 
-                cy={centerY} 
-                r="25" 
-                fill="#374151" 
-                stroke="#1f2937" 
-                strokeWidth="2"
-              />
-
-              {/* Founder Seat (Always at bottom) */}
-              <g transform={`translate(${centerX}, ${centerY + radius + 50})`}>
-                {/* Chair */}
-                <rect x="-25" y="-15" width="50" height="30" rx="5" fill="#1f2937" />
-                {/* Person */}
-                <circle cx="0" cy="-25" r="15" fill="#fbbf24" />
-                {/* Badge */}
-                <rect x="-20" y="-45" width="40" height="12" rx="6" fill="#059669" />
-                <text x="0" y="-37" textAnchor="middle" fontSize="8" fill="white" fontWeight="bold">
+            <div className="absolute inset-0 bg-black/10 rounded-xl"></div>
+            
+            {/* Founder Position - Bottom Center */}
+            <div 
+              className="absolute flex flex-col items-center transform -translate-x-1/2"
+              style={{ 
+                left: '50%', 
+                bottom: '5%'
+              }}
+            >
+              <div className="relative mb-1">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 shadow-2xl border-4 border-white flex items-center justify-center">
+                  <div className="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center">
+                    <Crown className="w-7 h-7 text-white" />
+                  </div>
+                </div>
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-600 to-green-700 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg border-2 border-white">
                   FOUNDER
-                </text>
-                {/* Name */}
-                <text x="0" y="20" textAnchor="middle" fontSize="10" fill="#374151" fontWeight="bold">
-                  You
-                </text>
-              </g>
+                </div>
+              </div>
+              <div className="bg-white/96 px-4 py-2 rounded-lg shadow-xl border border-gray-200 backdrop-blur-sm">
+                <p className="text-sm font-bold text-gray-900">You</p>
+                <p className="text-xs font-medium text-emerald-700">CEO & Owner</p>
+              </div>
+            </div>
 
-              {/* Executive Seats */}
-              {activeExecutives.map((exec, index) => {
-                const position = calculateSeatPosition(index, activeExecutives.length, radius);
-                const seatX = centerX + position.x;
-                const seatY = centerY + position.y;
+            {/* Executive Positions */}
+            {activeExecutives.map((exec, index) => {
+              const position = calculateSeatPosition(index, activeExecutives.length, 130);
+              const seatX = 50 + (position.x / 300) * 100; // Convert to percentage with better scaling
+              const seatY = 50 + (position.y / 300) * 100; // Convert to percentage with better scaling
+              
+              // Professional avatar styles based on role
+              const getAvatarStyle = (role: string) => {
+                const styles = {
+                  'CTO': { bg: 'from-blue-500 to-blue-700', icon: 'tech' },
+                  'COO': { bg: 'from-green-500 to-green-700', icon: 'ops' },
+                  'CFO': { bg: 'from-purple-500 to-purple-700', icon: 'finance' },
+                  'CMO': { bg: 'from-pink-500 to-pink-700', icon: 'marketing' },
+                  'CHRO': { bg: 'from-orange-500 to-orange-700', icon: 'hr' }
+                };
+                return styles[role as keyof typeof styles] || { bg: 'from-gray-500 to-gray-700', icon: 'exec' };
+              };
+
+              const avatarStyle = getAvatarStyle(exec.role);
+              
+              return (
+                <div 
+                  key={exec.id}
+                  className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+                  style={{ 
+                    left: `${seatX}%`, 
+                    top: `${seatY}%`
+                  }}
+                >
+                  <div className="relative mb-1">
+                    <div 
+                      className={`w-16 h-16 rounded-full shadow-xl border-4 border-white bg-gradient-to-br ${avatarStyle.bg} flex items-center justify-center`}
+                    >
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg border-2 border-white">
+                      {exec.shares}%
+                    </div>
+                  </div>
+                  <div className="bg-white/96 px-3 py-2 rounded-lg shadow-lg border border-gray-200 text-center min-w-max backdrop-blur-sm">
+                    <p className="text-sm font-bold text-gray-900">{exec.name.split(' ')[0]}</p>
+                    <p className="text-xs font-medium text-blue-700">{exec.role}</p>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Empty Seat Placeholders */}
+            {mode === 'data' && activeExecutives.length < 5 && 
+              Array.from({ length: 5 - activeExecutives.length }).map((_, index) => {
+                const totalIndex = activeExecutives.length + index;
+                const position = calculateSeatPosition(totalIndex, 5, 130);
+                const seatX = 50 + (position.x / 300) * 100;
+                const seatY = 50 + (position.y / 300) * 100;
                 
                 return (
-                  <g key={exec.id} transform={`translate(${seatX}, ${seatY})`}>
-                    {/* Chair */}
-                    <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#1f2937" />
-                    {/* Person */}
-                    <circle cx="0" cy="-20" r="12" fill={exec.color} />
-                    {/* Shares Badge */}
-                    <rect x="-15" y="-35" width="30" height="10" rx="5" fill="#3b82f6" />
-                    <text x="0" y="-28" textAnchor="middle" fontSize="7" fill="white" fontWeight="bold">
-                      {exec.shares}%
-                    </text>
-                    {/* Name */}
-                    <text x="0" y="15" textAnchor="middle" fontSize="8" fill="#374151" fontWeight="bold">
-                      {exec.name}
-                    </text>
-                    {/* Role */}
-                    <text x="0" y="25" textAnchor="middle" fontSize="7" fill="#6b7280">
-                      {exec.role}
-                    </text>
-                  </g>
+                  <div 
+                    key={`empty-${index}`}
+                    className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 opacity-50 hover:opacity-80 transition-opacity cursor-pointer"
+                    style={{ 
+                      left: `${seatX}%`, 
+                      top: `${seatY}%`
+                    }}
+                  >
+                    <div className="w-14 h-14 rounded-full border-3 border-dashed border-gray-400 bg-white/70 flex items-center justify-center mb-1 hover:border-blue-400 transition-colors">
+                      <Plus className="w-6 h-6 text-gray-500" />
+                    </div>
+                    <div className="bg-white/80 px-2 py-1 rounded text-center shadow-sm">
+                      <p className="text-xs text-gray-600 font-medium">Open Seat</p>
+                    </div>
+                  </div>
                 );
-              })}
+              })
+            }
 
-              {/* Empty Seat Placeholders (when in data mode and fewer than 5 executives) */}
-              {mode === 'data' && activeExecutives.length < 5 && 
-                Array.from({ length: 5 - activeExecutives.length }).map((_, index) => {
-                  const totalIndex = activeExecutives.length + index;
-                  const position = calculateSeatPosition(totalIndex, 5, radius);
-                  const seatX = centerX + position.x;
-                  const seatY = centerY + position.y;
-                  
-                  return (
-                    <g key={`empty-${index}`} transform={`translate(${seatX}, ${seatY})`} opacity="0.3">
-                      {/* Empty Chair */}
-                      <rect x="-20" y="-12" width="40" height="24" rx="4" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1" strokeDasharray="3,3" />
-                      <text x="0" y="0" textAnchor="middle" fontSize="10" fill="#9ca3af">
-                        Empty
-                      </text>
-                    </g>
-                  );
-                })
-              }
-            </svg>
+            {/* Meeting Table Label */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="bg-white/95 px-5 py-3 rounded-xl shadow-lg border border-gray-200 backdrop-blur-sm">
+                <div className="text-center">
+                  <p className="text-lg font-bold text-gray-900 mb-1">Executive Board</p>
+                  <p className="text-sm text-blue-700 font-medium">Strategic Planning</p>
+                  <div className="mt-2 flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <p className="text-xs text-gray-600">Meeting in Session</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
