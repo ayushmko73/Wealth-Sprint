@@ -1,6 +1,4 @@
 import React, { useState, useRef, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,12 +35,70 @@ const executiveColors = [
   '#EF4444'  // Red
 ];
 
-// 3D Meeting Room Component
-const MeetingRoom3D: React.FC<{ executiveCount: number }> = ({ executiveCount }) => {
-  const modelPath = `/meeting-room-${Math.min(executiveCount, 5)}.glb`;
-  const { scene } = useGLTF(modelPath);
-  
-  return <primitive object={scene} scale={2.5} position={[0, -2, 0]} />;
+// 2D Meeting Room Component with Image
+const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) => {
+  // Calculate positions for executives around the table based on actual chair positions in image
+  const calculatePosition = (index: number, total: number) => {
+    // Predefined positions matching the chairs in the meeting room image
+    const chairPositions = [
+      { x: 50, y: 25 },   // Top center
+      { x: 75, y: 35 },   // Top right
+      { x: 85, y: 50 },   // Right side
+      { x: 75, y: 65 },   // Bottom right  
+      { x: 25, y: 65 },   // Bottom left
+      { x: 15, y: 50 },   // Left side
+      { x: 25, y: 35 },   // Top left
+    ];
+    
+    // Select position based on index, cycling through available positions
+    const position = chairPositions[index % chairPositions.length];
+    return { x: `${position.x}%`, y: `${position.y}%` };
+  };
+
+  return (
+    <div className="relative w-full h-full">
+      {/* Meeting room image */}
+      <img 
+        src="/images/meeting-room-top-view.webp" 
+        alt="Meeting room top view"
+        className="w-full h-full object-contain rounded-lg"
+      />
+      
+      {/* Executive avatars positioned around the table */}
+      {executives.map((exec, index) => {
+        const position = calculatePosition(index, executives.length);
+        return (
+          <div
+            key={exec.id}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm bg-opacity-90 hover:scale-110 transition-transform cursor-pointer"
+            style={{
+              left: position.x,
+              top: position.y,
+              backgroundColor: exec.color,
+              zIndex: 10
+            }}
+            title={`${exec.name} - ${exec.role}`}
+          >
+            {exec.name.split(' ').map(n => n[0]).join('')}
+          </div>
+        );
+      })}
+      
+      {/* CEO/Founder position (positioned at the head of the table) */}
+      <div
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border-4 border-yellow-400 shadow-xl flex items-center justify-center text-white font-bold text-sm"
+        style={{
+          left: '50%',
+          top: '80%',
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
+          zIndex: 15
+        }}
+        title="You - CEO & Founder"
+      >
+        <Crown className="w-6 h-6" />
+      </div>
+    </div>
+  );
 };
 
 const MeetingRoomView: React.FC = () => {
@@ -275,28 +331,11 @@ const MeetingRoomView: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Professional 3D Meeting Room Visualization */}
+      {/* Professional Meeting Room Visualization */}
       <Card>
         <CardContent className="p-6">
-          <div ref={meetingRoomRef} className="w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
-            <Canvas camera={{ position: [0, 5, 8], fov: 50 }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[10, 10, 5]} intensity={1} />
-              <pointLight position={[-10, -10, -5]} intensity={0.5} />
-              
-              <Suspense fallback={null}>
-                <MeetingRoom3D executiveCount={activeExecutives.length} />
-              </Suspense>
-              
-              <OrbitControls 
-                enablePan={false} 
-                enableZoom={true} 
-                enableRotate={true}
-                maxPolarAngle={Math.PI / 2}
-                minDistance={5}
-                maxDistance={15}
-              />
-            </Canvas>
+          <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
+            <MeetingRoom2D executives={activeExecutives} />
             
             {/* Status Overlay */}
             <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
