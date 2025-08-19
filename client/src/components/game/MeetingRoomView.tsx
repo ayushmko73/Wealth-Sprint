@@ -44,12 +44,20 @@ interface ChatMessage {
 const speakText = (text: string, rate: number = 0.9): Promise<void> => {
   return new Promise((resolve) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = rate;
-      utterance.pitch = 1.0;
-      utterance.volume = 0.8;
-      utterance.onend = () => resolve();
-      window.speechSynthesis.speak(utterance);
+      // Cancel any existing speech
+      window.speechSynthesis.cancel();
+      
+      // Wait a bit for cancellation to complete
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = rate;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve(); // Resolve on error too
+        
+        window.speechSynthesis.speak(utterance);
+      }, 100);
     } else {
       // Fallback - just resolve after a short delay to simulate speech
       setTimeout(resolve, 1000);
@@ -114,18 +122,18 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
         );
       })}
       
-      {/* CEO/Founder position (positioned at the head of the table) */}
+      {/* CEO/Founder position (positioned at the head of the table - top center) */}
       <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border-4 border-yellow-400 shadow-xl flex items-center justify-center text-white font-bold text-sm"
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-4 border-yellow-400 shadow-xl flex items-center justify-center text-white font-bold text-sm"
         style={{
           left: '50%',
-          top: '80%',
+          top: '25%',
           background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
           zIndex: 15
         }}
         title="You - CEO & Founder"
       >
-        <Crown className="w-6 h-6" />
+        <Crown className="w-7 h-7" />
       </div>
     </div>
   );
@@ -148,13 +156,10 @@ const MeetingChatInterface: React.FC<{
     }
   }, [isActive, executives]);
 
-  useEffect(() => {
-    // Only scroll if user is not actively typing to avoid interrupting input
-    const timeout = setTimeout(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, [chatMessages]);
+  // Disable auto-scroll behavior completely
+  // useEffect(() => {
+  //   chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // }, [chatMessages]);
 
   const startMeetingGreetings = async () => {
     setIsGreeting(true);
@@ -296,8 +301,8 @@ const MeetingChatInterface: React.FC<{
               }
             }}
             onFocus={(e) => {
-              // Prevent scrolling when input is focused
-              e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              // Prevent automatic scrolling when input is focused
+              e.preventDefault();
             }}
             placeholder={isGreeting ? "Officers are greeting..." : "Type your message..."}
             disabled={isGreeting}
@@ -441,7 +446,7 @@ const MeetingRoomView: React.FC = () => {
       return;
     }
     
-    // Stop background music
+    // Stop background music using the audio store
     stopBackgroundMusic();
     setIsMeetingActive(true);
   };
