@@ -356,15 +356,15 @@ const NewSettingsSection: React.FC = () => {
                 <h4 className="font-medium text-black">Interface Click Sound</h4>
                 <p className="text-sm text-gray-600">Sound for button clicks and interactions</p>
               </div>
-              <Select defaultValue="subtle">
-                <SelectTrigger className="w-32">
-                  <SelectValue />
+              <Select defaultValue="futuristic">
+                <SelectTrigger className="w-48 h-10 bg-white border-2 border-blue-200 rounded-lg shadow-sm hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                  <SelectValue className="text-blue-700 font-medium" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="off">Off</SelectItem>
-                  <SelectItem value="subtle">Subtle Beep</SelectItem>
-                  <SelectItem value="typewriter">Typewriter</SelectItem>
-                  <SelectItem value="futuristic">Futuristic Pulse</SelectItem>
+                <SelectContent className="bg-white border-2 border-blue-200 rounded-lg shadow-lg">
+                  <SelectItem value="off" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Off</SelectItem>
+                  <SelectItem value="subtle" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Subtle Beep</SelectItem>
+                  <SelectItem value="typewriter" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Typewriter</SelectItem>
+                  <SelectItem value="futuristic" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md text-blue-700 font-medium">Futuristic Pulse</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -374,14 +374,17 @@ const NewSettingsSection: React.FC = () => {
                 <h4 className="font-medium text-gray-800">Background Music</h4>
                 <p className="text-sm text-gray-600">Calm, minimalist ambient music for focus</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleToggleBackgroundMusic}
-                disabled={isMuted}
-              >
-                Calm Business Lo-Fi
-              </Button>
+              <Select defaultValue="calm-lofi">
+                <SelectTrigger className="w-48 h-10 bg-white border-2 border-blue-200 rounded-lg shadow-sm hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                  <SelectValue className="text-blue-700 font-medium" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-2 border-blue-200 rounded-lg shadow-lg">
+                  <SelectItem value="off" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Off</SelectItem>
+                  <SelectItem value="calm-lofi" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md text-blue-700 font-medium">Calm Business Lo-Fi</SelectItem>
+                  <SelectItem value="ambient" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Ambient Focus</SelectItem>
+                  <SelectItem value="minimal" className="hover:bg-blue-50 focus:bg-blue-100 rounded-md">Minimal Beats</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         );
