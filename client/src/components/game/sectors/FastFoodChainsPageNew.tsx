@@ -332,7 +332,8 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                 { id: 'expansion', label: 'City Expansion', icon: MapPin },
                 { id: 'menu', label: 'Menu Types', icon: ChefHat },
                 { id: 'pricing', label: 'Pricing', icon: DollarSign },
-                { id: 'logistics', label: 'Logistics', icon: Truck }
+                { id: 'logistics', label: 'Logistics', icon: Truck },
+                { id: 'team', label: 'Team', icon: Users }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -572,6 +573,94 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
           </div>
         )}
 
+        {/* Team Tab */}
+        {activeTab === 'team' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              Team Management
+            </h3>
+            
+            {/* Available Candidates Section */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-gray-700 flex items-center gap-2">
+                👥 Available Candidates
+              </h4>
+              
+              <div className="space-y-3">
+                {[
+                  {
+                    id: 'emp_001',
+                    name: 'Rajesh Kumar',
+                    role: 'Operations Manager',
+                    experience: '5 years',
+                    performance: '85%',
+                    salary: '₹45,000/month',
+                    icon: '👨‍💼'
+                  },
+                  {
+                    id: 'emp_002', 
+                    name: 'Priya Sharma',
+                    role: 'Software Developer',
+                    experience: '3 years',
+                    performance: '92%',
+                    salary: '₹55,000/month',
+                    icon: '👩‍💻'
+                  }
+                ].map((candidate) => (
+                  <Card key={candidate.id} className="border border-gray-200 hover:shadow-lg transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-4">
+                        <div className="text-2xl">{candidate.icon}</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h5 className="font-semibold text-gray-900">{candidate.name}</h5>
+                              <p className="text-sm text-gray-600">{candidate.role}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <span className="text-xs text-gray-500">Experience:</span>
+                              <div className="font-medium text-gray-700">{candidate.experience}</div>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-500">Performance:</span>
+                              <div className="font-medium text-blue-600">{candidate.performance}</div>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-500">Salary:</span>
+                              <div className="font-medium text-green-600">{candidate.salary}</div>
+                            </div>
+                            <div>
+                              <span className="text-xs text-gray-500">Transfer to:</span>
+                              <select className="text-xs border rounded px-2 py-1 bg-white">
+                                <option>Fast Food</option>
+                                <option>Tech Startups</option>
+                                <option>E-commerce</option>
+                                <option>Healthcare</option>
+                              </select>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm">
+                              👥 Hire Employee
+                            </Button>
+                            <Button variant="outline" className="text-sm border-blue-200 text-blue-600 hover:bg-blue-50">
+                              ↔️ Transfer
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
