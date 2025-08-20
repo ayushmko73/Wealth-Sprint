@@ -61,7 +61,7 @@ import BusinessSection from './sections/BusinessSection';
 import StrategyCardsSection from './sections/StrategyCardsSection';
 import StoreSection from './sections/StoreSection';
 
-import AdvancedTeamManagement from './AdvancedTeamManagement';
+import TeamManagementSection from './sections/TeamManagementSection';
 import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
@@ -114,7 +114,7 @@ const GameDashboard: React.FC = () => {
     { id: 'bank', label: 'Banking', icon: PiggyBank },
     { id: 'store', label: 'Store', icon: ShoppingCart },
 
-    { id: 'advanced_team', label: 'Team Mgmt', icon: UserCog },
+    { id: 'team_management', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'strategy_cards', label: 'Cards', icon: Target },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
@@ -140,13 +140,8 @@ const GameDashboard: React.FC = () => {
       case 'store':
         return <StoreSection />;
 
-      case 'advanced_team':
-        return (
-          <AdvancedTeamManagement 
-            onClose={() => setActiveSection('dashboard')}
-            onNavigateToSectors={() => setActiveSection('industry_sectors')}
-          />
-        );
+      case 'team_management':
+        return <TeamManagementSection />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'strategy_cards':

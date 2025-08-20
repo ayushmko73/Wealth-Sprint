@@ -280,8 +280,7 @@ const HealthcarePageNew: React.FC<HealthcarePageProps> = ({ onBack }) => {
                 { id: 'overview', label: 'Overview', icon: Star },
                 { id: 'services', label: 'Services', icon: Heart },
                 { id: 'technology', label: 'Technology', icon: Activity },
-                { id: 'programs', label: 'Programs', icon: Shield },
-                { id: 'team', label: 'Team', icon: Users }
+                { id: 'programs', label: 'Programs', icon: Shield }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -483,20 +482,7 @@ const HealthcarePageNew: React.FC<HealthcarePageProps> = ({ onBack }) => {
           </div>
         )}
 
-        {/* Team Tab */}
-        {activeTab === 'team' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              Medical Team
-            </h3>
-            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <p className="text-gray-600 text-center">Team management integration coming soon...</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
       </div>
     </div>
   );

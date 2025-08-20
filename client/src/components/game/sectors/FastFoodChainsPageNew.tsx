@@ -319,7 +319,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Total Investment</div>
-                <div className="text-orange-300 font-bold text-lg">₹{((fastFoodChains?.totalInvested || 0) / 100000).toFixed(1)}L</div>
+                <div className="text-orange-300 font-bold text-lg">₹0.0L</div>
               </div>
             </div>
           </div>
@@ -332,8 +332,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
                 { id: 'expansion', label: 'City Expansion', icon: MapPin },
                 { id: 'menu', label: 'Menu Types', icon: ChefHat },
                 { id: 'pricing', label: 'Pricing', icon: DollarSign },
-                { id: 'logistics', label: 'Logistics', icon: Truck },
-                { id: 'team', label: 'Team', icon: Users }
+                { id: 'logistics', label: 'Logistics', icon: Truck }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -573,20 +572,7 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
           </div>
         )}
 
-        {/* Team Tab */}
-        {activeTab === 'team' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              Team Management
-            </h3>
-            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <p className="text-gray-600 text-center">Team management integration coming soon...</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
       </div>
     </div>
   );

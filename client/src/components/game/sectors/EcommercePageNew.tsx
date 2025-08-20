@@ -280,8 +280,7 @@ const EcommercePageNew: React.FC<EcommercePageProps> = ({ onBack }) => {
                 { id: 'overview', label: 'Overview', icon: Star },
                 { id: 'products', label: 'Products', icon: Package },
                 { id: 'platforms', label: 'Platforms', icon: Globe },
-                { id: 'marketing', label: 'Marketing', icon: BarChart3 },
-                { id: 'team', label: 'Team', icon: Users }
+                { id: 'marketing', label: 'Marketing', icon: BarChart3 }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -483,20 +482,7 @@ const EcommercePageNew: React.FC<EcommercePageProps> = ({ onBack }) => {
           </div>
         )}
 
-        {/* Team Tab */}
-        {activeTab === 'team' && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              E-commerce Team
-            </h3>
-            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <p className="text-gray-600 text-center">Team management integration coming soon...</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
       </div>
     </div>
   );
