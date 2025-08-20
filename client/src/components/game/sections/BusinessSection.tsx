@@ -22,6 +22,9 @@ import {
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { industrySectors } from '@/lib/data/industrySectors';
 import FastFoodChainsPageNew from '../sectors/FastFoodChainsPageNew';
+import TechStartupsPageNew from '../sectors/TechStartupsPageNew';
+import EcommercePageNew from '../sectors/EcommercePageNew';
+import HealthcarePageNew from '../sectors/HealthcarePageNew';
 
 export default function BusinessSection() {
   const { 
@@ -36,6 +39,15 @@ export default function BusinessSection() {
   // Handle sector-specific page navigation
   if (selectedSector === 'fast_food') {
     return <FastFoodChainsPageNew onBack={() => setSelectedSector(null)} />;
+  }
+  if (selectedSector === 'tech_startups') {
+    return <TechStartupsPageNew onBack={() => setSelectedSector(null)} />;
+  }
+  if (selectedSector === 'ecommerce') {
+    return <EcommercePageNew onBack={() => setSelectedSector(null)} />;
+  }
+  if (selectedSector === 'healthcare') {
+    return <HealthcarePageNew onBack={() => setSelectedSector(null)} />;
   }
 
   // Generate business metrics for purchased sectors using real data
