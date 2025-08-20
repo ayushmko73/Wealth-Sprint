@@ -25,11 +25,11 @@ import {
   AlertTriangle,
   Camera,
   Volume2,
-  Crown
+  Crown,
+  Activity
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { toast } from 'sonner';
-import SectorTeamSection from './SectorTeamSection';
 
 interface FastFoodChainsPageProps {
   onBack: () => void;
@@ -50,6 +50,7 @@ interface MenuType {
   name: string;
   description: string;
   cost: number;
+  customerAppeal: string;
   revenueBoost: number;
   active: boolean;
 }
@@ -73,226 +74,134 @@ interface LogisticsModel {
   active: boolean;
 }
 
-interface EventCard {
-  id: string;
-  title: string;
-  description: string;
-  effect: string;
-  duration: string;
-  active: boolean;
-}
-
 const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) => {
-  const { financialData, spendFromWallet, fastFoodChains, setFastFoodState } = useWealthSprintGame();
+  const { financialData, updateFinancialData, fastFoodChains, setFastFoodState } = useWealthSprintGame();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [brandName, setBrandName] = useState('My Fast Food Chain');
   const [customerSatisfaction] = useState(78);
   
-  // Cities for expansion - Load from persistent state if available
-  const [cities, setCities] = useState<City[]>(
-    fastFoodChains?.cities || [
-      {
-        id: 'ranikhet',
-        name: 'Ranikhet',
-        cost: 250000,
-        population: '50K',
-        customerBoost: 15,
-        deliveryTime: '25 min',
-        unlocked: false
-      },
-      {
-        id: 'jaipur',
-        name: 'Jaipur',
-        cost: 500000,
-        population: '3.5M',
-        customerBoost: 35,
-        deliveryTime: '35 min',
-        unlocked: false
-      },
-      {
-        id: 'delhi',
-        name: 'Delhi',
-        cost: 1000000,
-        population: '32M',
-        customerBoost: 75,
-        deliveryTime: '45 min',
-        unlocked: false
-      },
-      {
-        id: 'mumbai',
-        name: 'Mumbai',
-        cost: 1200000,
-        population: '20M',
-        customerBoost: 85,
-        deliveryTime: '40 min',
-        unlocked: false
-      },
-      {
-        id: 'bangalore',
-        name: 'Bangalore',
-        cost: 800000,
-        population: '13M',
-        customerBoost: 65,
-        deliveryTime: '30 min',
-        unlocked: false
-      }
-    ]
-  );
-
-  // Menu options - Load from persistent state if available
-  const [menuTypes, setMenuTypes] = useState<MenuType[]>(
-    fastFoodChains?.menuTypes || [
-      {
-        id: 'standard',
-        name: 'Standard Menu',
-        description: 'Classic items with affordable pricing',
-        cost: 50000,
-        revenueBoost: 20,
-        active: false
-      },
-      {
-        id: 'premium',
-        name: 'Premium Menu',
-        description: 'Gourmet, international, or high-margin items',
-        cost: 150000,
-        revenueBoost: 45,
-        active: false
-      },
-      {
-        id: 'local',
-        name: 'Local Tastes',
-        description: 'Custom dishes based on selected cities',
-        cost: 100000,
-        revenueBoost: 30,
-        active: false
-      }
-    ]
-  );
-
-  // Pricing strategies - Load from persistent state if available
-  const [pricingStrategies, setPricingStrategies] = useState<PricingStrategy[]>(
-    fastFoodChains?.pricingStrategies || [
-      {
-        id: 'high_margin',
-        name: 'High Margin',
-        description: 'Lower customer footfall, higher per-item profit',
-        cost: 75000,
-        customerFootfall: 'Low',
-        profitMargin: 'High (45%)',
-        active: false
-      },
-      {
-        id: 'volume_based',
-        name: 'Volume Based',
-        description: 'Lower price, higher footfall and brand expansion',
-        cost: 60000,
-        customerFootfall: 'High',
-        profitMargin: 'Medium (25%)',
-        active: false
-      }
-    ]
-  );
-
-  // Logistics models - Load from persistent state if available
-  const [logisticsModels, setLogisticsModels] = useState<LogisticsModel[]>(
-    fastFoodChains?.logisticsModels || [
-      {
-        id: 'quick_commerce',
-        name: 'Quick Commerce',
-        description: 'Own bikes/scooters for ultra-fast 30-minute delivery',
-        cost: 200000,
-        deliveryTime: '30 min',
-        active: false
-      },
-      {
-        id: 'franchise',
-        name: 'Franchise',
-        description: 'Independent stores paying licensing fees',
-        cost: 500000,
-        deliveryTime: '35 min',
-        active: false
-      }
-    ]
-  );
-
-  // Event cards
-  const [eventCards] = useState<EventCard[]>([
+  // Cities for expansion
+  const [cities, setCities] = useState<City[]>([
     {
-      id: 'rainy_day',
-      title: 'Rainy Day Boost',
-      description: 'Hot food demand increases in Delhi',
-      effect: 'Revenue +15%',
-      duration: 'Today',
-      active: true
+      id: 'ranikhet',
+      name: 'Ranikhet',
+      cost: 250000,
+      population: '50K',
+      customerBoost: 15,
+      deliveryTime: '25 min',
+      unlocked: false
     },
     {
-      id: 'festival_season',
-      title: 'Festival Season',
-      description: 'High demand during festive period',
-      effect: 'Customer satisfaction +10%',
-      duration: '3 days',
+      id: 'jaipur',
+      name: 'Jaipur',
+      cost: 500000,
+      population: '3.5M',
+      customerBoost: 35,
+      deliveryTime: '35 min',
+      unlocked: false
+    },
+    {
+      id: 'delhi',
+      name: 'Delhi',
+      cost: 750000,
+      population: '32M',
+      customerBoost: 50,
+      deliveryTime: '45 min',
+      unlocked: false
+    }
+  ]);
+
+  // Menu types
+  const [menuTypes, setMenuTypes] = useState<MenuType[]>([
+    {
+      id: 'classic',
+      name: 'Classic Burgers',
+      description: 'Traditional fast food menu with burgers, fries, and shakes',
+      cost: 150000,
+      customerAppeal: 'High',
+      revenueBoost: 20,
+      active: false
+    },
+    {
+      id: 'healthy',
+      name: 'Healthy Options',
+      description: 'Salads, wraps, and organic ingredients',
+      cost: 200000,
+      customerAppeal: 'Medium',
+      revenueBoost: 15,
       active: false
     }
   ]);
 
-  // Save state to store whenever local state changes
-  useEffect(() => {
-    if (setFastFoodState) {
-      setFastFoodState({
-        cities,
-        menuTypes,
-        pricingStrategies,
-        logisticsModels
-      });
+  // Pricing strategies
+  const [pricingStrategies, setPricingStrategies] = useState<PricingStrategy[]>([
+    {
+      id: 'premium',
+      name: 'Premium Pricing',
+      description: 'High-quality ingredients with premium pricing',
+      cost: 100000,
+      customerFootfall: 'Medium',
+      profitMargin: 'High',
+      active: false
+    },
+    {
+      id: 'value',
+      name: 'Value Pricing',
+      description: 'Competitive pricing to attract more customers',
+      cost: 75000,
+      customerFootfall: 'High',
+      profitMargin: 'Medium',
+      active: false
     }
-  }, [cities, menuTypes, pricingStrategies, logisticsModels, setFastFoodState]);
+  ]);
 
-  // Calculate current metrics using centralized business data
+  // Logistics models
+  const [logisticsModels, setLogisticsModels] = useState<LogisticsModel[]>([
+    {
+      id: 'express',
+      name: 'Express Delivery',
+      description: 'Fast delivery service with dedicated fleet',
+      cost: 300000,
+      deliveryTime: '15-20 min',
+      active: false
+    },
+    {
+      id: 'standard',
+      name: 'Standard Delivery',
+      description: 'Regular delivery service with third-party partners',
+      cost: 150000,
+      deliveryTime: '30-40 min',
+      active: false
+    }
+  ]);
+
+  // Helper functions
   const activeCities = cities.filter(c => c.unlocked);
-  const { calculateBusinessRevenue } = useWealthSprintGame.getState();
-  
-  // Get real revenue from centralized business system
-  const finalRevenue = financialData.businessRevenue;
-  
-  // For local display calculations (if needed)
-  const totalRevenue = activeCities.reduce((sum, city) => sum + (city.customerBoost * 1000), 0);
-  const activeMenuBoost = menuTypes.filter(m => m.active).reduce((sum, m) => sum + m.revenueBoost, 0);
+  const activeMenus = menuTypes.filter(m => m.active);
+  const finalRevenue = 50000 + (activeCities.length * 15000) + (activeMenus.length * 10000);
+  const activeMenuBoost = activeMenus.reduce((total, menu) => total + menu.revenueBoost, 0);
 
-  // Check sufficient funds function
-  const checkFunds = (amount: number): boolean => {
+  const checkFunds = (amount: number) => {
     if (financialData.bankBalance < amount) {
-      toast.error('⚠️ Insufficient funds to complete this action.');
+      toast.error(`Insufficient funds! Need ₹${amount.toLocaleString()}`);
       return false;
     }
     return true;
   };
 
-  // Expand to city
-  const expandToCity = (cityId: string) => {
+  // Unlock city
+  const unlockCity = (cityId: string) => {
     const city = cities.find(c => c.id === cityId);
     if (!city) return;
 
     if (!checkFunds(city.cost)) return;
 
-    // Use centralized business investment function
     const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `City expansion to ${city.name}`, city.cost);
     
     if (success) {
-      // Update sector data to track this city
-      const state = useWealthSprintGame.getState();
-      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
-      if (sectorIndex >= 0) {
-        const updatedSectors = [...state.financialData.businessSectors];
-        updatedSectors[sectorIndex] = {
-          ...updatedSectors[sectorIndex],
-          activeCities: [...updatedSectors[sectorIndex].activeCities, cityId]
-        };
-        state.updateFinancialData({ businessSectors: updatedSectors });
-      }
-      
       setCities(prev => 
         prev.map(c => 
           c.id === cityId ? { ...c, unlocked: true } : c
@@ -309,24 +218,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(menu.cost)) return;
 
-    // Use centralized business investment function
     const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${menu.name}`, menu.cost);
     
     if (success) {
-      // Update sector data to track this menu type
-      const state = useWealthSprintGame.getState();
-      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
-      if (sectorIndex >= 0) {
-        const updatedSectors = [...state.financialData.businessSectors];
-        updatedSectors[sectorIndex] = {
-          ...updatedSectors[sectorIndex],
-          activeMenuTypes: [...updatedSectors[sectorIndex].activeMenuTypes, menuId]
-        };
-        state.updateFinancialData({ businessSectors: updatedSectors });
-      }
-      
       setMenuTypes(prev => 
         prev.map(m => 
           m.id === menuId ? { ...m, active: true } : m
@@ -343,24 +239,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(strategy.cost)) return;
 
-    // Use centralized business investment function
     const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${strategy.name} pricing strategy`, strategy.cost);
     
     if (success) {
-      // Update sector data to track this pricing strategy
-      const state = useWealthSprintGame.getState();
-      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
-      if (sectorIndex >= 0) {
-        const updatedSectors = [...state.financialData.businessSectors];
-        updatedSectors[sectorIndex] = {
-          ...updatedSectors[sectorIndex],
-          activePricingStrategies: [...updatedSectors[sectorIndex].activePricingStrategies, strategyId]
-        };
-        state.updateFinancialData({ businessSectors: updatedSectors });
-      }
-      
       setPricingStrategies(prev => 
         prev.map(s => ({ ...s, active: s.id === strategyId }))
       );
@@ -375,24 +258,11 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
 
     if (!checkFunds(model.cost)) return;
 
-    // Use centralized business investment function
     const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${model.name} logistics model`, model.cost);
     
     if (success) {
-      // Update sector data to track this logistics model
-      const state = useWealthSprintGame.getState();
-      const sectorIndex = state.financialData.businessSectors.findIndex(s => s.sectorId === 'fast_food');
-      if (sectorIndex >= 0) {
-        const updatedSectors = [...state.financialData.businessSectors];
-        updatedSectors[sectorIndex] = {
-          ...updatedSectors[sectorIndex],
-          activeLogisticsModels: [...updatedSectors[sectorIndex].activeLogisticsModels, modelId]
-        };
-        state.updateFinancialData({ businessSectors: updatedSectors });
-      }
-      
       setLogisticsModels(prev => 
         prev.map(m => ({ ...m, active: m.id === modelId }))
       );
@@ -401,470 +271,323 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onBack}
-          className="flex items-center gap-2 hover:bg-orange-100"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-full bg-red-500 text-white">
-            🍟
+    <div className="min-h-screen bg-white">
+      {/* Blue Header */}
+      <div className="w-full bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+        <div className="px-4 py-4">
+          {/* Main Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onBack}
+                className="text-white hover:bg-white hover:bg-opacity-20 p-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div className="p-2 bg-white bg-opacity-15 rounded-lg">
+                <div className="text-2xl">🍟</div>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">{brandName}</h1>
+                <p className="text-blue-200 text-sm">Fast Food Chain Management • Build your food empire</p>
+              </div>
+            </div>
+            <div className="bg-white bg-opacity-15 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 text-white text-sm">
+                <DollarSign className="w-4 h-4" />
+                <span>Budget: ₹{(financialData.bankBalance / 100000).toFixed(1)}L</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{brandName}</h1>
-            <p className="text-gray-600">Build your food empire across India</p>
+
+          {/* Business Summary */}
+          <div className="bg-white bg-opacity-10 rounded-lg p-3 mb-4">
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Active Cities</div>
+                <div className="text-white font-bold text-lg">{activeCities.length}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Menu Types</div>
+                <div className="text-green-300 font-bold text-lg">{activeMenus.length}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Satisfaction</div>
+                <div className="text-yellow-300 font-bold text-lg">{customerSatisfaction}%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Total Investment</div>
+                <div className="text-orange-300 font-bold text-lg">₹{((fastFoodChains?.totalInvested || 0) / 100000).toFixed(1)}L</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Horizontal Tabs Menu */}
+          <div className="bg-blue-700 rounded-lg p-1">
+            <div className="flex overflow-x-auto scrollbar-hide gap-1">
+              {[
+                { id: 'overview', label: 'Overview', icon: Star },
+                { id: 'expansion', label: 'City Expansion', icon: MapPin },
+                { id: 'menu', label: 'Menu Types', icon: ChefHat },
+                { id: 'pricing', label: 'Pricing', icon: DollarSign },
+                { id: 'logistics', label: 'Logistics', icon: Truck },
+                { id: 'team', label: 'Team', icon: Users }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <Button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    variant="ghost"
+                    size="sm"
+                    className={`flex-shrink-0 transition-all duration-200 ${
+                      isActive 
+                        ? 'bg-white text-blue-800 hover:bg-white hover:text-blue-800' 
+                        : 'bg-transparent text-white hover:bg-white hover:bg-opacity-20'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 mr-2" />
+                    {tab.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bank Balance Display */}
-      <Card className="mb-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <DollarSign className="h-6 w-6 text-green-600" />
-              <div>
-                <p className="text-sm text-gray-600">Available Balance</p>
-                <p className="text-xl font-bold text-green-700">₹{financialData.bankBalance.toLocaleString()}</p>
-              </div>
-            </div>
-            <Badge className="bg-blue-100 text-blue-800">
-              Customer Satisfaction: {customerSatisfaction}%
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Key Metrics Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="text-sm text-green-700">Monthly Revenue</p>
-                <p className="text-lg font-bold text-green-800">₹{finalRevenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm text-blue-700">Active Cities</p>
-                <p className="text-lg font-bold text-blue-800">{activeCities.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-purple-50 border-purple-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-purple-600" />
-              <div>
-                <p className="text-sm text-purple-700">Customer Rating</p>
-                <p className="text-lg font-bold text-purple-800">★ {(customerSatisfaction / 20).toFixed(1)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-orange-50 border-orange-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-orange-600" />
-              <div>
-                <p className="text-sm text-orange-700">Active Menu Boost</p>
-                <p className="text-lg font-bold text-orange-800">+{activeMenuBoost}%</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 bg-white">
-          <TabsTrigger 
-            value="overview" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger 
-            value="cities" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
-          >
-            Cities
-          </TabsTrigger>
-          <TabsTrigger 
-            value="operations" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
-          >
-            Operations
-          </TabsTrigger>
-          <TabsTrigger 
-            value="brand" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
-          >
-            Brand
-          </TabsTrigger>
-          <TabsTrigger 
-            value="team" 
-            className="data-[state=active]:bg-green-500 data-[state=active]:text-white text-xs"
-          >
-            Team
-          </TabsTrigger>
-        </TabsList>
-
+      {/* Content Area */}
+      <div className="p-4 space-y-6">
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Active Cities */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Active Cities
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {activeCities.map((city) => (
-                  <div key={city.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">{city.name}</p>
-                      <p className="text-sm text-gray-600">Population: {city.population}</p>
-                    </div>
-                    <Badge className="bg-green-100 text-green-800">+{city.customerBoost}% revenue</Badge>
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm text-blue-700">Monthly Revenue</p>
+                    <p className="text-lg font-bold text-blue-800">₹{finalRevenue.toLocaleString()}</p>
                   </div>
-                ))}
-                {activeCities.length === 0 && (
-                  <p className="text-gray-500 text-center py-4">No cities expanded yet</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Event Cards */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  Active Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {eventCards.filter(e => e.active).map((event) => (
-                  <div key={event.id} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium">{event.title}</p>
-                      <Badge className="bg-yellow-100 text-yellow-800">{event.duration}</Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-1">{event.description}</p>
-                    <p className="text-sm font-medium text-green-600">{event.effect}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Cities Tab (Replace Business Models) */}
-        <TabsContent value="cities" className="space-y-4">
-          <Card className="border-cyan-200 bg-cyan-50/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-cyan-600" />
-                Expand to New Cities
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {cities.map((city) => (
-                  <Card key={city.id} className={`transition-all duration-200 ${
-                    city.unlocked 
-                      ? 'border-green-400 bg-green-100 shadow-md order-first' 
-                      : 'border-gray-200 bg-white hover:border-cyan-300 hover:bg-cyan-50'
-                  }`}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <MapPin className={`h-4 w-4 ${city.unlocked ? 'text-green-600' : 'text-cyan-600'}`} />
-                          {city.name}
-                        </div>
-                        {city.unlocked ? (
-                          <Badge className="bg-green-500 text-white">
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="border-cyan-300 text-cyan-700">Available</Badge>
-                        )}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Population:</span>
-                          <span className="font-medium text-cyan-700">{city.population}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Expansion Cost:</span>
-                          <span className="font-medium text-red-600">₹{city.cost.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Revenue Boost:</span>
-                          <span className="font-medium text-green-600">+{city.customerBoost}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Delivery Time:</span>
-                          <span className="font-medium text-blue-600">{city.deliveryTime}</span>
-                        </div>
-                      </div>
-
-                      {!city.unlocked && (
-                        <Button 
-                          onClick={() => expandToCity(city.id)}
-                          disabled={financialData.bankBalance < city.cost}
-                          className={`w-full ${
-                            financialData.bankBalance >= city.cost 
-                              ? 'bg-red-500 hover:bg-red-600 text-white' 
-                              : 'bg-gray-300 text-gray-500'
-                          }`}
-                        >
-                          {financialData.bankBalance < city.cost ? (
-                            <>
-                              <AlertTriangle className="h-4 w-4 mr-2 text-gray-500" />
-                              Insufficient Funds
-                            </>
-                          ) : (
-                            <>
-                              Expand - ₹{city.cost.toLocaleString()}
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-green-700">Active Cities</p>
+                    <p className="text-lg font-bold text-green-800">{activeCities.length}</p>
+                  </div>
+                </div>
+              </div>
 
-        {/* Operations Tab */}
-        <TabsContent value="operations" className="space-y-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Menu Section */}
-            <Card className="border-orange-200 bg-orange-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ChefHat className="h-5 w-5 text-orange-600" />
-                  Menu
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {menuTypes.map((menu) => (
-                  <div key={menu.id} className={`p-3 rounded-lg border transition-all duration-200 ${
-                    menu.active 
-                      ? 'border-green-400 bg-green-100 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50'
-                  }`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium">{menu.name}</p>
-                      {menu.active && (
-                        <Badge className="bg-green-500 text-white">
-                          Active
-                        </Badge>
-                      )}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                <div className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-purple-600" />
+                  <div>
+                    <p className="text-sm text-purple-700">Satisfaction</p>
+                    <p className="text-lg font-bold text-purple-800">{customerSatisfaction}%</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-orange-600" />
+                  <div>
+                    <p className="text-sm text-orange-700">Menu Boost</p>
+                    <p className="text-lg font-bold text-orange-800">+{activeMenuBoost}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* City Expansion Tab */}
+        {activeTab === 'expansion' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-blue-600" />
+              City Expansion ({activeCities.length}/{cities.length} unlocked)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {cities.map((city) => (
+                <Card key={city.id} className={`border transition-all hover:shadow-lg ${city.unlocked ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900">{city.name}</h4>
+                      {city.unlocked && <Badge className="bg-green-600 text-white text-xs">Active</Badge>}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{menu.description}</p>
-                    <p className="text-sm font-medium text-green-600">Revenue +{menu.revenueBoost}%</p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Population:</span>
+                        <span className="font-medium">{city.population}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Customer Boost:</span>
+                        <span className="font-medium text-green-600">+{city.customerBoost}%</span>
+                      </div>
+                    </div>
+                    {!city.unlocked && (
+                      <div className="mt-4 pt-3 border-t border-gray-200">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Investment Cost:</span>
+                          <span className="font-bold text-blue-600">₹{city.cost.toLocaleString()}</span>
+                        </div>
+                        <Button 
+                          onClick={() => unlockCity(city.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={financialData.bankBalance < city.cost}
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Expand to {city.name}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Menu Tab */}
+        {activeTab === 'menu' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <ChefHat className="w-5 h-5 text-blue-600" />
+              Menu Types ({activeMenus.length} active)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {menuTypes.map((menu) => (
+                <Card key={menu.id} className={`border transition-all hover:shadow-lg ${menu.active ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900">{menu.name}</h4>
+                      {menu.active && <Badge className="bg-green-600 text-white text-xs">Active</Badge>}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{menu.description}</p>
                     {!menu.active && (
-                      <Button 
-                        onClick={() => activateMenuType(menu.id)}
-                        disabled={financialData.bankBalance < menu.cost}
-                        className={`w-full mt-2 ${
-                          financialData.bankBalance >= menu.cost 
-                            ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-                            : 'bg-gray-300 text-gray-500'
-                        }`}
-                        size="sm"
-                      >
-                        Activate - ₹{menu.cost.toLocaleString()}
-                      </Button>
+                      <div className="pt-3 border-t border-gray-200">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Activation Cost:</span>
+                          <span className="font-bold text-blue-600">₹{menu.cost.toLocaleString()}</span>
+                        </div>
+                        <Button 
+                          onClick={() => activateMenuType(menu.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={financialData.bankBalance < menu.cost}
+                        >
+                          <ChefHat className="w-4 h-4 mr-2" />
+                          Activate Menu
+                        </Button>
+                      </div>
                     )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
-            {/* Pricing Strategy */}
-            <Card className="border-teal-200 bg-teal-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-teal-600" />
-                  Pricing Strategy
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {pricingStrategies.map((strategy) => (
-                  <div key={strategy.id} className={`p-3 rounded-lg border transition-all duration-200 ${
-                    strategy.active 
-                      ? 'border-green-400 bg-green-100 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50'
-                  }`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium">{strategy.name}</p>
-                      {strategy.active && (
-                        <Badge className="bg-green-500 text-white">
-                          Active
-                        </Badge>
-                      )}
+        {/* Pricing Tab */}
+        {activeTab === 'pricing' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-blue-600" />
+              Pricing Strategies
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pricingStrategies.map((strategy) => (
+                <Card key={strategy.id} className={`border transition-all hover:shadow-lg ${strategy.active ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900">{strategy.name}</h4>
+                      {strategy.active && <Badge className="bg-green-600 text-white text-xs">Active</Badge>}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{strategy.description}</p>
-                    <div className="text-sm space-y-1">
-                      <p>Footfall: <span className="font-medium text-teal-600">{strategy.customerFootfall}</span></p>
-                      <p>Margin: <span className="font-medium text-green-600">{strategy.profitMargin}</span></p>
-                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{strategy.description}</p>
                     {!strategy.active && (
-                      <Button 
-                        onClick={() => activatePricingStrategy(strategy.id)}
-                        disabled={financialData.bankBalance < strategy.cost}
-                        className={`w-full mt-2 ${
-                          financialData.bankBalance >= strategy.cost 
-                            ? 'bg-teal-500 hover:bg-teal-600 text-white' 
-                            : 'bg-gray-300 text-gray-500'
-                        }`}
-                        size="sm"
-                      >
-                        Activate - ₹{strategy.cost.toLocaleString()}
-                      </Button>
+                      <div className="pt-3 border-t border-gray-200">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Implementation Cost:</span>
+                          <span className="font-bold text-blue-600">₹{strategy.cost.toLocaleString()}</span>
+                        </div>
+                        <Button 
+                          onClick={() => activatePricingStrategy(strategy.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={financialData.bankBalance < strategy.cost}
+                        >
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          Implement Strategy
+                        </Button>
+                      </div>
                     )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
-            {/* Logistics */}
-            <Card className="border-purple-200 bg-purple-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-purple-600" />
-                  Logistics & Business
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {logisticsModels.map((model) => (
-                  <div key={model.id} className={`p-3 rounded-lg border transition-all duration-200 ${
-                    model.active 
-                      ? 'border-green-400 bg-green-100 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50'
-                  }`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium">{model.name}</p>
-                      {model.active && (
-                        <Badge className="bg-green-500 text-white">
-                          Active
-                        </Badge>
-                      )}
+        {/* Logistics Tab */}
+        {activeTab === 'logistics' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Truck className="w-5 h-5 text-blue-600" />
+              Logistics Models
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {logisticsModels.map((model) => (
+                <Card key={model.id} className={`border transition-all hover:shadow-lg ${model.active ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900">{model.name}</h4>
+                      {model.active && <Badge className="bg-green-600 text-white text-xs">Active</Badge>}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{model.description}</p>
-                    <p className="text-sm">Delivery: <span className="font-medium text-purple-600">{model.deliveryTime}</span></p>
+                    <p className="text-sm text-gray-600 mb-3">{model.description}</p>
                     {!model.active && (
-                      <Button 
-                        onClick={() => activateLogisticsModel(model.id)}
-                        disabled={financialData.bankBalance < model.cost}
-                        className={`w-full mt-2 ${
-                          financialData.bankBalance >= model.cost 
-                            ? 'bg-purple-500 hover:bg-purple-600 text-white' 
-                            : 'bg-gray-300 text-gray-500'
-                        }`}
-                        size="sm"
-                      >
-                        Activate - ₹{model.cost.toLocaleString()}
-                      </Button>
+                      <div className="pt-3 border-t border-gray-200">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Setup Cost:</span>
+                          <span className="font-bold text-blue-600">₹{model.cost.toLocaleString()}</span>
+                        </div>
+                        <Button 
+                          onClick={() => activateLogisticsModel(model.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={financialData.bankBalance < model.cost}
+                        >
+                          <Truck className="w-4 h-4 mr-2" />
+                          Setup Logistics
+                        </Button>
+                      </div>
                     )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </TabsContent>
-
-        {/* Brand Tab */}
-        <TabsContent value="brand" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Brand Customization */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Crown className="h-5 w-5" />
-                  Brand Identity
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="brand-name">Brand Name</Label>
-                  <Input
-                    id="brand-name"
-                    value={brandName}
-                    onChange={(e) => setBrandName(e.target.value)}
-                    placeholder="Enter your brand name"
-                  />
-                </div>
-                <div>
-                  <Label>Upload Logo</Label>
-                  <Button variant="outline" className="w-full mt-2">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Upload Brand Logo
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Customer Reviews */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="h-5 w-5" />
-                  Customer Reviews
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium">Food Critic Review</p>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm">4.2</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">"Exceptional taste and quick delivery. The local menu adds authentic flavors."</p>
-                </div>
-                
-                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="font-medium text-yellow-800 mb-1">Brand Impact</p>
-                  <p className="text-sm text-yellow-700">Recent review increased brand reputation by 5%</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+        )}
 
         {/* Team Tab */}
-        <TabsContent value="team" className="space-y-4">
-          <SectorTeamSection sectorId="fast_food" />
-        </TabsContent>
-      </Tabs>
+        {activeTab === 'team' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              Team Management
+            </h3>
+            <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <p className="text-gray-600 text-center">Team management integration coming soon...</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -13,7 +13,11 @@ import {
   TrendingUp,
   DollarSign,
   Users,
-  ArrowRight
+  ArrowRight,
+  Target,
+  Star,
+  Activity,
+  BarChart3
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { industrySectors } from '@/lib/data/industrySectors';
@@ -27,6 +31,7 @@ export default function BusinessSection() {
   } = useWealthSprintGame();
   
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
   // Handle sector-specific page navigation
   if (selectedSector === 'fast_food') {
@@ -105,27 +110,6 @@ export default function BusinessSection() {
     };
   };
 
-  const getSatisfactionEmoji = (satisfaction: number) => {
-    if (satisfaction >= 80) return '😊';
-    if (satisfaction >= 60) return '😐';
-    if (satisfaction >= 40) return '😕';
-    return '😞';
-  };
-
-  const getSatisfactionColor = (satisfaction: number) => {
-    if (satisfaction >= 80) return 'text-green-600';
-    if (satisfaction >= 60) return 'text-yellow-600';
-    if (satisfaction >= 40) return 'text-orange-600';
-    return 'text-red-600';
-  };
-
-  const getProgressColor = (progress: number) => {
-    if (progress >= 80) return 'bg-green-500';
-    if (progress >= 50) return 'bg-blue-500';
-    if (progress >= 25) return 'bg-yellow-500';
-    return 'bg-orange-500';
-  };
-
   const handleSectorClick = (sectorId: string, event: React.MouseEvent) => {
     // Add click animation effect
     const target = event.currentTarget as HTMLElement;
@@ -139,188 +123,222 @@ export default function BusinessSection() {
     setSelectedSector(sectorId);
   };
 
+  // Category definitions for horizontal menu
+  const categories = [
+    { id: 'all', label: 'All Business', icon: Star },
+    { id: 'food', label: 'Food & Beverage', icon: Building2 },
+    { id: 'tech', label: 'Technology', icon: TrendingUp },
+    { id: 'health', label: 'Healthcare', icon: Activity },
+    { id: 'retail', label: 'Retail', icon: Target }
+  ];
+
+  const getCategoryForSector = (sectorId: string) => {
+    const categoryMap: Record<string, string> = {
+      'fast_food': 'food',
+      'tech_startups': 'tech',
+      'ecommerce': 'retail',
+      'healthcare': 'health'
+    };
+    return categoryMap[sectorId] || 'all';
+  };
+
+  const filteredSectors = activeCategory === 'all' 
+    ? purchasedSectors 
+    : purchasedSectors.filter(sectorId => getCategoryForSector(sectorId) === activeCategory);
+
   return (
-    <div className="space-y-6 p-4 max-w-7xl mx-auto bg-white/10 backdrop-blur-sm rounded-lg">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
-          <Building2 className="h-8 w-8 text-blue-600" />
-          Business Portfolio
-        </h1>
-        <p className="text-gray-600 mb-4">
-          Manage your active business sectors and track their performance
-        </p>
-        <div className="flex justify-center gap-4 text-sm">
-          <Badge className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
-            <Building2 className="h-4 w-4" />
-            {purchasedSectors.length} Active Sectors
-          </Badge>
-          <Badge className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
-            <DollarSign className="h-4 w-4" />
-            Total Revenue: ₹{(financialData.businessRevenue || 0).toLocaleString()}/month
-          </Badge>
+    <div className="min-h-screen bg-white">
+      {/* Blue Header - Inspired by Bonds/Stock Market/Banking sections */}
+      <div className="w-full bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+        <div className="px-4 py-4">
+          {/* Main Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white bg-opacity-15 rounded-lg">
+                <Building2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Business Portfolio</h1>
+                <p className="text-blue-200 text-sm">Manage active sectors • Track performance • Optimize growth</p>
+              </div>
+            </div>
+            <div className="bg-white bg-opacity-15 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 text-white text-sm">
+                <DollarSign className="w-4 h-4" />
+                <span>Revenue: ₹{((financialData.businessRevenue || 0) / 1000).toFixed(1)}k/mo</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Portfolio Summary */}
+          <div className="bg-white bg-opacity-10 rounded-lg p-3 mb-4">
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Active Sectors</div>
+                <div className="text-white font-bold text-lg">{purchasedSectors.length}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Total Revenue</div>
+                <div className="text-green-300 font-bold text-lg">₹{((financialData.businessRevenue || 0) / 1000).toFixed(1)}k</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Avg Progress</div>
+                <div className="text-yellow-300 font-bold text-lg">{purchasedSectors.length > 0 ? Math.round(purchasedSectors.reduce((total, sectorId) => {
+                  const metrics = getBusinessMetrics(sectorId);
+                  return total + (metrics?.progress || 0);
+                }, 0) / purchasedSectors.length) : 0}%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-blue-200 text-xs">Portfolio Value</div>
+                <div className="text-orange-300 font-bold text-lg">₹{(purchasedSectors.length * 2).toFixed(0)}L</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Horizontal Categories Menu - Blue background with white text */}
+          <div className="bg-blue-700 rounded-lg p-1">
+            <div className="flex overflow-x-auto scrollbar-hide gap-1">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                const isActive = activeCategory === category.id;
+                const sectorCount = activeCategory === 'all' 
+                  ? purchasedSectors.length 
+                  : purchasedSectors.filter(sectorId => getCategoryForSector(sectorId) === category.id).length;
+                
+                return (
+                  <Button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    variant="ghost"
+                    size="sm"
+                    className={`flex-shrink-0 transition-all duration-200 ${
+                      isActive 
+                        ? 'bg-white text-blue-800 hover:bg-white hover:text-blue-800' 
+                        : 'bg-transparent text-white hover:bg-white hover:bg-opacity-20'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 mr-2" />
+                    {category.label}
+                    {sectorCount > 0 && (
+                      <Badge className={`ml-2 text-xs ${isActive ? 'bg-blue-600 text-white' : 'bg-white bg-opacity-20 text-blue-100'}`}>
+                        {sectorCount}
+                      </Badge>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* No Sectors Message */}
-      {purchasedSectors.length === 0 && (
-        <Card className="text-center py-12">
-          <CardContent>
-            <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Business Sectors Yet</h3>
-            <p className="text-gray-500 mb-6">
+      {/* Content Area */}
+      <div className="p-4 space-y-6">
+        {/* No Sectors Message */}
+        {purchasedSectors.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-blue-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <Building2 className="w-10 h-10 text-blue-500" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Business Sectors</h3>
+            <p className="text-gray-600 mb-6">
               Purchase sectors from the "Industry Sectors" tab to start building your business empire.
             </p>
-            <Button variant="outline">
-              Go to Sectors
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Target className="w-4 h-4 mr-2" />
+              Browse Sectors
             </Button>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      {/* Business Sectors Grid */}
-      {purchasedSectors.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {purchasedSectors.map((sectorId) => {
-            const sector = industrySectors.find(s => s.id === sectorId);
-            const metrics = getBusinessMetrics(sectorId);
+        {/* Business Sectors Grid */}
+        {filteredSectors.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-600" />
+              {activeCategory === 'all' ? 'All Business Sectors' : `${categories.find(c => c.id === activeCategory)?.label} Sectors`} ({filteredSectors.length})
+            </h2>
             
-            if (!sector || !metrics) return null;
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredSectors.map((sectorId) => {
+                const sector = industrySectors.find(s => s.id === sectorId);
+                const metrics = getBusinessMetrics(sectorId);
+                
+                if (!sector || !metrics) return null;
 
-            return (
-              <Card 
-                key={sectorId}
-                className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer border-l-4 ${metrics.borderColor} ${metrics.bgColor}`}
-                onClick={(e) => handleSectorClick(sectorId, e)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-3 rounded-full ${metrics.bgColor} ${metrics.borderColor} border-2 flex items-center justify-center`}>
-                        <span className="text-2xl">{sector.icon}</span>
+                return (
+                  <Card 
+                    key={sectorId}
+                    className="bg-gradient-to-br from-white to-blue-50 border-blue-200 hover:shadow-xl hover:scale-105 cursor-pointer transition-all duration-300"
+                    onClick={(e) => handleSectorClick(sectorId, e)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="text-3xl">{sector.icon}</div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{sector.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-600 text-white text-xs px-2 py-0.5">
+                              Active
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {metrics.progress}% Complete
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
                       </div>
-                      <div>
-                        <CardTitle className="text-lg">{sector.name}</CardTitle>
-                        <Badge variant="secondary" className="mt-1">
-                          Active
-                        </Badge>
+
+                      {/* Progress Bar */}
+                      <div className="mb-4">
+                        <Progress value={metrics.progress} className="h-2" />
                       </div>
-                    </div>
-                    <div className={`p-2 rounded-full ${metrics.color} hover:shadow-lg active:scale-95 transition-all duration-150 group`}>
-                      <ArrowRight className="h-5 w-5 text-white group-hover:translate-x-0.5 group-active:translate-x-1 transition-transform duration-150" />
-                    </div>
-                  </div>
-                </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Progress */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">Progress</span>
-                      <span className="font-bold">{metrics.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className={`h-3 rounded-full ${metrics.color} transition-all duration-300`}
-                        style={{ width: `${metrics.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
+                      {/* Metrics Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-green-50 rounded-lg p-3 text-center">
+                          <div className="text-green-700 text-xs">Monthly Revenue</div>
+                          <div className="text-green-800 font-bold">₹{(metrics.monthlyRevenue / 1000).toFixed(1)}k</div>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-3 text-center">
+                          <div className="text-blue-700 text-xs">Satisfaction</div>
+                          <div className="text-blue-800 font-bold">{metrics.customerSatisfaction}%</div>
+                        </div>
+                      </div>
 
-                  {/* Monthly Revenue */}
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Monthly Revenue</span>
-                    </div>
-                    <span className="text-lg font-bold text-green-700">
-                      ₹{(metrics.monthlyRevenue / 1000).toFixed(1)}k
-                    </span>
-                  </div>
-
-                  {/* Customer Satisfaction */}
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-800">Customer Satisfaction</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{getSatisfactionEmoji(metrics.customerSatisfaction)}</span>
-                      <span className={`font-bold ${getSatisfactionColor(metrics.customerSatisfaction)}`}>
-                        {metrics.customerSatisfaction}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quick Stats */}
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    <div className="text-center p-2 bg-blue-50 rounded">
-                      <TrendingUp className="h-4 w-4 text-blue-600 mx-auto mb-1" />
-                      <p className="text-xs text-blue-800 font-medium">
-                        {metrics.progress > 75 ? 'Excellent' : 
-                         metrics.progress > 50 ? 'Good' : 
-                         metrics.progress > 25 ? 'Growing' : 'Starting'}
-                      </p>
-                    </div>
-                    <div className="text-center p-2 bg-purple-50 rounded">
-                      <Building2 className="h-4 w-4 text-purple-600 mx-auto mb-1" />
-                      <p className="text-xs text-purple-800 font-medium">
-                        {metrics.progress > 50 ? 'Established' : 'Developing'}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Summary Stats */}
-      {purchasedSectors.length > 0 && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Portfolio Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600">
-                  {purchasedSectors.length}
-                </p>
-                <p className="text-sm text-blue-800">Active Sectors</p>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-2xl font-bold text-green-600">
-                  ₹{((financialData.businessRevenue || 0) / 1000).toFixed(1)}k
-                </p>
-                <p className="text-sm text-green-800">Monthly Revenue</p>
-              </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <p className="text-2xl font-bold text-yellow-600">
-                  {Math.round(purchasedSectors.reduce((total, sectorId) => {
-                    const metrics = getBusinessMetrics(sectorId);
-                    return total + (metrics?.progress || 0);
-                  }, 0) / purchasedSectors.length) || 0}%
-                </p>
-                <p className="text-sm text-yellow-800">Avg Progress</p>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <p className="text-2xl font-bold text-purple-600">
-                  {Math.round(purchasedSectors.reduce((total, sectorId) => {
-                    const metrics = getBusinessMetrics(sectorId);
-                    return total + (metrics?.customerSatisfaction || 0);
-                  }, 0) / purchasedSectors.length) || 0}%
-                </p>
-                <p className="text-sm text-purple-800">Avg Satisfaction</p>
-              </div>
+                      {/* Action Button */}
+                      <div className="mt-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSectorClick(sectorId, e);
+                          }}
+                        >
+                          <Target className="w-4 h-4 mr-2" />
+                          Manage Sector
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+
+        {/* Show message when category filter has no results */}
+        {purchasedSectors.length > 0 && filteredSectors.length === 0 && (
+          <div className="text-center py-8">
+            <div className="text-gray-400 text-lg mb-2">📊</div>
+            <p className="text-gray-500">No sectors in this category</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
