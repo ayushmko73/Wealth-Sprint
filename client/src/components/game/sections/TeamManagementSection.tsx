@@ -116,12 +116,7 @@ export default function TeamManagementSection() {
     tech_startups: '💻',
     ecommerce: '🛒',
     healthcare: '🏥',
-    real_estate: '🏠',
-    retail_clothing: '👕',
-    automotive: '🚗',
-    financial_services: '💰',
-    travel_tourism: '✈️',
-    education_training: '🎓'
+  
   };
 
   const getRoleIcon = (role: string) => {
@@ -134,8 +129,8 @@ export default function TeamManagementSection() {
 
   const getPerformanceColor = (performance: number) => {
     if (performance >= 90) return 'text-green-600 bg-green-50';
-    if (performance >= 80) return 'text-blue-600 bg-blue-50';
-    if (performance >= 70) return 'text-yellow-600 bg-yellow-50';
+    if (performance >= 75) return 'text-blue-600 bg-blue-50';
+    if (performance >= 60) return 'text-yellow-600 bg-yellow-50';
     return 'text-red-600 bg-red-50';
   };
 
