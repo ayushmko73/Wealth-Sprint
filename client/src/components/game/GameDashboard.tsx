@@ -58,7 +58,7 @@ import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
-import StrategyCardsSection from './sections/StrategyCardsSection';
+import NewDataSection from './sections/NewDataSection';
 import StoreSection from './sections/StoreSection';
 
 import TeamManagementSection from './sections/TeamManagementSection';
@@ -116,7 +116,7 @@ const GameDashboard: React.FC = () => {
 
     { id: 'team_management', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
-    { id: 'strategy_cards', label: 'Cards', icon: Target },
+    { id: 'data_hub', label: 'Data Hub', icon: BarChart3 },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
     { id: 'assets', label: 'Assets', icon: TrendingUp },
@@ -144,8 +144,8 @@ const GameDashboard: React.FC = () => {
         return <TeamManagementSection />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
-      case 'strategy_cards':
-        return <StrategyCardsSection />;
+      case 'data_hub':
+        return <NewDataSection />;
       case 'business_deals':
         return <DealsSection />;
       case 'strategy_hub':
