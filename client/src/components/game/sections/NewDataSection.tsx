@@ -196,7 +196,7 @@ export default function NewDataSection() {
   const getUpgradesForItem = (item: any) => {
     const itemId = item?.id;
     const baseUpgrades = {
-      1: [ // Revenue Growth
+      1: [ // Revenue Growth (8 upgrades)
         {
           id: 'sales_automation',
           title: 'Sales Automation System',
@@ -212,9 +212,57 @@ export default function NewDataSection() {
           monthlyBoost: 18000,
           description: 'Enter new markets and demographics to increase revenue streams',
           impact: '+25% Market Reach'
+        },
+        {
+          id: 'digital_marketing',
+          title: 'Digital Marketing Suite',
+          price: 85000,
+          monthlyBoost: 15000,
+          description: 'Advanced online marketing tools and campaigns',
+          impact: '+30% Online Visibility'
+        },
+        {
+          id: 'customer_loyalty',
+          title: 'Customer Loyalty Program',
+          price: 65000,
+          monthlyBoost: 11000,
+          description: 'Retain customers with rewards and loyalty benefits',
+          impact: '+18% Customer Retention'
+        },
+        {
+          id: 'pricing_optimization',
+          title: 'Dynamic Pricing Engine',
+          price: 95000,
+          monthlyBoost: 16500,
+          description: 'AI-driven pricing strategies for maximum revenue',
+          impact: '+22% Pricing Efficiency'
+        },
+        {
+          id: 'partnership_network',
+          title: 'Strategic Partnerships',
+          price: 110000,
+          monthlyBoost: 19000,
+          description: 'Build valuable business partnerships for growth',
+          impact: '+28% Network Value'
+        },
+        {
+          id: 'sales_training',
+          title: 'Sales Team Training',
+          price: 70000,
+          monthlyBoost: 13000,
+          description: 'Professional development for sales performance',
+          impact: '+24% Sales Skills'
+        },
+        {
+          id: 'revenue_analytics',
+          title: 'Revenue Analytics Platform',
+          price: 80000,
+          monthlyBoost: 14500,
+          description: 'Advanced revenue tracking and forecasting tools',
+          impact: '+26% Revenue Insights'
         }
       ],
-      2: [ // Investment Returns
+      2: [ // Investment Returns (8 upgrades)
         {
           id: 'portfolio_optimizer',
           title: 'Portfolio Optimization',
@@ -230,9 +278,57 @@ export default function NewDataSection() {
           monthlyBoost: 22000,
           description: 'Diversify into high-yield investment opportunities',
           impact: '+30% Portfolio Balance'
+        },
+        {
+          id: 'crypto_portfolio',
+          title: 'Cryptocurrency Portfolio',
+          price: 120000,
+          monthlyBoost: 18000,
+          description: 'Strategic crypto investments for high returns',
+          impact: '+35% Crypto Gains'
+        },
+        {
+          id: 'real_estate_reit',
+          title: 'Real Estate REIT',
+          price: 200000,
+          monthlyBoost: 28000,
+          description: 'Real estate investment trusts for stable income',
+          impact: '+20% Property Returns'
+        },
+        {
+          id: 'hedge_fund',
+          title: 'Hedge Fund Access',
+          price: 300000,
+          monthlyBoost: 35000,
+          description: 'Exclusive hedge fund investment opportunities',
+          impact: '+40% Premium Returns'
+        },
+        {
+          id: 'bond_ladder',
+          title: 'Bond Ladder Strategy',
+          price: 90000,
+          monthlyBoost: 15000,
+          description: 'Systematic bond investment for steady income',
+          impact: '+18% Fixed Income'
+        },
+        {
+          id: 'dividend_stocks',
+          title: 'Dividend Growth Stocks',
+          price: 140000,
+          monthlyBoost: 20000,
+          description: 'High-dividend paying stocks for regular income',
+          impact: '+25% Dividend Yield'
+        },
+        {
+          id: 'investment_advisor',
+          title: 'Personal Investment Advisor',
+          price: 180000,
+          monthlyBoost: 25000,
+          description: 'Professional investment guidance and strategy',
+          impact: '+32% Advisory Value'
         }
       ],
-      3: [ // Cost Efficiency  
+      3: [ // Cost Efficiency (8 upgrades)
         {
           id: 'process_automation',
           title: 'Process Automation',
@@ -248,9 +344,57 @@ export default function NewDataSection() {
           monthlyBoost: 16000,
           description: 'Optimize supply chain for maximum cost efficiency',
           impact: '+20% Operational Savings'
+        },
+        {
+          id: 'energy_efficiency',
+          title: 'Energy Management System',
+          price: 85000,
+          monthlyBoost: 15000,
+          description: 'Smart energy solutions to reduce utility costs',
+          impact: '+30% Energy Savings'
+        },
+        {
+          id: 'vendor_negotiation',
+          title: 'Vendor Contract Optimization',
+          price: 75000,
+          monthlyBoost: 13000,
+          description: 'Renegotiate supplier contracts for better rates',
+          impact: '+22% Vendor Savings'
+        },
+        {
+          id: 'lean_methodology',
+          title: 'Lean Operations Program',
+          price: 95000,
+          monthlyBoost: 17000,
+          description: 'Implement lean principles to eliminate waste',
+          impact: '+28% Efficiency Gain'
+        },
+        {
+          id: 'cloud_migration',
+          title: 'Cloud Infrastructure',
+          price: 100000,
+          monthlyBoost: 18000,
+          description: 'Migrate to cloud for reduced IT infrastructure costs',
+          impact: '+35% IT Savings'
+        },
+        {
+          id: 'remote_work',
+          title: 'Remote Work Program',
+          price: 70000,
+          monthlyBoost: 12000,
+          description: 'Reduce office costs with remote work policies',
+          impact: '+24% Office Savings'
+        },
+        {
+          id: 'maintenance_optimization',
+          title: 'Predictive Maintenance',
+          price: 110000,
+          monthlyBoost: 19000,
+          description: 'AI-powered maintenance to prevent costly breakdowns',
+          impact: '+26% Maintenance Savings'
         }
       ],
-      4: [ // Market Position
+      4: [ // Market Position (8 upgrades)
         {
           id: 'brand_building',
           title: 'Brand Building Campaign',
@@ -266,6 +410,54 @@ export default function NewDataSection() {
           monthlyBoost: 8000,
           description: 'Advanced market research and competitive analysis tools',
           impact: '+2 Market Position'
+        },
+        {
+          id: 'thought_leadership',
+          title: 'Thought Leadership Program',
+          price: 85000,
+          monthlyBoost: 14000,
+          description: 'Establish industry expertise and thought leadership',
+          impact: '+4 Industry Authority'
+        },
+        {
+          id: 'innovation_lab',
+          title: 'Innovation Laboratory',
+          price: 120000,
+          monthlyBoost: 18000,
+          description: 'R&D facility for breakthrough innovations',
+          impact: '+5 Innovation Score'
+        },
+        {
+          id: 'awards_recognition',
+          title: 'Industry Awards Campaign',
+          price: 60000,
+          monthlyBoost: 10000,
+          description: 'Strategic pursuit of industry recognition and awards',
+          impact: '+3 Recognition Value'
+        },
+        {
+          id: 'media_relations',
+          title: 'Media Relations Program',
+          price: 75000,
+          monthlyBoost: 12000,
+          description: 'Professional media outreach and PR campaigns',
+          impact: '+4 Media Presence'
+        },
+        {
+          id: 'industry_partnerships',
+          title: 'Industry Alliance Network',
+          price: 95000,
+          monthlyBoost: 16000,
+          description: 'Strategic alliances with industry leaders',
+          impact: '+6 Network Strength'
+        },
+        {
+          id: 'market_research',
+          title: 'Advanced Market Research',
+          price: 80000,
+          monthlyBoost: 13000,
+          description: 'Deep market insights and consumer behavior analysis',
+          impact: '+5 Market Intelligence'
         }
       ]
     };
