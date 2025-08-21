@@ -192,41 +192,86 @@ export default function NewDataSection() {
     }
   };
 
-  // Business growth upgrades
-  const businessUpgrades = [
-    {
-      id: 'marketing_boost',
-      title: 'Marketing Campaign',
-      price: 50000,
-      monthlyBoost: 8000,
-      description: 'Increase brand visibility and customer acquisition by 15%',
-      impact: '+15% Customer Reach'
-    },
-    {
-      id: 'tech_infrastructure',
-      title: 'Tech Infrastructure',
-      price: 120000,
-      monthlyBoost: 18000,
-      description: 'Upgrade technology systems for 25% efficiency improvement',
-      impact: '+25% Operational Efficiency'
-    },
-    {
-      id: 'team_expansion',
-      title: 'Team Expansion',
-      price: 80000,
-      monthlyBoost: 12000,
-      description: 'Hire specialized talent to boost productivity by 20%',
-      impact: '+20% Team Productivity'
-    },
-    {
-      id: 'research_development',
-      title: 'R&D Investment',
-      price: 100000,
-      monthlyBoost: 15000,
-      description: 'Innovation fund for new product development',
-      impact: '+30% Innovation Score'
-    }
-  ];
+  // Get upgrades based on selected item
+  const getUpgradesForItem = (item: any) => {
+    const itemId = item?.id;
+    const baseUpgrades = {
+      1: [ // Revenue Growth
+        {
+          id: 'sales_automation',
+          title: 'Sales Automation System',
+          price: 75000,
+          monthlyBoost: 12000,
+          description: 'Automate lead generation and sales processes to boost revenue by 20%',
+          impact: '+20% Revenue Growth'
+        },
+        {
+          id: 'market_expansion',
+          title: 'Market Expansion',
+          price: 100000,
+          monthlyBoost: 18000,
+          description: 'Enter new markets and demographics to increase revenue streams',
+          impact: '+25% Market Reach'
+        }
+      ],
+      2: [ // Investment Returns
+        {
+          id: 'portfolio_optimizer',
+          title: 'Portfolio Optimization',
+          price: 60000,
+          monthlyBoost: 10000,
+          description: 'AI-powered portfolio management for better investment returns',
+          impact: '+15% Return Rate'
+        },
+        {
+          id: 'diversification_fund',
+          title: 'Diversification Fund',
+          price: 150000,
+          monthlyBoost: 22000,
+          description: 'Diversify into high-yield investment opportunities',
+          impact: '+30% Portfolio Balance'
+        }
+      ],
+      3: [ // Cost Efficiency  
+        {
+          id: 'process_automation',
+          title: 'Process Automation',
+          price: 80000,
+          monthlyBoost: 14000,
+          description: 'Automate repetitive tasks to reduce operational costs',
+          impact: '+25% Cost Reduction'
+        },
+        {
+          id: 'supply_chain_optimization',
+          title: 'Supply Chain Optimization',
+          price: 90000,
+          monthlyBoost: 16000,
+          description: 'Optimize supply chain for maximum cost efficiency',
+          impact: '+20% Operational Savings'
+        }
+      ],
+      4: [ // Market Position
+        {
+          id: 'brand_building',
+          title: 'Brand Building Campaign',
+          price: 70000,
+          monthlyBoost: 11000,
+          description: 'Strengthen brand presence and market positioning',
+          impact: '+3 Market Rank'
+        },
+        {
+          id: 'competitive_analysis',
+          title: 'Competitive Intelligence',
+          price: 50000,
+          monthlyBoost: 8000,
+          description: 'Advanced market research and competitive analysis tools',
+          impact: '+2 Market Position'
+        }
+      ]
+    };
+    
+    return baseUpgrades[itemId as keyof typeof baseUpgrades] || [];
+  };
 
   const handleViewDetails = (item: any) => {
     setSelectedItem(item);
@@ -262,7 +307,13 @@ export default function NewDataSection() {
 
   // Calculate total contribution from upgrades
   const totalUpgradeContribution = purchasedUpgrades.reduce((total, upgradeId) => {
-    const upgrade = businessUpgrades.find(u => u.id === upgradeId);
+    // Find upgrade across all categories
+    let upgrade = null;
+    for (let i = 1; i <= 4; i++) {
+      const categoryUpgrades = getUpgradesForItem({ id: i });
+      upgrade = categoryUpgrades.find((u: any) => u.id === upgradeId);
+      if (upgrade) break;
+    }
     return total + (upgrade?.monthlyBoost || 0);
   }, 0);
 
@@ -306,7 +357,7 @@ export default function NewDataSection() {
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Upgrades</div>
-                <div className="text-white font-bold text-lg">{purchasedUpgrades.length}/{businessUpgrades.length}</div>
+                <div className="text-white font-bold text-lg">{purchasedUpgrades.length}/8</div>
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Success Rate</div>
@@ -410,7 +461,7 @@ export default function NewDataSection() {
             <div className="space-y-6 pt-4">
               {/* Current Metrics */}
               <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
-                <h3 className="font-bold text-blue-800 mb-4 text-lg">Current Performance</h3>
+                <h3 className="font-bold text-blue-800 mb-4 text-lg">Current Performance: {selectedItem.title}</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
                     <div className="text-sm text-blue-600 mb-1">Value</div>
@@ -429,16 +480,79 @@ export default function NewDataSection() {
                   </div>
                 </div>
                 <p className="text-blue-700 mt-4 text-center bg-white bg-opacity-50 rounded-lg p-3">{selectedItem.description}</p>
+                
+                {/* Detailed Analytics */}
+                <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                    <div className="text-xs text-blue-600">Last Month</div>
+                    <div className="font-bold text-blue-800">
+                      {selectedItem.id === 1 ? '18.3%' : 
+                       selectedItem.id === 2 ? formatMoney(98000) :
+                       selectedItem.id === 3 ? '21.3%' : '6th'}
+                    </div>
+                  </div>
+                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                    <div className="text-xs text-blue-600">6 Month Avg</div>
+                    <div className="font-bold text-blue-800">
+                      {selectedItem.id === 1 ? '20.1%' : 
+                       selectedItem.id === 2 ? formatMoney(105000) :
+                       selectedItem.id === 3 ? '19.8%' : '5th'}
+                    </div>
+                  </div>
+                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                    <div className="text-xs text-blue-600">Industry Avg</div>
+                    <div className="font-bold text-blue-800">
+                      {selectedItem.id === 1 ? '15.2%' : 
+                       selectedItem.id === 2 ? formatMoney(82000) :
+                       selectedItem.id === 3 ? '14.5%' : '8th'}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Key Insights */}
+                <div className="mt-4 bg-white bg-opacity-70 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 mb-2">Key Insights</h4>
+                  <div className="text-sm text-blue-700 space-y-1">
+                    {selectedItem.id === 1 && (
+                      <>
+                        <div>• Performance is 8.3% above industry average</div>
+                        <div>• Q4 showing strong upward momentum</div>
+                        <div>• New customer acquisition rate increased by 35%</div>
+                      </>
+                    )}
+                    {selectedItem.id === 2 && (
+                      <>
+                        <div>• Portfolio outperforming market by 52%</div>
+                        <div>• High-yield bonds contributing 45% of returns</div>
+                        <div>• Risk-adjusted returns show excellent stability</div>
+                      </>
+                    )}
+                    {selectedItem.id === 3 && (
+                      <>
+                        <div>• Cost reduction ahead of target by 3.7%</div>
+                        <div>• Automation saving ₹45K monthly</div>
+                        <div>• Supply chain optimization showing 12% efficiency gain</div>
+                      </>
+                    )}
+                    {selectedItem.id === 4 && (
+                      <>
+                        <div>• Moved up 2 positions in industry ranking</div>
+                        <div>• Brand recognition increased by 28%</div>
+                        <div>• Customer satisfaction score at all-time high</div>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Available Upgrades */}
               <div>
                 <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2 text-lg">
                   <ShoppingCart className="w-5 h-5" />
-                  Business Growth Investments
+                  Targeted Improvements for {selectedItem.title}
                 </h3>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {businessUpgrades.map((upgrade) => {
+                  {getUpgradesForItem(selectedItem).map((upgrade: any) => {
                     const isPurchased = purchasedUpgrades.includes(upgrade.id);
                     const canAfford = financialData.bankBalance >= upgrade.price;
                     
