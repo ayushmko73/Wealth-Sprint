@@ -34,9 +34,9 @@ interface Employee {
 }
 
 export default function TeamManagementSection() {
-  const { financialData, updateFinancialData, purchasedSectors } = useWealthSprintGame();
+  const { financialData, updateFinancialData, purchasedSectors, uiState, updateUIState } = useWealthSprintGame();
   
-  const [activeTab, setActiveTab] = useState('overview');
+  const activeTab = uiState.teamManagementActiveTab;
   
   // Available employees to hire (no automatic sector assignment)
   const [availableEmployees] = useState<Employee[]>([
@@ -254,7 +254,7 @@ export default function TeamManagementSection() {
                 return (
                   <Button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => updateUIState({ teamManagementActiveTab: tab.id })}
                     variant="ghost"
                     size="sm"
                     className={`flex-shrink-0 transition-all duration-200 ${

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Card, 
   CardContent, 
@@ -30,24 +30,26 @@ export default function BusinessSection() {
   const { 
     purchasedSectors,
     playerStats,
-    financialData
+    financialData,
+    uiState,
+    updateUIState
   } = useWealthSprintGame();
   
-  const [selectedSector, setSelectedSector] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const selectedSector = uiState.businessSelectedSector;
+  const activeCategory = uiState.businessSelectedCategory;
 
   // Handle sector-specific page navigation
   if (selectedSector === 'fast_food') {
-    return <FastFoodChainsPageNew onBack={() => setSelectedSector(null)} />;
+    return <FastFoodChainsPageNew onBack={() => updateUIState({ businessSelectedSector: null })} />;
   }
   if (selectedSector === 'tech_startups') {
-    return <TechStartupsPageNew onBack={() => setSelectedSector(null)} />;
+    return <TechStartupsPageNew onBack={() => updateUIState({ businessSelectedSector: null })} />;
   }
   if (selectedSector === 'ecommerce') {
-    return <EcommercePageNew onBack={() => setSelectedSector(null)} />;
+    return <EcommercePageNew onBack={() => updateUIState({ businessSelectedSector: null })} />;
   }
   if (selectedSector === 'healthcare') {
-    return <HealthcarePageNew onBack={() => setSelectedSector(null)} />;
+    return <HealthcarePageNew onBack={() => updateUIState({ businessSelectedSector: null })} />;
   }
 
   // Generate business metrics for purchased sectors using real data
@@ -132,7 +134,7 @@ export default function BusinessSection() {
     
     // Navigate to detailed sector management page
     console.log(`Navigate to detailed view for sector: ${sectorId}`);
-    setSelectedSector(sectorId);
+    updateUIState({ businessSelectedSector: sectorId });
   };
 
   // Category definitions for horizontal menu
@@ -220,7 +222,7 @@ export default function BusinessSection() {
                 return (
                   <Button
                     key={category.id}
-                    onClick={() => setActiveCategory(category.id)}
+                    onClick={() => updateUIState({ businessSelectedCategory: category.id })}
                     variant="ghost"
                     size="sm"
                     className={`flex-shrink-0 transition-all duration-200 ${

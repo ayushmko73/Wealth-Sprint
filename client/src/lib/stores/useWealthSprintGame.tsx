@@ -131,6 +131,20 @@ export interface GameEvent {
   };
 }
 
+export interface UIState {
+  // Section-specific UI states that should persist across navigation
+  cashflowSelectedCategory: string;
+  teamManagementActiveTab: string;
+  businessSelectedCategory: string;
+  businessSelectedSector: string | null;
+  bondsSelectedCategory: string;
+  dataHubActiveCategory: string;
+  settingsActiveTab: string;
+  assetsSelectedCategory: string;
+  stockMarketSelectedStock: string | null;
+  // Add more section states as needed
+}
+
 interface WealthSprintGameState {
   // Game State
   currentWeek: number;
@@ -179,6 +193,9 @@ interface WealthSprintGameState {
     pricingStrategies: any[];
     logisticsModels: any[];
   };
+
+  // UI State - persistent across navigation
+  uiState: UIState;
   
   // Actions
   updatePlayerStats: (updates: Partial<PlayerStats>) => void;
@@ -268,6 +285,9 @@ interface WealthSprintGameState {
   
   // Deal investment functions
   purchaseDeal: (deal: any, paymentMethod: 'bank' | 'credit', paymentType: 'full' | 'emi', emiDuration?: number) => { success: boolean; message: string };
+  
+  // UI State management functions
+  updateUIState: (updates: Partial<UIState>) => void;
 }
 
 // Initial state values
@@ -314,6 +334,18 @@ const initialFinancialData: FinancialData = {
   liabilities: [], // Start with no default liabilities
 };
 
+const initialUIState: UIState = {
+  cashflowSelectedCategory: 'Overview',
+  teamManagementActiveTab: 'overview',
+  businessSelectedCategory: 'all',
+  businessSelectedSector: null,
+  bondsSelectedCategory: 'all',
+  dataHubActiveCategory: 'Analytics',
+  settingsActiveTab: 'profile',
+  assetsSelectedCategory: 'Assets',
+  stockMarketSelectedStock: null,
+};
+
 export const useWealthSprintGame = create<WealthSprintGameState>()(
   subscribeWithSelector((set, get) => ({
     // Initial state
@@ -354,6 +386,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     gameEvents: [],
     teamMembers: [],
     purchasedSectors: [],
+    uiState: { ...initialUIState },
 
     // Actions
     updatePlayerStats: (updates: Partial<PlayerStats>) => {
@@ -416,6 +449,15 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           financialData: newFinancialData,
         };
       });
+    },
+
+    updateUIState: (updates: Partial<UIState>) => {
+      set((state) => ({
+        uiState: {
+          ...state.uiState,
+          ...updates,
+        },
+      }));
     },
     
 

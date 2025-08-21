@@ -18,10 +18,12 @@ const AssetsSection: React.FC = () => {
     getLiabilities,
     removeAsset,
     updateLiability,
-    addTransaction
+    addTransaction,
+    uiState,
+    updateUIState
   } = useWealthSprintGame();
   
-  const [selectedCategory, setSelectedCategory] = useState<string>('Assets');
+  const selectedCategory = uiState.assetsSelectedCategory;
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
 
@@ -485,7 +487,7 @@ const AssetsSection: React.FC = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => updateUIState({ assetsSelectedCategory: category })}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap shadow-md ${
                   selectedCategory === category
                     ? 'bg-white text-blue-800 shadow-md'

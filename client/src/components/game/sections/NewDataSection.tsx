@@ -25,8 +25,8 @@ import { formatMoney } from '../../../lib/utils/formatMoney';
 import { toast } from 'sonner';
 
 export default function NewDataSection() {
-  const { financialData, playerStats, updateFinancialData, addTransaction } = useWealthSprintGame();
-  const [activeCategory, setActiveCategory] = useState<string>('Analytics');
+  const { financialData, playerStats, updateFinancialData, addTransaction, uiState, updateUIState } = useWealthSprintGame();
+  const activeCategory = uiState.dataHubActiveCategory;
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [purchasedUpgrades, setPurchasedUpgrades] = useState<string[]>([]);
@@ -375,7 +375,7 @@ export default function NewDataSection() {
                 return (
                   <button
                     key={category.id}
-                    onClick={() => setActiveCategory(category.id)}
+                    onClick={() => updateUIState({ dataHubActiveCategory: category.id })}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                       isActive 
                         ? 'bg-white text-blue-800 shadow-md' 

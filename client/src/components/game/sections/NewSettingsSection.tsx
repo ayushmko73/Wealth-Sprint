@@ -37,6 +37,8 @@ const NewSettingsSection: React.FC = () => {
     currentWeek, 
     timeEngine,
     resetGame,
+    uiState,
+    updateUIState
   } = useWealthSprintGame();
 
   const { 
@@ -49,7 +51,7 @@ const NewSettingsSection: React.FC = () => {
     isBackgroundPlaying
   } = useAudio();
 
-  const [activeTab, setActiveTab] = useState('profile');
+  const activeTab = uiState.settingsActiveTab;
   const [localSettings, setLocalSettings] = useState({
     theme: 'light',
     soundEnabled: true,
@@ -525,7 +527,7 @@ const NewSettingsSection: React.FC = () => {
             {menuTabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => updateUIState({ settingsActiveTab: tab.id })}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-white text-blue-600 shadow-md'

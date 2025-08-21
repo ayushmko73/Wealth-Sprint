@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { Card, CardContent } from '../../ui/card';
 import { 
@@ -16,8 +16,8 @@ import {
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const CashflowSection: React.FC = () => {
-  const { financialData } = useWealthSprintGame();
-  const [selectedCategory, setSelectedCategory] = useState('Overview');
+  const { financialData, uiState, updateUIState } = useWealthSprintGame();
+  const selectedCategory = uiState.cashflowSelectedCategory;
 
   // Categories for the horizontal menu
   const categories = ['Overview', 'Income Sources', 'Expense Breakdown', 'Financial Health', 'Projections'];
@@ -103,7 +103,7 @@ const CashflowSection: React.FC = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => updateUIState({ cashflowSelectedCategory: category })}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap shadow-md ${
                   selectedCategory === category 
                     ? 'bg-white text-blue-800 shadow-md' 
