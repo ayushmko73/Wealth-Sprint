@@ -439,7 +439,7 @@ export default function NewDataSection() {
 
       {/* Details Modal */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="max-w-lg max-h-[75vh] overflow-y-auto bg-white p-0 border-0">
+        <DialogContent className="max-w-sm max-h-[75vh] overflow-y-auto bg-white p-0 border-0 data-[state=open]:bg-transparent">
           <div className="bg-white">
             <DialogHeader className="px-3 py-2 border-b bg-white">
               <DialogTitle className="flex items-center justify-between text-sm">
