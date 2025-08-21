@@ -357,13 +357,6 @@ export default function TeamManagementSection() {
                         
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Sector:</span>
-                            <div className="flex items-center gap-1">
-                              <span>{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
-                              <span className="font-medium">{sectorNames[employee.sector as keyof typeof sectorNames]}</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between">
                             <span className="text-gray-600">Experience:</span>
                             <span className="font-medium">{employee.experience} years</span>
                           </div>
@@ -411,13 +404,6 @@ export default function TeamManagementSection() {
                       </div>
                       
                       <div className="space-y-2 text-sm mb-4">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Sector:</span>
-                          <div className="flex items-center gap-1">
-                            <span>{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
-                            <span className="font-medium">{sectorNames[employee.sector as keyof typeof sectorNames]}</span>
-                          </div>
-                        </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Experience:</span>
                           <span className="font-medium">{employee.experience} years</span>
