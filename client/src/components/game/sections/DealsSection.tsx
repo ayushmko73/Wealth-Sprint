@@ -843,228 +843,258 @@ const DealsSection: React.FC = () => {
     const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
     
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {availableDeals.map(deal => {
-          const colors = getSectorColors(deal.sector);
-          const rarity = getDealRarity(deal.investmentRequired);
-          const canAfford = financialData.bankBalance >= deal.investmentRequired;
-          const monthlyReturn = (deal.investmentRequired * deal.expectedROI / 100) / 12;
+      <div className="space-y-4">
+        {/* Corporate Executive Table Header */}
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 rounded-lg">
+          <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+            <Globe className="w-5 h-5" />
+            Global Business Opportunities
+          </h3>
+          <p className="text-slate-300 text-sm">Enterprise-grade investment opportunities for strategic portfolio expansion</p>
+        </div>
+
+        {/* Executive Summary Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-800">High-Value Deals</span>
+            </div>
+            <div className="text-2xl font-bold text-emerald-700">{availableDeals.filter(d => d.investmentRequired >= 5000000).length}</div>
+            <div className="text-xs text-emerald-600">₹50L+ Investment</div>
+          </div>
           
-          return (
-            <Card 
-              key={deal.id} 
-              className={`overflow-hidden transition-all duration-300 hover:shadow-lg bg-gradient-to-br ${colors.bg} ${colors.border} hover:border-blue-300`}
-            >
-              <CardContent className="p-4">
-                {/* Deal Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors.icon} ${colors.text}`}>
-                      {getDealIcon(deal)}
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="w-4 h-4 text-purple-600" />
+              <span className="text-sm font-semibold text-purple-800">Low Risk</span>
+            </div>
+            <div className="text-2xl font-bold text-purple-700">{availableDeals.filter(d => d.riskLevel === 'low').length}</div>
+            <div className="text-xs text-purple-600">Conservative Options</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <BarChart3 className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-800">Avg ROI</span>
+            </div>
+            <div className="text-2xl font-bold text-blue-700">
+              {availableDeals.length > 0 ? Math.round(availableDeals.reduce((sum, d) => sum + d.expectedROI, 0) / availableDeals.length) : 0}%
+            </div>
+            <div className="text-xs text-blue-600">Annual Returns</div>
+          </div>
+        </div>
+
+        {/* Executive Table View */}
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+          {/* Table Header */}
+          <div className="bg-gradient-to-r from-slate-100 to-slate-200 px-6 py-3 border-b border-slate-300">
+            <div className="grid grid-cols-12 gap-4 text-xs font-semibold text-slate-700 uppercase tracking-wide">
+              <div className="col-span-3">Investment Opportunity</div>
+              <div className="col-span-2">Capital Required</div>
+              <div className="col-span-1">ROI</div>
+              <div className="col-span-2">Monthly Return</div>
+              <div className="col-span-1">Risk</div>
+              <div className="col-span-1">Timeline</div>
+              <div className="col-span-2">Actions</div>
+            </div>
+          </div>
+
+          {/* Table Body */}
+          <div className="divide-y divide-slate-100">
+            {availableDeals.map(deal => {
+              const rarity = getDealRarity(deal.investmentRequired);
+              const canAfford = financialData.bankBalance >= deal.investmentRequired;
+              const monthlyReturn = (deal.investmentRequired * deal.expectedROI / 100) / 12;
+              
+              return (
+                <div key={deal.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+                  <div className="grid grid-cols-12 gap-4 items-center">
+                    {/* Investment Opportunity */}
+                    <div className="col-span-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+                          {getDealIcon(deal)}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-slate-800 text-sm">{deal.title}</h4>
+                          <p className="text-xs text-slate-500">{deal.company}</p>
+                          <Badge className={`text-[10px] mt-1 ${rarity.color}`}>
+                            {rarity.rarity.toUpperCase()}
+                          </Badge>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-800">{deal.title}</h3>
-                      <Badge className={`text-xs ${colors.text.replace('text-', 'bg-').replace('600', '100')} ${colors.text} ${colors.border}`}>
-                        {deal.sector?.replace('_', ' ') || deal.type}
+
+                    {/* Capital Required */}
+                    <div className="col-span-2">
+                      <div className="text-lg font-bold text-slate-800">
+                        {formatCurrency(deal.investmentRequired)}
+                      </div>
+                      <div className="text-xs text-slate-500 capitalize">
+                        {deal.type.replace('_', ' ')}
+                      </div>
+                    </div>
+
+                    {/* ROI */}
+                    <div className="col-span-1">
+                      <div className="text-lg font-bold text-emerald-600">
+                        {deal.expectedROI}%
+                      </div>
+                      <div className="text-xs text-slate-500">Annual</div>
+                    </div>
+
+                    {/* Monthly Return */}
+                    <div className="col-span-2">
+                      <div className="text-base font-semibold text-blue-600">
+                        {formatCurrency(deal.cashflowMonthly)}
+                      </div>
+                      <div className="text-xs text-slate-500">Per Month</div>
+                    </div>
+
+                    {/* Risk */}
+                    <div className="col-span-1">
+                      <Badge className={`text-xs px-2 py-1 ${getRiskColor(deal.riskLevel)}`}>
+                        {deal.riskLevel}
                       </Badge>
+                      <div className="text-xs text-slate-500 mt-1 capitalize">{deal.liquidity} liquidity</div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Investment Amount and ROI */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-left">
-                    <div className="text-xl font-bold text-slate-800">
-                      {formatCurrency(deal.investmentRequired)}
-                    </div>
-                    <div className={`text-sm ${colors.text} font-semibold`}>
-                      {deal.expectedROI}% Annual ROI
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
-                    <Coins className="w-3 h-3 text-amber-600" />
-                    <span className="text-xs font-semibold text-amber-700">
-                      {formatCurrency(deal.cashflowMonthly)}/mo
-                    </span>
-                  </div>
-                </div>
-
-                {/* Company and Description */}
-                <div className="mb-3">
-                  <p className={`text-sm font-medium ${colors.text} mb-1`}>{deal.company}</p>
-                  <p className="text-sm text-slate-600">{deal.description}</p>
-                </div>
-
-                {/* Deal Rarity and Type */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge className={`text-xs px-2 py-1 ${rarity.color}`}>
-                      <span className="capitalize">{rarity.rarity} Deal</span>
-                    </Badge>
-                    <Badge className={`text-xs px-2 py-1 ${getRiskColor(deal.riskLevel)}`}>
-                      {deal.riskLevel} risk
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Key Metrics */}
-                <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-blue-500" />
-                    <span className="text-slate-600">{deal.timeHorizon}m horizon</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Droplets className="w-3 h-3 text-green-500" />
-                    <span className="text-slate-600 capitalize">{deal.liquidity} liquidity</span>
-                  </div>
-                </div>
-
-                {/* Benefits and Risks Preview */}
-                {(deal.benefits.length > 0 || deal.risks.length > 0) && (
-                  <div className="mb-4 space-y-2">
-                    {deal.benefits.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-1 mb-1">
-                          <CheckCircle className="w-3 h-3 text-green-600" />
-                          <span className="text-xs font-semibold text-green-700">Key Benefits:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {deal.benefits.slice(0, 2).map((benefit, idx) => (
-                            <Badge key={idx} className="text-[10px] bg-green-100 text-green-800 border-green-200">
-                              {benefit}
-                            </Badge>
-                          ))}
-                          {deal.benefits.length > 2 && (
-                            <Badge className="text-[10px] bg-green-100 text-green-600 border-green-200">
-                              +{deal.benefits.length - 2} more
-                            </Badge>
-                          )}
-                        </div>
+                    {/* Timeline */}
+                    <div className="col-span-1">
+                      <div className="text-sm font-semibold text-slate-700">
+                        {deal.timeHorizon}M
                       </div>
-                    )}
-                    
-                    {deal.risks.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-1 mb-1">
-                          <AlertTriangle className="w-3 h-3 text-red-600" />
-                          <span className="text-xs font-semibold text-red-700">Key Risks:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {deal.risks.slice(0, 2).map((risk, idx) => (
-                            <Badge key={idx} className="text-[10px] bg-red-100 text-red-800 border-red-200">
-                              {risk}
-                            </Badge>
-                          ))}
-                          {deal.risks.length > 2 && (
-                            <Badge className="text-[10px] bg-red-100 text-red-600 border-red-200">
-                              +{deal.risks.length - 2} more
-                            </Badge>
-                          )}
-                        </div>
+                      <div className="text-xs text-slate-500">Duration</div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="col-span-2">
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="flex-1 bg-amber-500 hover:bg-amber-600 text-white border-amber-500 text-xs"
+                          onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
+                        >
+                          <Eye className="w-3 h-3 mr-1" />
+                          Details
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className={`flex-1 text-xs ${
+                            canAfford 
+                              ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white' 
+                              : 'bg-red-500 hover:bg-red-600 text-white'
+                          }`}
+                          onClick={() => setShowPurchaseModal(deal)}
+                        >
+                          <TrendingUp className="w-3 h-3 mr-1" />
+                          {canAfford ? 'Invest' : 'Insufficient'}
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </div>
-                )}
 
-                {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500"
-                    onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Details
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className={`flex-1 ${
-                      canAfford 
-                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
-                    onClick={() => setShowPurchaseModal(deal)}
-                  >
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    {canAfford ? 'Invest' : 'Insufficient'}
-                  </Button>
-                </div>
-
-                {/* Expanded Details */}
-                {expandedDeal === deal.id && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                    {/* Full Benefits List */}
-                    <div>
-                      <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        All Benefits
-                      </h4>
-                      <ul className="text-sm text-green-700 space-y-1">
-                        {deal.benefits.map((benefit, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0" />
-                            {benefit}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    {/* Full Risks List */}
-                    <div>
-                      <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        All Risks
-                      </h4>
-                      <ul className="text-sm text-red-700 space-y-1">
-                        {deal.risks.map((risk, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="w-1 h-1 bg-red-500 rounded-full mt-2 flex-shrink-0" />
-                            {risk}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Key Factors */}
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4" />
-                        Key Investment Factors
-                      </h4>
-                      <div className="grid grid-cols-3 gap-2">
-                        {Object.entries(deal.keyFactors).map(([key, value]) => (
-                          <div key={key} className="text-center p-2 bg-gray-50 rounded">
-                            <div className="text-xs text-gray-600">{key}</div>
-                            <div className="text-sm font-semibold text-gray-800">{value}</div>
+                  {/* Expanded Executive Details */}
+                  {expandedDeal === deal.id && (
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <div className="grid grid-cols-2 gap-6">
+                        {/* Left Column - Strategic Information */}
+                        <div className="space-y-4">
+                          <div>
+                            <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-emerald-600" />
+                              Strategic Benefits
+                            </h5>
+                            <ul className="text-sm text-slate-600 space-y-1">
+                              {deal.benefits.map((benefit, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
+                                  {benefit}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 text-red-600" />
+                              Risk Assessment
+                            </h5>
+                            <ul className="text-sm text-slate-600 space-y-1">
+                              {deal.risks.map((risk, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0" />
+                                  {risk}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
 
-                    {/* Financial Projections */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                        <Calculator className="w-4 h-4" />
-                        Financial Projections
-                      </h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className="text-blue-600">Monthly Return:</span>
-                          <div className="font-semibold text-blue-800">{formatCurrency(monthlyReturn)}</div>
-                        </div>
-                        <div>
-                          <span className="text-blue-600">Break-even:</span>
-                          <div className="font-semibold text-blue-800">{Math.round(12/deal.expectedROI*100)} months</div>
+                        {/* Right Column - Financial Analytics */}
+                        <div className="space-y-4">
+                          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h5 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                              <Calculator className="w-4 h-4 text-blue-600" />
+                              Executive Financial Summary
+                            </h5>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="text-slate-600">Break-even Period:</span>
+                                <div className="font-semibold text-slate-800">{Math.round(12/deal.expectedROI*100)} months</div>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">Monthly ROI:</span>
+                                <div className="font-semibold text-emerald-600">{(deal.expectedROI/12).toFixed(2)}%</div>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">Total Return (5Y):</span>
+                                <div className="font-semibold text-blue-600">{formatCurrency(deal.investmentRequired * (deal.expectedROI/100) * 5)}</div>
+                              </div>
+                              <div>
+                                <span className="text-slate-600">Investment Grade:</span>
+                                <div className="font-semibold text-purple-600 capitalize">{rarity.rarity}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                              <BarChart3 className="w-4 h-4 text-slate-600" />
+                              Key Investment Metrics
+                            </h5>
+                            <div className="grid grid-cols-3 gap-2">
+                              {Object.entries(deal.keyFactors).map(([key, value]) => (
+                                <div key={key} className="text-center p-2 bg-slate-100 rounded border border-slate-200">
+                                  <div className="text-xs text-slate-600 font-medium">{key}</div>
+                                  <div className="text-sm font-bold text-slate-800">{value}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {availableDeals.length === 0 && (
+          <div className="bg-slate-50 p-8 rounded-lg border border-slate-200 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
+              <Globe className="w-8 h-8 text-slate-400" />
+            </div>
+            <h3 className="font-semibold text-slate-800 mb-2">No Global Business Opportunities Available</h3>
+            <p className="text-sm text-slate-500 mb-4">
+              Expand your portfolio to unlock higher-tier global business investments.
+            </p>
+          </div>
+        )}
       </div>
     );
   };
