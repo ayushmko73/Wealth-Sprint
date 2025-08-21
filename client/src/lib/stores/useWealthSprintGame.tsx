@@ -135,6 +135,7 @@ export interface UIState {
   // Section-specific UI states that should persist across navigation
   cashflowSelectedCategory: string;
   teamManagementActiveTab: string;
+  currentTeam: any[]; // Array of hired employees
   businessSelectedCategory: string;
   businessSelectedSector: string | null;
   bondsSelectedCategory: string;
@@ -337,6 +338,7 @@ const initialFinancialData: FinancialData = {
 const initialUIState: UIState = {
   cashflowSelectedCategory: 'Overview',
   teamManagementActiveTab: 'overview',
+  currentTeam: [],
   businessSelectedCategory: 'all',
   businessSelectedSector: null,
   bondsSelectedCategory: 'all',

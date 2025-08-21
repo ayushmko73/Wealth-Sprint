@@ -37,6 +37,7 @@ export default function TeamManagementSection() {
   const { financialData, updateFinancialData, purchasedSectors, uiState, updateUIState } = useWealthSprintGame();
   
   const activeTab = uiState.teamManagementActiveTab;
+  const currentTeam = uiState.currentTeam;
   
   // Available employees to hire (no automatic sector assignment)
   const [availableEmployees] = useState<Employee[]>([
@@ -96,7 +97,7 @@ export default function TeamManagementSection() {
     }
   ]);
 
-  const [currentTeam, setCurrentTeam] = useState<Employee[]>([]);
+  // currentTeam is now managed globally via uiState
   
   const sectorNames = {
     fast_food: 'Fast Food',
@@ -149,24 +150,24 @@ export default function TeamManagementSection() {
     });
 
     // Add to team without sector assignment
-    setCurrentTeam(prev => [...prev, { ...employee, hired: true, sector: undefined }]);
+    updateUIState({ currentTeam: [...currentTeam, { ...employee, hired: true, sector: undefined }] });
     
     toast.success(`🎉 Successfully hired ${employee.name}!`);
   };
 
   // Function to assign employee to sector
   const assignEmployeeToSector = (employeeId: string, sectorId: string) => {
-    setCurrentTeam(prev => prev.map(emp => 
+    updateUIState({ currentTeam: currentTeam.map(emp => 
       emp.id === employeeId ? { ...emp, sector: sectorId } : emp
-    ));
+    ) });
     toast.success(`Employee assigned to ${sectorNames[sectorId as keyof typeof sectorNames]}!`);
   };
 
   // Function to unassign employee from sector
   const unassignEmployee = (employeeId: string) => {
-    setCurrentTeam(prev => prev.map(emp => 
+    updateUIState({ currentTeam: currentTeam.map(emp => 
       emp.id === employeeId ? { ...emp, sector: undefined } : emp
-    ));
+    ) });
     toast.success('Employee unassigned from sector!');
   };
 
