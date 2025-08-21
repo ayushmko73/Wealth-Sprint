@@ -98,7 +98,7 @@ const DealsSection: React.FC = () => {
     // Base deals available based on portfolio logic
     const deals: Deal[] = [];
 
-    // Entry-level deals (0 sectors)
+    // Entry-level deals (0 sectors) - More than 10 deals
     if (sectorCount === 0) {
       deals.push(
         {
@@ -138,6 +138,196 @@ const DealsSection: React.FC = () => {
           benefits: ['High growth potential', 'Scalable technology', 'Recurring revenue'],
           risks: ['Technology risk', 'Market adoption uncertainty'],
           keyFactors: { 'Liquidity': 'Low', 'Volatility': 'High', 'Growth': 'Exponential' }
+        },
+        {
+          id: 'ecommerce_entry',
+          type: 'sector',
+          sector: 'ecommerce',
+          title: 'Online Retail Store',
+          description: 'Digital marketplace for electronics and gadgets',
+          company: 'TechBazar Online',
+          investmentRequired: 300000,
+          expectedROI: 22,
+          riskLevel: 'medium',
+          liquidity: 'high',
+          timeHorizon: 18,
+          cashflowMonthly: 12000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 250000 },
+          benefits: ['Growing market', 'Digital advantage', 'Scalable platform'],
+          risks: ['Online competition', 'Technology changes'],
+          keyFactors: { 'Liquidity': 'High', 'Volatility': 'Medium', 'Growth': 'Digital' }
+        },
+        {
+          id: 'healthcare_entry',
+          type: 'sector',
+          sector: 'healthcare',
+          title: 'Medical Clinic Chain',
+          description: 'Primary care clinic with telemedicine capabilities',
+          company: 'HealthFirst Centers',
+          investmentRequired: 600000,
+          expectedROI: 16,
+          riskLevel: 'low',
+          liquidity: 'medium',
+          timeHorizon: 30,
+          cashflowMonthly: 18000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 500000 },
+          benefits: ['Essential service', 'Stable demand', 'Insurance backing'],
+          risks: ['Regulatory compliance', 'Staff shortages'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Low', 'Growth': 'Healthcare' }
+        },
+        {
+          id: 'real_estate_entry',
+          type: 'sector',
+          sector: 'real_estate',
+          title: 'Property Development',
+          description: 'Residential apartment complex development project',
+          company: 'Urban Developers Ltd',
+          investmentRequired: 800000,
+          expectedROI: 24,
+          riskLevel: 'medium',
+          liquidity: 'low',
+          timeHorizon: 48,
+          cashflowMonthly: 22000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 600000 },
+          benefits: ['Asset appreciation', 'Rental income', 'Tax benefits'],
+          risks: ['Market cycles', 'Construction delays'],
+          keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Property' }
+        },
+        {
+          id: 'renewable_energy_entry',
+          type: 'sector',
+          sector: 'renewable_energy',
+          title: 'Solar Panel Installation',
+          description: 'Commercial solar panel installation business',
+          company: 'SunPower Solutions',
+          investmentRequired: 450000,
+          expectedROI: 28,
+          riskLevel: 'medium',
+          liquidity: 'medium',
+          timeHorizon: 36,
+          cashflowMonthly: 16000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 350000 },
+          benefits: ['Government incentives', 'Green energy trend', 'Long-term contracts'],
+          risks: ['Weather dependency', 'Technology evolution'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Low', 'Growth': 'Sustainable' }
+        },
+        {
+          id: 'food_delivery_entry',
+          type: 'sector',
+          sector: 'tech',
+          title: 'Food Delivery App',
+          description: 'Local food delivery platform with cloud kitchen network',
+          company: 'QuickEats Platform',
+          investmentRequired: 700000,
+          expectedROI: 32,
+          riskLevel: 'high',
+          liquidity: 'medium',
+          timeHorizon: 24,
+          cashflowMonthly: 25000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 550000 },
+          benefits: ['Growing demand', 'Technology edge', 'Network effects'],
+          risks: ['High competition', 'Delivery logistics'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Platform' }
+        },
+        {
+          id: 'fitness_entry',
+          type: 'sector',
+          sector: 'healthcare',
+          title: 'Fitness Center Chain',
+          description: 'Modern gym with digital fitness tracking',
+          company: 'FitLife Gyms',
+          investmentRequired: 400000,
+          expectedROI: 20,
+          riskLevel: 'medium',
+          liquidity: 'medium',
+          timeHorizon: 30,
+          cashflowMonthly: 14000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 300000 },
+          benefits: ['Health trend', 'Membership model', 'Equipment assets'],
+          risks: ['Location dependency', 'Seasonal variations'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Wellness' }
+        },
+        {
+          id: 'organic_farming_entry',
+          type: 'sector',
+          sector: 'renewable_energy',
+          title: 'Organic Farm Operations',
+          description: 'Sustainable organic farming with direct-to-consumer sales',
+          company: 'Green Valley Farms',
+          investmentRequired: 350000,
+          expectedROI: 19,
+          riskLevel: 'medium',
+          liquidity: 'medium',
+          timeHorizon: 36,
+          cashflowMonthly: 11000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 250000 },
+          benefits: ['Premium pricing', 'Sustainable model', 'Health conscious market'],
+          risks: ['Weather dependency', 'Certification costs'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Organic' }
+        },
+        {
+          id: 'digital_marketing_entry',
+          type: 'sector',
+          sector: 'tech',
+          title: 'Digital Marketing Agency',
+          description: 'Full-service digital marketing and social media management',
+          company: 'Digital Boost Agency',
+          investmentRequired: 200000,
+          expectedROI: 26,
+          riskLevel: 'low',
+          liquidity: 'high',
+          timeHorizon: 18,
+          cashflowMonthly: 9000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 150000 },
+          benefits: ['Low overhead', 'Scalable service', 'Growing demand'],
+          risks: ['Client dependency', 'Algorithm changes'],
+          keyFactors: { 'Liquidity': 'High', 'Volatility': 'Low', 'Growth': 'Digital' }
+        },
+        {
+          id: 'education_tech_entry',
+          type: 'sector',
+          sector: 'tech',
+          title: 'Online Learning Platform',
+          description: 'Educational technology platform for skill development',
+          company: 'LearnTech Solutions',
+          investmentRequired: 550000,
+          expectedROI: 30,
+          riskLevel: 'medium',
+          liquidity: 'medium',
+          timeHorizon: 30,
+          cashflowMonthly: 19000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 450000 },
+          benefits: ['Education demand', 'Subscription model', 'Scalable content'],
+          risks: ['Content competition', 'Technology changes'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'EdTech' }
+        },
+        {
+          id: 'coffee_chain_entry',
+          type: 'sector',
+          sector: 'fast_food',
+          title: 'Premium Coffee Chain',
+          description: 'Artisanal coffee shops with specialty blends',
+          company: 'Brew Masters Cafe',
+          investmentRequired: 320000,
+          expectedROI: 21,
+          riskLevel: 'medium',
+          liquidity: 'medium',
+          timeHorizon: 24,
+          cashflowMonthly: 13000,
+          status: 'available',
+          requirements: { minSectors: 0, minNetWorth: 280000 },
+          benefits: ['Premium positioning', 'Brand loyalty', 'High margins'],
+          risks: ['Location risk', 'Coffee price volatility'],
+          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Beverage' }
         }
       );
     }
@@ -359,6 +549,188 @@ const DealsSection: React.FC = () => {
         benefits: ['Brand portfolio', 'Content creation capabilities', 'Digital transformation'],
         risks: ['Changing consumer preferences', 'Technology disruption', 'Content creation risks'],
         keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Entertainment' }
+      },
+      
+      // Additional Global Business deals to reach 10+
+      {
+        id: 'global_retail_1',
+        type: 'acquisition' as const,
+        title: 'National Retail Chain',
+        description: 'Acquire established retail chain with 150+ stores across India',
+        company: 'MegaMart Retail Ltd',
+        investmentRequired: 9500000, // 95L
+        expectedROI: 19,
+        riskLevel: 'medium' as const,
+        liquidity: 'medium' as const,
+        timeHorizon: 42,
+        cashflowMonthly: 165000,
+        status: 'available' as const,
+        requirements: { minSectors: 0, minNetWorth: 7000000 },
+        benefits: ['Established customer base', 'Prime locations', 'Supply chain network'],
+        risks: ['E-commerce competition', 'Real estate costs', 'Inventory management'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Retail' }
+      },
+      {
+        id: 'global_logistics_2',
+        type: 'acquisition' as const,
+        title: 'Logistics & Warehousing Network',
+        description: 'Pan-India logistics company with advanced supply chain technology',
+        company: 'SwiftMove Logistics',
+        investmentRequired: 55000000, // 5.5Cr
+        expectedROI: 23,
+        riskLevel: 'medium' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 54,
+        cashflowMonthly: 1200000,
+        status: 'available' as const,
+        requirements: { minSectors: 1, minNetWorth: 40000000 },
+        benefits: ['E-commerce growth', 'Technology advantage', 'Strategic locations'],
+        risks: ['Fuel price volatility', 'Regulatory changes', 'Competition'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Logistics' }
+      },
+      {
+        id: 'global_fintech_2',
+        type: 'acquisition' as const,
+        title: 'Digital Payment Platform',
+        description: 'Leading fintech company with payment gateway and wallet services',
+        company: 'PaySecure Technologies',
+        investmentRequired: 85000000, // 8.5Cr
+        expectedROI: 35,
+        riskLevel: 'high' as const,
+        liquidity: 'medium' as const,
+        timeHorizon: 36,
+        cashflowMonthly: 2400000,
+        status: 'available' as const,
+        requirements: { minSectors: 1, minNetWorth: 60000000 },
+        benefits: ['Digital payments growth', 'Recurring revenue', 'Technology moat'],
+        risks: ['Regulatory changes', 'Cybersecurity threats', 'Competition'],
+        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Fintech' }
+      },
+      {
+        id: 'global_agriculture_3',
+        type: 'acquisition' as const,
+        title: 'Agricultural Processing Empire',
+        description: 'Integrated agriculture processing with food manufacturing capabilities',
+        company: 'AgroTech Industries',
+        investmentRequired: 180000000, // 18Cr
+        expectedROI: 21,
+        riskLevel: 'medium' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 66,
+        cashflowMonthly: 3150000,
+        status: 'available' as const,
+        requirements: { minSectors: 2, minNetWorth: 130000000 },
+        benefits: ['Food security sector', 'Government support', 'Export potential'],
+        risks: ['Weather dependency', 'Commodity prices', 'Supply chain'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Agriculture' }
+      },
+      {
+        id: 'global_hospitality_3',
+        type: 'acquisition' as const,
+        title: 'Premium Hotel Chain',
+        description: 'Luxury hotel chain with 25 properties in tier-1 cities',
+        company: 'Royal Suites Hospitality',
+        investmentRequired: 320000000, // 32Cr
+        expectedROI: 18,
+        riskLevel: 'medium' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 84,
+        cashflowMonthly: 4800000,
+        status: 'available' as const,
+        requirements: { minSectors: 2, minNetWorth: 250000000 },
+        benefits: ['Prime real estate', 'Brand recognition', 'Tourism growth'],
+        risks: ['Economic cycles', 'High operational costs', 'Seasonal demand'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'High', 'Growth': 'Hospitality' }
+      },
+      {
+        id: 'global_automotive_4',
+        type: 'acquisition' as const,
+        title: 'Electric Vehicle Manufacturing',
+        description: 'EV manufacturing facility with battery technology and charging network',
+        company: 'ElectriDrive Motors',
+        investmentRequired: 850000000, // 85Cr
+        expectedROI: 28,
+        riskLevel: 'high' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 96,
+        cashflowMonthly: 19850000,
+        status: 'available' as const,
+        requirements: { minSectors: 3, minNetWorth: 650000000 },
+        benefits: ['EV revolution', 'Government incentives', 'Technology leadership'],
+        risks: ['Technology disruption', 'High capital needs', 'Market adoption'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Electric' }
+      },
+      {
+        id: 'global_pharma_biotech_4',
+        type: 'acquisition' as const,
+        title: 'Biotechnology Research Firm',
+        description: 'Leading biotech company with drug development pipeline',
+        company: 'BioGenesis Research',
+        investmentRequired: 1200000000, // 120Cr
+        expectedROI: 32,
+        riskLevel: 'high' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 120,
+        cashflowMonthly: 32000000,
+        status: 'available' as const,
+        requirements: { minSectors: 3, minNetWorth: 900000000 },
+        benefits: ['Innovation pipeline', 'Patent portfolio', 'Global market'],
+        risks: ['R&D failures', 'Regulatory approval', 'Long development cycles'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Biotech' }
+      },
+      {
+        id: 'global_space_tech_4',
+        type: 'joint_venture' as const,
+        title: 'Space Technology Venture',
+        description: 'Joint venture in satellite manufacturing and space services',
+        company: 'Cosmos Technologies',
+        investmentRequired: 2100000000, // 210Cr
+        expectedROI: 25,
+        riskLevel: 'high' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 144,
+        cashflowMonthly: 43750000,
+        status: 'available' as const,
+        requirements: { minSectors: 4, minNetWorth: 1500000000 },
+        benefits: ['Future technology', 'Government contracts', 'Global demand'],
+        risks: ['Technical complexity', 'High capital needs', 'Long payback'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Space' }
+      },
+      {
+        id: 'global_defense_4',
+        type: 'acquisition' as const,
+        title: 'Defense Technology Corporation',
+        description: 'Defense contractor with aerospace and cybersecurity capabilities',
+        company: 'Shield Defense Systems',
+        investmentRequired: 3200000000, // 320Cr
+        expectedROI: 22,
+        riskLevel: 'medium' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 108,
+        cashflowMonthly: 58600000,
+        status: 'available' as const,
+        requirements: { minSectors: 4, minNetWorth: 2400000000 },
+        benefits: ['Government contracts', 'Strategic importance', 'Technology edge'],
+        risks: ['Policy changes', 'Security clearance', 'Competition'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Defense' }
+      },
+      {
+        id: 'global_infrastructure_4',
+        type: 'acquisition' as const,
+        title: 'Smart City Infrastructure',
+        description: 'Integrated smart city solutions including IoT, traffic, and utilities',
+        company: 'UrbanTech Solutions',
+        investmentRequired: 5500000000, // 550Cr
+        expectedROI: 19,
+        riskLevel: 'medium' as const,
+        liquidity: 'low' as const,
+        timeHorizon: 180,
+        cashflowMonthly: 87000000,
+        status: 'available' as const,
+        requirements: { minSectors: 4, minNetWorth: 4000000000 },
+        benefits: ['Government backing', 'Long-term contracts', 'Infrastructure growth'],
+        risks: ['Project delays', 'Policy changes', 'Technology complexity'],
+        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Low', 'Growth': 'Infrastructure' }
       }
     ];
 
@@ -843,12 +1215,8 @@ const DealsSection: React.FC = () => {
   };
 
   const renderGlobalBusinessContent = () => {
-    // Filter deals between 10Cr-1000Cr (₹100,000,000 to ₹10,000,000,000) for Global Business section
-    const availableDeals = qualifiedDeals.filter(deal => 
-      deal.status === 'available' && 
-      deal.investmentRequired >= 100000000 && 
-      deal.investmentRequired <= 10000000000
-    );
+    // Show all qualified deals for Global Business section (original behavior)
+    const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
     
     return (
       <div className="space-y-4">
