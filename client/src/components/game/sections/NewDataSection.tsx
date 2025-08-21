@@ -297,35 +297,6 @@ export default function NewDataSection() {
           ))}
         </div>
 
-        {/* Additional Info Section */}
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-800">
-              <Zap className="w-5 h-5" />
-              Quick Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Analyze Trends
-              </Button>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
-                <Target className="w-4 h-4 mr-2" />
-                Set Goals
-              </Button>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
-                <Users className="w-4 h-4 mr-2" />
-                Team Review
-              </Button>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
-                <Briefcase className="w-4 h-4 mr-2" />
-                Export Report
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
