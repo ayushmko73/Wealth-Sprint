@@ -388,75 +388,101 @@ export default function NewDataSection() {
 
       {/* Details Modal */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-600" />
-              {selectedItem?.title} - Growth Opportunities
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-blue-600" />
+                {selectedItem?.title} - Growth Opportunities
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDetailsModal(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </DialogTitle>
           </DialogHeader>
           
           {selectedItem && (
-            <div className="space-y-6">
+            <div className="space-y-6 pt-4">
               {/* Current Metrics */}
-              <div className="bg-blue-50 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-800 mb-2">Current Performance</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-blue-600">Value</div>
-                    <div className="text-xl font-bold text-blue-800">{selectedItem.value}</div>
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
+                <h3 className="font-bold text-blue-800 mb-4 text-lg">Current Performance</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-sm text-blue-600 mb-1">Value</div>
+                    <div className="text-2xl font-bold text-blue-800">{selectedItem.value}</div>
                   </div>
-                  <div>
-                    <div className="text-sm text-blue-600">Change</div>
-                    <div className={`text-lg font-semibold ${
+                  <div className="text-center">
+                    <div className="text-sm text-blue-600 mb-1">Change</div>
+                    <div className={`text-xl font-bold flex items-center justify-center gap-1 ${
                       selectedItem.trend === 'up' ? 'text-green-600' : 
                       selectedItem.trend === 'down' ? 'text-red-600' : 'text-blue-600'
                     }`}>
+                      {selectedItem.trend === 'up' && <ArrowUp className="w-5 h-5" />}
+                      {selectedItem.trend === 'down' && <ArrowDown className="w-5 h-5" />}
                       {selectedItem.change}
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-blue-700 mt-2">{selectedItem.description}</p>
+                <p className="text-blue-700 mt-4 text-center bg-white bg-opacity-50 rounded-lg p-3">{selectedItem.description}</p>
               </div>
 
               {/* Available Upgrades */}
               <div>
-                <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4" />
+                <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2 text-lg">
+                  <ShoppingCart className="w-5 h-5" />
                   Business Growth Investments
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
                   {businessUpgrades.map((upgrade) => {
                     const isPurchased = purchasedUpgrades.includes(upgrade.id);
                     const canAfford = financialData.bankBalance >= upgrade.price;
                     
                     return (
-                      <div key={upgrade.id} className={`border rounded-lg p-4 ${
-                        isPurchased ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                      <div key={upgrade.id} className={`border-2 rounded-xl p-5 transition-all duration-200 hover:shadow-lg ${
+                        isPurchased 
+                          ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' 
+                          : 'bg-white border-gray-200 hover:border-blue-300'
                       }`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-800">{upgrade.title}</h4>
+                        <div className="flex items-start justify-between mb-3">
+                          <h4 className="font-bold text-gray-800 text-lg">{upgrade.title}</h4>
                           <div className="flex items-center gap-2">
-                            {isPurchased && <CheckCircle className="w-4 h-4 text-green-600" />}
-                            <Badge className={isPurchased ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
-                              {isPurchased ? 'Owned' : formatMoney(upgrade.price)}
+                            {isPurchased && <CheckCircle className="w-5 h-5 text-green-600" />}
+                            <Badge className={`px-3 py-1 ${
+                              isPurchased 
+                                ? 'bg-green-200 text-green-800 border-green-300' 
+                                : 'bg-blue-100 text-blue-800 border-blue-200'
+                            }`}>
+                              {isPurchased ? 'OWNED' : formatMoney(upgrade.price)}
                             </Badge>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{upgrade.description}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm">
-                            <span className="text-green-600 font-semibold">+{formatMoney(upgrade.monthlyBoost)}/month</span>
-                            <span className="text-gray-500 ml-2">{upgrade.impact}</span>
+                        
+                        <p className="text-gray-600 mb-4 leading-relaxed">{upgrade.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-green-600 font-bold text-lg">+{formatMoney(upgrade.monthlyBoost)}/month</span>
+                            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 px-2 py-1">
+                              {upgrade.impact}
+                            </Badge>
                           </div>
+                          
                           {!isPurchased && (
                             <Button 
-                              size="sm" 
+                              className={`w-full py-3 font-semibold ${
+                                canAfford 
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              }`}
                               onClick={() => handlePurchaseUpgrade(upgrade)}
                               disabled={!canAfford}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
-                              {canAfford ? 'Purchase' : 'Insufficient Funds'}
+                              {canAfford ? '💳 Purchase Now' : '💰 Insufficient Funds'}
                             </Button>
                           )}
                         </div>
@@ -467,16 +493,19 @@ export default function NewDataSection() {
               </div>
 
               {/* Summary */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-800 mb-2">Investment Summary</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">Available Balance:</span>
-                    <span className="font-semibold ml-2">{formatMoney(financialData.bankBalance)}</span>
+              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border-2 border-gray-200">
+                <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Investment Summary
+                </h4>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-gray-600 mb-1">Available Balance</div>
+                    <div className="text-xl font-bold text-gray-800">{formatMoney(financialData.bankBalance)}</div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Monthly Boost:</span>
-                    <span className="font-semibold text-green-600 ml-2">+{formatMoney(totalUpgradeContribution)}</span>
+                  <div className="text-center">
+                    <div className="text-gray-600 mb-1">Monthly Growth Boost</div>
+                    <div className="text-xl font-bold text-green-600">+{formatMoney(totalUpgradeContribution)}</div>
                   </div>
                 </div>
               </div>
