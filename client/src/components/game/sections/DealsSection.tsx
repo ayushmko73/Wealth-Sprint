@@ -98,23 +98,23 @@ const DealsSection: React.FC = () => {
     // Base deals available based on portfolio logic
     const deals: Deal[] = [];
 
-    // Entry-level deals (0 sectors) - More than 10 deals
+    // Entry-level deals (0 sectors)
     if (sectorCount === 0) {
       deals.push(
         {
           id: 'fast_food_entry',
-          type: 'sector' as const,
+          type: 'sector',
           sector: 'fast_food',
           title: 'Quick Bite Franchise',
           description: 'Entry-level fast food franchise opportunity with proven business model',
           company: 'Quick Bite Chain',
           investmentRequired: 250000,
           expectedROI: 18,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
+          riskLevel: 'medium',
+          liquidity: 'medium',
           timeHorizon: 24,
           cashflowMonthly: 15000,
-          status: 'available' as const,
+          status: 'available',
           requirements: { minSectors: 0, minNetWorth: 200000 },
           benefits: ['Proven business model', 'Training provided', 'Brand recognition'],
           risks: ['Market competition', 'Location dependency'],
@@ -122,212 +122,22 @@ const DealsSection: React.FC = () => {
         },
         {
           id: 'tech_entry',
-          type: 'sector' as const,
+          type: 'sector',
           sector: 'tech',
           title: 'SaaS Startup Investment',
           description: 'Early-stage SaaS platform targeting small businesses',
           company: 'CloudSync Solutions',
           investmentRequired: 500000,
           expectedROI: 35,
-          riskLevel: 'high' as const,
-          liquidity: 'low' as const,
+          riskLevel: 'high',
+          liquidity: 'low',
           timeHorizon: 36,
           cashflowMonthly: 8000,
-          status: 'available' as const,
+          status: 'available',
           requirements: { minSectors: 0, minNetWorth: 400000 },
           benefits: ['High growth potential', 'Scalable technology', 'Recurring revenue'],
           risks: ['Technology risk', 'Market adoption uncertainty'],
           keyFactors: { 'Liquidity': 'Low', 'Volatility': 'High', 'Growth': 'Exponential' }
-        },
-        {
-          id: 'ecommerce_entry',
-          type: 'sector' as const,
-          sector: 'ecommerce',
-          title: 'Online Retail Store',
-          description: 'Digital marketplace for electronics and gadgets',
-          company: 'TechBazar Online',
-          investmentRequired: 300000,
-          expectedROI: 22,
-          riskLevel: 'medium' as const,
-          liquidity: 'high' as const,
-          timeHorizon: 18,
-          cashflowMonthly: 12000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 250000 },
-          benefits: ['Growing market', 'Digital advantage', 'Scalable platform'],
-          risks: ['Online competition', 'Technology changes'],
-          keyFactors: { 'Liquidity': 'High', 'Volatility': 'Medium', 'Growth': 'Digital' }
-        },
-        {
-          id: 'healthcare_entry',
-          type: 'sector' as const,
-          sector: 'healthcare',
-          title: 'Medical Clinic Chain',
-          description: 'Primary care clinic with telemedicine capabilities',
-          company: 'HealthFirst Centers',
-          investmentRequired: 600000,
-          expectedROI: 16,
-          riskLevel: 'low' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 30,
-          cashflowMonthly: 18000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 500000 },
-          benefits: ['Essential service', 'Stable demand', 'Insurance backing'],
-          risks: ['Regulatory compliance', 'Staff shortages'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Low', 'Growth': 'Healthcare' }
-        },
-        {
-          id: 'real_estate_entry',
-          type: 'sector' as const,
-          sector: 'real_estate',
-          title: 'Property Development',
-          description: 'Residential apartment complex development project',
-          company: 'Urban Developers Ltd',
-          investmentRequired: 800000,
-          expectedROI: 24,
-          riskLevel: 'medium' as const,
-          liquidity: 'low' as const,
-          timeHorizon: 48,
-          cashflowMonthly: 22000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 600000 },
-          benefits: ['Asset appreciation', 'Rental income', 'Tax benefits'],
-          risks: ['Market cycles', 'Construction delays'],
-          keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Property' }
-        },
-        {
-          id: 'renewable_energy_entry',
-          type: 'sector' as const,
-          sector: 'renewable_energy',
-          title: 'Solar Panel Installation',
-          description: 'Commercial solar panel installation business',
-          company: 'SunPower Solutions',
-          investmentRequired: 450000,
-          expectedROI: 28,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 36,
-          cashflowMonthly: 16000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 350000 },
-          benefits: ['Government incentives', 'Green energy trend', 'Long-term contracts'],
-          risks: ['Weather dependency', 'Technology evolution'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Low', 'Growth': 'Sustainable' }
-        },
-        {
-          id: 'food_delivery_entry',
-          type: 'sector' as const,
-          sector: 'tech',
-          title: 'Food Delivery App',
-          description: 'Local food delivery platform with cloud kitchen network',
-          company: 'QuickEats Platform',
-          investmentRequired: 700000,
-          expectedROI: 32,
-          riskLevel: 'high' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 24,
-          cashflowMonthly: 25000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 550000 },
-          benefits: ['Growing demand', 'Technology edge', 'Network effects'],
-          risks: ['High competition', 'Delivery logistics'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Platform' }
-        },
-        {
-          id: 'fitness_entry',
-          type: 'sector' as const,
-          sector: 'healthcare',
-          title: 'Fitness Center Chain',
-          description: 'Modern gym with digital fitness tracking',
-          company: 'FitLife Gyms',
-          investmentRequired: 400000,
-          expectedROI: 20,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 30,
-          cashflowMonthly: 14000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 300000 },
-          benefits: ['Health trend', 'Membership model', 'Equipment assets'],
-          risks: ['Location dependency', 'Seasonal variations'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Wellness' }
-        },
-        {
-          id: 'organic_farming_entry',
-          type: 'sector' as const,
-          sector: 'renewable_energy',
-          title: 'Organic Farm Operations',
-          description: 'Sustainable organic farming with direct-to-consumer sales',
-          company: 'Green Valley Farms',
-          investmentRequired: 350000,
-          expectedROI: 19,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 36,
-          cashflowMonthly: 11000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 250000 },
-          benefits: ['Premium pricing', 'Sustainable model', 'Health conscious market'],
-          risks: ['Weather dependency', 'Certification costs'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Organic' }
-        },
-        {
-          id: 'digital_marketing_entry',
-          type: 'sector' as const,
-          sector: 'tech',
-          title: 'Digital Marketing Agency',
-          description: 'Full-service digital marketing and social media management',
-          company: 'Digital Boost Agency',
-          investmentRequired: 200000,
-          expectedROI: 26,
-          riskLevel: 'low' as const,
-          liquidity: 'high' as const,
-          timeHorizon: 18,
-          cashflowMonthly: 9000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 150000 },
-          benefits: ['Low overhead', 'Scalable service', 'Growing demand'],
-          risks: ['Client dependency', 'Algorithm changes'],
-          keyFactors: { 'Liquidity': 'High', 'Volatility': 'Low', 'Growth': 'Digital' }
-        },
-        {
-          id: 'education_tech_entry',
-          type: 'sector' as const,
-          sector: 'tech',
-          title: 'Online Learning Platform',
-          description: 'Educational technology platform for skill development',
-          company: 'LearnTech Solutions',
-          investmentRequired: 550000,
-          expectedROI: 30,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 30,
-          cashflowMonthly: 19000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 450000 },
-          benefits: ['Education demand', 'Subscription model', 'Scalable content'],
-          risks: ['Content competition', 'Technology changes'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'EdTech' }
-        },
-        {
-          id: 'coffee_chain_entry',
-          type: 'sector' as const,
-          sector: 'fast_food',
-          title: 'Premium Coffee Chain',
-          description: 'Artisanal coffee shops with specialty blends',
-          company: 'Brew Masters Cafe',
-          investmentRequired: 320000,
-          expectedROI: 21,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
-          timeHorizon: 24,
-          cashflowMonthly: 13000,
-          status: 'available' as const,
-          requirements: { minSectors: 0, minNetWorth: 280000 },
-          benefits: ['Premium positioning', 'Brand loyalty', 'High margins'],
-          risks: ['Location risk', 'Coffee price volatility'],
-          keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Beverage' }
         }
       );
     }
@@ -337,18 +147,18 @@ const DealsSection: React.FC = () => {
       if (ownedSectors.includes('fast_food')) {
         deals.push({
           id: 'fast_food_expansion',
-          type: 'sector' as const,
+          type: 'sector',
           sector: 'fast_food',
           title: 'Premium Restaurant Chain',
           description: 'Expand into premium dining with established fast food experience',
           company: 'Gourmet Express',
           investmentRequired: 750000,
           expectedROI: 22,
-          riskLevel: 'medium' as const,
-          liquidity: 'medium' as const,
+          riskLevel: 'medium',
+          liquidity: 'medium',
           timeHorizon: 18,
           cashflowMonthly: 25000,
-          status: 'available' as const,
+          status: 'available',
           requirements: { minSectors: 1, specificSectors: ['fast_food'] },
           benefits: ['Higher margins', 'Premium positioning', 'Existing supply chain'],
           risks: ['Higher operational costs', 'Market positioning'],
@@ -361,17 +171,17 @@ const DealsSection: React.FC = () => {
     if (sectorCount >= 2) {
       deals.push({
         id: 'multi_sector_synergy',
-        type: 'sector' as const,
+        type: 'sector',
         title: 'Cross-Industry Platform',
         description: 'Leverage multiple sector experience for integrated platform',
         company: 'Synergy Ventures',
         investmentRequired: 1200000,
         expectedROI: 45,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
+        riskLevel: 'medium',
+        liquidity: 'low',
         timeHorizon: 42,
         cashflowMonthly: 35000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 2 },
         benefits: ['Cross-sector synergies', 'Diversified revenue', 'Market leadership'],
         risks: ['Complex operations', 'Integration challenges'],
@@ -384,17 +194,17 @@ const DealsSection: React.FC = () => {
       // Level 1: 50L - 1Cr deals (entry level)
       {
         id: 'global_manufacturing_1',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Industrial Manufacturing Plant',
         description: 'Acquire majority stake in established steel manufacturing facility',
         company: 'Steel Tech Industries',
         investmentRequired: 7500000, // 75L
         expectedROI: 18,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
+        riskLevel: 'medium',
+        liquidity: 'low',
         timeHorizon: 48,
         cashflowMonthly: 125000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 0, minNetWorth: 5000000 },
         benefits: ['Established market presence', 'Steady industrial demand', 'Asset-backed value'],
         risks: ['Capital intensive operations', 'Environmental regulations', 'Commodity price volatility'],
@@ -402,17 +212,17 @@ const DealsSection: React.FC = () => {
       },
       {
         id: 'global_telecom_1',
-        type: 'joint_venture' as const,
+        type: 'joint_venture',
         title: 'Telecom Infrastructure JV',
         description: 'Joint venture in 5G tower installation across tier-2 cities',
         company: 'Connect India Networks',
         investmentRequired: 8500000, // 85L
         expectedROI: 22,
-        riskLevel: 'medium' as const,
-        liquidity: 'medium' as const,
+        riskLevel: 'medium',
+        liquidity: 'medium',
         timeHorizon: 36,
         cashflowMonthly: 180000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 0, minNetWorth: 6000000 },
         benefits: ['Government backing', 'Future-ready technology', 'Recurring revenue model'],
         risks: ['Technology obsolescence', 'Regulatory changes', 'High competition'],
@@ -422,17 +232,17 @@ const DealsSection: React.FC = () => {
       // Level 2: 1Cr - 10Cr deals
       {
         id: 'global_pharma_2',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Pharmaceutical Distribution Network',
         description: 'Complete acquisition of regional pharmaceutical distribution company',
         company: 'MediCare Distribution Ltd',
         investmentRequired: 35000000, // 3.5Cr
         expectedROI: 25,
-        riskLevel: 'low' as const,
-        liquidity: 'medium' as const,
+        riskLevel: 'low',
+        liquidity: 'medium',
         timeHorizon: 60,
         cashflowMonthly: 750000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 1, minNetWorth: 25000000 },
         benefits: ['Essential service sector', 'Stable demand', 'Government contracts'],
         risks: ['Regulatory compliance', 'Supply chain disruptions', 'Price controls'],
@@ -440,17 +250,17 @@ const DealsSection: React.FC = () => {
       },
       {
         id: 'global_energy_2',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Renewable Energy Portfolio',
         description: 'Acquire wind and solar farm portfolio across multiple states',
         company: 'GreenPower Solutions',
         investmentRequired: 65000000, // 6.5Cr
         expectedROI: 28,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
+        riskLevel: 'medium',
+        liquidity: 'low',
         timeHorizon: 84,
         cashflowMonthly: 1450000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 1, minNetWorth: 45000000 },
         benefits: ['Government incentives', 'Long-term contracts', 'ESG compliance'],
         risks: ['Weather dependency', 'Technology changes', 'Grid stability issues'],
@@ -460,17 +270,17 @@ const DealsSection: React.FC = () => {
       // Level 3: 10Cr - 100Cr deals
       {
         id: 'global_banking_3',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Regional Banking Institution',
         description: 'Majority stake acquisition in profitable regional bank',
         company: 'Capital Trust Bank',
         investmentRequired: 250000000, // 25Cr
         expectedROI: 20,
-        riskLevel: 'medium' as const,
-        liquidity: 'medium' as const,
+        riskLevel: 'medium',
+        liquidity: 'medium',
         timeHorizon: 72,
         cashflowMonthly: 4200000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 2, minNetWorth: 180000000 },
         benefits: ['Financial sector expertise', 'Regulatory moat', 'Diversified income'],
         risks: ['Regulatory scrutiny', 'Credit risk exposure', 'Economic cycles'],
@@ -478,17 +288,17 @@ const DealsSection: React.FC = () => {
       },
       {
         id: 'global_ports_3',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Maritime Port Operations',
         description: 'Strategic acquisition of container port terminal operations',
         company: 'Ocean Gateway Terminals',
         investmentRequired: 450000000, // 45Cr
         expectedROI: 24,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
+        riskLevel: 'medium',
+        liquidity: 'low',
         timeHorizon: 120,
         cashflowMonthly: 8750000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 2, minNetWorth: 320000000 },
         benefits: ['Strategic infrastructure', 'Trade growth exposure', 'High barriers to entry'],
         risks: ['Capital intensive', 'Global trade volatility', 'Environmental concerns'],
@@ -498,17 +308,17 @@ const DealsSection: React.FC = () => {
       // Level 4: 100Cr - 500Cr deals (ultra high-value)
       {
         id: 'global_airline_4',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'National Airline Acquisition',
         description: 'Complete acquisition of established domestic airline with international routes',
         company: 'Skyways International',
         investmentRequired: 1500000000, // 150Cr
         expectedROI: 22,
-        riskLevel: 'high' as const,
-        liquidity: 'medium' as const,
+        riskLevel: 'high',
+        liquidity: 'medium',
         timeHorizon: 96,
         cashflowMonthly: 28000000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 3, minNetWorth: 1000000000 },
         benefits: ['Market leadership', 'International exposure', 'Brand recognition'],
         risks: ['Fuel price volatility', 'Economic sensitivity', 'Regulatory complexity'],
@@ -516,17 +326,17 @@ const DealsSection: React.FC = () => {
       },
       {
         id: 'global_mining_4',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Mineral Extraction Conglomerate',
         description: 'Acquisition of diversified mining operations across iron ore, coal, and rare metals',
         company: 'Bharat Mining Corporation',
         investmentRequired: 2800000000, // 280Cr
         expectedROI: 26,
-        riskLevel: 'high' as const,
-        liquidity: 'low' as const,
+        riskLevel: 'high',
+        liquidity: 'low',
         timeHorizon: 144,
         cashflowMonthly: 65000000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 3, minNetWorth: 2000000000 },
         benefits: ['Resource control', 'Global demand exposure', 'Strategic materials'],
         risks: ['Commodity cycles', 'Environmental regulations', 'Geopolitical risks'],
@@ -534,203 +344,21 @@ const DealsSection: React.FC = () => {
       },
       {
         id: 'global_media_4',
-        type: 'acquisition' as const,
+        type: 'acquisition',
         title: 'Media & Entertainment Empire',
         description: 'Complete acquisition of integrated media conglomerate with TV, film, and digital assets',
         company: 'Universal Entertainment Group',
         investmentRequired: 4200000000, // 420Cr
         expectedROI: 30,
-        riskLevel: 'high' as const,
-        liquidity: 'medium' as const,
+        riskLevel: 'high',
+        liquidity: 'medium',
         timeHorizon: 108,
         cashflowMonthly: 95000000,
-        status: 'available' as const,
+        status: 'available',
         requirements: { minSectors: 4, minNetWorth: 3000000000 },
         benefits: ['Brand portfolio', 'Content creation capabilities', 'Digital transformation'],
         risks: ['Changing consumer preferences', 'Technology disruption', 'Content creation risks'],
         keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Entertainment' }
-      },
-      
-      // Additional Global Business deals to reach 10+
-      {
-        id: 'global_retail_1',
-        type: 'acquisition' as const,
-        title: 'National Retail Chain',
-        description: 'Acquire established retail chain with 150+ stores across India',
-        company: 'MegaMart Retail Ltd',
-        investmentRequired: 9500000, // 95L
-        expectedROI: 19,
-        riskLevel: 'medium' as const,
-        liquidity: 'medium' as const,
-        timeHorizon: 42,
-        cashflowMonthly: 165000,
-        status: 'available' as const,
-        requirements: { minSectors: 0, minNetWorth: 7000000 },
-        benefits: ['Established customer base', 'Prime locations', 'Supply chain network'],
-        risks: ['E-commerce competition', 'Real estate costs', 'Inventory management'],
-        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'Medium', 'Growth': 'Retail' }
-      },
-      {
-        id: 'global_logistics_2',
-        type: 'acquisition' as const,
-        title: 'Logistics & Warehousing Network',
-        description: 'Pan-India logistics company with advanced supply chain technology',
-        company: 'SwiftMove Logistics',
-        investmentRequired: 55000000, // 5.5Cr
-        expectedROI: 23,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 54,
-        cashflowMonthly: 1200000,
-        status: 'available' as const,
-        requirements: { minSectors: 1, minNetWorth: 40000000 },
-        benefits: ['E-commerce growth', 'Technology advantage', 'Strategic locations'],
-        risks: ['Fuel price volatility', 'Regulatory changes', 'Competition'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Logistics' }
-      },
-      {
-        id: 'global_fintech_2',
-        type: 'acquisition' as const,
-        title: 'Digital Payment Platform',
-        description: 'Leading fintech company with payment gateway and wallet services',
-        company: 'PaySecure Technologies',
-        investmentRequired: 85000000, // 8.5Cr
-        expectedROI: 35,
-        riskLevel: 'high' as const,
-        liquidity: 'medium' as const,
-        timeHorizon: 36,
-        cashflowMonthly: 2400000,
-        status: 'available' as const,
-        requirements: { minSectors: 1, minNetWorth: 60000000 },
-        benefits: ['Digital payments growth', 'Recurring revenue', 'Technology moat'],
-        risks: ['Regulatory changes', 'Cybersecurity threats', 'Competition'],
-        keyFactors: { 'Liquidity': 'Medium', 'Volatility': 'High', 'Growth': 'Fintech' }
-      },
-      {
-        id: 'global_agriculture_3',
-        type: 'acquisition' as const,
-        title: 'Agricultural Processing Empire',
-        description: 'Integrated agriculture processing with food manufacturing capabilities',
-        company: 'AgroTech Industries',
-        investmentRequired: 180000000, // 18Cr
-        expectedROI: 21,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 66,
-        cashflowMonthly: 3150000,
-        status: 'available' as const,
-        requirements: { minSectors: 2, minNetWorth: 130000000 },
-        benefits: ['Food security sector', 'Government support', 'Export potential'],
-        risks: ['Weather dependency', 'Commodity prices', 'Supply chain'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Agriculture' }
-      },
-      {
-        id: 'global_hospitality_3',
-        type: 'acquisition' as const,
-        title: 'Premium Hotel Chain',
-        description: 'Luxury hotel chain with 25 properties in tier-1 cities',
-        company: 'Royal Suites Hospitality',
-        investmentRequired: 320000000, // 32Cr
-        expectedROI: 18,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 84,
-        cashflowMonthly: 4800000,
-        status: 'available' as const,
-        requirements: { minSectors: 2, minNetWorth: 250000000 },
-        benefits: ['Prime real estate', 'Brand recognition', 'Tourism growth'],
-        risks: ['Economic cycles', 'High operational costs', 'Seasonal demand'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'High', 'Growth': 'Hospitality' }
-      },
-      {
-        id: 'global_automotive_4',
-        type: 'acquisition' as const,
-        title: 'Electric Vehicle Manufacturing',
-        description: 'EV manufacturing facility with battery technology and charging network',
-        company: 'ElectriDrive Motors',
-        investmentRequired: 850000000, // 85Cr
-        expectedROI: 28,
-        riskLevel: 'high' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 96,
-        cashflowMonthly: 19850000,
-        status: 'available' as const,
-        requirements: { minSectors: 3, minNetWorth: 650000000 },
-        benefits: ['EV revolution', 'Government incentives', 'Technology leadership'],
-        risks: ['Technology disruption', 'High capital needs', 'Market adoption'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Electric' }
-      },
-      {
-        id: 'global_pharma_biotech_4',
-        type: 'acquisition' as const,
-        title: 'Biotechnology Research Firm',
-        description: 'Leading biotech company with drug development pipeline',
-        company: 'BioGenesis Research',
-        investmentRequired: 1200000000, // 120Cr
-        expectedROI: 32,
-        riskLevel: 'high' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 120,
-        cashflowMonthly: 32000000,
-        status: 'available' as const,
-        requirements: { minSectors: 3, minNetWorth: 900000000 },
-        benefits: ['Innovation pipeline', 'Patent portfolio', 'Global market'],
-        risks: ['R&D failures', 'Regulatory approval', 'Long development cycles'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Biotech' }
-      },
-      {
-        id: 'global_space_tech_4',
-        type: 'joint_venture' as const,
-        title: 'Space Technology Venture',
-        description: 'Joint venture in satellite manufacturing and space services',
-        company: 'Cosmos Technologies',
-        investmentRequired: 2100000000, // 210Cr
-        expectedROI: 25,
-        riskLevel: 'high' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 144,
-        cashflowMonthly: 43750000,
-        status: 'available' as const,
-        requirements: { minSectors: 4, minNetWorth: 1500000000 },
-        benefits: ['Future technology', 'Government contracts', 'Global demand'],
-        risks: ['Technical complexity', 'High capital needs', 'Long payback'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Very High', 'Growth': 'Space' }
-      },
-      {
-        id: 'global_defense_4',
-        type: 'acquisition' as const,
-        title: 'Defense Technology Corporation',
-        description: 'Defense contractor with aerospace and cybersecurity capabilities',
-        company: 'Shield Defense Systems',
-        investmentRequired: 3200000000, // 320Cr
-        expectedROI: 22,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 108,
-        cashflowMonthly: 58600000,
-        status: 'available' as const,
-        requirements: { minSectors: 4, minNetWorth: 2400000000 },
-        benefits: ['Government contracts', 'Strategic importance', 'Technology edge'],
-        risks: ['Policy changes', 'Security clearance', 'Competition'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Medium', 'Growth': 'Defense' }
-      },
-      {
-        id: 'global_infrastructure_4',
-        type: 'acquisition' as const,
-        title: 'Smart City Infrastructure',
-        description: 'Integrated smart city solutions including IoT, traffic, and utilities',
-        company: 'UrbanTech Solutions',
-        investmentRequired: 5500000000, // 550Cr
-        expectedROI: 19,
-        riskLevel: 'medium' as const,
-        liquidity: 'low' as const,
-        timeHorizon: 180,
-        cashflowMonthly: 87000000,
-        status: 'available' as const,
-        requirements: { minSectors: 4, minNetWorth: 4000000000 },
-        benefits: ['Government backing', 'Long-term contracts', 'Infrastructure growth'],
-        risks: ['Project delays', 'Policy changes', 'Technology complexity'],
-        keyFactors: { 'Liquidity': 'Low', 'Volatility': 'Low', 'Growth': 'Infrastructure' }
       }
     ];
 
@@ -982,10 +610,7 @@ const DealsSection: React.FC = () => {
   };
 
   const renderOpportunitiesContent = () => {
-    // Filter deals below 1Cr (₹10,000,000) for Opportunities section
-    const availableDeals = qualifiedDeals.filter(deal => 
-      deal.status === 'available' && deal.investmentRequired < 10000000
-    );
+    const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
     
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1215,7 +840,6 @@ const DealsSection: React.FC = () => {
   };
 
   const renderGlobalBusinessContent = () => {
-    // Show all qualified deals for Global Business section (original behavior)
     const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
     
     return (
@@ -1347,124 +971,100 @@ const DealsSection: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white border-amber-500 text-xs"
+                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500"
                     onClick={() => setExpandedDeal(expandedDeal === deal.id ? null : deal.id)}
                   >
-                    <Eye className="w-3 h-3 mr-1" />
+                    <Eye className="w-4 h-4 mr-1" />
                     Details
                   </Button>
                   <Button 
                     size="sm" 
-                    className={`flex-1 text-xs ${
+                    className={`flex-1 ${
                       canAfford 
-                        ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white' 
+                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                     onClick={() => setShowPurchaseModal(deal)}
                   >
-                    <TrendingUp className="w-3 h-3 mr-1" />
+                    <TrendingUp className="w-4 h-4 mr-1" />
                     {canAfford ? 'Invest' : 'Insufficient'}
                   </Button>
                 </div>
-              </CardContent>
 
-              {/* Expanded Executive Details */}
-              {expandedDeal === deal.id && (
-                <div className="mt-4 pt-4 border-t border-slate-200">
-                  <div className="grid grid-cols-2 gap-6">
-                    {/* Left Column - Strategic Information */}
-                    <div className="space-y-4">
-                      <div>
-                        <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-emerald-600" />
-                          Strategic Benefits
-                        </h5>
-                        <ul className="text-sm text-slate-600 space-y-1">
-                          {deal.benefits.map((benefit, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
-                              {benefit}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div>
-                        <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4 text-red-600" />
-                          Risk Assessment
-                        </h5>
-                        <ul className="text-sm text-slate-600 space-y-1">
-                          {deal.risks.map((risk, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0" />
-                              {risk}
-                            </li>
-                          ))}
-                        </ul>
+                {/* Expanded Details */}
+                {expandedDeal === deal.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                    {/* Full Benefits List */}
+                    <div>
+                      <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        All Benefits
+                      </h4>
+                      <ul className="text-sm text-green-700 space-y-1">
+                        {deal.benefits.map((benefit, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Full Risks List */}
+                    <div>
+                      <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4" />
+                        All Risks
+                      </h4>
+                      <ul className="text-sm text-red-700 space-y-1">
+                        {deal.risks.map((risk, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="w-1 h-1 bg-red-500 rounded-full mt-2 flex-shrink-0" />
+                            {risk}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Key Factors */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        Key Investment Factors
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {Object.entries(deal.keyFactors).map(([key, value]) => (
+                          <div key={key} className="text-center p-2 bg-gray-50 rounded">
+                            <div className="text-xs text-gray-600">{key}</div>
+                            <div className="text-sm font-semibold text-gray-800">{value}</div>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    {/* Right Column - Financial Analytics */}
-                    <div className="space-y-4">
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                        <h5 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                          <Calculator className="w-4 h-4 text-blue-600" />
-                          Executive Financial Summary
-                        </h5>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <span className="text-slate-600">Break-even Period:</span>
-                            <div className="font-semibold text-slate-800">{Math.round(12/deal.expectedROI*100)} months</div>
-                          </div>
-                          <div>
-                            <span className="text-slate-600">Monthly ROI:</span>
-                            <div className="font-semibold text-emerald-600">{(deal.expectedROI/12).toFixed(2)}%</div>
-                          </div>
-                          <div>
-                            <span className="text-slate-600">Total Return (5Y):</span>
-                            <div className="font-semibold text-blue-600">{formatCurrency(deal.investmentRequired * (deal.expectedROI/100) * 5)}</div>
-                          </div>
-                          <div>
-                            <span className="text-slate-600">Investment Grade:</span>
-                            <div className="font-semibold text-purple-600 capitalize">{rarity.rarity}</div>
-                          </div>
+                    {/* Financial Projections */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                        <Calculator className="w-4 h-4" />
+                        Financial Projections
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-blue-600">Monthly Return:</span>
+                          <div className="font-semibold text-blue-800">{formatCurrency(monthlyReturn)}</div>
                         </div>
-                      </div>
-
-                      <div>
-                        <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                          <BarChart3 className="w-4 h-4 text-slate-600" />
-                          Key Investment Metrics
-                        </h5>
-                        <div className="grid grid-cols-3 gap-2">
-                          {Object.entries(deal.keyFactors).map(([key, value]) => (
-                            <div key={key} className="text-center p-2 bg-slate-100 rounded border border-slate-200">
-                              <div className="text-xs text-slate-600 font-medium">{key}</div>
-                              <div className="text-sm font-bold text-slate-800">{value}</div>
-                            </div>
-                          ))}
+                        <div>
+                          <span className="text-blue-600">Break-even:</span>
+                          <div className="font-semibold text-blue-800">{Math.round(12/deal.expectedROI*100)} months</div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </CardContent>
             </Card>
           );
         })}
-
-        {availableDeals.length === 0 && (
-          <div className="bg-slate-50 p-8 rounded-lg border border-slate-200 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-              <Globe className="w-8 h-8 text-slate-400" />
-            </div>
-            <h3 className="font-semibold text-slate-800 mb-2">No Global Business Opportunities Available</h3>
-            <p className="text-sm text-slate-500 mb-4">
-              Expand your portfolio to unlock higher-tier global business investments.
-            </p>
-          </div>
-        )}
       </div>
     );
   };
