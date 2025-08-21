@@ -438,25 +438,27 @@ export default function NewDataSection() {
       </div>
 
       {/* Details Modal */}
-      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="max-w-sm max-h-[75vh] overflow-y-auto bg-white p-0 border-0 data-[state=open]:bg-transparent">
-          <div className="bg-white">
-            <DialogHeader className="px-3 py-2 border-b bg-white">
-              <DialogTitle className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
-                  <span>{selectedItem?.title} - Growth Opportunities</span>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setShowDetailsModal(false)}
-                  className="h-6 w-6 p-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </DialogTitle>
-            </DialogHeader>
+      {showDetailsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="fixed inset-0 bg-transparent" 
+            onClick={() => setShowDetailsModal(false)}
+          />
+          <div className="relative max-w-sm w-full max-h-[75vh] overflow-y-auto bg-white border rounded-lg shadow-lg">
+            <div className="px-3 py-2 border-b bg-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-semibold">{selectedItem?.title} - Growth Opportunities</span>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDetailsModal(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           
             {selectedItem && (
               <div className="p-3 space-y-3">
@@ -627,8 +629,8 @@ export default function NewDataSection() {
             </div>
           )}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }
