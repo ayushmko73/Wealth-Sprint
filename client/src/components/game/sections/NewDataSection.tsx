@@ -439,51 +439,52 @@ export default function NewDataSection() {
 
       {/* Details Modal */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
-            <DialogTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                {selectedItem?.title} - Growth Opportunities
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowDetailsModal(false)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-lg max-h-[75vh] overflow-y-auto bg-white p-0 border-0">
+          <div className="bg-white">
+            <DialogHeader className="px-3 py-2 border-b bg-white">
+              <DialogTitle className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                  <span>{selectedItem?.title} - Growth Opportunities</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowDetailsModal(false)}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
           
-          {selectedItem && (
-            <div className="space-y-6 pt-4">
-              {/* Current Metrics */}
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
-                <h3 className="font-bold text-blue-800 mb-4 text-lg">Current Performance: {selectedItem.title}</h3>
-                <div className="grid grid-cols-2 gap-6">
+            {selectedItem && (
+              <div className="p-3 space-y-3">
+                {/* Current Metrics */}
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-3">
+                  <h3 className="font-bold text-blue-800 mb-2 text-sm">Current Performance: {selectedItem.title}</h3>
+                <div className="grid grid-cols-2 gap-3">
                   <div className="text-center">
-                    <div className="text-sm text-blue-600 mb-1">Value</div>
-                    <div className="text-2xl font-bold text-blue-800">{selectedItem.value}</div>
+                    <div className="text-xs text-blue-600 mb-1">Value</div>
+                    <div className="text-lg font-bold text-blue-800">{selectedItem.value}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm text-blue-600 mb-1">Change</div>
-                    <div className={`text-xl font-bold flex items-center justify-center gap-1 ${
+                    <div className="text-xs text-blue-600 mb-1">Change</div>
+                    <div className={`text-base font-bold flex items-center justify-center gap-1 ${
                       selectedItem.trend === 'up' ? 'text-green-600' : 
                       selectedItem.trend === 'down' ? 'text-red-600' : 'text-blue-600'
                     }`}>
-                      {selectedItem.trend === 'up' && <ArrowUp className="w-5 h-5" />}
-                      {selectedItem.trend === 'down' && <ArrowDown className="w-5 h-5" />}
+                      {selectedItem.trend === 'up' && <ArrowUp className="w-4 h-4" />}
+                      {selectedItem.trend === 'down' && <ArrowDown className="w-4 h-4" />}
                       {selectedItem.change}
                     </div>
                   </div>
                 </div>
-                <p className="text-blue-700 mt-4 text-center bg-white bg-opacity-50 rounded-lg p-3">{selectedItem.description}</p>
+                <p className="text-blue-700 mt-2 text-center bg-white bg-opacity-50 rounded-lg p-2 text-sm">{selectedItem.description}</p>
                 
                 {/* Detailed Analytics */}
-                <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
                     <div className="text-xs text-blue-600">Last Month</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '18.3%' : 
@@ -491,7 +492,7 @@ export default function NewDataSection() {
                        selectedItem.id === 3 ? '21.3%' : '6th'}
                     </div>
                   </div>
-                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
                     <div className="text-xs text-blue-600">6 Month Avg</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '20.1%' : 
@@ -499,7 +500,7 @@ export default function NewDataSection() {
                        selectedItem.id === 3 ? '19.8%' : '5th'}
                     </div>
                   </div>
-                  <div className="bg-white bg-opacity-70 rounded-lg p-3">
+                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
                     <div className="text-xs text-blue-600">Industry Avg</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '15.2%' : 
@@ -510,8 +511,8 @@ export default function NewDataSection() {
                 </div>
                 
                 {/* Key Insights */}
-                <div className="mt-4 bg-white bg-opacity-70 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">Key Insights</h4>
+                <div className="mt-2 bg-white bg-opacity-70 rounded-lg p-3">
+                  <h4 className="font-semibold text-blue-800 mb-2 text-sm">Key Insights</h4>
                   <div className="text-sm text-blue-700 space-y-1">
                     {selectedItem.id === 1 && (
                       <>
@@ -547,23 +548,23 @@ export default function NewDataSection() {
 
               {/* Available Upgrades */}
               <div>
-                <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2 text-lg">
+                <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-base">
                   <ShoppingCart className="w-5 h-5" />
                   Targeted Improvements for {selectedItem.title}
                 </h3>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid gap-3">
                   {getUpgradesForItem(selectedItem).map((upgrade: any) => {
                     const isPurchased = purchasedUpgrades.includes(upgrade.id);
                     const canAfford = financialData.bankBalance >= upgrade.price;
                     
                     return (
-                      <div key={upgrade.id} className={`border-2 rounded-xl p-5 transition-all duration-200 hover:shadow-lg ${
+                      <div key={upgrade.id} className={`border rounded-lg p-3 transition-all duration-200 hover:shadow-md ${
                         isPurchased 
                           ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' 
                           : 'bg-white border-gray-200 hover:border-blue-300'
                       }`}>
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-bold text-gray-800 text-lg">{upgrade.title}</h4>
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-bold text-gray-800 text-sm">{upgrade.title}</h4>
                           <div className="flex items-center gap-2">
                             {isPurchased && <CheckCircle className="w-5 h-5 text-green-600" />}
                             <Badge className={`px-3 py-1 ${
@@ -576,11 +577,11 @@ export default function NewDataSection() {
                           </div>
                         </div>
                         
-                        <p className="text-gray-600 mb-4 leading-relaxed">{upgrade.description}</p>
+                        <p className="text-gray-600 mb-2 leading-relaxed text-xs">{upgrade.description}</p>
                         
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-green-600 font-bold text-lg">+{formatMoney(upgrade.monthlyBoost)}/month</span>
+                            <span className="text-green-600 font-bold text-sm">+{formatMoney(upgrade.monthlyBoost)}/month</span>
                             <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 px-2 py-1">
                               {upgrade.impact}
                             </Badge>
@@ -588,7 +589,7 @@ export default function NewDataSection() {
                           
                           {!isPurchased && (
                             <Button 
-                              className={`w-full py-3 font-semibold ${
+                              className={`w-full py-2 text-xs font-semibold ${
                                 canAfford 
                                   ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -607,24 +608,25 @@ export default function NewDataSection() {
               </div>
 
               {/* Summary */}
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border-2 border-gray-200">
-                <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-3 border border-gray-200">
+                <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
                   <DollarSign className="w-5 h-5" />
                   Investment Summary
                 </h4>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="text-center">
-                    <div className="text-gray-600 mb-1">Available Balance</div>
-                    <div className="text-xl font-bold text-gray-800">{formatMoney(financialData.bankBalance)}</div>
+                    <div className="text-gray-600 mb-1 text-xs">Available Balance</div>
+                    <div className="text-base font-bold text-gray-800">{formatMoney(financialData.bankBalance)}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-gray-600 mb-1">Monthly Growth Boost</div>
-                    <div className="text-xl font-bold text-green-600">+{formatMoney(totalUpgradeContribution)}</div>
+                    <div className="text-gray-600 mb-1 text-xs">Monthly Growth Boost</div>
+                    <div className="text-base font-bold text-green-600">+{formatMoney(totalUpgradeContribution)}</div>
                   </div>
                 </div>
               </div>
             </div>
           )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
