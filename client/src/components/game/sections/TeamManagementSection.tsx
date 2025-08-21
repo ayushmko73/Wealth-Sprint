@@ -392,20 +392,48 @@ export default function TeamManagementSection() {
                           </div>
                         </div>
                         
-                        {/* Sector Assignment - Simplified */}
+                        {/* Sector Assignment */}
                         <div className="mt-3 pt-3 border-t border-gray-200">
+                          <div className="text-xs text-gray-600 mb-2">Assigned Sector:</div>
                           {employee.sector ? (
-                            <div className="flex items-center justify-center gap-2 py-2">
-                              <span className="text-lg">{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
-                              <span className="text-sm font-medium text-blue-600">
-                                Working in {sectorNames[employee.sector as keyof typeof sectorNames]}
-                              </span>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span>{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
+                                <span className="text-sm font-medium">{sectorNames[employee.sector as keyof typeof sectorNames]}</span>
+                              </div>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => unassignEmployee(employee.id)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Unassign
+                              </Button>
                             </div>
                           ) : (
-                            <div className="text-center py-2">
-                              <div className="text-xs text-gray-500 bg-gray-50 rounded-full px-3 py-1">
-                                💼 Available for Assignment
-                              </div>
+                            <div>
+                              {purchasedSectors.length > 0 ? (
+                                <select 
+                                  className="w-full text-xs p-1 border border-gray-300 rounded"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      assignEmployeeToSector(employee.id, e.target.value);
+                                      e.target.value = ''; // Reset selection
+                                    }
+                                  }}
+                                >
+                                  <option value="">Select Sector...</option>
+                                  {purchasedSectors.map(sectorId => (
+                                    <option key={sectorId} value={sectorId}>
+                                      {sectorEmojis[sectorId as keyof typeof sectorEmojis]} {sectorNames[sectorId as keyof typeof sectorNames]}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <div className="text-xs text-gray-500 italic">
+                                  No sectors purchased yet
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -420,115 +448,57 @@ export default function TeamManagementSection() {
 
         {/* Hiring Tab */}
         {activeTab === 'hiring' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-xl">
-                  <UserPlus className="w-6 h-6 text-blue-600" />
-                </div>
-                Talent Pool
-              </h3>
-              <Badge variant="outline" className="px-3 py-1 text-sm">
-                {availableEmployees.filter(emp => !currentTeam.find(t => t.id === emp.id)).length} Available
-              </Badge>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-blue-600" />
+              Available Candidates
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {availableEmployees.filter(emp => !currentTeam.find(t => t.id === emp.id)).map((employee) => {
                 const RoleIcon = getRoleIcon(employee.role);
-                const canAfford = financialData.bankBalance >= employee.salary;
                 return (
-                  <Card key={employee.id} className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-0 ${
-                    canAfford ? 'bg-gradient-to-br from-white via-blue-50 to-indigo-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'
-                  }`}>
-                    <CardContent className="p-0">
-                      {/* Header with gradient */}
-                      <div className={`h-20 relative ${
-                        canAfford 
-                          ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500' 
-                          : 'bg-gradient-to-r from-gray-400 to-gray-500'
-                      }`}>
-                        <div className="absolute inset-0 bg-black opacity-10"></div>
-                        <div className="relative p-4 flex items-center gap-4">
-                          <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <RoleIcon className="w-6 h-6 text-white" />
-                          </div>
-                          <div className="text-white">
-                            <h4 className="text-lg font-bold">{employee.name}</h4>
-                            <p className="text-sm opacity-90">{employee.role}</p>
-                          </div>
+                  <Card key={employee.id} className="border transition-all hover:shadow-lg">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-gray-100 rounded-lg">
+                          <RoleIcon className="w-5 h-5 text-gray-600" />
                         </div>
-                        
-                        {/* Performance badge */}
-                        <div className="absolute top-4 right-4">
-                          <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            employee.performance >= 90 ? 'bg-green-500/20 text-green-100 border border-green-400/30' :
-                            employee.performance >= 75 ? 'bg-blue-500/20 text-blue-100 border border-blue-400/30' :
-                            employee.performance >= 60 ? 'bg-yellow-500/20 text-yellow-100 border border-yellow-400/30' :
-                            'bg-red-500/20 text-red-100 border border-red-400/30'
-                          }`}>
-                            {employee.performance}% Rating
-                          </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{employee.name}</h4>
+                          <p className="text-sm text-gray-600">{employee.role}</p>
                         </div>
                       </div>
                       
-                      {/* Content */}
-                      <div className="p-6">
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="text-center p-3 rounded-lg bg-white/50 backdrop-blur-sm">
-                            <Clock className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                            <div className="text-sm text-gray-600">Experience</div>
-                            <div className="font-bold text-gray-900">{employee.experience} years</div>
-                          </div>
-                          <div className="text-center p-3 rounded-lg bg-white/50 backdrop-blur-sm">
-                            <DollarSign className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                            <div className="text-sm text-gray-600">Monthly Salary</div>
-                            <div className="font-bold text-green-600">₹{(employee.salary/1000).toFixed(0)}K</div>
-                          </div>
+                      <div className="space-y-2 text-sm mb-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Experience:</span>
+                          <span className="font-medium">{employee.experience} years</span>
                         </div>
-                        
-                        {/* Action button - only hire, no transfer dropdown */}
-                        <div className="relative">
-                          {canAfford ? (
-                            <Button 
-                              onClick={() => hireEmployee(employee.id)}
-                              className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg group-hover:scale-[1.02]"
-                            >
-                              <UserPlus className="w-5 h-5 mr-2" />
-                              Recruit Talent
-                            </Button>
-                          ) : (
-                            <div className="text-center">
-                              <Button disabled className="w-full h-12 bg-gray-300 text-gray-500 font-semibold rounded-xl cursor-not-allowed">
-                                <span className="opacity-60">Insufficient Funds</span>
-                              </Button>
-                              <p className="text-xs text-gray-500 mt-2">Need ₹{employee.salary.toLocaleString()} to hire</p>
-                            </div>
-                          )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Performance:</span>
+                          <Badge className={`text-xs ${getPerformanceColor(employee.performance)}`}>
+                            {employee.performance}%
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Salary:</span>
+                          <span className="font-medium text-blue-600">₹{employee.salary.toLocaleString()}/month</span>
                         </div>
                       </div>
                       
-                      {/* Glow effect for affordable candidates */}
-                      {canAfford && (
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-lg"></div>
-                        </div>
-                      )}
+                      <Button 
+                        onClick={() => hireEmployee(employee.id)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        disabled={financialData.bankBalance < employee.salary}
+                      >
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Hire Employee
+                      </Button>
                     </CardContent>
                   </Card>
                 );
               })}
             </div>
-            
-            {availableEmployees.filter(emp => !currentTeam.find(t => t.id === emp.id)).length === 0 && (
-              <Card className="bg-gradient-to-br from-gray-50 to-blue-50 border-dashed border-2 border-gray-300">
-                <CardContent className="p-12 text-center">
-                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h4 className="text-xl font-semibold text-gray-600 mb-2">All Talent Recruited!</h4>
-                  <p className="text-gray-500">You've successfully hired all available candidates. Great work building your team!</p>
-                </CardContent>
-              </Card>
-            )}
           </div>
         )}
 

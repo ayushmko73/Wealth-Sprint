@@ -51,6 +51,7 @@ const DecisionManager: React.FC = () => {
           if (consequences.logic !== undefined) statUpdates.logic = consequences.logic;
           if (consequences.reputation !== undefined) statUpdates.reputation = consequences.reputation;
           if (consequences.energy !== undefined) statUpdates.energy = consequences.energy;
+          if (consequences.clarityXP !== undefined) statUpdates.clarityXP = consequences.clarityXP;
           
           if (consequences.financial !== undefined) {
             financialUpdates.bankBalance = consequences.financial;

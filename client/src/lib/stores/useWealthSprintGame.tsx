@@ -732,6 +732,38 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
     // 7 game days = 1 week  
     // 4 weeks = 1 month
     // 12 months = 1 year
+    // Add automatic Clarity XP earning mechanisms
+    checkFinancialMilestones: () => {
+      const { financialData, playerStats } = get();
+      const bankBalance = financialData.bankBalance;
+      
+      // Define milestones and their Clarity XP rewards
+      const milestones = [
+        { amount: 100000, xp: 10, key: 'milestone_100k' },
+        { amount: 500000, xp: 25, key: 'milestone_500k' },
+        { amount: 1000000, xp: 50, key: 'milestone_1m' },
+        { amount: 5000000, xp: 100, key: 'milestone_5m' },
+        { amount: 10000000, xp: 200, key: 'milestone_10m' }
+      ];
+      
+      // Check for reached milestones (store in playerStats to avoid repeating)
+      const reachedMilestones = playerStats.reachedMilestones || [];
+      
+      milestones.forEach(milestone => {
+        if (bankBalance >= milestone.amount && !reachedMilestones.includes(milestone.key)) {
+          get().gainClarityXP(milestone.xp, `reaching ₹${milestone.amount.toLocaleString()} milestone`);
+          
+          // Mark milestone as reached
+          set((state) => ({
+            playerStats: {
+              ...state.playerStats,
+              reachedMilestones: [...(state.playerStats.reachedMilestones || []), milestone.key]
+            }
+          }));
+        }
+      });
+    },
+
     advanceGameTime: () => {
       set((state) => {
         const { timeEngine } = state;
@@ -770,6 +802,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
           
           // Process team salaries
           get().processTeamSalaries();
+          
+          // Monthly Clarity XP bonus for consistent progress
+          get().gainClarityXP(5, "monthly progress and consistency");
           
           // Check FD maturity and auto-save
           get().addGameEvent({
@@ -836,6 +871,9 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
             timestamp: new Date(),
           });
         }
+        
+        // Check for financial milestones every day
+        get().checkFinancialMilestones();
         
         // Console logging for developer (Settings panel access)
         console.log("⏱️ Game Time Engine Active: 24× faster than real world time");
@@ -1904,7 +1942,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       });
 
       // Gain some clarity XP for strategic expansion
-      get().gainClarityXP(25, `Strategic sector purchase`);
+      get().gainClarityXP(25, `strategic sector expansion`);
 
       return true;
     },
