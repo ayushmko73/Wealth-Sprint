@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -14,14 +15,21 @@ import {
   Star,
   Building2,
   Users,
-  Briefcase
+  Briefcase,
+  ShoppingCart,
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { useWealthSprintGame } from '../../../lib/stores/useWealthSprintGame';
 import { formatMoney } from '../../../lib/utils/formatMoney';
+import { toast } from 'sonner';
 
 export default function NewDataSection() {
-  const { financialData, playerStats } = useWealthSprintGame();
+  const { financialData, playerStats, updateFinancialData, addTransaction } = useWealthSprintGame();
   const [activeCategory, setActiveCategory] = useState<string>('Analytics');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [purchasedUpgrades, setPurchasedUpgrades] = useState<string[]>([]);
 
   // Sample data for the new section
   const categories = [
@@ -184,6 +192,80 @@ export default function NewDataSection() {
     }
   };
 
+  // Business growth upgrades
+  const businessUpgrades = [
+    {
+      id: 'marketing_boost',
+      title: 'Marketing Campaign',
+      price: 50000,
+      monthlyBoost: 8000,
+      description: 'Increase brand visibility and customer acquisition by 15%',
+      impact: '+15% Customer Reach'
+    },
+    {
+      id: 'tech_infrastructure',
+      title: 'Tech Infrastructure',
+      price: 120000,
+      monthlyBoost: 18000,
+      description: 'Upgrade technology systems for 25% efficiency improvement',
+      impact: '+25% Operational Efficiency'
+    },
+    {
+      id: 'team_expansion',
+      title: 'Team Expansion',
+      price: 80000,
+      monthlyBoost: 12000,
+      description: 'Hire specialized talent to boost productivity by 20%',
+      impact: '+20% Team Productivity'
+    },
+    {
+      id: 'research_development',
+      title: 'R&D Investment',
+      price: 100000,
+      monthlyBoost: 15000,
+      description: 'Innovation fund for new product development',
+      impact: '+30% Innovation Score'
+    }
+  ];
+
+  const handleViewDetails = (item: any) => {
+    setSelectedItem(item);
+    setShowDetailsModal(true);
+  };
+
+  const handlePurchaseUpgrade = (upgrade: any) => {
+    if (financialData.bankBalance >= upgrade.price) {
+      // Deduct cost from bank balance
+      updateFinancialData({
+        bankBalance: financialData.bankBalance - upgrade.price,
+        sideIncome: financialData.sideIncome + upgrade.monthlyBoost
+      });
+
+      // Add transaction record
+      addTransaction({
+        type: 'business',
+        amount: -upgrade.price,
+        description: `Business Growth: ${upgrade.title}`,
+        fromAccount: 'bank',
+        toAccount: 'business'
+      });
+
+      // Track purchase
+      setPurchasedUpgrades([...purchasedUpgrades, upgrade.id]);
+      
+      toast.success(`${upgrade.title} purchased! +${formatMoney(upgrade.monthlyBoost)}/month income boost`);
+      setShowDetailsModal(false);
+    } else {
+      toast.error('Insufficient funds for this upgrade');
+    }
+  };
+
+  // Calculate total contribution from upgrades
+  const totalUpgradeContribution = purchasedUpgrades.reduce((total, upgradeId) => {
+    const upgrade = businessUpgrades.find(u => u.id === upgradeId);
+    return total + (upgrade?.monthlyBoost || 0);
+  }, 0);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header - Blue Background with Maximum Width */}
@@ -219,12 +301,12 @@ export default function NewDataSection() {
                 <div className="text-white font-bold text-lg">{formatMoney(financialData.totalAssets)}</div>
               </div>
               <div className="text-center">
-                <div className="text-blue-200 text-xs">Growth Rate</div>
-                <div className="text-green-300 font-bold text-lg">+23.4%</div>
+                <div className="text-blue-200 text-xs">Growth Boost</div>
+                <div className="text-green-300 font-bold text-lg">{formatMoney(totalUpgradeContribution)}/mo</div>
               </div>
               <div className="text-center">
-                <div className="text-blue-200 text-xs">Active Projects</div>
-                <div className="text-white font-bold text-lg">12</div>
+                <div className="text-blue-200 text-xs">Upgrades</div>
+                <div className="text-white font-bold text-lg">{purchasedUpgrades.length}/{businessUpgrades.length}</div>
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Success Rate</div>
@@ -288,7 +370,12 @@ export default function NewDataSection() {
                   <Badge className="bg-blue-100 text-blue-800 border-blue-200">
                     {activeCategory}
                   </Badge>
-                  <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                    onClick={() => handleViewDetails(item)}
+                  >
                     View Details
                   </Button>
                 </div>
@@ -298,6 +385,105 @@ export default function NewDataSection() {
         </div>
 
       </div>
+
+      {/* Details Modal */}
+      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-600" />
+              {selectedItem?.title} - Growth Opportunities
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedItem && (
+            <div className="space-y-6">
+              {/* Current Metrics */}
+              <div className="bg-blue-50 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-800 mb-2">Current Performance</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-blue-600">Value</div>
+                    <div className="text-xl font-bold text-blue-800">{selectedItem.value}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-blue-600">Change</div>
+                    <div className={`text-lg font-semibold ${
+                      selectedItem.trend === 'up' ? 'text-green-600' : 
+                      selectedItem.trend === 'down' ? 'text-red-600' : 'text-blue-600'
+                    }`}>
+                      {selectedItem.change}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-blue-700 mt-2">{selectedItem.description}</p>
+              </div>
+
+              {/* Available Upgrades */}
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  Business Growth Investments
+                </h3>
+                <div className="grid gap-4">
+                  {businessUpgrades.map((upgrade) => {
+                    const isPurchased = purchasedUpgrades.includes(upgrade.id);
+                    const canAfford = financialData.bankBalance >= upgrade.price;
+                    
+                    return (
+                      <div key={upgrade.id} className={`border rounded-lg p-4 ${
+                        isPurchased ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                      }`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-gray-800">{upgrade.title}</h4>
+                          <div className="flex items-center gap-2">
+                            {isPurchased && <CheckCircle className="w-4 h-4 text-green-600" />}
+                            <Badge className={isPurchased ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                              {isPurchased ? 'Owned' : formatMoney(upgrade.price)}
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{upgrade.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm">
+                            <span className="text-green-600 font-semibold">+{formatMoney(upgrade.monthlyBoost)}/month</span>
+                            <span className="text-gray-500 ml-2">{upgrade.impact}</span>
+                          </div>
+                          {!isPurchased && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => handlePurchaseUpgrade(upgrade)}
+                              disabled={!canAfford}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              {canAfford ? 'Purchase' : 'Insufficient Funds'}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-800 mb-2">Investment Summary</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Available Balance:</span>
+                    <span className="font-semibold ml-2">{formatMoney(financialData.bankBalance)}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Monthly Boost:</span>
+                    <span className="font-semibold text-green-600 ml-2">+{formatMoney(totalUpgradeContribution)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
