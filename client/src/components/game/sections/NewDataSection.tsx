@@ -357,7 +357,7 @@ export default function NewDataSection() {
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Upgrades</div>
-                <div className="text-white font-bold text-lg">{purchasedUpgrades.length}/8</div>
+                <div className="text-white font-bold text-lg">{purchasedUpgrades.length}/{getUpgradesForItem({ id: 1 }).length + getUpgradesForItem({ id: 2 }).length + getUpgradesForItem({ id: 3 }).length + getUpgradesForItem({ id: 4 }).length}</div>
               </div>
               <div className="text-center">
                 <div className="text-blue-200 text-xs">Success Rate</div>
@@ -444,11 +444,11 @@ export default function NewDataSection() {
             className="fixed inset-0 bg-black bg-opacity-20" 
             onClick={() => setShowDetailsModal(false)}
           />
-          <div className="relative max-w-xs w-full max-h-[75vh] overflow-y-auto bg-white rounded-lg shadow-lg">
-            <div className="px-3 py-2 border-b bg-white flex items-center justify-between">
+          <div className="relative max-w-xs w-full max-h-[75vh] overflow-y-auto bg-white rounded-2xl shadow-lg">
+            <div className="px-4 py-3 border-b bg-white flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-semibold">{selectedItem?.title} - Growth Opportunities</span>
+                <span className="text-base font-semibold">{selectedItem?.title} - Growth Opportunities</span>
               </div>
               <Button 
                 variant="ghost" 
@@ -463,7 +463,7 @@ export default function NewDataSection() {
             {selectedItem && (
               <div className="p-3 space-y-3">
                 {/* Current Metrics */}
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-3">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-3">
                   <h3 className="font-bold text-blue-800 mb-2 text-sm">Current Performance: {selectedItem.title}</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="text-center">
@@ -482,11 +482,11 @@ export default function NewDataSection() {
                     </div>
                   </div>
                 </div>
-                <p className="text-blue-700 mt-2 text-center bg-white bg-opacity-50 rounded-lg p-2 text-sm">{selectedItem.description}</p>
+                <p className="text-blue-700 mt-2 text-center bg-white bg-opacity-50 rounded-xl p-2 text-sm">{selectedItem.description}</p>
                 
                 {/* Detailed Analytics */}
                 <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
+                  <div className="bg-white bg-opacity-70 rounded-xl p-2">
                     <div className="text-xs text-blue-600">Last Month</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '18.3%' : 
@@ -494,7 +494,7 @@ export default function NewDataSection() {
                        selectedItem.id === 3 ? '21.3%' : '6th'}
                     </div>
                   </div>
-                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
+                  <div className="bg-white bg-opacity-70 rounded-xl p-2">
                     <div className="text-xs text-blue-600">6 Month Avg</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '20.1%' : 
@@ -502,7 +502,7 @@ export default function NewDataSection() {
                        selectedItem.id === 3 ? '19.8%' : '5th'}
                     </div>
                   </div>
-                  <div className="bg-white bg-opacity-70 rounded-lg p-2">
+                  <div className="bg-white bg-opacity-70 rounded-xl p-2">
                     <div className="text-xs text-blue-600">Industry Avg</div>
                     <div className="font-bold text-blue-800">
                       {selectedItem.id === 1 ? '15.2%' : 
@@ -513,7 +513,7 @@ export default function NewDataSection() {
                 </div>
                 
                 {/* Key Insights */}
-                <div className="mt-2 bg-white bg-opacity-70 rounded-lg p-3">
+                <div className="mt-2 bg-white bg-opacity-70 rounded-xl p-3">
                   <h4 className="font-semibold text-blue-800 mb-2 text-sm">Key Insights</h4>
                   <div className="text-sm text-blue-700 space-y-1">
                     {selectedItem.id === 1 && (
@@ -560,7 +560,7 @@ export default function NewDataSection() {
                     const canAfford = financialData.bankBalance >= upgrade.price;
                     
                     return (
-                      <div key={upgrade.id} className={`border rounded-lg p-3 transition-all duration-200 hover:shadow-md ${
+                      <div key={upgrade.id} className={`border rounded-2xl p-3 transition-all duration-200 hover:shadow-md ${
                         isPurchased 
                           ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' 
                           : 'bg-white border-gray-200 hover:border-blue-300'
@@ -610,7 +610,7 @@ export default function NewDataSection() {
               </div>
 
               {/* Summary */}
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-3 border border-gray-200">
+              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-3 border border-gray-200">
                 <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
                   <DollarSign className="w-5 h-5" />
                   Investment Summary
