@@ -610,7 +610,10 @@ const DealsSection: React.FC = () => {
   };
 
   const renderOpportunitiesContent = () => {
-    const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
+    // Filter deals below 1Cr (₹10,000,000) for Opportunities section
+    const availableDeals = qualifiedDeals.filter(deal => 
+      deal.status === 'available' && deal.investmentRequired < 10000000
+    );
     
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -840,7 +843,12 @@ const DealsSection: React.FC = () => {
   };
 
   const renderGlobalBusinessContent = () => {
-    const availableDeals = qualifiedDeals.filter(deal => deal.status === 'available');
+    // Filter deals between 10Cr-1000Cr (₹100,000,000 to ₹10,000,000,000) for Global Business section
+    const availableDeals = qualifiedDeals.filter(deal => 
+      deal.status === 'available' && 
+      deal.investmentRequired >= 100000000 && 
+      deal.investmentRequired <= 10000000000
+    );
     
     return (
       <div className="space-y-4">
