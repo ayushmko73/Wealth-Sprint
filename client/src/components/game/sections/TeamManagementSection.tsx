@@ -26,7 +26,7 @@ interface Employee {
   id: string;
   name: string;
   role: string;
-  sector: string;
+  sector?: string; // Optional - assigned after hiring
   experience: number;
   performance: number;
   salary: number;
@@ -34,17 +34,16 @@ interface Employee {
 }
 
 export default function TeamManagementSection() {
-  const { financialData, updateFinancialData } = useWealthSprintGame();
+  const { financialData, updateFinancialData, purchasedSectors } = useWealthSprintGame();
   
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Available employees to hire
+  // Available employees to hire (no automatic sector assignment)
   const [availableEmployees] = useState<Employee[]>([
     {
       id: 'emp_001',
       name: 'Rajesh Kumar',
       role: 'Operations Manager',
-      sector: 'fast_food',
       experience: 5,
       performance: 85,
       salary: 45000,
@@ -54,7 +53,6 @@ export default function TeamManagementSection() {
       id: 'emp_002',
       name: 'Priya Sharma',
       role: 'Software Developer',
-      sector: 'tech_startups',
       experience: 3,
       performance: 92,
       salary: 60000,
@@ -64,7 +62,6 @@ export default function TeamManagementSection() {
       id: 'emp_003',
       name: 'Amit Patel',
       role: 'Marketing Specialist',
-      sector: 'ecommerce',
       experience: 4,
       performance: 78,
       salary: 40000,
@@ -74,7 +71,6 @@ export default function TeamManagementSection() {
       id: 'emp_004',
       name: 'Dr. Sneha Reddy',
       role: 'Medical Director',
-      sector: 'healthcare',
       experience: 8,
       performance: 95,
       salary: 80000,
@@ -84,7 +80,6 @@ export default function TeamManagementSection() {
       id: 'emp_005',
       name: 'Vikram Singh',
       role: 'Chef Manager',
-      sector: 'fast_food',
       experience: 6,
       performance: 88,
       salary: 35000,
@@ -94,7 +89,6 @@ export default function TeamManagementSection() {
       id: 'emp_006',
       name: 'Anita Gupta',
       role: 'Tech Lead',
-      sector: 'tech_startups',
       experience: 7,
       performance: 90,
       salary: 75000,
@@ -108,14 +102,26 @@ export default function TeamManagementSection() {
     fast_food: 'Fast Food',
     tech_startups: 'Tech Startups', 
     ecommerce: 'E-commerce',
-    healthcare: 'Healthcare'
+    healthcare: 'Healthcare',
+    real_estate: 'Real Estate',
+    retail_clothing: 'Retail Clothing',
+    automotive: 'Automotive',
+    financial_services: 'Financial Services',
+    travel_tourism: 'Travel & Tourism',
+    education_training: 'Education & Training'
   };
 
   const sectorEmojis = {
     fast_food: '🍟',
     tech_startups: '💻',
     ecommerce: '🛒',
-    healthcare: '🏥'
+    healthcare: '🏥',
+    real_estate: '🏠',
+    retail_clothing: '👕',
+    automotive: '🚗',
+    financial_services: '💰',
+    travel_tourism: '✈️',
+    education_training: '🎓'
   };
 
   const getRoleIcon = (role: string) => {
@@ -147,10 +153,26 @@ export default function TeamManagementSection() {
       bankBalance: financialData.bankBalance - employee.salary
     });
 
-    // Add to team
-    setCurrentTeam(prev => [...prev, { ...employee, hired: true }]);
+    // Add to team without sector assignment
+    setCurrentTeam(prev => [...prev, { ...employee, hired: true, sector: undefined }]);
     
     toast.success(`🎉 Successfully hired ${employee.name}!`);
+  };
+
+  // Function to assign employee to sector
+  const assignEmployeeToSector = (employeeId: string, sectorId: string) => {
+    setCurrentTeam(prev => prev.map(emp => 
+      emp.id === employeeId ? { ...emp, sector: sectorId } : emp
+    ));
+    toast.success(`Employee assigned to ${sectorNames[sectorId as keyof typeof sectorNames]}!`);
+  };
+
+  // Function to unassign employee from sector
+  const unassignEmployee = (employeeId: string) => {
+    setCurrentTeam(prev => prev.map(emp => 
+      emp.id === employeeId ? { ...emp, sector: undefined } : emp
+    ));
+    toast.success('Employee unassigned from sector!');
   };
 
   const getTeamStats = () => {
@@ -160,7 +182,9 @@ export default function TeamManagementSection() {
       : 0;
     const totalSalaryExpense = currentTeam.reduce((sum, emp) => sum + emp.salary, 0);
     const sectorDistribution = currentTeam.reduce((acc, emp) => {
-      acc[emp.sector] = (acc[emp.sector] || 0) + 1;
+      if (emp.sector) {
+        acc[emp.sector] = (acc[emp.sector] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>);
 
@@ -214,8 +238,8 @@ export default function TeamManagementSection() {
                 <div className="text-yellow-300 font-bold text-lg">₹{(stats.totalSalaryExpense / 1000).toFixed(0)}K</div>
               </div>
               <div className="text-center">
-                <div className="text-blue-200 text-xs">Active Sectors</div>
-                <div className="text-orange-300 font-bold text-lg">{Object.keys(stats.sectorDistribution).length}</div>
+                <div className="text-blue-200 text-xs">Purchased Sectors</div>
+                <div className="text-orange-300 font-bold text-lg">{purchasedSectors.length}</div>
               </div>
             </div>
           </div>
@@ -371,6 +395,52 @@ export default function TeamManagementSection() {
                             <span className="font-medium text-green-600">₹{employee.salary.toLocaleString()}</span>
                           </div>
                         </div>
+                        
+                        {/* Sector Assignment */}
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <div className="text-xs text-gray-600 mb-2">Assigned Sector:</div>
+                          {employee.sector ? (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span>{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
+                                <span className="text-sm font-medium">{sectorNames[employee.sector as keyof typeof sectorNames]}</span>
+                              </div>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => unassignEmployee(employee.id)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Unassign
+                              </Button>
+                            </div>
+                          ) : (
+                            <div>
+                              {purchasedSectors.length > 0 ? (
+                                <select 
+                                  className="w-full text-xs p-1 border border-gray-300 rounded"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      assignEmployeeToSector(employee.id, e.target.value);
+                                      e.target.value = ''; // Reset selection
+                                    }
+                                  }}
+                                >
+                                  <option value="">Select Sector...</option>
+                                  {purchasedSectors.map(sectorId => (
+                                    <option key={sectorId} value={sectorId}>
+                                      {sectorEmojis[sectorId as keyof typeof sectorEmojis]} {sectorNames[sectorId as keyof typeof sectorNames]}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <div className="text-xs text-gray-500 italic">
+                                  No sectors purchased yet
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </CardContent>
                     </Card>
                   );
@@ -494,38 +564,47 @@ export default function TeamManagementSection() {
           </div>
         )}
 
-        {/* Sectors Tab */}
+        {/* Sectors Tab - Only show purchased sectors */}
         {activeTab === 'sectors' && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-blue-600" />
-              Team by Business Sectors
+              Team by Purchased Sectors
             </h3>
-            <div className="space-y-4">
-              {Object.entries(sectorNames).map(([sectorId, sectorName]) => {
-                const sectorEmployees = currentTeam.filter(emp => emp.sector === sectorId);
-                const sectorEmoji = sectorEmojis[sectorId as keyof typeof sectorEmojis];
-                
-                return (
-                  <Card key={sectorId} className="border border-gray-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="text-2xl">{sectorEmoji}</div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{sectorName}</h4>
-                            <p className="text-sm text-gray-600">{sectorEmployees.length} employees</p>
-                          </div>
-                        </div>
-                        {sectorEmployees.length > 0 && (
-                          <div className="text-right">
-                            <div className="text-sm text-gray-600">Avg Performance</div>
-                            <div className="font-bold text-blue-600">
-                              {Math.round(sectorEmployees.reduce((sum, emp) => sum + emp.performance, 0) / sectorEmployees.length)}%
+            {purchasedSectors.length === 0 ? (
+              <Card className="bg-gradient-to-br from-white to-blue-50 border-blue-200">
+                <CardContent className="p-8 text-center">
+                  <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">No sectors purchased yet. Buy sectors from the Business section to assign employees!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {purchasedSectors.map((sectorId) => {
+                  const sectorName = sectorNames[sectorId as keyof typeof sectorNames] || 'Unknown Sector';
+                  const sectorEmployees = currentTeam.filter(emp => emp.sector === sectorId);
+                  const sectorEmoji = sectorEmojis[sectorId as keyof typeof sectorEmojis] || '🏢';
+                  
+                  return (
+                    <Card key={sectorId} className="border border-gray-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="text-2xl">{sectorEmoji}</div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900">{sectorName}</h4>
+                              <p className="text-sm text-gray-600">{sectorEmployees.length} employees</p>
                             </div>
                           </div>
-                        )}
-                      </div>
+                          {sectorEmployees.length > 0 && (
+                            <div className="text-right">
+                              <div className="text-sm text-gray-600">Avg Performance</div>
+                              <div className="font-bold text-blue-600">
+                                {Math.round(sectorEmployees.reduce((sum, emp) => sum + emp.performance, 0) / sectorEmployees.length)}%
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       
                       {sectorEmployees.length === 0 ? (
                         <div className="text-center py-4 text-gray-500">
@@ -550,14 +629,15 @@ export default function TeamManagementSection() {
                           })}
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
-}
+};
