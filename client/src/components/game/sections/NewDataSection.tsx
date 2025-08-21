@@ -444,7 +444,7 @@ export default function NewDataSection() {
             className="fixed inset-0 bg-black bg-opacity-20" 
             onClick={() => setShowDetailsModal(false)}
           />
-          <div className="relative max-w-sm w-full max-h-[75vh] overflow-y-auto bg-white rounded-lg shadow-lg">
+          <div className="relative max-w-xs w-full max-h-[75vh] overflow-y-auto bg-white rounded-lg shadow-lg">
             <div className="px-3 py-2 border-b bg-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-blue-600" />
