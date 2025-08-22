@@ -195,48 +195,53 @@ const MeetingChatInterface: React.FC<{
     const welcomeMessage: ChatMessage = {
       id: 'welcome',
       sender: 'System',
-      message: 'Meeting started. Officers are joining...',
+      message: 'Meeting started. Executives are taking their seats...',
       timestamp: new Date(),
       isSystem: true
     };
     setChatMessages([welcomeMessage]);
 
-    // Get chair positions to match seat comments exactly
-    const chairPositions = [
-      { x: 50, y: 25 },   // Top center
-      { x: 75, y: 35 },   // Top right
-      { x: 85, y: 50 },   // Right side
-      { x: 75, y: 65 },   // Bottom right  
-      { x: 25, y: 65 },   // Bottom left
-      { x: 15, y: 50 },   // Left side
-      { x: 25, y: 35 },   // Top left
+    // Define exact seat positions and their descriptions based on the meeting room layout
+    const executiveSeatings = [
+      {
+        position: "right side of the boardroom table",
+        description: "Perfect spot to your right, Sir! Great visibility across the entire meeting room.",
+        location: "Position 1 - Right Side"
+      },
+      {
+        position: "left side chair facing the center", 
+        description: "Excellent seat on your left, Sir! Ideal angle to observe all team discussions.",
+        location: "Position 2 - Left Side"
+      },
+      {
+        position: "far right corner seat",
+        description: "Strategic corner position, Sir! Can monitor the entire room from this vantage point.",
+        location: "Position 3 - Right Corner"
+      },
+      {
+        position: "back left chair near the wall",
+        description: "Secured the back-left position, Sir! Great overview of the meeting dynamics.",
+        location: "Position 4 - Back Left"
+      },
+      {
+        position: "opposite end of the conference table",
+        description: "Positioned at the far end, Sir! Excellent view directly across from your leadership seat.",
+        location: "Position 5 - Far End"
+      }
     ];
 
-    // Seat position descriptions matching the exact chair positions
-    const seatComments = [
-      "Good morning Sir! I've taken the top center position near the head of the table - ready to support your leadership directly.",
-      "Sir, I'm positioned on the top right area - excellent view of the entire table and perfect for strategic input.",
-      "Hello Sir! I'm seated on the right side of the meeting room - ideal position to observe all team dynamics.",
-      "Good morning Sir! I've taken the bottom right seat - great angle to see the presentation screen and all attendees.",
-      "Sir, I'm positioned on the bottom left side - strategic spot to collaborate with everyone around the table.",
-      "Hello Sir! I'm seated on the left side of the room - perfect position to facilitate team communication.",
-      "Good morning Sir! I've taken the top left position - excellent vantage point to oversee the entire meeting flow."
-    ];
-
-    // Greetings from each executive with accurate seating position comments
+    // Each executive speaks about their specific highlighted seating area
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Use the exact position index to match the chair position
-      const positionIndex = i % chairPositions.length;
-      const seatComment = seatComments[positionIndex];
-      const position = chairPositions[positionIndex];
+      // Get the specific seating info for this executive
+      const seatInfo = executiveSeatings[i % executiveSeatings.length];
       
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `${seatComment} This is ${exec.name}, ${exec.role}, reporting for duty from position ${positionIndex + 1}.`,
+        message: `Good morning Sir! I'm ${exec.name}, your ${exec.role}. I've taken my seat at the ${seatInfo.position}. ${seatInfo.description} Ready to begin our strategic discussion!`,
         timestamp: new Date()
       };
       
