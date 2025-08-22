@@ -201,23 +201,23 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // Ensure each executive gets their own unique chair position
-    const chairPositions = [
-      { seat: "Chair 1 - Top right position", description: "I'm seated in the top right chair, Sir! Perfect strategic position." },
-      { seat: "Chair 2 - Right side position", description: "I've taken the right side chair, Sir! Excellent view of the meeting." },
-      { seat: "Chair 3 - Bottom right position", description: "I'm positioned in the bottom right chair, Sir! Great angle for discussions." },
-      { seat: "Chair 4 - Bottom left position", description: "I've secured the bottom left chair, Sir! Ideal spot for collaboration." },
-      { seat: "Chair 5 - Left side position", description: "I'm seated in the left side chair, Sir! Perfect for team coordination." },
-      { seat: "Chair 6 - Top left position", description: "I've taken the top left chair, Sir! Excellent overview position." }
-    ];
+    // 4 specific chairs for executive roles on opposite sides
+    const executiveChairs = {
+      "Chief Financial Officer": { position: "right side of the table", description: "I'm seated on the right side, Sir! Ready to discuss financial strategies." },
+      "Chief Operating Officer": { position: "left side of the table", description: "I've taken the left side position, Sir! Perfect for operational oversight." },
+      "Chief Technology Officer": { position: "opposite end of the table", description: "I'm positioned at the far end, Sir! Great view for technology discussions." }
+    };
 
-    // Each executive gets their own individual chair - no sharing or overlapping
+    // Each executive speaks about their designated chair based on their role
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Assign unique chair to each executive (no modulo to avoid sharing)
-      const chairInfo = chairPositions[i] || chairPositions[chairPositions.length - 1];
+      // Get chair assignment based on executive role
+      const chairInfo = executiveChairs[exec.role] || { 
+        position: "available chair", 
+        description: "I've taken my designated seat, Sir! Ready for the meeting." 
+      };
       
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
