@@ -201,15 +201,27 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // Greetings from each executive
+    // Seat position descriptions based on the highlighted areas in the image
+    const seatComments = [
+      "Good morning Sir! I've taken my position at the head of the table, ready to lead this discussion.",
+      "Sir, I'm positioned to your right side - perfect spot to provide strategic insights.",
+      "Hello Sir! I'm seated on the right side of the room, ready to support our agenda.",
+      "Good morning Sir! I've taken the seat on the lower right - excellent view of the presentation screen.",
+      "Sir, I'm positioned on the left side here - ready to collaborate with the team.",
+      "Hello Sir! I'm seated on the left side with a great view of everyone around the table.",
+      "Good morning Sir! I've taken the upper left position - perfect angle to observe the team dynamics."
+    ];
+
+    // Greetings from each executive with seating comments
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
+      const seatComment = seatComments[i % seatComments.length];
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `Hello Sir! ${exec.name}, ${exec.role} reporting for duty.`,
+        message: `${seatComment} ${exec.name}, ${exec.role} reporting for duty from this strategic position.`,
         timestamp: new Date()
       };
       
