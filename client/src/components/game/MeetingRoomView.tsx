@@ -100,68 +100,102 @@ const executiveColors = [
   '#EF4444'  // Red
 ];
 
-// 2D Meeting Room Component with Image
+// Modern 2D Meeting Room Component with New UI
 const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) => {
-  // Calculate positions for executives around the table based on actual chair positions in image
-  const calculatePosition = (index: number, total: number) => {
-    // Predefined positions matching the chairs in the meeting room image
-    const chairPositions = [
-      { x: 50, y: 25 },   // Top center
-      { x: 75, y: 35 },   // Top right
-      { x: 85, y: 50 },   // Right side
-      { x: 75, y: 65 },   // Bottom right  
-      { x: 25, y: 65 },   // Bottom left
-      { x: 15, y: 50 },   // Left side
-      { x: 25, y: 35 },   // Top left
-    ];
-    
-    // Select position based on index, cycling through available positions
-    const position = chairPositions[index % chairPositions.length];
-    return { x: `${position.x}%`, y: `${position.y}%` };
+  // Define the 4 executive chair positions around the boardroom table
+  const getExecutivePosition = (role: string) => {
+    const positions = {
+      "Chief Financial Officer": { x: '75%', y: '50%', label: 'CFO' },
+      "Chief Operating Officer": { x: '25%', y: '50%', label: 'COO' },
+      "Chief Technology Officer": { x: '50%', y: '75%', label: 'CTO' }
+    };
+    return positions[role] || { x: '50%', y: '85%', label: 'EXEC' };
   };
 
   return (
-    <div className="relative w-full h-full">
-      {/* Meeting room image */}
-      <img 
-        src="/images/meeting-room-top-view.webp" 
-        alt="Meeting room top view"
-        className="w-full h-full object-contain rounded-lg"
-      />
+    <div className="relative w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl overflow-hidden shadow-2xl">
+      {/* Modern Conference Table */}
+      <div className="absolute inset-8 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full shadow-inner border-4 border-amber-300">
+        {/* Table Surface Details */}
+        <div className="absolute inset-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-full opacity-60"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-amber-200 rounded-full shadow-lg opacity-40"></div>
+        
+        {/* Conference Grid Lines */}
+        <div className="absolute inset-8 border border-amber-300/30 rounded-full"></div>
+        <div className="absolute inset-12 border border-amber-300/20 rounded-full"></div>
+      </div>
       
-      {/* Executive avatars positioned around the table */}
+      {/* Executive Positions */}
       {executives.map((exec, index) => {
-        const position = calculatePosition(index, executives.length);
+        const position = getExecutivePosition(exec.role);
         return (
           <div
             key={exec.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm bg-opacity-90 hover:scale-110 transition-transform cursor-pointer"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
             style={{
               left: position.x,
               top: position.y,
-              backgroundColor: exec.color,
-              zIndex: 10
+              zIndex: 20
             }}
-            title={`${exec.name} - ${exec.role}`}
           >
-            {exec.name.split(' ').map(n => n[0]).join('')}
+            {/* Executive Chair Base */}
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-xl mb-2 opacity-50"></div>
+            
+            {/* Executive Avatar */}
+            <div
+              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-14 h-14 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-white font-bold text-sm bg-opacity-95 hover:scale-110 transition-all duration-300 cursor-pointer"
+              style={{
+                background: `linear-gradient(135deg, ${exec.color}dd, ${exec.color})`,
+                boxShadow: `0 8px 32px ${exec.color}40`
+              }}
+              title={`${exec.name} - ${exec.role}`}
+            >
+              {exec.name.split(' ').map(n => n[0]).join('')}
+            </div>
+            
+            {/* Role Label */}
+            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 shadow-lg border border-gray-200">
+              {position.label}
+            </div>
           </div>
         );
       })}
       
-      {/* CEO/Founder position (positioned at the head of the table - top center) */}
+      {/* CEO Position - Head of Table */}
       <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-yellow-400 shadow-lg flex items-center justify-center text-white font-bold text-sm"
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
         style={{
           left: '50%',
-          top: '25%',
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
-          zIndex: 15
+          top: '20%',
+          zIndex: 25
         }}
-        title="You - CEO & Founder"
       >
-        <Crown className="w-5 h-5" />
+        {/* CEO Chair Base */}
+        <div className="w-20 h-20 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full shadow-2xl mb-2"></div>
+        
+        {/* CEO Avatar */}
+        <div
+          className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 w-16 h-16 rounded-full border-4 border-yellow-400 shadow-2xl flex items-center justify-center text-white font-bold text-lg hover:scale-110 transition-all duration-300 cursor-pointer"
+          style={{
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
+            boxShadow: '0 12px 40px #f59e0b60'
+          }}
+          title="You - CEO & Founder"
+        >
+          <Crown className="w-6 h-6" />
+        </div>
+        
+        {/* CEO Label */}
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg border-2 border-yellow-300">
+          CEO
+        </div>
       </div>
+
+      {/* Modern Room Details */}
+      <div className="absolute top-4 left-4 w-6 h-6 bg-green-400 rounded-full shadow-lg animate-pulse opacity-60"></div>
+      <div className="absolute top-4 right-4 w-4 h-4 bg-blue-400 rounded-full shadow-lg opacity-40"></div>
+      <div className="absolute bottom-4 left-4 w-5 h-5 bg-purple-400 rounded-full shadow-lg opacity-40"></div>
+      <div className="absolute bottom-4 right-4 w-3 h-3 bg-red-400 rounded-full shadow-lg opacity-40"></div>
     </div>
   );
 };
