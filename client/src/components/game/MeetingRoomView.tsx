@@ -201,27 +201,42 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // Seat position descriptions based on the highlighted areas in the image
-    const seatComments = [
-      "Good morning Sir! I've taken my position at the head of the table, ready to lead this discussion.",
-      "Sir, I'm positioned to your right side - perfect spot to provide strategic insights.",
-      "Hello Sir! I'm seated on the right side of the room, ready to support our agenda.",
-      "Good morning Sir! I've taken the seat on the lower right - excellent view of the presentation screen.",
-      "Sir, I'm positioned on the left side here - ready to collaborate with the team.",
-      "Hello Sir! I'm seated on the left side with a great view of everyone around the table.",
-      "Good morning Sir! I've taken the upper left position - perfect angle to observe the team dynamics."
+    // Get chair positions to match seat comments exactly
+    const chairPositions = [
+      { x: 50, y: 25 },   // Top center
+      { x: 75, y: 35 },   // Top right
+      { x: 85, y: 50 },   // Right side
+      { x: 75, y: 65 },   // Bottom right  
+      { x: 25, y: 65 },   // Bottom left
+      { x: 15, y: 50 },   // Left side
+      { x: 25, y: 35 },   // Top left
     ];
 
-    // Greetings from each executive with seating comments
+    // Seat position descriptions matching the exact chair positions
+    const seatComments = [
+      "Good morning Sir! I've taken the top center position near the head of the table - ready to support your leadership directly.",
+      "Sir, I'm positioned on the top right area - excellent view of the entire table and perfect for strategic input.",
+      "Hello Sir! I'm seated on the right side of the meeting room - ideal position to observe all team dynamics.",
+      "Good morning Sir! I've taken the bottom right seat - great angle to see the presentation screen and all attendees.",
+      "Sir, I'm positioned on the bottom left side - strategic spot to collaborate with everyone around the table.",
+      "Hello Sir! I'm seated on the left side of the room - perfect position to facilitate team communication.",
+      "Good morning Sir! I've taken the top left position - excellent vantage point to oversee the entire meeting flow."
+    ];
+
+    // Greetings from each executive with accurate seating position comments
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const seatComment = seatComments[i % seatComments.length];
+      // Use the exact position index to match the chair position
+      const positionIndex = i % chairPositions.length;
+      const seatComment = seatComments[positionIndex];
+      const position = chairPositions[positionIndex];
+      
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `${seatComment} ${exec.name}, ${exec.role} reporting for duty from this strategic position.`,
+        message: `${seatComment} This is ${exec.name}, ${exec.role}, reporting for duty from position ${positionIndex + 1}.`,
         timestamp: new Date()
       };
       
