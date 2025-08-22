@@ -129,39 +129,6 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
         className="w-full h-full object-contain rounded-lg"
       />
       
-      {/* Executive avatars positioned around the table */}
-      {executives.map((exec, index) => {
-        const position = calculatePosition(index, executives.length);
-        return (
-          <div
-            key={exec.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm bg-opacity-90 hover:scale-110 transition-transform cursor-pointer"
-            style={{
-              left: position.x,
-              top: position.y,
-              backgroundColor: exec.color,
-              zIndex: 10
-            }}
-            title={`${exec.name} - ${exec.role}`}
-          >
-            {exec.name.split(' ').map(n => n[0]).join('')}
-          </div>
-        );
-      })}
-      
-      {/* CEO/Founder position (positioned at the head of the table - top center) */}
-      <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-yellow-400 shadow-lg flex items-center justify-center text-white font-bold text-sm"
-        style={{
-          left: '50%',
-          top: '25%',
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
-          zIndex: 15
-        }}
-        title="You - CEO & Founder"
-      >
-        <Crown className="w-5 h-5" />
-      </div>
     </div>
   );
 };
