@@ -100,102 +100,68 @@ const executiveColors = [
   '#EF4444'  // Red
 ];
 
-// Modern 2D Meeting Room Component with New UI
+// 2D Meeting Room Component with Image
 const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) => {
-  // Define the 4 executive chair positions around the boardroom table
-  const getExecutivePosition = (role: string) => {
-    const positions = {
-      "Chief Financial Officer": { x: '75%', y: '50%', label: 'CFO' },
-      "Chief Operating Officer": { x: '25%', y: '50%', label: 'COO' },
-      "Chief Technology Officer": { x: '50%', y: '75%', label: 'CTO' }
-    };
-    return positions[role] || { x: '50%', y: '85%', label: 'EXEC' };
+  // Calculate positions for executives around the table based on actual chair positions in image
+  const calculatePosition = (index: number, total: number) => {
+    // Predefined positions matching the chairs in the meeting room image
+    const chairPositions = [
+      { x: 50, y: 25 },   // Top center
+      { x: 75, y: 35 },   // Top right
+      { x: 85, y: 50 },   // Right side
+      { x: 75, y: 65 },   // Bottom right  
+      { x: 25, y: 65 },   // Bottom left
+      { x: 15, y: 50 },   // Left side
+      { x: 25, y: 35 },   // Top left
+    ];
+    
+    // Select position based on index, cycling through available positions
+    const position = chairPositions[index % chairPositions.length];
+    return { x: `${position.x}%`, y: `${position.y}%` };
   };
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl overflow-hidden shadow-2xl">
-      {/* Modern Conference Table */}
-      <div className="absolute inset-8 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full shadow-inner border-4 border-amber-300">
-        {/* Table Surface Details */}
-        <div className="absolute inset-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-full opacity-60"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-amber-200 rounded-full shadow-lg opacity-40"></div>
-        
-        {/* Conference Grid Lines */}
-        <div className="absolute inset-8 border border-amber-300/30 rounded-full"></div>
-        <div className="absolute inset-12 border border-amber-300/20 rounded-full"></div>
-      </div>
+    <div className="relative w-full h-full">
+      {/* Meeting room image */}
+      <img 
+        src="/images/meeting-room-top-view.webp" 
+        alt="Meeting room top view"
+        className="w-full h-full object-contain rounded-lg"
+      />
       
-      {/* Executive Positions */}
+      {/* Executive avatars positioned around the table */}
       {executives.map((exec, index) => {
-        const position = getExecutivePosition(exec.role);
+        const position = calculatePosition(index, executives.length);
         return (
           <div
             key={exec.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm bg-opacity-90 hover:scale-110 transition-transform cursor-pointer"
             style={{
               left: position.x,
               top: position.y,
-              zIndex: 20
+              backgroundColor: exec.color,
+              zIndex: 10
             }}
+            title={`${exec.name} - ${exec.role}`}
           >
-            {/* Executive Chair Base */}
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full shadow-xl mb-2 opacity-50"></div>
-            
-            {/* Executive Avatar */}
-            <div
-              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-14 h-14 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-white font-bold text-sm bg-opacity-95 hover:scale-110 transition-all duration-300 cursor-pointer"
-              style={{
-                background: `linear-gradient(135deg, ${exec.color}dd, ${exec.color})`,
-                boxShadow: `0 8px 32px ${exec.color}40`
-              }}
-              title={`${exec.name} - ${exec.role}`}
-            >
-              {exec.name.split(' ').map(n => n[0]).join('')}
-            </div>
-            
-            {/* Role Label */}
-            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 shadow-lg border border-gray-200">
-              {position.label}
-            </div>
+            {exec.name.split(' ').map(n => n[0]).join('')}
           </div>
         );
       })}
       
-      {/* CEO Position - Head of Table */}
+      {/* CEO/Founder position (positioned at the head of the table - top center) */}
       <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-3 border-yellow-400 shadow-lg flex items-center justify-center text-white font-bold text-sm"
         style={{
           left: '50%',
-          top: '20%',
-          zIndex: 25
+          top: '25%',
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
+          zIndex: 15
         }}
+        title="You - CEO & Founder"
       >
-        {/* CEO Chair Base */}
-        <div className="w-20 h-20 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full shadow-2xl mb-2"></div>
-        
-        {/* CEO Avatar */}
-        <div
-          className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 w-16 h-16 rounded-full border-4 border-yellow-400 shadow-2xl flex items-center justify-center text-white font-bold text-lg hover:scale-110 transition-all duration-300 cursor-pointer"
-          style={{
-            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
-            boxShadow: '0 12px 40px #f59e0b60'
-          }}
-          title="You - CEO & Founder"
-        >
-          <Crown className="w-6 h-6" />
-        </div>
-        
-        {/* CEO Label */}
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg border-2 border-yellow-300">
-          CEO
-        </div>
+        <Crown className="w-5 h-5" />
       </div>
-
-      {/* Modern Room Details */}
-      <div className="absolute top-4 left-4 w-6 h-6 bg-green-400 rounded-full shadow-lg animate-pulse opacity-60"></div>
-      <div className="absolute top-4 right-4 w-4 h-4 bg-blue-400 rounded-full shadow-lg opacity-40"></div>
-      <div className="absolute bottom-4 left-4 w-5 h-5 bg-purple-400 rounded-full shadow-lg opacity-40"></div>
-      <div className="absolute bottom-4 right-4 w-3 h-3 bg-red-400 rounded-full shadow-lg opacity-40"></div>
     </div>
   );
 };
@@ -235,28 +201,27 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // 4 specific chairs for executive roles on opposite sides
-    const executiveChairs = {
-      "Chief Financial Officer": { position: "right side of the table", description: "I'm seated on the right side, Sir! Ready to discuss financial strategies." },
-      "Chief Operating Officer": { position: "left side of the table", description: "I've taken the left side position, Sir! Perfect for operational oversight." },
-      "Chief Technology Officer": { position: "opposite end of the table", description: "I'm positioned at the far end, Sir! Great view for technology discussions." }
-    };
+    // Seat position descriptions based on the highlighted areas in the image
+    const seatComments = [
+      "Good morning Sir! I've taken my position at the head of the table, ready to lead this discussion.",
+      "Sir, I'm positioned to your right side - perfect spot to provide strategic insights.",
+      "Hello Sir! I'm seated on the right side of the room, ready to support our agenda.",
+      "Good morning Sir! I've taken the seat on the lower right - excellent view of the presentation screen.",
+      "Sir, I'm positioned on the left side here - ready to collaborate with the team.",
+      "Hello Sir! I'm seated on the left side with a great view of everyone around the table.",
+      "Good morning Sir! I've taken the upper left position - perfect angle to observe the team dynamics."
+    ];
 
-    // Each executive speaks about their designated chair based on their role
+    // Greetings from each executive with seating comments
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Get chair assignment based on executive role
-      const chairInfo = executiveChairs[exec.role] || { 
-        position: "available chair", 
-        description: "I've taken my designated seat, Sir! Ready for the meeting." 
-      };
-      
+      const seatComment = seatComments[i % seatComments.length];
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `Hello Sir! ${exec.name}, ${exec.role} reporting for duty. ${chairInfo.description}`,
+        message: `${seatComment} ${exec.name}, ${exec.role} reporting for duty from this strategic position.`,
         timestamp: new Date()
       };
       
