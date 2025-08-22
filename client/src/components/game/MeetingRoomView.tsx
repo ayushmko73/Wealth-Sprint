@@ -195,53 +195,34 @@ const MeetingChatInterface: React.FC<{
     const welcomeMessage: ChatMessage = {
       id: 'welcome',
       sender: 'System',
-      message: 'Meeting started. Executives are taking their seats...',
+      message: 'Meeting started. Officers are joining...',
       timestamp: new Date(),
       isSystem: true
     };
     setChatMessages([welcomeMessage]);
 
-    // Define exact seat positions and their descriptions based on the meeting room layout
-    const executiveSeatings = [
-      {
-        position: "right side of the boardroom table",
-        description: "Perfect spot to your right, Sir! Great visibility across the entire meeting room.",
-        location: "Position 1 - Right Side"
-      },
-      {
-        position: "left side chair facing the center", 
-        description: "Excellent seat on your left, Sir! Ideal angle to observe all team discussions.",
-        location: "Position 2 - Left Side"
-      },
-      {
-        position: "far right corner seat",
-        description: "Strategic corner position, Sir! Can monitor the entire room from this vantage point.",
-        location: "Position 3 - Right Corner"
-      },
-      {
-        position: "back left chair near the wall",
-        description: "Secured the back-left position, Sir! Great overview of the meeting dynamics.",
-        location: "Position 4 - Back Left"
-      },
-      {
-        position: "opposite end of the conference table",
-        description: "Positioned at the far end, Sir! Excellent view directly across from your leadership seat.",
-        location: "Position 5 - Far End"
-      }
+    // Ensure each executive gets their own unique chair position
+    const chairPositions = [
+      { seat: "Chair 1 - Top right position", description: "I'm seated in the top right chair, Sir! Perfect strategic position." },
+      { seat: "Chair 2 - Right side position", description: "I've taken the right side chair, Sir! Excellent view of the meeting." },
+      { seat: "Chair 3 - Bottom right position", description: "I'm positioned in the bottom right chair, Sir! Great angle for discussions." },
+      { seat: "Chair 4 - Bottom left position", description: "I've secured the bottom left chair, Sir! Ideal spot for collaboration." },
+      { seat: "Chair 5 - Left side position", description: "I'm seated in the left side chair, Sir! Perfect for team coordination." },
+      { seat: "Chair 6 - Top left position", description: "I've taken the top left chair, Sir! Excellent overview position." }
     ];
 
-    // Each executive speaks about their specific highlighted seating area
+    // Each executive gets their own individual chair - no sharing or overlapping
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Get the specific seating info for this executive
-      const seatInfo = executiveSeatings[i % executiveSeatings.length];
+      // Assign unique chair to each executive (no modulo to avoid sharing)
+      const chairInfo = chairPositions[i] || chairPositions[chairPositions.length - 1];
       
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `Good morning Sir! I'm ${exec.name}, your ${exec.role}. I've taken my seat at the ${seatInfo.position}. ${seatInfo.description} Ready to begin our strategic discussion!`,
+        message: `Hello Sir! ${exec.name}, ${exec.role} reporting for duty. ${chairInfo.description}`,
         timestamp: new Date()
       };
       
