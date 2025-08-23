@@ -101,23 +101,29 @@ const executiveColors = [
 ];
 
 // 2D Meeting Room Component with Image
-const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) => {
+const MeetingRoom2D: React.FC<{ executives: Executive[], showFounder?: boolean }> = ({ executives, showFounder = false }) => {
   // Calculate positions for executives around the table based on actual chair positions in image
-  const calculatePosition = (index: number, total: number) => {
+  const calculatePosition = (index: number, isFounder: boolean = false) => {
     // Predefined positions matching the chairs in the meeting room image
     const chairPositions = [
-      { x: 50, y: 25 },   // Top center
-      { x: 75, y: 35 },   // Top right
-      { x: 85, y: 50 },   // Right side
-      { x: 75, y: 65 },   // Bottom right  
-      { x: 25, y: 65 },   // Bottom left
-      { x: 15, y: 50 },   // Left side
-      { x: 25, y: 35 },   // Top left
+      { x: 50, y: 25, label: 'Head of Table (Founder)' },   // Top center - FOUNDER'S DOMINANT SEAT
+      { x: 75, y: 35, label: 'Top Right' },   // Top right
+      { x: 85, y: 50, label: 'Right Side' },   // Right side
+      { x: 75, y: 65, label: 'Bottom Right' },   // Bottom right  
+      { x: 25, y: 65, label: 'Bottom Left' },   // Bottom left
+      { x: 15, y: 50, label: 'Left Side' },   // Left side
+      { x: 25, y: 35, label: 'Top Left' },   // Top left
     ];
     
-    // Select position based on index, cycling through available positions
-    const position = chairPositions[index % chairPositions.length];
-    return { x: `${position.x}%`, y: `${position.y}%` };
+    // If founder, always give them position 0 (top center - dominant position)
+    if (isFounder) {
+      const position = chairPositions[0];
+      return { x: `${position.x}%`, y: `${position.y}%`, label: position.label };
+    }
+    
+    // For executives, skip position 0 (reserved for founder) and use positions 1-6
+    const position = chairPositions[(index + 1) % chairPositions.length];
+    return { x: `${position.x}%`, y: `${position.y}%`, label: position.label };
   };
 
   return (
@@ -129,6 +135,61 @@ const MeetingRoom2D: React.FC<{ executives: Executive[] }> = ({ executives }) =>
         className="w-full h-full object-contain rounded-lg"
       />
       
+      {/* Founder (CEO) - Always at head of table when meeting is active */}
+      {showFounder && (
+        <div 
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
+          style={{ left: calculatePosition(0, true).x, top: calculatePosition(0, true).y }}
+        >
+          <div className="relative group">
+            {/* Founder avatar with crown */}
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg border-3 border-white">
+              <Crown className="w-6 h-6 text-white" />
+            </div>
+            {/* Founder label */}
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+              CEO (You) - Head of Table
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Executive Team Members */}
+      {executives.map((exec, index) => {
+        const position = calculatePosition(index, false);
+        return (
+          <div 
+            key={exec.id}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
+            style={{ left: position.x, top: position.y }}
+          >
+            <div className="relative group">
+              {/* Executive avatar */}
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white text-white font-bold text-sm"
+                style={{ backgroundColor: exec.color }}
+              >
+                {exec.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              {/* Executive info tooltip */}
+              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-30">
+                <div className="font-semibold">{exec.name}</div>
+                <div className="text-gray-300">{exec.role} • {position.label}</div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      
+      {/* Meeting status indicator */}
+      {showFounder && executives.length > 0 && (
+        <div className="absolute bottom-4 right-4 bg-green-600 text-white px-3 py-2 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">All Members Seated</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -162,21 +223,21 @@ const MeetingChatInterface: React.FC<{
     const welcomeMessage: ChatMessage = {
       id: 'welcome',
       sender: 'System',
-      message: 'Meeting started. Officers are joining...',
+      message: 'Meeting started. CEO has taken the head seat. Officers are taking their positions around the table...',
       timestamp: new Date(),
       isSystem: true
     };
     setChatMessages([welcomeMessage]);
 
-    // Seat position descriptions based on the highlighted areas in the image
+    // Seat position descriptions - Founder takes head position, executives positioned around
     const seatComments = [
-      "Good morning Sir! I've taken my position at the head of the table, ready to lead this discussion.",
-      "Sir, I'm positioned to your right side - perfect spot to provide strategic insights.",
-      "Hello Sir! I'm seated on the right side of the room, ready to support our agenda.",
-      "Good morning Sir! I've taken the seat on the lower right - excellent view of the presentation screen.",
-      "Sir, I'm positioned on the left side here - ready to collaborate with the team.",
-      "Hello Sir! I'm seated on the left side with a great view of everyone around the table.",
-      "Good morning Sir! I've taken the upper left position - perfect angle to observe the team dynamics."
+      "Good morning Sir! I've taken the top right position, ready to provide strategic insights from this excellent vantage point.",
+      "Hello Sir! I'm seated on the right side of the table, perfectly positioned to support our agenda and collaborate effectively.",
+      "Good morning Sir! I've taken the seat on the lower right with an excellent view of the presentation screen and the entire team.",
+      "Sir, I'm positioned on the lower left, ready to collaborate with everyone and contribute to our strategic discussions.",
+      "Hello Sir! I'm seated on the left side with a great view of everyone around the table and ready to support our initiatives.",
+      "Good morning Sir! I've taken the upper left position with a perfect angle to observe team dynamics and contribute effectively.",
+      "Sir, I'm positioned strategically to support our meeting objectives and collaborate with the entire executive team."
     ];
 
     // Greetings from each executive with seating comments
@@ -557,7 +618,7 @@ const MeetingRoomView: React.FC = () => {
       <Card>
         <CardContent className="p-6">
           <div ref={meetingRoomRef} className="relative w-full h-96 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden shadow-lg">
-            <MeetingRoom2D executives={isMeetingActive ? activeExecutives : []} />
+            <MeetingRoom2D executives={isMeetingActive ? activeExecutives : []} showFounder={isMeetingActive} />
             
             {/* Status Overlay */}
             <div className="absolute top-4 left-4 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
