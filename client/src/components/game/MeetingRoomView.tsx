@@ -229,27 +229,27 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // Seat position descriptions - matching the highlighted chair positions
+    // Short seat position descriptions
     const seatComments = [
-      "Good morning Sir! I've taken the right side position as highlighted, ready to provide strategic insights from this key location.",
-      "Hello Sir! I'm seated at the bottom center position, perfectly positioned with full view of the table and ready to support our agenda.",
-      "Good morning Sir! I've taken the left side position as designated, ready to collaborate and contribute to our strategic discussions.",
-      "Sir, I'm positioned at the top right area, ready to support our initiatives and provide valuable input to the team.",
-      "Hello Sir! I'm seated at the bottom right position with excellent visibility and ready to contribute effectively.",
-      "Good morning Sir! I've taken the bottom left position, perfectly placed to observe team dynamics and support our objectives.",
-      "Sir, I'm positioned strategically in the available seating to collaborate with the entire executive team."
+      "Good morning Sir! Right side position ready.",
+      "Hello Sir! Bottom center, ready to support.",
+      "Good morning Sir! Left side position ready.",
+      "Sir! Top right area, ready to contribute.",
+      "Hello Sir! Bottom right position ready.",
+      "Good morning Sir! Bottom left ready.",
+      "Sir! Strategic position ready."
     ];
 
     // Greetings from each executive with seating comments
     for (let i = 0; i < executives.length; i++) {
       const exec = executives[i];
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       const seatComment = seatComments[i % seatComments.length];
       const greeting: ChatMessage = {
         id: `greeting-${exec.id}`,
         sender: exec.name,
-        message: `${seatComment} ${exec.name}, ${exec.role} reporting for duty from this strategic position.`,
+        message: `${seatComment} ${exec.name}, ${exec.role} ready.`,
         timestamp: new Date()
       };
       
