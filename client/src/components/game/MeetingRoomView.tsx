@@ -633,19 +633,6 @@ const MeetingRoomView: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Chat Interface - Only when meeting is active */}
-      {isMeetingActive && (
-        <Card>
-          <CardContent className="p-6">
-            <MeetingChatInterface 
-              executives={activeExecutives} 
-              onClose={endMeeting}
-              isActive={isMeetingActive}
-            />
-          </CardContent>
-        </Card>
-      )}
-
       {/* Board Composition */}
       <Card>
         <CardHeader>
@@ -740,6 +727,19 @@ const MeetingRoomView: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Chat Interface - Moved to bottom as requested */}
+      {isMeetingActive && (
+        <Card>
+          <CardContent className="p-6">
+            <MeetingChatInterface 
+              executives={activeExecutives} 
+              onClose={endMeeting}
+              isActive={isMeetingActive}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
