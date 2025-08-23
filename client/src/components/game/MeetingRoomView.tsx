@@ -211,10 +211,10 @@ const MeetingChatInterface: React.FC<{
     }
   }, [isActive, executives]);
 
-  // Disable auto-scroll behavior completely
-  // useEffect(() => {
-  //   chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  // }, [chatMessages]);
+  // Enable auto-scroll when new messages are added
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   const startMeetingGreetings = async () => {
     setIsGreeting(true);
