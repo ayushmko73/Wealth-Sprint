@@ -102,17 +102,17 @@ const executiveColors = [
 
 // 2D Meeting Room Component with Image
 const MeetingRoom2D: React.FC<{ executives: Executive[], showFounder?: boolean }> = ({ executives, showFounder = false }) => {
-  // Calculate positions for executives around the table based on actual chair positions in image
+  // Calculate positions for executives around the table based on actual highlighted chair positions in image
   const calculatePosition = (index: number, isFounder: boolean = false) => {
-    // Predefined positions matching the chairs in the meeting room image
+    // Predefined positions matching the EXACT highlighted chairs in the meeting room image
     const chairPositions = [
-      { x: 50, y: 25, label: 'Head of Table (Founder)' },   // Top center - FOUNDER'S DOMINANT SEAT
-      { x: 75, y: 35, label: 'Top Right' },   // Top right
-      { x: 85, y: 50, label: 'Right Side' },   // Right side
-      { x: 75, y: 65, label: 'Bottom Right' },   // Bottom right  
-      { x: 25, y: 65, label: 'Bottom Left' },   // Bottom left
-      { x: 15, y: 50, label: 'Left Side' },   // Left side
-      { x: 25, y: 35, label: 'Top Left' },   // Top left
+      { x: 50, y: 20, label: 'Head of Table (Founder)' },   // Top center - FOUNDER'S DOMINANT SEAT (highlighted)
+      { x: 78, y: 50, label: 'Right Side' },   // Right side (highlighted chair)
+      { x: 50, y: 78, label: 'Bottom Center' },   // Bottom center (highlighted chair)
+      { x: 22, y: 50, label: 'Left Side' },   // Left side (highlighted chair)
+      { x: 65, y: 30, label: 'Top Right' },   // Additional position if needed
+      { x: 65, y: 70, label: 'Bottom Right' },   // Additional position if needed
+      { x: 35, y: 70, label: 'Bottom Left' },   // Additional position if needed
     ];
     
     // If founder, always give them position 0 (top center - dominant position)
@@ -229,15 +229,15 @@ const MeetingChatInterface: React.FC<{
     };
     setChatMessages([welcomeMessage]);
 
-    // Seat position descriptions - Founder takes head position, executives positioned around
+    // Seat position descriptions - matching the highlighted chair positions
     const seatComments = [
-      "Good morning Sir! I've taken the top right position, ready to provide strategic insights from this excellent vantage point.",
-      "Hello Sir! I'm seated on the right side of the table, perfectly positioned to support our agenda and collaborate effectively.",
-      "Good morning Sir! I've taken the seat on the lower right with an excellent view of the presentation screen and the entire team.",
-      "Sir, I'm positioned on the lower left, ready to collaborate with everyone and contribute to our strategic discussions.",
-      "Hello Sir! I'm seated on the left side with a great view of everyone around the table and ready to support our initiatives.",
-      "Good morning Sir! I've taken the upper left position with a perfect angle to observe team dynamics and contribute effectively.",
-      "Sir, I'm positioned strategically to support our meeting objectives and collaborate with the entire executive team."
+      "Good morning Sir! I've taken the right side position as highlighted, ready to provide strategic insights from this key location.",
+      "Hello Sir! I'm seated at the bottom center position, perfectly positioned with full view of the table and ready to support our agenda.",
+      "Good morning Sir! I've taken the left side position as designated, ready to collaborate and contribute to our strategic discussions.",
+      "Sir, I'm positioned at the top right area, ready to support our initiatives and provide valuable input to the team.",
+      "Hello Sir! I'm seated at the bottom right position with excellent visibility and ready to contribute effectively.",
+      "Good morning Sir! I've taken the bottom left position, perfectly placed to observe team dynamics and support our objectives.",
+      "Sir, I'm positioned strategically in the available seating to collaborate with the entire executive team."
     ];
 
     // Greetings from each executive with seating comments
