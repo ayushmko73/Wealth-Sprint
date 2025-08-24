@@ -283,7 +283,6 @@ const TeamSuggestionsView: React.FC = () => {
                 <div key={suggestion.id} className="border border-blue-200 rounded-lg p-4 bg-blue-50">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-semibold text-blue-800">{suggestion.title}</h4>
-                    <Badge className={`text-xs ${getBadgeColor(suggestion.sector)}`}>{suggestion.sector}</Badge>
                   </div>
                   <p className="text-sm text-blue-700 mb-3">{suggestion.description}</p>
                   <div className="space-y-2 text-sm">
@@ -313,7 +312,6 @@ const TeamSuggestionsView: React.FC = () => {
               <div key={suggestion.id} className="border border-green-200 rounded-lg p-4 bg-green-50">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-semibold text-green-800">{suggestion.title}</h4>
-                  <Badge className="text-xs bg-green-500">{suggestion.asset}</Badge>
                 </div>
                 <p className="text-sm text-green-700 mb-3">{suggestion.description}</p>
                 <div className="space-y-2 text-sm">

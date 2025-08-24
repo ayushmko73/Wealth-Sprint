@@ -209,11 +209,6 @@ const SimpleOpportunitiesSection: React.FC = () => {
             <div className="flex-1">
               <h3 className="font-semibold text-lg">{deal.title}</h3>
               <p className="text-gray-600 text-sm">{deal.company}</p>
-              {sectorInfo && (
-                <Badge className={`text-xs mt-1 ${sectorInfo.color}`}>
-                  {sectorInfo.label}
-                </Badge>
-              )}
             </div>
           </div>
 
@@ -241,9 +236,6 @@ const SimpleOpportunitiesSection: React.FC = () => {
 
           {/* Risk Level */}
           <div className="flex justify-between items-center">
-            <Badge className={`${getRiskColor(deal.riskLevel)}`}>
-              {deal.riskLevel.toUpperCase()} RISK
-            </Badge>
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
               View Details
             </Button>
@@ -276,12 +268,7 @@ const SimpleOpportunitiesSection: React.FC = () => {
               <div className="space-y-2">
                 <div><span className="font-medium">Monthly Cashflow:</span> {formatCurrency(selectedDeal.cashflowMonthly)}</div>
                 <div><span className="font-medium">Timeline:</span> {selectedDeal.timeHorizon} months</div>
-                <div>
-                  <span className="font-medium">Risk Level:</span> 
-                  <Badge className={`ml-2 ${getRiskColor(selectedDeal.riskLevel)}`}>
-                    {selectedDeal.riskLevel}
-                  </Badge>
-                </div>
+                <div><span className="font-medium">Risk Level:</span> {selectedDeal.riskLevel}</div>
               </div>
             </div>
 
