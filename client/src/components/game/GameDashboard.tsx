@@ -226,33 +226,86 @@ const GameDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Menu (Mobile) */}
+      {/* Enhanced Grid Navigation Menu */}
       {menuOpen && (
-        <div className="bg-white border-b border-gray-200 px-2 py-3">
-          <div className="grid grid-cols-3 gap-2">
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="grid grid-cols-3 gap-3">
             {navigationItems.map((item) => {
               const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              const isDeals = item.id === 'business_deals';
+              
               return (
-                <Button
+                <button
                   key={item.id}
-                  variant={activeSection === item.id ? "default" : "ghost"}
-                  size="sm"
                   onClick={() => {
                     setActiveSection(item.id);
                     setMenuOpen(false);
                   }}
-                  className={`flex flex-col items-center gap-1 h-auto py-2 px-2 min-h-16 ${
-                    activeSection === item.id 
-                      ? 'bg-green-500 text-white hover:bg-green-600' 
-                      : 'hover:bg-green-100 hover:text-green-700'
+                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-lg border transition-all duration-200 min-h-20 ${
+                    isActive && isDeals
+                      ? 'bg-green-500 text-white border-green-600 shadow-lg transform scale-105'
+                      : isActive
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
                   }`}
                 >
-                  <Icon size={16} />
-                  <span className="text-xs text-center leading-tight">{item.label}</span>
-                </Button>
+                  <Icon size={20} className={isActive && isDeals ? 'text-white' : isActive ? 'text-blue-600' : 'text-gray-500'} />
+                  <span className={`text-xs font-medium text-center leading-tight ${
+                    isActive && isDeals ? 'text-white' : isActive ? 'text-blue-700' : 'text-gray-600'
+                  }`}>
+                    {item.label}
+                  </span>
+                </button>
               );
             })}
           </div>
+          
+          {/* Business Deals Portfolio Section */}
+          {activeSection === 'business_deals' && (
+            <div className="mt-4 bg-blue-600 rounded-lg p-4 text-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Briefcase size={20} className="text-white" />
+                <h3 className="font-bold text-white">Business Deals</h3>
+                <span className="ml-auto text-sm text-blue-200">Portfolio Value</span>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">{formatIndianCurrency(1500000)}</div>
+              </div>
+              <p className="text-blue-200 text-sm mt-1">Comprehensive deal management & portfolio optimization</p>
+              
+              <div className="grid grid-cols-4 gap-3 mt-3 text-center">
+                <div>
+                  <div className="text-xs text-blue-200">Active Deals</div>
+                  <div className="text-sm font-bold">3</div>
+                </div>
+                <div>
+                  <div className="text-xs text-blue-200">Avg ROI</div>
+                  <div className="text-sm font-bold">24.5%</div>
+                </div>
+                <div>
+                  <div className="text-xs text-blue-200">Monthly Flow</div>
+                  <div className="text-sm font-bold">{formatIndianCurrency(35000)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-blue-200">Risk Level</div>
+                  <div className="text-sm font-bold">Medium</div>
+                </div>
+              </div>
+              
+              <div className="flex gap-2 mt-3">
+                <div className="bg-white/20 rounded px-3 py-1">
+                  <span className="text-xs text-white">Overview</span>
+                </div>
+                <div className="bg-white/10 rounded px-3 py-1">
+                  <span className="text-xs text-blue-200">Opportunities</span>
+                </div>
+                <div className="bg-white/10 rounded px-3 py-1">
+                  <span className="text-xs text-blue-200">Financials</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
