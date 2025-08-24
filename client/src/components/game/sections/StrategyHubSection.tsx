@@ -244,7 +244,6 @@ const TeamSuggestionsView: React.FC = () => {
               <div key={suggestion.id} className="border border-red-200 rounded-lg p-4 bg-red-50">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-semibold text-red-800">{suggestion.title}</h4>
-                  <Badge variant="destructive" className="text-xs">{suggestion.priority}</Badge>
                 </div>
                 <p className="text-sm text-red-700 mb-3">{suggestion.description}</p>
                 <div className="space-y-2 text-sm">
