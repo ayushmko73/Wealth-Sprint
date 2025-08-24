@@ -210,7 +210,7 @@ const SimpleOpportunitiesSection: React.FC = () => {
               <h3 className="font-semibold text-lg">{deal.title}</h3>
               <p className="text-gray-600 text-sm">{deal.company}</p>
               {sectorInfo && (
-                <Badge className={`text-xs mt-1 ${sectorInfo.color}`}>
+                <Badge className={`text-xs mt-1 bg-blue-500 text-white`}>
                   {sectorInfo.label}
                 </Badge>
               )}

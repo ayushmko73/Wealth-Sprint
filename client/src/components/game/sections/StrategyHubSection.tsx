@@ -288,34 +288,6 @@ const TeamSuggestionsView: React.FC = () => {
         </Card>
       )}
 
-      {/* Sector-Based Suggestions */}
-      {suggestions.sectorBased.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-600">
-              <Target className="w-5 h-5" />
-              Sector-Specific Recommendations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {suggestions.sectorBased.map((suggestion, index) => (
-              <div key={suggestion.id} className="border border-blue-200 rounded-lg p-4 bg-blue-50">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-blue-800">{suggestion.title}</h4>
-                  <Badge className="text-xs bg-blue-500">{suggestion.sector}</Badge>
-                </div>
-                <p className="text-sm text-blue-700 mb-3">{suggestion.description}</p>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
-                  <div><strong>Impact:</strong> {suggestion.impact}</div>
-                  <div><strong>Cost:</strong> {suggestion.cost}</div>
-                  <div className="text-xs italic text-blue-600">{suggestion.reasoning}</div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Asset-Based Suggestions */}
       {suggestions.assetBased.length > 0 && (
