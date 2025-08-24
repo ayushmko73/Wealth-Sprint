@@ -226,152 +226,32 @@ const GameDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Completely New Modern Navigation Menu */}
+      {/* Navigation Menu (Mobile) */}
       {menuOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex">
-          {/* Menu Overlay */}
-          <div 
-            className="flex-1" 
-            onClick={() => setMenuOpen(false)}
-          />
-          
-          {/* New Slide-in Menu Panel */}
-          <div className="bg-white w-80 h-full shadow-2xl transform transition-all duration-300 ease-out">
-            {/* Menu Header */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Navigation</h2>
-                <button 
-                  onClick={() => setMenuOpen(false)}
-                  className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+        <div className="bg-white border-b border-gray-200 px-2 py-3">
+          <div className="grid grid-cols-3 gap-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={item.id}
+                  variant={activeSection === item.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMenuOpen(false);
+                  }}
+                  className={`flex flex-col items-center gap-1 h-auto py-2 px-2 min-h-16 ${
+                    activeSection === item.id 
+                      ? 'bg-green-500 text-white hover:bg-green-600' 
+                      : 'hover:bg-green-100 hover:text-green-700'
+                  }`}
                 >
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="text-sm text-indigo-100">Select your destination</div>
-            </div>
-            
-            {/* Menu Content */}
-            <div className="h-full overflow-y-auto pb-20">
-              {/* Primary Navigation Section */}
-              <div className="p-4">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Core Features</h3>
-                <div className="space-y-2">
-                  {navigationItems.slice(0, 6).map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeSection === item.id;
-                    
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveSection(item.id);
-                          setMenuOpen(false);
-                        }}
-                        className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
-                          isActive 
-                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
-                            : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        <div className={`p-2 rounded-lg ${
-                          isActive ? 'bg-white/20' : 'bg-white'
-                        }`}>
-                          <Icon size={20} className={isActive ? 'text-white' : 'text-blue-600'} />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className={`font-medium ${isActive ? 'text-white' : 'text-gray-800'}`}>
-                            {item.label}
-                          </div>
-                          <div className={`text-xs ${isActive ? 'text-blue-100' : 'text-gray-500'}`}>
-                            {item.id === 'dashboard' && 'Overview & Analytics'}
-                            {item.id === 'business' && 'Business Management'}
-                            {item.id === 'cashflow' && 'Financial Flow'}
-                            {item.id === 'stock_market' && 'Market Trading'}
-                            {item.id === 'bonds' && 'Fixed Income'}
-                            {item.id === 'revenue' && 'Revenue Analytics'}
-                          </div>
-                        </div>
-                        {isActive && (
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Advanced Features Section */}
-              <div className="p-4 border-t border-gray-100">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Advanced Tools</h3>
-                <div className="space-y-2">
-                  {navigationItems.slice(6).map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeSection === item.id;
-                    
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveSection(item.id);
-                          setMenuOpen(false);
-                        }}
-                        className={`w-full flex items-center gap-4 p-3 rounded-lg transition-all duration-200 ${
-                          isActive 
-                            ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md' 
-                            : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        <div className={`p-2 rounded-lg ${
-                          isActive ? 'bg-white/20' : 'bg-white'
-                        }`}>
-                          <Icon size={18} className={isActive ? 'text-white' : 'text-emerald-600'} />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className={`font-medium text-sm ${isActive ? 'text-white' : 'text-gray-800'}`}>
-                            {item.label}
-                          </div>
-                        </div>
-                        {isActive && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Quick Stats Section */}
-              <div className="p-4 border-t border-gray-100">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Stats</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-lg text-white">
-                    <div className="text-xs text-blue-100">Balance</div>
-                    <div className="font-bold text-sm">{formatIndianCurrency(financialData.bankBalance)}</div>
-                  </div>
-                  <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-lg text-white">
-                    <div className="text-xs text-green-100">FI Progress</div>
-                    <div className="font-bold text-sm">
-                      {Math.round((financialData.sideIncome / financialData.monthlyExpenses) * 100)}%
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-lg text-white">
-                    <div className="text-xs text-purple-100">Week</div>
-                    <div className="font-bold text-sm">{currentWeek}</div>
-                  </div>
-                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-3 rounded-lg text-white">
-                    <div className="text-xs text-orange-100">Karma</div>
-                    <div className="font-bold text-sm">{playerStats.karma}</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Footer */}
-              <div className="p-4 border-t border-gray-100 text-center">
-                <div className="text-xs text-gray-400">Wealth Sprint v2.0</div>
-                <div className="text-xs text-gray-500 mt-1">Build your financial future</div>
-              </div>
-            </div>
+                  <Icon size={16} />
+                  <span className="text-xs text-center leading-tight">{item.label}</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
       )}
