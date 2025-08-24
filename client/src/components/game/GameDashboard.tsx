@@ -272,8 +272,6 @@ const GameDashboard: React.FC = () => {
       {/* Sage AI Assistant */}
       <SageAI />
       
-      {/* Decision System Manager */}
-      <DecisionManager />
     </div>
   );
 };
