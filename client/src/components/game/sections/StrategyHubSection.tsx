@@ -9,6 +9,385 @@ import { getTeamScenarios, TeamScenario } from '../../../lib/data/teamScenarios'
 import { formatIndianCurrency } from '../../../lib/utils';
 import MeetingRoomView from '../MeetingRoomView';
 
+// Smart Team Suggestions Component
+const TeamSuggestionsView: React.FC = () => {
+  const { playerStats, financialData, purchasedSectors, uiState } = useWealthSprintGame();
+  const { teamMembers } = useTeamManagement();
+
+  // Get user's assets from game state (store items)
+  const userAssets = financialData.assets || [];
+  
+  // Generate smart suggestions based on context
+  const generateSuggestions = () => {
+    const suggestions = {
+      immediate: [] as any[],
+      strategic: [] as any[],
+      sectorBased: [] as any[],
+      assetBased: [] as any[]
+    };
+
+    // Analyze current team composition
+    const currentRoles = teamMembers.map(member => member.role.toLowerCase());
+    const hasManager = currentRoles.some(role => role.includes('manager') || role.includes('lead'));
+    const hasMarketing = currentRoles.some(role => role.includes('marketing') || role.includes('sales'));
+    const hasTech = currentRoles.some(role => role.includes('developer') || role.includes('tech'));
+    const hasFinance = currentRoles.some(role => role.includes('finance') || role.includes('accountant'));
+    const hasOperations = currentRoles.some(role => role.includes('operations') || role.includes('logistics'));
+
+    // IMMEDIATE SUGGESTIONS based on critical gaps
+    if (teamMembers.length === 0) {
+      suggestions.immediate.push({
+        id: 'first_hire',
+        priority: 'CRITICAL',
+        title: 'Hire Your First Team Member',
+        description: 'Start with a versatile manager or assistant to help delegate tasks.',
+        actions: ['Visit Team Management', 'Look for Manager or Assistant roles'],
+        impact: 'Reduces your stress by 15-20 points monthly',
+        cost: '₹25K - ₹40K monthly',
+        reasoning: 'Solo operations unsustainable beyond early stage'
+      });
+    }
+
+    if (!hasFinance && financialData.bankBalance > 100000) {
+      suggestions.immediate.push({
+        id: 'finance_hire',
+        priority: 'HIGH',
+        title: 'Hire Finance Manager',
+        description: 'With ₹1L+ balance, you need financial oversight and planning.',
+        actions: ['Hire Accountant or Finance Manager', 'Set up financial reporting systems'],
+        impact: 'Better financial decisions, tax optimization',
+        cost: '₹35K - ₹50K monthly',
+        reasoning: 'Growing finances need professional management'
+      });
+    }
+
+    if (playerStats.stress > 70) {
+      suggestions.immediate.push({
+        id: 'stress_relief_hire',
+        priority: 'URGENT',
+        title: 'Delegate to Reduce Stress',
+        description: `Your stress (${playerStats.stress}) is dangerously high. Hire support staff.`,
+        actions: ['Hire Operations Manager', 'Hire Executive Assistant'],
+        impact: 'Stress reduction: 20-30 points',
+        cost: '₹30K - ₹45K monthly',
+        reasoning: 'High stress leads to poor decisions and burnout'
+      });
+    }
+
+    // SECTOR-SPECIFIC SUGGESTIONS
+    purchasedSectors.forEach(sectorId => {
+      switch(sectorId) {
+        case 'fast_food':
+          if (!hasOperations) {
+            suggestions.sectorBased.push({
+              id: 'ff_operations',
+              sector: 'Fast Food',
+              title: 'Hire Restaurant Operations Manager',
+              description: 'Fast food requires tight operational control for quality and efficiency.',
+              actions: ['Hire Operations Manager', 'Focus on food service experience'],
+              impact: '15-25% efficiency boost, better customer satisfaction',
+              cost: '₹40K - ₹60K monthly',
+              reasoning: 'Fast food success depends on operational excellence'
+            });
+          }
+          if (!hasMarketing) {
+            suggestions.sectorBased.push({
+              id: 'ff_marketing',
+              sector: 'Fast Food',
+              title: 'Hire Marketing Specialist',
+              description: 'Drive customer acquisition and brand building.',
+              actions: ['Hire Marketing Manager', 'Focus on local marketing experience'],
+              impact: '20-30% revenue boost through better marketing',
+              cost: '₹35K - ₹50K monthly',
+              reasoning: 'Food industry needs strong local marketing'
+            });
+          }
+          break;
+
+        case 'tech_startups':
+          if (!hasTech) {
+            suggestions.sectorBased.push({
+              id: 'tech_developer',
+              sector: 'Tech Startup',
+              title: 'Hire Lead Developer',
+              description: 'Tech startups need strong technical leadership for product development.',
+              actions: ['Hire Senior Developer', 'Look for startup experience'],
+              impact: 'Faster product development, technical debt management',
+              cost: '₹60K - ₹80K monthly',
+              reasoning: 'Technical expertise crucial for startup success'
+            });
+          }
+          if (teamMembers.length > 2 && !currentRoles.includes('cto')) {
+            suggestions.sectorBased.push({
+              id: 'tech_cto',
+              sector: 'Tech Startup',
+              title: 'Promote/Hire CTO',
+              description: 'Scale requires dedicated technical leadership.',
+              actions: ['Promote senior developer', 'Hire external CTO'],
+              impact: 'Better technical strategy, team scaling',
+              cost: '₹80K - ₹120K monthly',
+              reasoning: 'Growing tech team needs dedicated leadership'
+            });
+          }
+          break;
+
+        case 'ecommerce':
+          if (!hasMarketing) {
+            suggestions.sectorBased.push({
+              id: 'ecom_marketing',
+              sector: 'E-commerce',
+              title: 'Hire Digital Marketing Manager',
+              description: 'E-commerce success depends heavily on digital marketing.',
+              actions: ['Hire Digital Marketing specialist', 'Focus on performance marketing'],
+              impact: '25-40% increase in online sales',
+              cost: '₹45K - ₹65K monthly',
+              reasoning: 'E-commerce is marketing-driven business'
+            });
+          }
+          if (!hasOperations) {
+            suggestions.sectorBased.push({
+              id: 'ecom_logistics',
+              sector: 'E-commerce',
+              title: 'Hire Logistics Manager',
+              description: 'Manage inventory, shipping, and customer service.',
+              actions: ['Hire Operations/Logistics Manager', 'Focus on supply chain experience'],
+              impact: 'Better delivery times, reduced operational costs',
+              cost: '₹40K - ₹55K monthly',
+              reasoning: 'E-commerce operations are complex and critical'
+            });
+          }
+          break;
+
+        case 'healthcare':
+          suggestions.sectorBased.push({
+            id: 'health_compliance',
+            sector: 'Healthcare',
+            title: 'Hire Compliance Manager',
+            description: 'Healthcare has strict regulatory requirements.',
+            actions: ['Hire Regulatory/Compliance specialist', 'Look for healthcare experience'],
+            impact: 'Regulatory compliance, risk mitigation',
+            cost: '₹50K - ₹70K monthly',
+            reasoning: 'Healthcare sector requires specialized compliance expertise'
+          });
+          break;
+      }
+    });
+
+    // ASSET-BASED SUGGESTIONS (based on store purchases)
+    // This would analyze owned assets from the store and suggest relevant team members
+    if (userAssets.length > 0) {
+      const hasProperty = userAssets.some((asset: any) => asset.category === 'property');
+      const hasVehicles = userAssets.some((asset: any) => asset.category === 'vehicle');
+      
+      if (hasProperty && !currentRoles.includes('property manager')) {
+        suggestions.assetBased.push({
+          id: 'property_management',
+          asset: 'Real Estate',
+          title: 'Hire Property Manager',
+          description: 'Your property investments need professional management.',
+          actions: ['Hire Property Manager', 'Focus on real estate experience'],
+          impact: 'Better rental yields, property maintenance',
+          cost: '₹30K - ₹45K monthly',
+          reasoning: 'Property portfolio requires dedicated management'
+        });
+      }
+    }
+
+    // STRATEGIC SUGGESTIONS (future planning)
+    if (financialData.bankBalance > 500000) {
+      suggestions.strategic.push({
+        id: 'exec_assistant',
+        title: 'Plan Executive Team',
+        description: 'With strong finances, consider building executive leadership.',
+        actions: ['Plan C-level hires', 'Consider equity compensation'],
+        impact: 'Strategic leadership, better decision making',
+        cost: '₹80K - ₹150K monthly per executive',
+        timeline: '3-6 months',
+        reasoning: 'Scaling requires professional management layer'
+      });
+    }
+
+    if (purchasedSectors.length >= 2) {
+      suggestions.strategic.push({
+        id: 'multi_sector_management',
+        title: 'Multi-Sector Management Structure',
+        description: 'Multiple sectors need specialized management.',
+        actions: ['Hire sector-specific managers', 'Create management hierarchy'],
+        impact: 'Better sector performance, focused expertise',
+        cost: '₹100K - ₹200K monthly for full structure',
+        timeline: '6-12 months',
+        reasoning: 'Diversified portfolio needs specialized management'
+      });
+    }
+
+    return suggestions;
+  };
+
+  const suggestions = generateSuggestions();
+  const totalSuggestions = suggestions.immediate.length + suggestions.strategic.length + 
+                          suggestions.sectorBased.length + suggestions.assetBased.length;
+
+  return (
+    <div className="space-y-4">
+      {/* Summary Card */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-blue-800">
+            <Brain className="w-5 h-5" />
+            Smart Team Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-blue-600">{teamMembers.length}</p>
+              <p className="text-xs text-blue-500">Current Team</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-orange-600">{purchasedSectors.length}</p>
+              <p className="text-xs text-orange-500">Active Sectors</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-600">{totalSuggestions}</p>
+              <p className="text-xs text-green-500">Suggestions</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-purple-600">{playerStats.stress}</p>
+              <p className="text-xs text-purple-500">Stress Level</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Immediate Actions */}
+      {suggestions.immediate.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-600">
+              <AlertCircle className="w-5 h-5" />
+              Immediate Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {suggestions.immediate.map((suggestion, index) => (
+              <div key={suggestion.id} className="border border-red-200 rounded-lg p-4 bg-red-50">
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-red-800">{suggestion.title}</h4>
+                  <Badge variant="destructive" className="text-xs">{suggestion.priority}</Badge>
+                </div>
+                <p className="text-sm text-red-700 mb-3">{suggestion.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
+                  <div><strong>Impact:</strong> {suggestion.impact}</div>
+                  <div><strong>Cost:</strong> {suggestion.cost}</div>
+                  <div className="text-xs italic text-red-600">{suggestion.reasoning}</div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Sector-Based Suggestions */}
+      {suggestions.sectorBased.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-600">
+              <Target className="w-5 h-5" />
+              Sector-Specific Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {suggestions.sectorBased.map((suggestion, index) => (
+              <div key={suggestion.id} className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-blue-800">{suggestion.title}</h4>
+                  <Badge className="text-xs bg-blue-500">{suggestion.sector}</Badge>
+                </div>
+                <p className="text-sm text-blue-700 mb-3">{suggestion.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
+                  <div><strong>Impact:</strong> {suggestion.impact}</div>
+                  <div><strong>Cost:</strong> {suggestion.cost}</div>
+                  <div className="text-xs italic text-blue-600">{suggestion.reasoning}</div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Asset-Based Suggestions */}
+      {suggestions.assetBased.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-600">
+              <DollarSign className="w-5 h-5" />
+              Asset Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {suggestions.assetBased.map((suggestion, index) => (
+              <div key={suggestion.id} className="border border-green-200 rounded-lg p-4 bg-green-50">
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-green-800">{suggestion.title}</h4>
+                  <Badge className="text-xs bg-green-500">{suggestion.asset}</Badge>
+                </div>
+                <p className="text-sm text-green-700 mb-3">{suggestion.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
+                  <div><strong>Impact:</strong> {suggestion.impact}</div>
+                  <div><strong>Cost:</strong> {suggestion.cost}</div>
+                  <div className="text-xs italic text-green-600">{suggestion.reasoning}</div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Strategic Planning */}
+      {suggestions.strategic.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-purple-600">
+              <TrendingUp className="w-5 h-5" />
+              Strategic Planning
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {suggestions.strategic.map((suggestion, index) => (
+              <div key={suggestion.id} className="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                <h4 className="font-semibold text-purple-800 mb-2">{suggestion.title}</h4>
+                <p className="text-sm text-purple-700 mb-3">{suggestion.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
+                  <div><strong>Impact:</strong> {suggestion.impact}</div>
+                  <div><strong>Cost:</strong> {suggestion.cost}</div>
+                  {suggestion.timeline && <div><strong>Timeline:</strong> {suggestion.timeline}</div>}
+                  <div className="text-xs italic text-purple-600">{suggestion.reasoning}</div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* No suggestions fallback */}
+      {totalSuggestions === 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <CheckCircle size={48} className="mx-auto mb-4 text-green-500" />
+            <p className="text-green-600 font-medium mb-2">Team Strategy Optimized!</p>
+            <p className="text-sm text-gray-600">Your team composition looks good for your current business setup.</p>
+            <p className="text-xs text-gray-500 mt-2">Suggestions will appear as you expand into new sectors or face operational challenges.</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 const StrategyHubSection: React.FC = () => {
   const { playerStats, financialData, updatePlayerStats, updateFinancialData, addGameEvent, currentWeek } = useWealthSprintGame();
   const { teamMembers, removeTeamMember } = useTeamManagement();
@@ -136,13 +515,7 @@ const StrategyHubSection: React.FC = () => {
       <div className="mt-3 px-4">
         {selectedCategory === 'Team Suggestions' && (
           <div className="space-y-4">
-            <Card>
-              <CardContent className="text-center py-12">
-                <Users size={48} className="mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-500 font-medium mb-2">Team Suggestions Coming Soon</p>
-                <p className="text-sm text-gray-400">This feature is under development</p>
-              </CardContent>
-            </Card>
+            <TeamSuggestionsView />
           </div>
         )}
 
