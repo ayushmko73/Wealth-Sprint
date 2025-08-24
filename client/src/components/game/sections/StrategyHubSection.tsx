@@ -229,35 +229,6 @@ const TeamSuggestionsView: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Summary Card */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-blue-800">
-            <Brain className="w-5 h-5" />
-            Smart Team Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">{teamMembers.length}</p>
-              <p className="text-xs text-blue-500">Current Team</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-orange-600">{purchasedSectors.length}</p>
-              <p className="text-xs text-orange-500">Active Sectors</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-green-600">{totalSuggestions}</p>
-              <p className="text-xs text-green-500">Suggestions</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-purple-600">{playerStats.stress}</p>
-              <p className="text-xs text-purple-500">Stress Level</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Immediate Actions */}
       {suggestions.immediate.length > 0 && (
@@ -288,6 +259,46 @@ const TeamSuggestionsView: React.FC = () => {
         </Card>
       )}
 
+      {/* Sector-Based Suggestions */}
+      {suggestions.sectorBased.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-600">
+              <Target className="w-5 h-5" />
+              Sector-Specific Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {suggestions.sectorBased.map((suggestion, index) => {
+              const getBadgeColor = (sector: string) => {
+                switch(sector) {
+                  case 'Fast Food': return 'bg-orange-500 text-white';
+                  case 'Tech Startup': return 'bg-blue-500 text-white';
+                  case 'E-commerce': return 'bg-purple-500 text-white';
+                  case 'Healthcare': return 'bg-green-500 text-white';
+                  default: return 'bg-gray-500 text-white';
+                }
+              };
+              
+              return (
+                <div key={suggestion.id} className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-blue-800">{suggestion.title}</h4>
+                    <Badge className={`text-xs ${getBadgeColor(suggestion.sector)}`}>{suggestion.sector}</Badge>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-3">{suggestion.description}</p>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Actions:</strong> {suggestion.actions.join(', ')}</div>
+                    <div><strong>Impact:</strong> {suggestion.impact}</div>
+                    <div><strong>Cost:</strong> {suggestion.cost}</div>
+                    <div className="text-xs italic text-blue-600">{suggestion.reasoning}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Asset-Based Suggestions */}
       {suggestions.assetBased.length > 0 && (
