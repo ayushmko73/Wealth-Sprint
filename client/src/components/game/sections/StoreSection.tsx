@@ -46,7 +46,10 @@ import {
   Store,
   Shield,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  Calculator,
+  CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -62,6 +65,10 @@ const StoreSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showPurchaseModal, setShowPurchaseModal] = useState<any>(null);
   const [selectedEmiMonths, setSelectedEmiMonths] = useState<number>(1);
+  const [paymentMethod, setPaymentMethod] = useState<'bank' | 'credit'>('bank');
+  const [paymentType, setPaymentType] = useState<'full' | 'emi' | null>(null);
+  const [emiDuration, setEmiDuration] = useState<number>(3);
+  const [showEmiDropdown, setShowEmiDropdown] = useState(false);
 
   const categories = ['All', ...getCategories().map(cat => 
     cat.charAt(0).toUpperCase() + cat.slice(1)
@@ -74,6 +81,15 @@ const StoreSection: React.FC = () => {
     { months: 12, label: '1 Year' },
     { months: 60, label: '5 Years' }
   ];
+
+  // Credit limit calculation helper
+  const getCreditInfo = () => {
+    const totalLiabilities = financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const creditLimit = 500000; // ₹5 lakh credit limit
+    const availableCredit = creditLimit - totalLiabilities;
+    const canPayFull = totalLiabilities < creditLimit && showPurchaseModal && showPurchaseModal.price <= availableCredit;
+    return { totalLiabilities, creditLimit, availableCredit, canPayFull };
+  };
   
   const categoryIcons: Record<string, React.ReactNode> = {
     'All': <Star className="w-4 h-4" />,
@@ -591,129 +607,248 @@ const StoreSection: React.FC = () => {
         })}
       </div>
 
-      {/* Compact Purchase Confirmation Modal */}
+      {/* Compact Purchase Modal - Deals Section Style */}
       {showPurchaseModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <Card className="max-w-xs w-full bg-white shadow-2xl border-0">
             <CardContent className="p-3 bg-white rounded-lg">
-              {/* Header with Close Button */}
+              {/* Compact Header */}
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-base font-bold text-slate-800">Confirm Purchase</h3>
+                <h3 className="text-sm font-bold text-slate-800">Investment Purchase</h3>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowPurchaseModal(null)}
-                  className="h-5 w-5 p-0"
+                  onClick={() => {
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType(null);
+                    setEmiDuration(3);
+                    setShowEmiDropdown(false);
+                  }}
+                  className="h-4 w-4 p-0"
                 >
                   <X className="w-3 h-3" />
                 </Button>
               </div>
 
               {/* Compact Item Info */}
-              <div className="text-center mb-3">
-                <div className="w-10 h-10 mx-auto mb-2 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-lg">
+              <div className="text-center mb-2">
+                <div className="w-10 h-10 mx-auto mb-1 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                   {getItemIcon(showPurchaseModal)}
                 </div>
-                <h4 className="font-bold text-slate-800 text-base mb-2">
+                <h4 className="font-bold text-slate-800 text-sm mb-1">
                   {showPurchaseModal.name}
                 </h4>
-                <p className="text-xl font-bold text-blue-600 mb-2">
-                  {formatMoney(showPurchaseModal.price)}
+                <p className="text-blue-600 text-xs font-medium">
+                  {showPurchaseModal.category}
                 </p>
-                <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 rounded-full">
-                  <Coins className="w-3 h-3 text-amber-600" />
-                  <span className="text-xs font-semibold text-amber-700">
-                    +{formatMoney(showPurchaseModal.passiveIncome || 0)}/month
-                  </span>
+              </div>
+
+              {/* Compact Investment Information */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <Calculator className="w-3 h-3 text-blue-600" />
+                  <h5 className="font-semibold text-blue-800 text-xs">Key Investment Information</h5>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-xs">
+                  <div>
+                    <span className="text-blue-600">Investment Amount:</span>
+                    <div className="font-bold text-blue-800">{formatMoney(showPurchaseModal.price)}</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Expected ROI:</span>
+                    <div className="font-bold text-green-800">{(((showPurchaseModal.passiveIncome || 0) * 12) / showPurchaseModal.price * 100).toFixed(1)}%</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Monthly Earnings:</span>
+                    <div className="font-bold text-green-800">{formatMoney(showPurchaseModal.passiveIncome || 0)}</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Time Horizon:</span>
+                    <div className="font-bold text-blue-800">18 months</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Risk Level:</span>
+                    <div className="font-bold capitalize text-xs text-yellow-600">Medium</div>
+                  </div>
+                  <div>
+                    <span className="text-blue-600">Liquidity:</span>
+                    <div className="font-bold text-blue-800 capitalize text-xs">Medium</div>
+                  </div>
                 </div>
               </div>
 
               {/* Compact Payment Method */}
-              <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
-                <div className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1">
-                  <DollarSign className="w-4 h-4" />
-                  Payment Method:
+              <div className="mb-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CreditCard className="w-3 h-3 text-slate-600" />
+                  <h5 className="font-semibold text-slate-800 text-xs">Payment Method</h5>
                 </div>
-                
-                {/* Bank Account Option */}
-                {financialData.bankBalance >= showPurchaseModal.price && (
-                  <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-xs font-semibold text-green-700">Bank Account</span>
-                      </div>
-                      <span className="text-xs text-green-600">Recommended</span>
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => {
+                      setPaymentMethod('bank');
+                      setPaymentType('full');
+                    }}
+                    className={`p-1.5 rounded text-xs font-medium transition-all ${
+                      paymentMethod === 'bank'
+                        ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      <Building2 className="w-3 h-3" />
+                      Banking
                     </div>
-                    <p className="text-xs text-green-600 mt-1">No additional fees • Instant payment</p>
-                  </div>
-                )}
-                
-                {/* Credit Card Option */}
-                <div className="bg-purple-50 border border-purple-200 rounded p-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-xs font-semibold text-purple-700">Credit Card</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPaymentMethod('credit');
+                      setPaymentType(null);
+                    }}
+                    className={`p-1.5 rounded text-xs font-medium transition-all ${
+                      paymentMethod === 'credit'
+                        ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      <CreditCard className="w-3 h-3" />
+                      Credit Card
                     </div>
-                    <span className="text-xs text-purple-600">Benefits Available</span>
-                  </div>
-                  <div className="mt-1 space-y-0">
-                    <p className="text-xs text-purple-600">• Instant purchase protection</p>
-                    <p className="text-xs text-purple-600">• 0.5% cashback on all purchases</p>
-                    <p className="text-xs text-purple-600">• Build credit score faster</p>
-                  </div>
-                  
-                  {/* EMI Options - Horizontal Scrolling */}
-                  <div className="mt-2 border-t border-purple-200 pt-2">
-                    <p className="text-xs font-semibold text-purple-700 mb-2">EMI Options:</p>
-                    <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 pb-2">
-                      {emiOptions.map((option) => (
-                        <button
-                          key={option.months}
-                          onClick={() => setSelectedEmiMonths(option.months)}
-                          className={`text-xs px-3 py-1 rounded text-center transition-all whitespace-nowrap flex-shrink-0 ${
-                            selectedEmiMonths === option.months
-                              ? 'bg-purple-600 text-white font-bold'
-                              : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedEmiMonths > 1 && (
-                      <p className="text-xs text-purple-600 mt-1 font-medium">
-                        Monthly: {formatMoney(Math.round(showPurchaseModal.price / selectedEmiMonths))}
-                      </p>
-                    )}
-                  </div>
+                  </button>
                 </div>
               </div>
 
+              {/* Credit Card Payment Options */}
+              {paymentMethod === 'credit' && (
+                <div className="mb-2">
+                  <h5 className="font-semibold text-slate-800 mb-1 text-xs">Payment Options</h5>
+                  
+                  {/* Horizontal Payment Options */}
+                  <div className="grid grid-cols-2 gap-1 mb-2">
+                    {/* Full Payment Button */}
+                    <button
+                      onClick={() => {
+                        setPaymentType('full');
+                      }}
+                      className={`p-1.5 rounded text-xs font-medium transition-all ${
+                        paymentType === 'full'
+                          ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                          : !getCreditInfo().canPayFull
+                            ? 'bg-red-100 border border-red-300 text-red-800 cursor-not-allowed opacity-60'
+                            : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                      }`}
+                      disabled={!getCreditInfo().canPayFull}
+                    >
+                      {getCreditInfo().canPayFull ? "Full Payment" : "Limit exceeded"}
+                    </button>
+
+                    {/* EMI Button */}
+                    <button
+                      onClick={() => {
+                        setPaymentType('emi');
+                        setEmiDuration(3);
+                      }}
+                      className={`p-1.5 rounded text-xs font-medium transition-all ${
+                        paymentType === 'emi'
+                          ? 'bg-blue-100 border border-blue-300 text-blue-800'
+                          : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      EMI 3M
+                    </button>
+                  </div>
+
+                  {/* EMI Duration Selector - Only show when EMI is selected */}
+                  {paymentType === 'emi' && (
+                    <div className="relative">
+                      <label className="text-xs text-gray-600 mb-1 block">EMI Duration</label>
+                      <button
+                        onClick={() => setShowEmiDropdown(!showEmiDropdown)}
+                        className="w-full p-1.5 rounded border border-gray-300 text-xs font-medium transition-all bg-white hover:bg-gray-50 flex items-center justify-between"
+                      >
+                        <span>{emiDuration < 12 ? `${emiDuration} months` : `${emiDuration/12} year${emiDuration/12 > 1 ? 's' : ''}`}</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${showEmiDropdown ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {/* Upward Opening Dropdown */}
+                      {showEmiDropdown && (
+                        <>
+                          {/* Overlay to close on outside click */}
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setShowEmiDropdown(false)}
+                          />
+                          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded shadow-lg z-20 overflow-hidden">
+                            {[3, 6, 12, 24, 60].map((months) => (
+                              <button
+                                key={months}
+                                onClick={() => {
+                                  setEmiDuration(months);
+                                  setShowEmiDropdown(false);
+                                }}
+                                className={`w-full p-2 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
+                                  emiDuration === months
+                                    ? 'bg-blue-50 text-blue-800'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
+                                <span className="text-xs text-gray-500">
+                                  ₹{Math.ceil(showPurchaseModal.price / months).toLocaleString()}/mo
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Compact Action Buttons */}
-              <div className="space-y-1.5">
-                {/* Bank Payment Button */}
-                {financialData.bankBalance >= showPurchaseModal.price && (
-                  <Button
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 text-xs"
-                    onClick={() => confirmPurchase(showPurchaseModal, 'bank')}
-                  >
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Pay with Bank Account
-                  </Button>
-                )}
-                
-                {/* Credit Card Payment Button */}
+              <div className="flex gap-2">
                 <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 text-xs"
-                  onClick={() => confirmPurchase(showPurchaseModal, 'credit', selectedEmiMonths)}
+                  variant="outline"
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white border-red-500 text-xs py-1.5"
+                  onClick={() => {
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType(null);
+                    setEmiDuration(3);
+                    setShowEmiDropdown(false);
+                  }}
                 >
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  {selectedEmiMonths > 1 
-                    ? `Pay with Credit Card + Benefits`
-                    : 'Pay with Credit Card + Benefits'
-                  }
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-xs py-1.5"
+                  onClick={() => {
+                    // Handle purchase logic here - check if paymentType is selected
+                    if (!paymentType && paymentMethod === 'credit') {
+                      toast.error('Please select a payment option (Full Payment or EMI)');
+                      return;
+                    }
+                    
+                    const finalPaymentType = paymentType || 'full';
+                    const finalEmiMonths = paymentMethod === 'credit' && finalPaymentType === 'emi' ? emiDuration : 1;
+                    
+                    confirmPurchase(
+                      showPurchaseModal,
+                      paymentMethod,
+                      finalEmiMonths
+                    );
+                    
+                    setShowPurchaseModal(null);
+                    setPaymentMethod('bank');
+                    setPaymentType(null);
+                    setEmiDuration(3);
+                    setShowEmiDropdown(false);
+                  }}
+                >
+                  Purchase
                 </Button>
               </div>
             </CardContent>
