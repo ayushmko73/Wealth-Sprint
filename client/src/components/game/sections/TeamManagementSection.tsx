@@ -20,6 +20,8 @@ import {
   Activity
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
+import { useTeamManagement } from '@/lib/stores/useTeamManagement';
+import { TeamMember } from '@/lib/types/GameTypes';
 import { toast } from 'sonner';
 
 interface Employee {
@@ -35,9 +37,10 @@ interface Employee {
 
 export default function TeamManagementSection() {
   const { financialData, updateFinancialData, purchasedSectors, uiState, updateUIState } = useWealthSprintGame();
+  const { teamMembers, addTeamMember, updateTeamMember } = useTeamManagement();
   
   const activeTab = uiState.teamManagementActiveTab;
-  const currentTeam = uiState.currentTeam;
+  const currentTeam = teamMembers; // Use teamMembers from useTeamManagement instead
   
   // Available employees to hire (no automatic sector assignment)
   const [availableEmployees] = useState<Employee[]>([
@@ -128,6 +131,25 @@ export default function TeamManagementSection() {
     return Users;
   };
 
+  // Helper functions for converting Employee to TeamMember
+  const getEmployeeAvatar = (role: string) => {
+    if (role.includes('Manager') || role.includes('Director')) return '👨‍💼';
+    if (role.includes('Developer') || role.includes('Tech')) return '👨‍💻';
+    if (role.includes('Marketing')) return '👨‍💼';
+    if (role.includes('Chef')) return '👨‍🍳';
+    if (role.includes('Medical')) return '👨‍⚕️';
+    return '👨‍💼';
+  };
+
+  const getSkillsForRole = (role: string): string[] => {
+    if (role.includes('Manager')) return ['Leadership', 'Strategy', 'Communication'];
+    if (role.includes('Developer')) return ['Programming', 'Problem Solving', 'System Design'];
+    if (role.includes('Marketing')) return ['Digital Marketing', 'Analytics', 'Campaign Management'];
+    if (role.includes('Chef')) return ['Cooking', 'Menu Planning', 'Food Safety'];
+    if (role.includes('Medical')) return ['Medical Knowledge', 'Patient Care', 'Healthcare Management'];
+    return ['General Skills', 'Teamwork', 'Communication'];
+  };
+
   const getPerformanceColor = (performance: number) => {
     if (performance >= 90) return 'text-green-600 bg-green-50';
     if (performance >= 75) return 'text-blue-600 bg-blue-50';
@@ -149,37 +171,70 @@ export default function TeamManagementSection() {
       bankBalance: financialData.bankBalance - employee.salary
     });
 
-    // Add to team without sector assignment
-    updateUIState({ currentTeam: [...currentTeam, { ...employee, hired: true, sector: undefined }] });
-    
+    // Create TeamMember from Employee and add to useTeamManagement store
+    const newTeamMember: TeamMember = {
+      id: employee.id,
+      name: employee.name,
+      role: employee.role,
+      avatar: getEmployeeAvatar(employee.role),
+      salary: employee.salary,
+      joinDate: new Date(),
+      experience: employee.experience,
+      skills: getSkillsForRole(employee.role),
+      achievements: [],
+      stats: {
+        loyalty: 60 + Math.floor(Math.random() * 20),
+        impact: employee.performance,
+        energy: 70 + Math.floor(Math.random() * 20),
+        mood: 'neutral' as const,
+      },
+      personality: {
+        type: "ENFP-T",
+        motivationTriggers: ["Growth opportunities", "Recognition", "Team collaboration"],
+        weakSpots: ["Micromanagement", "Unrealistic expectations"],
+      },
+      emotionalTrait: "Balanced",
+      loopVulnerability: "none",
+      clarityContribution: 40 + Math.floor(Math.random() * 30),
+      hiddenDynamics: {
+        trustWithFounder: 80,
+        creativeFulfillment: 70,
+        burnoutRisk: 20,
+        isHidingStruggles: false
+      },
+      department: 'Operations' as const,
+      seniority: 'Junior' as const,
+      status: 'Neutral' as const,
+      assignedSector: undefined, // No sector assigned initially
+      promotionHistory: [],
+      isCEO: false,
+    };
+
+    addTeamMember(newTeamMember);
     toast.success(`🎉 Successfully hired ${employee.name}!`);
   };
 
   // Function to assign employee to sector
   const assignEmployeeToSector = (employeeId: string, sectorId: string) => {
-    updateUIState({ currentTeam: currentTeam.map(emp => 
-      emp.id === employeeId ? { ...emp, sector: sectorId } : emp
-    ) });
+    updateTeamMember(employeeId, { assignedSector: sectorId });
     toast.success(`Employee assigned to ${sectorNames[sectorId as keyof typeof sectorNames]}!`);
   };
 
   // Function to unassign employee from sector
   const unassignEmployee = (employeeId: string) => {
-    updateUIState({ currentTeam: currentTeam.map(emp => 
-      emp.id === employeeId ? { ...emp, sector: undefined } : emp
-    ) });
+    updateTeamMember(employeeId, { assignedSector: undefined });
     toast.success('Employee unassigned from sector!');
   };
 
   const getTeamStats = () => {
     const totalEmployees = currentTeam.length;
     const avgPerformance = totalEmployees > 0 
-      ? Math.round(currentTeam.reduce((sum, emp) => sum + emp.performance, 0) / totalEmployees)
+      ? Math.round(currentTeam.reduce((sum, emp) => sum + emp.stats.impact, 0) / totalEmployees)
       : 0;
     const totalSalaryExpense = currentTeam.reduce((sum, emp) => sum + emp.salary, 0);
     const sectorDistribution = currentTeam.reduce((acc, emp) => {
-      if (emp.sector) {
-        acc[emp.sector] = (acc[emp.sector] || 0) + 1;
+      if (emp.assignedSector) {
+        acc[emp.assignedSector] = (acc[emp.assignedSector] || 0) + 1;
       }
       return acc;
     }, {} as Record<string, number>);
@@ -382,8 +437,8 @@ export default function TeamManagementSection() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Performance:</span>
-                            <Badge className={`text-xs ${getPerformanceColor(employee.performance)}`}>
-                              {employee.performance}%
+                            <Badge className={`text-xs ${getPerformanceColor(employee.stats.impact)}`}>
+                              {employee.stats.impact}%
                             </Badge>
                           </div>
                           <div className="flex justify-between">
@@ -395,11 +450,11 @@ export default function TeamManagementSection() {
                         {/* Sector Assignment */}
                         <div className="mt-3 pt-3 border-t border-gray-200">
                           <div className="text-xs text-gray-600 mb-2">Assigned Sector:</div>
-                          {employee.sector ? (
+                          {employee.assignedSector ? (
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1">
-                                <span>{sectorEmojis[employee.sector as keyof typeof sectorEmojis]}</span>
-                                <span className="text-sm font-medium">{sectorNames[employee.sector as keyof typeof sectorNames]}</span>
+                                <span>{sectorEmojis[employee.assignedSector as keyof typeof sectorEmojis]}</span>
+                                <span className="text-sm font-medium">{sectorNames[employee.assignedSector as keyof typeof sectorNames]}</span>
                               </div>
                               <Button 
                                 size="sm" 
@@ -527,7 +582,7 @@ export default function TeamManagementSection() {
                   </Card>
                   <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                     <CardContent className="p-4 text-center">
-                      <div className="text-blue-600 text-2xl font-bold">{currentTeam.filter(e => e.performance >= 90).length}</div>
+                      <div className="text-blue-600 text-2xl font-bold">{currentTeam.filter(e => e.stats.impact >= 90).length}</div>
                       <div className="text-blue-700 text-sm">Top Performers</div>
                     </CardContent>
                   </Card>
@@ -547,9 +602,9 @@ export default function TeamManagementSection() {
                         <div key={employee.id} className="flex items-center gap-3">
                           <div className="w-32 text-sm font-medium truncate">{employee.name}</div>
                           <div className="flex-1">
-                            <Progress value={employee.performance} className="h-2" />
+                            <Progress value={employee.stats.impact} className="h-2" />
                           </div>
-                          <div className="w-12 text-sm text-right">{employee.performance}%</div>
+                          <div className="w-12 text-sm text-right">{employee.stats.impact}%</div>
                         </div>
                       ))}
                     </div>
@@ -578,7 +633,7 @@ export default function TeamManagementSection() {
               <div className="space-y-4">
                 {purchasedSectors.map((sectorId) => {
                   const sectorName = sectorNames[sectorId as keyof typeof sectorNames] || 'Unknown Sector';
-                  const sectorEmployees = currentTeam.filter(emp => emp.sector === sectorId);
+                  const sectorEmployees = currentTeam.filter(emp => emp.assignedSector === sectorId);
                   const sectorEmoji = sectorEmojis[sectorId as keyof typeof sectorEmojis] || '🏢';
                   
                   return (
@@ -596,7 +651,7 @@ export default function TeamManagementSection() {
                             <div className="text-right">
                               <div className="text-sm text-gray-600">Avg Performance</div>
                               <div className="font-bold text-blue-600">
-                                {Math.round(sectorEmployees.reduce((sum, emp) => sum + emp.performance, 0) / sectorEmployees.length)}%
+                                {Math.round(sectorEmployees.reduce((sum, emp) => sum + emp.stats.impact, 0) / sectorEmployees.length)}%
                               </div>
                             </div>
                           )}
@@ -617,8 +672,8 @@ export default function TeamManagementSection() {
                                   <div className="font-medium text-sm">{employee.name}</div>
                                   <div className="text-xs text-gray-600">{employee.role}</div>
                                 </div>
-                                <Badge className={`text-xs ${getPerformanceColor(employee.performance)}`}>
-                                  {employee.performance}%
+                                <Badge className={`text-xs ${getPerformanceColor(employee.stats.impact)}`}>
+                                  {employee.stats.impact}%
                                 </Badge>
                               </div>
                             );
