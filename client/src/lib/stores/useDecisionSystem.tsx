@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { Decision, DecisionOption, getDecisionsForDay } from '../data/decisionsData';
+import { useWealthSprintGame } from './useWealthSprintGame';
 
 export interface PlayerDecision {
   id: string;
@@ -80,9 +81,8 @@ const useDecisionSystem = create<DecisionSystemState>()(
     // Start daily decisions for a specific day
     startDailyDecisions: (day: number) => {
       // Get purchased sectors from main game store
-      const useWealthSprintGame = require('../stores/useWealthSprintGame').useWealthSprintGame;
       const gameState = useWealthSprintGame.getState();
-      const purchasedSectorIds = gameState.purchasedSectors.map(sector => sector.id);
+      const purchasedSectorIds = gameState.purchasedSectors.map((sector: any) => sector.id);
       
       const decisions = getDecisionsForDay(day, purchasedSectorIds);
       if (decisions.length === 0) return;
@@ -356,9 +356,8 @@ const useDecisionSystem = create<DecisionSystemState>()(
         const existingDecisions = get().getDecisionsByDay(gameDay);
         
         // Get purchased sectors for filtering
-        const useWealthSprintGame = require('../stores/useWealthSprintGame').useWealthSprintGame;
         const gameState = useWealthSprintGame.getState();
-        const purchasedSectorIds = gameState.purchasedSectors.map(sector => sector.id);
+        const purchasedSectorIds = gameState.purchasedSectors.map((sector: any) => sector.id);
         
         const expectedDecisions = getDecisionsForDay(gameDay, purchasedSectorIds);
         
