@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { Decision, DecisionOption, getDecisionsForDay } from '../data/decisionsData';
+import { useWealthSprintGame } from './useWealthSprintGame';
 
 export interface PlayerDecision {
   id: string;
@@ -54,7 +55,6 @@ interface DecisionSystemState {
   // Blockchain functions (simulated for now)
   storeDecisionOnChain: (decision: PlayerDecision) => Promise<string>;
   retrieveDecisionFromChain: (hash: string) => Promise<PlayerDecision>;
-  checkAndStartTodaysDecisions: () => void;
   
   // Data management
   getDecisionHistory: () => PlayerDecision[];
@@ -80,7 +80,11 @@ const useDecisionSystem = create<DecisionSystemState>()(
 
     // Start daily decisions for a specific day
     startDailyDecisions: (day: number) => {
-      const decisions = getDecisionsForDay(day);
+      // Get purchased sectors from main game store
+      const gameState = useWealthSprintGame.getState();
+      const purchasedSectorIds = gameState.purchasedSectors.map((sector: any) => sector.id);
+      
+      const decisions = getDecisionsForDay(day, purchasedSectorIds);
       if (decisions.length === 0) return;
 
       const session: DailyDecisionSession = {
@@ -350,7 +354,12 @@ const useDecisionSystem = create<DecisionSystemState>()(
       // Only start if haven't completed today's decisions
       if (!hasCompletedToday) {
         const existingDecisions = get().getDecisionsByDay(gameDay);
-        const expectedDecisions = getDecisionsForDay(gameDay);
+        
+        // Get purchased sectors for filtering
+        const gameState = useWealthSprintGame.getState();
+        const purchasedSectorIds = gameState.purchasedSectors.map((sector: any) => sector.id);
+        
+        const expectedDecisions = getDecisionsForDay(gameDay, purchasedSectorIds);
         
         // Start decisions if none completed for today or incomplete set
         if (existingDecisions.length === 0 || existingDecisions.length < expectedDecisions.length) {

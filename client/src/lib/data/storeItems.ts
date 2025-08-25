@@ -12,6 +12,14 @@ export interface StoreItem {
   passiveIncome?: number;
   maintenanceCost?: number;
   appreciationRate?: number;
+  // Unique abilities and disabilities
+  abilities?: string[];
+  disabilities?: string[];
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  specialEffect?: string;
+  isLiability?: boolean; // Items that drain money instead of generating it
+  cause?: string; // Why someone would want this liability
+  badImpact?: string; // The negative consequences
 }
 
 export const storeItems: StoreItem[] = [
@@ -22,6 +30,13 @@ export const storeItems: StoreItem[] = [
     description: 'Compact city home with one bedroom.',
     category: 'property',
     icon: '🏠',
+    passiveIncome: 1500,
+    maintenanceCost: 500,
+    appreciationRate: 8.5,
+    abilities: ['Low maintenance', 'Easy to rent', 'Great for beginners'],
+    disabilities: ['Limited space', 'Lower rental yield'],
+    rarity: 'common',
+    specialEffect: 'Reduces stress by 2 when owned',
   },
   {
     id: 'luxury_villa',
@@ -30,15 +45,28 @@ export const storeItems: StoreItem[] = [
     description: 'Spacious estate with pool and garden.',
     category: 'property',
     icon: '🏖️',
+    passiveIncome: 8000,
+    maintenanceCost: 2000,
+    appreciationRate: 10,
+    abilities: ['High appreciation', 'Luxury rental rates', 'Status symbol'],
+    disabilities: ['High maintenance', 'Market sensitive', 'Illiquid asset'],
+    rarity: 'epic',
+    specialEffect: 'Increases reputation by 5 points',
   },
   {
     id: 'coffee_shop',
-    name: 'Coffee Shop Business',
+    name: 'Coffee Shop',
     price: 80000,
     description: 'A small café generating daily sales.',
     category: 'business',
     icon: '☕',
-    passiveIncome: 2500, // Monthly income
+    passiveIncome: 2500,
+    maintenanceCost: 800,
+    appreciationRate: 12,
+    abilities: ['Daily cash flow', 'Community building', 'Scalable franchise'],
+    disabilities: ['Weather dependent', 'High competition', 'Staff dependent'],
+    rarity: 'rare',
+    specialEffect: 'Generates random bonus income 20% of the time',
   },
   {
     id: 'delivery_van',
@@ -47,22 +75,29 @@ export const storeItems: StoreItem[] = [
     description: 'Medium-sized van for transporting goods.',
     category: 'vehicle',
     icon: '🚐',
+    passiveIncome: 1800,
+    maintenanceCost: 600,
+    appreciationRate: -10,
+    abilities: ['E-commerce ready', 'Large cargo space', 'Commercial licensing'],
+    disabilities: ['High fuel costs', 'Parking restrictions', 'Wear and tear'],
+    rarity: 'common',
+    specialEffect: 'Unlocks delivery business opportunities',
   },
+
   {
-    id: 'motorbike',
-    name: 'Motorbike',
-    price: 12000,
-    description: 'Two-wheeler for quick city travel.',
-    category: 'vehicle',
-    icon: '🏍️',
-  },
-  {
-    id: 'high_end_laptop',
-    name: 'High-End Laptop',
+    id: 'laptop',
+    name: 'Laptop',
     price: 3500,
     description: 'Boosts productivity for remote work.',
     category: 'gadget',
     icon: '💻',
+    passiveIncome: 500,
+    maintenanceCost: 100,
+    appreciationRate: -20,
+    abilities: ['Remote work enabler', 'Skill development', 'Multiple income streams'],
+    disabilities: ['Rapid obsolescence', 'Fragile hardware', 'Power dependent'],
+    rarity: 'common',
+    specialEffect: 'Increases side income potential by 25%',
   },
   {
     id: 'arcade_machine',
@@ -71,7 +106,13 @@ export const storeItems: StoreItem[] = [
     description: 'Fun gaming setup for home or rental.',
     category: 'entertainment',
     icon: '🕹️',
-    passiveIncome: 150, // Monthly rental income
+    passiveIncome: 150,
+    maintenanceCost: 50,
+    appreciationRate: -5,
+    abilities: ['Nostalgic appeal', 'Social gathering', 'Gaming tournaments'],
+    disabilities: ['Space consuming', 'Mechanical issues', 'Limited audience'],
+    rarity: 'common',
+    specialEffect: 'Reduces stress by 1 point monthly',
   },
   {
     id: 'solar_power_plant',
@@ -80,7 +121,13 @@ export const storeItems: StoreItem[] = [
     description: 'Generates renewable electricity for resale.',
     category: 'investment',
     icon: '☀️',
-    passiveIncome: 4500, // Monthly income
+    passiveIncome: 4500,
+    maintenanceCost: 1000,
+    appreciationRate: 8,
+    abilities: ['Government subsidies', 'Green energy credits', '25-year lifespan', 'Grid independence'],
+    disabilities: ['Weather dependent', 'High initial cost', 'Technology risk'],
+    rarity: 'epic',
+    specialEffect: 'Reduces electricity bills by 80% for all properties',
   },
   {
     id: 'fishing_boat',
@@ -89,23 +136,21 @@ export const storeItems: StoreItem[] = [
     description: 'Ideal for fishing trips or small business.',
     category: 'vehicle',
     icon: '⛵',
+    passiveIncome: 2200,
+    maintenanceCost: 800,
+    appreciationRate: -8,
   },
+
   {
-    id: 'drone',
-    name: 'Drone',
-    price: 2200,
-    description: 'Aerial photography and delivery potential.',
-    category: 'gadget',
-    icon: '🚁',
-  },
-  {
-    id: 'fast_food_franchise',
-    name: 'Fast Food Franchise',
+    id: 'fast_food_stall',
+    name: 'Fast Food Stall',
     price: 150000,
-    description: 'Popular chain outlet with steady income.',
+    description: 'Popular food stall with steady income.',
     category: 'business',
     icon: '🍔',
-    passiveIncome: 6000, // Monthly income
+    passiveIncome: 6000,
+    maintenanceCost: 1500,
+    appreciationRate: 15,
   },
   {
     id: 'gym_equipment',
@@ -114,16 +159,11 @@ export const storeItems: StoreItem[] = [
     description: 'Full setup for personal or commercial gym.',
     category: 'entertainment',
     icon: '🏋️',
-    passiveIncome: 300, // Monthly rental income
+    passiveIncome: 300,
+    maintenanceCost: 100,
+    appreciationRate: -10,
   },
-  {
-    id: 'smartwatch',
-    name: 'Smartwatch',
-    price: 600,
-    description: 'Tracks fitness and sends notifications.',
-    category: 'gadget',
-    icon: '⌚',
-  },
+
   {
     id: 'advertising_billboard',
     name: 'Advertising Billboard',
@@ -131,29 +171,26 @@ export const storeItems: StoreItem[] = [
     description: 'Earn revenue by renting ad space.',
     category: 'investment',
     icon: '📺',
-    passiveIncome: 450, // Monthly rental income
+    passiveIncome: 450,
+    maintenanceCost: 100,
+    appreciationRate: 5,
   },
   {
     id: 'art_gallery',
-    name: 'Art Gallery Collection',
+    name: 'Art Gallery',
     price: 70000,
     description: 'Display and sell high-value artwork.',
     category: 'investment',
     icon: '🎨',
-    passiveIncome: 1800, // Monthly income
+    passiveIncome: 1800,
+    maintenanceCost: 500,
+    appreciationRate: 12,
+    abilities: ['Cultural investment', 'Tax benefits', 'Art appreciation', 'Elite networking'],
+    disabilities: ['Market volatility', 'Authenticity risks', 'Storage requirements'],
+    rarity: 'epic',
+    specialEffect: 'Attracts high-net-worth investors, increasing all investment returns by 5%',
   },
-  // Real Estate Properties
-  {
-    id: 'mumbai_2bhk',
-    name: '2BHK Apartment in Mumbai',
-    price: 7500000,
-    description: 'Prime location apartment generating rental income',
-    category: 'property',
-    icon: '🏠',
-    passiveIncome: 25000, // Monthly rental income
-    maintenanceCost: 3000,
-    appreciationRate: 8.5,
-  },
+
   {
     id: 'commercial_office',
     name: 'Commercial Office Space',
@@ -164,19 +201,12 @@ export const storeItems: StoreItem[] = [
     passiveIncome: 45000,
     maintenanceCost: 5000,
     appreciationRate: 10,
+    abilities: ['Prime location', 'Corporate tenants', 'Long-term leases', 'Business networking'],
+    disabilities: ['Economic cycles', 'Remote work trend', 'High vacancy risk'],
+    rarity: 'legendary',
+    specialEffect: 'Increases credibility for business loans by 200 credit points',
   },
-  {
-    id: 'warehouse_facility',
-    name: 'Industrial Warehouse',
-    price: 5000000,
-    description: 'Large storage facility for logistics business',
-    category: 'property',
-    icon: '🏭',
-    passiveIncome: 18000,
-    maintenanceCost: 2500,
-    appreciationRate: 6,
-  },
-  // Vehicle Fleet
+
   {
     id: 'delivery_fleet',
     name: 'Delivery Vehicle Fleet',
@@ -186,87 +216,209 @@ export const storeItems: StoreItem[] = [
     icon: '🚚',
     passiveIncome: 45000,
     maintenanceCost: 8000,
-    appreciationRate: -10, // Depreciation
+    appreciationRate: -10,
   },
   {
-    id: 'luxury_car',
-    name: 'Luxury Sedan',
+    id: 'tesla',
+    name: 'Tesla',
     price: 2500000,
-    description: 'Premium vehicle for executive transport service',
+    description: 'Premium electric vehicle with autopilot features',
     category: 'vehicle',
-    icon: '🚗',
-    passiveIncome: 12000,
-    maintenanceCost: 4000,
-    appreciationRate: -15,
-  },
-  // Business Investments
-  {
-    id: 'tech_startup',
-    name: 'Tech Startup Equity',
-    price: 1000000,
-    description: '15% stake in a growing fintech startup',
-    category: 'business',
-    icon: '🚀',
-    passiveIncome: 0,
-    maintenanceCost: 0,
-    appreciationRate: 25,
+    icon: '⚡',
+    passiveIncome: 15000,
+    maintenanceCost: 3000,
+    appreciationRate: -8,
+    abilities: ['Eco-friendly', 'Self-driving', 'Premium ride sharing', 'Tech innovation'],
+    disabilities: ['Expensive repairs', 'Charging infrastructure', 'Battery degradation'],
+    rarity: 'legendary',
+    specialEffect: 'Reduces monthly fuel costs by ₹5,000 for all vehicles',
   },
   {
-    id: 'restaurant_chain',
-    name: 'Restaurant Chain Franchise',
+    id: 'restaurant',
+    name: 'Restaurant',
     price: 3500000,
-    description: 'Multi-location food franchise with established brand',
+    description: 'Full-service restaurant with established brand',
     category: 'business',
     icon: '🍽️',
     passiveIncome: 85000,
     maintenanceCost: 15000,
     appreciationRate: 12,
+    abilities: ['Brand recognition', 'Multiple revenue streams', 'Catering opportunities', 'Franchise potential'],
+    disabilities: ['High labor costs', 'Food waste risk', 'Health regulations', 'Economic sensitivity'],
+    rarity: 'legendary',
+    specialEffect: 'Generates celebrity endorsements worth ₹50,000 quarterly',
   },
-  // Investment Instruments
+
+  // 🔻 LIABILITIES - Items that drain money instead of building wealth (distributed across categories)
+  
+  // Vehicle Liabilities
   {
-    id: 'government_bonds',
-    name: 'Government Bonds Portfolio',
-    price: 500000,
-    description: 'Safe government securities with fixed returns',
-    category: 'investment',
-    icon: '🏛️',
-    passiveIncome: 3500,
-    maintenanceCost: 0,
-    appreciationRate: 0,
-  },
-  {
-    id: 'mutual_funds',
-    name: 'Equity Mutual Funds',
-    price: 250000,
-    description: 'Diversified equity portfolio managed by professionals',
-    category: 'investment',
-    icon: '📈',
-    passiveIncome: 1800,
-    maintenanceCost: 200,
-    appreciationRate: 12,
-  },
-  // Intellectual Property
-  {
-    id: 'online_course',
-    name: 'Online Course Revenue',
-    price: 50000,
-    description: 'Passive income from educational content',
-    category: 'business',
-    icon: '📚',
-    passiveIncome: 12000,
-    maintenanceCost: 1000,
-    appreciationRate: 15,
+    id: 'luxury_sports_car',
+    name: 'Luxury Sports Car',
+    price: 120000,
+    description: 'High-end sports car that drains money through high depreciation, costly maintenance, insurance, and fuel.',
+    category: 'vehicle',
+    icon: '🏎️',
+    passiveIncome: -8500, // Monthly EMI + maintenance + insurance + fuel
+    maintenanceCost: 3500,
+    appreciationRate: -25,
+    isLiability: true,
+    cause: 'Desire for status, thrill, and showing off wealth',
+    badImpact: 'High depreciation, costly maintenance, insurance, and fuel',
+    abilities: ['Ultimate status symbol', 'Adrenaline rush', 'Social prestige'],
+    disabilities: ['Massive depreciation', 'Expensive maintenance', 'High insurance costs', 'Premium fuel only'],
+    rarity: 'epic',
+    specialEffect: 'Drains ₹8,500 monthly but increases social reputation dramatically',
   },
   {
-    id: 'mobile_app',
-    name: 'Mobile App with Ads',
+    id: 'private_jet_membership',
+    name: 'Private Jet Membership',
+    price: 2500000,
+    description: 'Exclusive private jet access for ultimate travel luxury and convenience.',
+    category: 'vehicle',
+    icon: '✈️',
+    passiveIncome: -45000, // Monthly membership + usage fees
+    maintenanceCost: 15000,
+    appreciationRate: -100,
+    isLiability: true,
+    cause: 'Wanting comfort, speed, and exclusivity in travel',
+    badImpact: 'Extremely high recurring costs, taxes, and fuel expenses',
+    abilities: ['Ultimate travel luxury', 'Time saving', 'Elite networking'],
+    disabilities: ['Massive recurring costs', 'Usage limitations', 'Weather dependent'],
+    rarity: 'legendary',
+    specialEffect: 'Creates addiction to luxury travel, monthly costs keep increasing',
+  },
+
+  // Entertainment Liabilities
+  {
+    id: 'designer_clothing_collection',
+    name: 'Designer Clothing Collection',
+    price: 80000,
+    description: 'Expensive fashion collection that provides no financial returns but satisfies vanity.',
+    category: 'entertainment',
+    icon: '👔',
+    passiveIncome: -3200, // Monthly shopping addiction + storage
+    maintenanceCost: 800,
+    appreciationRate: -70,
+    isLiability: true,
+    cause: 'Vanity, fashion trends, and social influence',
+    badImpact: 'No resale value, fast-changing trends make them outdated',
+    abilities: ['Fashion statement', 'Social status', 'Confidence boost'],
+    disabilities: ['Zero resale value', 'Trend dependency', 'Storage costs'],
+    rarity: 'rare',
+    specialEffect: 'Triggers compulsive shopping, draining ₹3,200 monthly',
+  },
+  {
+    id: 'expensive_watch_set',
+    name: 'Expensive Watch Set',
     price: 150000,
-    description: 'Revenue-generating mobile application',
+    description: 'Luxury timepiece collection that ties up money in non-productive assets.',
+    category: 'entertainment',
+    icon: '⌚',
+    passiveIncome: -1200, // Insurance + maintenance
+    maintenanceCost: 600,
+    appreciationRate: -15,
+    isLiability: true,
+    cause: 'Collector\'s pride, status symbol',
+    badImpact: 'Ties up money in non-productive assets; risk of theft',
+    abilities: ['Status symbol', 'Collector\'s pride', 'Conversation starter'],
+    disabilities: ['Non-productive asset', 'Theft risk', 'High insurance'],
+    rarity: 'epic',
+    specialEffect: 'Increases desire for more expensive watches, creating collection addiction',
+  },
+  {
+    id: 'luxury_vacation_package',
+    name: 'Luxury Vacation Package',
+    price: 75000,
+    description: 'Extravagant holiday that drains savings for temporary enjoyment.',
+    category: 'entertainment',
+    icon: '🏖️',
+    passiveIncome: -2500, // Annual vacation fund + recurring travel expenses
+    maintenanceCost: 0,
+    appreciationRate: -100,
+    isLiability: true,
+    cause: 'Escape, social media show-off, relaxation',
+    badImpact: 'One-time enjoyment, drains savings, no financial growth',
+    abilities: ['Temporary happiness', 'Social media content', 'Stress relief'],
+    disabilities: ['No lasting value', 'FOMO addiction', 'Recurring pressure'],
+    rarity: 'rare',
+    specialEffect: 'Creates vacation addiction, demanding bigger trips yearly',
+  },
+  {
+    id: 'exotic_pets',
+    name: 'Exotic Pets',
+    price: 45000,
+    description: 'Unique pets that require expensive care and have unpredictable costs.',
+    category: 'entertainment',
+    icon: '🦜',
+    passiveIncome: -2800, // Monthly care + food + medical
+    maintenanceCost: 1500,
+    appreciationRate: -100,
+    isLiability: true,
+    cause: 'Passion, uniqueness, luxury status',
+    badImpact: 'Expensive care, legal risks, unpredictable medical bills',
+    abilities: ['Unique status', 'Companionship', 'Conversation piece'],
+    disabilities: ['Expensive care', 'Legal restrictions', 'Unpredictable costs'],
+    rarity: 'epic',
+    specialEffect: 'Medical emergencies can cause sudden massive expenses',
+  },
+
+  // Property Liabilities
+  {
+    id: 'ultra_luxury_villa',
+    name: 'Ultra-Luxury Villa',
+    price: 850000,
+    description: 'Oversized luxury property that drains money through taxes, upkeep, and low liquidity.',
+    category: 'property',
+    icon: '🏰',
+    passiveIncome: -12000, // Property tax + maintenance + utilities
+    maintenanceCost: 8000,
+    appreciationRate: 5,
+    isLiability: true,
+    cause: 'Showcasing lifestyle, bigger space than needed',
+    badImpact: 'Property tax, high upkeep, no cash flow, low liquidity',
+    abilities: ['Ultimate status symbol', 'Entertainment space', 'Family gatherings'],
+    disabilities: ['Massive upkeep costs', 'Property taxes', 'Low liquidity'],
+    rarity: 'legendary',
+    specialEffect: 'Locks up wealth in illiquid asset while draining ₹12,000 monthly',
+  },
+  {
+    id: 'home_theater_upgrade',
+    name: 'Home Theater Upgrade',
+    price: 95000,
+    description: 'High-end entertainment system that provides no returns and requires constant upgrades.',
+    category: 'property',
+    icon: '🎬',
+    passiveIncome: -1800, // Electricity + subscription services + maintenance
+    maintenanceCost: 800,
+    appreciationRate: -35,
+    isLiability: true,
+    cause: 'Desire for entertainment, showing off home luxury',
+    badImpact: 'High setup cost, ongoing upgrades, no returns',
+    abilities: ['Entertainment value', 'Social gatherings', 'Home luxury'],
+    disabilities: ['Rapid obsolescence', 'High electricity costs', 'Subscription dependencies'],
+    rarity: 'rare',
+    specialEffect: 'Technology upgrades create continuous spending pressure',
+  },
+
+  // Business/Investment Liabilities
+  {
+    id: 'exclusive_club_membership',
+    name: 'Exclusive Club Membership',
+    price: 180000,
+    description: 'Elite social club with high joining fees and recurring expenses.',
     category: 'business',
-    icon: '📱',
-    passiveIncome: 8500,
-    maintenanceCost: 2000,
-    appreciationRate: 20,
+    icon: '🏌️',
+    passiveIncome: -4500, // Monthly dues + additional charges
+    maintenanceCost: 1000,
+    appreciationRate: -100,
+    isLiability: true,
+    cause: 'Networking, social prestige, luxury experiences',
+    badImpact: 'High joining & renewal fees, recurring expenses',
+    abilities: ['Elite networking', 'Social prestige', 'Business connections'],
+    disabilities: ['High recurring fees', 'Limited usage', 'Social pressure'],
+    rarity: 'epic',
+    specialEffect: 'Creates pressure to maintain expensive lifestyle to fit in',
   },
 ];
 
@@ -281,4 +433,17 @@ export const getItemsByCategory = (category: string): StoreItem[] => {
 
 export const getCategories = (): string[] => {
   return Array.from(new Set(storeItems.map(item => item.category)));
+};
+
+export const getCategoryStats = () => {
+  const stats = storeItems.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = { count: 0, totalValue: 0 };
+    }
+    acc[item.category].count += 1;
+    acc[item.category].totalValue += item.price;
+    return acc;
+  }, {} as Record<string, { count: number; totalValue: number }>);
+  
+  return stats;
 };

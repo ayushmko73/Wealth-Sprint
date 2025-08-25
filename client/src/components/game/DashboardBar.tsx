@@ -334,28 +334,6 @@ const DashboardBar: React.FC = () => {
         </Card>
       </div>
 
-      {/* Decision Test Button (Development) */}
-      <Card className="bg-pink-50 border border-pink-200">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-semibold text-pink-800 text-sm">Daily Decisions</div>
-              <div className="text-xs text-pink-600">
-                {hasCompletedToday ? 'Completed for today' : 'Ready for today\'s decisions'}
-              </div>
-            </div>
-            <Button
-              onClick={() => startDailyDecisions(currentDay)}
-              disabled={hasCompletedToday}
-              size="sm"
-              className="bg-pink-600 hover:bg-pink-700 text-white"
-            >
-              <PlayCircle size={16} className="mr-1" />
-              Start Decisions
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Special Status Alerts */}
       {(gameState.isHospitalized || gameState.isMentalBreakdown || gameState.isBlackoutMode) && (

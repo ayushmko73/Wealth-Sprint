@@ -11,7 +11,7 @@ import CyberModeButton from './components/CyberModeButton';
 import DashboardBar from './DashboardBar';
 import CompactDashboard from './CompactDashboard';
 import InvestmentTable from './InvestmentTable';
-import RevenueOverview from './RevenueOverview';
+
 import SoundManager from './components/SoundManager';
 import NotificationCenter from './NotificationCenter';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -45,23 +45,20 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import WealthTracker from './WealthTracker';
-import CashflowSection from './sections/CashflowSection';
+import FinancialManagementSection from './sections/FinancialManagementSection';
 import StocksSection from './sections/StocksSection';
 import BondsSection from './sections/BondsSection';
 import BankSection from './sections/BankSection';
 
-import BusinessDealsSection from './sections/BusinessDealsSection';
+import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
-import AssetsSection from './sections/AssetsSection';
-import SettingsSection from './sections/SettingsSection';
-import RevenueSection from './sections/RevenueSection';
+import NewSettingsSection from './sections/NewSettingsSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
-import StrategyCardsSection from './sections/StrategyCardsSection';
 import StoreSection from './sections/StoreSection';
 
-import AdvancedTeamManagement from './AdvancedTeamManagement';
+import TeamManagementSection from './sections/TeamManagementSection';
 import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
@@ -89,14 +86,15 @@ const GameDashboard: React.FC = () => {
     }, 1000);
   }, [initializeTeam]);
 
-  // Auto time progression at 24x speed - runs every 1 hour (real time)
-  // This equals 1 real hour = 1 in-game day (24x faster than real time)
+  // Auto time progression: 1 real day = 24 game days
+  // This runs every 1 hour in real time = 1 game day
+  // So 24 hours real time = 24 game days = 1 game day cycle
   useEffect(() => {
     const timeProgressionInterval = setInterval(() => {
       if (gameStarted) {
         advanceTime();
       }
-    }, 3600000); // 3600000 ms = 1 hour = 1 in-game day
+    }, 3600000); // 3600000 ms = 1 hour real time = 1 game day
 
     return () => clearInterval(timeProgressionInterval);
   }, [gameStarted, advanceTime]);
@@ -106,19 +104,16 @@ const GameDashboard: React.FC = () => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'business', label: 'Business', icon: Building2 },
-    { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
+    { id: 'financial_management', label: 'Financial Management', icon: DollarSign },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
-    { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
     { id: 'store', label: 'Store', icon: ShoppingCart },
 
-    { id: 'advanced_team', label: 'Team Mgmt', icon: UserCog },
+    { id: 'team_management', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
-    { id: 'strategy_cards', label: 'Cards', icon: Target },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
-    { id: 'assets', label: 'Assets', icon: TrendingUp },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -126,38 +121,27 @@ const GameDashboard: React.FC = () => {
     switch (activeSection) {
       case 'business':
         return <BusinessSection />;
-      case 'cashflow':
-        return <CashflowSection />;
+      case 'financial_management':
+        return <FinancialManagementSection />;
       case 'stock_market':
         return <ProfessionalStockMarket />;
       case 'bonds':
         return <BondsSection />;
-      case 'revenue':
-        return <RevenueOverview />;
       case 'bank':
         return <BankSection />;
       case 'store':
         return <StoreSection />;
 
-      case 'advanced_team':
-        return (
-          <AdvancedTeamManagement 
-            onClose={() => setActiveSection('dashboard')}
-            onNavigateToSectors={() => setActiveSection('industry_sectors')}
-          />
-        );
+      case 'team_management':
+        return <TeamManagementSection />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
-      case 'strategy_cards':
-        return <StrategyCardsSection />;
       case 'business_deals':
-        return <BusinessDealsSection />;
+        return <DealsSection />;
       case 'strategy_hub':
         return <StrategyHubSection />;
-      case 'assets':
-        return <AssetsSection />;
       case 'settings':
-        return <SettingsSection />;
+        return <NewSettingsSection />;
       default:
         return (
           <div className="space-y-6">
@@ -172,38 +156,8 @@ const GameDashboard: React.FC = () => {
     return <StartScreen />;
   }
 
-  // Check for financial independence
-  if (financialData.sideIncome >= financialData.monthlyExpenses) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#d4af37] to-[#f0ead6] flex items-center justify-center p-4">
-        <div className="text-center p-4 md:p-8 bg-[#f0ead6] rounded-lg shadow-2xl max-w-2xl w-full">
-          <h1 className="text-2xl md:text-4xl font-bold text-[#3a3a3a] mb-4">
-            🎉 Game Over – You have achieved Financial Independence!
-          </h1>
-          <p className="text-lg md:text-xl text-[#3a3a3a] mb-8">
-            Your side income of ₹{financialData.sideIncome.toLocaleString()} now covers your monthly expenses of ₹{financialData.monthlyExpenses.toLocaleString()}.
-          </p>
-          <p className="text-base md:text-lg text-[#3a3a3a] mb-8">
-            Do you want to continue to the next level of life mastery?
-          </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <button 
-              className="bg-[#d4af37] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#b8941f] transition-colors"
-              onClick={() => {/* Handle challenge mode */}}
-            >
-              YES – Challenge Mode
-            </button>
-            <button 
-              className="bg-[#3a3a3a] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#2a2a2a] transition-colors"
-              onClick={() => {/* Handle restart */}}
-            >
-              NO – Restart Journey
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Financial independence is now just a milestone, not game end
+  // Game continues with new challenges and opportunities
 
   return (
     <div className="h-screen bg-white flex flex-col">
@@ -306,8 +260,6 @@ const GameDashboard: React.FC = () => {
       {/* Sage AI Assistant */}
       <SageAI />
       
-      {/* Decision System Manager */}
-      <DecisionManager />
     </div>
   );
 };
