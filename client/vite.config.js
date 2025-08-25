@@ -18,10 +18,12 @@ export default defineConfig({
     emptyOutDir: true,
     target: 'esnext',
     rollupOptions: {
+      external: [],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           three: ['three'],
+          utils: ['html2canvas', 'chart.js'],
         },
       },
     },
@@ -32,8 +34,12 @@ export default defineConfig({
       'react-dom',
       'three',
       'chart.js',
-      'zustand'
-    ]
+      'zustand',
+      'html2canvas',
+      'howler',
+      'framer-motion'
+    ],
+    exclude: []
   },
   assetsInclude: ['**/*.gltf', '**/*.glb', '**/*.mp3', '**/*.ogg', '**/*.wav'],
 });
