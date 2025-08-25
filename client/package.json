@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-only": "vite build --mode production"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
@@ -87,7 +88,6 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.15",
     "@types/matter-js": "^0.19.7",
     "@types/react": "^18.3.11",
