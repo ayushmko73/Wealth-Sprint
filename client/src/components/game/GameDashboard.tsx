@@ -54,11 +54,9 @@ import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
 import AssetsSection from './sections/AssetsSection';
 import NewSettingsSection from './sections/NewSettingsSection';
-import RevenueSection from './sections/RevenueSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
-import NewDataSection from './sections/NewDataSection';
 import StoreSection from './sections/StoreSection';
 
 import TeamManagementSection from './sections/TeamManagementSection';
@@ -110,13 +108,11 @@ const GameDashboard: React.FC = () => {
     { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
-    { id: 'revenue', label: '5-Year Revenue', icon: BarChart3 },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
     { id: 'store', label: 'Store', icon: ShoppingCart },
 
     { id: 'team_management', label: 'Team Mgmt', icon: UserCog },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
-    { id: 'data_hub', label: 'Data Hub', icon: BarChart3 },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
     { id: 'assets', label: 'Assets', icon: TrendingUp },
@@ -133,8 +129,6 @@ const GameDashboard: React.FC = () => {
         return <ProfessionalStockMarket />;
       case 'bonds':
         return <BondsSection />;
-      case 'revenue':
-        return <RevenueSection />;
       case 'bank':
         return <BankSection />;
       case 'store':
@@ -144,8 +138,6 @@ const GameDashboard: React.FC = () => {
         return <TeamManagementSection />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
-      case 'data_hub':
-        return <NewDataSection />;
       case 'business_deals':
         return <DealsSection />;
       case 'strategy_hub':

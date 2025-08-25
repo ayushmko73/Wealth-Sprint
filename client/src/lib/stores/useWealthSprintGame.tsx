@@ -139,7 +139,6 @@ export interface UIState {
   businessSelectedCategory: string;
   businessSelectedSector: string | null;
   bondsSelectedCategory: string;
-  dataHubActiveCategory: string;
   settingsActiveTab: string;
   assetsSelectedCategory: string;
   stockMarketSelectedStock: string | null;
@@ -342,7 +341,6 @@ const initialUIState: UIState = {
   businessSelectedCategory: 'all',
   businessSelectedSector: null,
   bondsSelectedCategory: 'all',
-  dataHubActiveCategory: 'Analytics',
   settingsActiveTab: 'profile',
   assetsSelectedCategory: 'Assets',
   stockMarketSelectedStock: null,
