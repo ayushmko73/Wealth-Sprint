@@ -219,36 +219,47 @@ const CashflowSection: React.FC = () => {
 
         {selectedCategory === 'Income Sources' && (
           <div className="space-y-4">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Income Sources</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-semibold text-green-800">Main Income (Job/Business)</span>
+            {/* Income Sources Cards - Same style as Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-green-800">Main Income</p>
+                      <p className="text-2xl font-bold text-green-600">₹{financialData.mainIncome.toLocaleString()}</p>
+                      <p className="text-xs text-green-600">Job/Business income</p>
                     </div>
-                    <span className="text-sm font-bold text-green-700">₹{financialData.mainIncome.toLocaleString()}</span>
+                    <ArrowUpCircle className="w-8 h-8 text-green-600" />
                   </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-orange-600" />
-                      <span className="text-sm font-semibold text-orange-800">Side Income (Investments)</span>
-                    </div>
-                    <span className="text-sm font-bold text-orange-700">₹{financialData.sideIncome.toLocaleString()}</span>
-                  </div>
+                </CardContent>
+              </Card>
 
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2">
-                      <Calculator className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-semibold text-blue-800">Total Monthly Income</span>
+              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-orange-800">Side Income</p>
+                      <p className="text-2xl font-bold text-orange-600">₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-orange-600">Investment returns</p>
                     </div>
-                    <span className="text-lg font-bold text-blue-700">₹{totalIncome.toLocaleString()}</span>
+                    <TrendingUp className="w-8 h-8 text-orange-600" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-50 to-sky-50 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">Total Income</p>
+                      <p className="text-2xl font-bold text-blue-600">₹{totalIncome.toLocaleString()}</p>
+                      <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
+                    </div>
+                    <DollarSign className="w-8 h-8 text-blue-600" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
