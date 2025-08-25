@@ -8,7 +8,6 @@ import {
   PieChart, 
   BarChart3,
   Calculator,
-  Target,
   Activity,
   ArrowUpCircle,
   ArrowDownCircle
@@ -20,15 +19,14 @@ const CashflowSection: React.FC = () => {
   const selectedCategory = uiState.cashflowSelectedCategory;
 
   // Categories for the horizontal menu
-  const categories = ['Overview', 'Income Sources', 'Expense Breakdown', 'Financial Health', 'Projections'];
+  const categories = ['Overview', 'Income Sources', 'Expense Breakdown', 'Financial Health'];
 
   // Category icons mapping
   const categoryIcons: Record<string, JSX.Element> = {
     'Overview': <BarChart3 className="w-4 h-4" />,
     'Income Sources': <TrendingUp className="w-4 h-4" />,
     'Expense Breakdown': <PieChart className="w-4 h-4" />,
-    'Financial Health': <Activity className="w-4 h-4" />,
-    'Projections': <Target className="w-4 h-4" />
+    'Financial Health': <Activity className="w-4 h-4" />
   };
 
   // Calculate cashflow data
@@ -339,35 +337,6 @@ const CashflowSection: React.FC = () => {
           </div>
         )}
 
-        {selectedCategory === 'Projections' && (
-          <div className="space-y-4">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">6-Month Cashflow Projection</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={[
-                      { month: 'Month 1', income: totalIncome, expenses: financialData.monthlyExpenses, net: netCashflow },
-                      { month: 'Month 2', income: totalIncome * 1.02, expenses: financialData.monthlyExpenses * 1.01, net: (totalIncome * 1.02) - (financialData.monthlyExpenses * 1.01) },
-                      { month: 'Month 3', income: totalIncome * 1.05, expenses: financialData.monthlyExpenses * 1.02, net: (totalIncome * 1.05) - (financialData.monthlyExpenses * 1.02) },
-                      { month: 'Month 4', income: totalIncome * 1.08, expenses: financialData.monthlyExpenses * 1.03, net: (totalIncome * 1.08) - (financialData.monthlyExpenses * 1.03) },
-                      { month: 'Month 5', income: totalIncome * 1.12, expenses: financialData.monthlyExpenses * 1.04, net: (totalIncome * 1.12) - (financialData.monthlyExpenses * 1.04) },
-                      { month: 'Month 6', income: totalIncome * 1.15, expenses: financialData.monthlyExpenses * 1.05, net: (totalIncome * 1.15) - (financialData.monthlyExpenses * 1.05) }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
-                      <Bar dataKey="income" fill="#10b981" name="Income" />
-                      <Bar dataKey="expenses" fill="#ef4444" name="Expenses" />
-                      <Bar dataKey="net" fill="#3b82f6" name="Net Cashflow" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </div>
     </div>
   );
