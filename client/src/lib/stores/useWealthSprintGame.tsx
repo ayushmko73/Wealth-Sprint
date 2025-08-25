@@ -134,6 +134,7 @@ export interface GameEvent {
 export interface UIState {
   // Section-specific UI states that should persist across navigation
   cashflowSelectedCategory: string;
+  financialManagementCategory: string;
   teamManagementActiveTab: string;
   currentTeam: any[]; // Array of hired employees
   businessSelectedCategory: string;
@@ -336,6 +337,7 @@ const initialFinancialData: FinancialData = {
 
 const initialUIState: UIState = {
   cashflowSelectedCategory: 'Overview',
+  financialManagementCategory: 'Cashflow Overview',
   teamManagementActiveTab: 'overview',
   currentTeam: [],
   businessSelectedCategory: 'all',

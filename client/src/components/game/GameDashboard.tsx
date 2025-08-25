@@ -45,14 +45,13 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import WealthTracker from './WealthTracker';
-import CashflowSection from './sections/CashflowSection';
+import FinancialManagementSection from './sections/FinancialManagementSection';
 import StocksSection from './sections/StocksSection';
 import BondsSection from './sections/BondsSection';
 import BankSection from './sections/BankSection';
 
 import DealsSection from './sections/DealsSection';
 import StrategyHubSection from './sections/StrategyHubSection';
-import AssetsSection from './sections/AssetsSection';
 import NewSettingsSection from './sections/NewSettingsSection';
 import EnhancedTeamSection from './sections/EnhancedTeamSection';
 import IndustrySectorsSection from './sections/IndustrySectorsSection';
@@ -105,7 +104,7 @@ const GameDashboard: React.FC = () => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'business', label: 'Business', icon: Building2 },
-    { id: 'cashflow', label: 'Cashflow', icon: DollarSign },
+    { id: 'financial_management', label: 'Financial Management', icon: DollarSign },
     { id: 'stock_market', label: 'Stock Market', icon: TrendingUp },
     { id: 'bonds', label: 'Bonds', icon: PiggyBank },
     { id: 'bank', label: 'Banking', icon: PiggyBank },
@@ -115,7 +114,6 @@ const GameDashboard: React.FC = () => {
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
-    { id: 'assets', label: 'Assets', icon: TrendingUp },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -123,8 +121,8 @@ const GameDashboard: React.FC = () => {
     switch (activeSection) {
       case 'business':
         return <BusinessSection />;
-      case 'cashflow':
-        return <CashflowSection />;
+      case 'financial_management':
+        return <FinancialManagementSection />;
       case 'stock_market':
         return <ProfessionalStockMarket />;
       case 'bonds':
@@ -142,8 +140,6 @@ const GameDashboard: React.FC = () => {
         return <DealsSection />;
       case 'strategy_hub':
         return <StrategyHubSection />;
-      case 'assets':
-        return <AssetsSection />;
       case 'settings':
         return <NewSettingsSection />;
       default:
