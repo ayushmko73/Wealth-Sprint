@@ -30,17 +30,16 @@ export interface IndustrySector {
 
 export interface Business {
   id: string;
+  sectorId: string;
   name: string;
   type: string;
-  investmentRequired: number;
-  monthlyRevenue: number;
-  monthlyExpenses: number;
-  monthlyProfit: number;
-  riskLevel: 'low' | 'medium' | 'high';
-  growthPotential: 'low' | 'medium' | 'high' | 'very_high';
-  loopChallenge: string;
-  isOwned: boolean;
-  ownershipPercentage: number;
+  revenue: number;
+  operationalCost: number;
+  employeeCount: number;
+  marketShare: number;
+  qualityScore: number; // Affected by loop decisions
+  sustainabilityScore: number;
+  isActive: boolean;
 }
 
 export interface FinancialData {
@@ -110,7 +109,6 @@ export interface LoopBoss {
     stress?: number;
     emotion?: number;
     karma?: number;
-    reputation?: number;
     loopScore?: number;
     specificActions?: string[];
   };

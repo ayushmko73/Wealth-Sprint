@@ -52,8 +52,14 @@ export default function IndustrySectorsSection() {
   };
 
   const getUnlockRequirementsText = (sector: any) => {
-    // All sectors are now unlocked - no requirements needed
-    return 'Available for purchase';
+    const missing = [];
+    if (playerStats.clarityXP < sector.unlockRequirements.clarityXP) {
+      missing.push(`${sector.unlockRequirements.clarityXP} Clarity XP`);
+    }
+    if (playerStats.loopScore > sector.unlockRequirements.maxLoopScore) {
+      missing.push(`Max ${sector.unlockRequirements.maxLoopScore} Loop Score`);
+    }
+    return missing.join(', ');
   };
 
   // Category definitions for horizontal menu

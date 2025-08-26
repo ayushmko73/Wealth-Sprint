@@ -49,9 +49,9 @@ export const industrySectors: IndustrySector[] = [
     icon: '💻',
     description: 'Build product → feedback → pivot. Overcome shiny object syndrome.',
     unlockRequirements: {
-      clarityXP: 0,
-      sectorsCompleted: 0,
-      maxLoopScore: 100,
+      clarityXP: 50,
+      sectorsCompleted: 1,
+      maxLoopScore: 80,
     },
     isUnlocked: false,
     businesses: [
@@ -91,9 +91,9 @@ export const industrySectors: IndustrySector[] = [
     icon: '📦',
     description: 'Marketing, fulfillment, warehousing. Navigate fake influencers and thin margins.',
     unlockRequirements: {
-      clarityXP: 0,
-      sectorsCompleted: 0,
-      maxLoopScore: 100,
+      clarityXP: 100,
+      sectorsCompleted: 2,
+      maxLoopScore: 60,
     },
     isUnlocked: false,
     businesses: [
@@ -133,9 +133,9 @@ export const industrySectors: IndustrySector[] = [
     icon: '🏥',
     description: 'Research, trials, hospitals. Navigate guilt loop between saving lives vs profit.',
     unlockRequirements: {
-      clarityXP: 0,
-      sectorsCompleted: 0,
-      maxLoopScore: 100,
+      clarityXP: 150,
+      sectorsCompleted: 3,
+      maxLoopScore: 50,
     },
     isUnlocked: false,
     businesses: [
@@ -373,7 +373,9 @@ export const strategyCards: StrategyCard[] = [
 // Helper functions
 export const getUnlockedSectors = (clarityXP: number, sectorsCompleted: number, loopScore: number): IndustrySector[] => {
   return industrySectors.filter(sector => 
-    true // All sectors are now unlocked based on user request
+    clarityXP >= sector.unlockRequirements.clarityXP &&
+    sectorsCompleted >= sector.unlockRequirements.sectorsCompleted &&
+    loopScore <= sector.unlockRequirements.maxLoopScore
   );
 };
 

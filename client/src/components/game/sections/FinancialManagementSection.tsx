@@ -24,8 +24,7 @@ import {
   Building2,
   CreditCard,
   PiggyBank,
-  Wallet,
-  Target
+  Wallet
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
@@ -379,53 +378,6 @@ const FinancialManagementSection: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Income Sources Pie Chart */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Income Sources Breakdown</h3>
-                </div>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#f59e0b' }
-                        ]}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#f59e0b' }
-                        ].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex justify-center gap-6 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Main Income</span>
-                    <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    <span className="text-sm">Side Income</span>
-                    <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         )}
 
@@ -683,262 +635,51 @@ const FinancialManagementSection: React.FC = () => {
 
         {selectedCategory === 'Financial Health' && (
           <div className="space-y-4">
-            {/* Financial Independence Journey */}
-            <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Target className="w-6 h-6 text-purple-600" />
-                    <h3 className="text-lg font-semibold text-purple-800">Financial Independence Journey</h3>
-                  </div>
-                  <Badge className={`${((financialData.sideIncome / financialData.monthlyExpenses) * 100) >= 100 ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}>
-                    {((financialData.sideIncome / financialData.monthlyExpenses) * 100) >= 100 ? 'FI Achieved!' : 'In Progress'}
-                  </Badge>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-purple-700">FI Progress</span>
-                    <span className="text-sm font-bold text-purple-800">{((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1)}%</span>
-                  </div>
-                  <Progress value={Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100)} className="h-3 mb-2" />
-                  <div className="flex justify-between text-xs text-purple-600">
-                    <span>Passive Income: ₹{financialData.sideIncome.toLocaleString()}/mo</span>
-                    <span>Target: ₹{financialData.monthlyExpenses.toLocaleString()}/mo</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white/50 rounded-lg">
-                    <p className="text-sm text-purple-600 mb-1">Years to FI</p>
-                    <p className="text-lg font-bold text-purple-800">
-                      {netCashflow > 0 ? Math.ceil((financialData.monthlyExpenses * 12 * 25 - totalAssetValue) / (netCashflow * 12)) : '∞'}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 bg-white/50 rounded-lg">
-                    <p className="text-sm text-purple-600 mb-1">FI Number</p>
-                    <p className="text-lg font-bold text-purple-800">₹{(financialData.monthlyExpenses * 12 * 25).toLocaleString()}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Financial Health Score */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Activity className="w-5 h-5 text-green-600" />
-                    <h3 className="text-lg font-semibold text-gray-800">Financial Health Score</h3>
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">Financial Health Metrics</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Expense Ratio</span>
+                      <span className="font-semibold">{((financialData.monthlyExpenses / totalIncome) * 100 || 0).toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Savings Rate</span>
+                      <span className="font-semibold">{((netCashflow / totalIncome) * 100 || 0).toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Debt-to-Asset Ratio</span>
+                      <span className="font-semibold">{totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">FI Progress</span>
+                      <span className="font-semibold">{((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1)}%</span>
+                    </div>
                   </div>
-                  
-                  {(() => {
-                    const expenseRatio = (financialData.monthlyExpenses / totalIncome) * 100;
-                    const savingsRate = (netCashflow / totalIncome) * 100;
-                    const debtRatio = totalAssetValue > 0 ? (totalLiabilityValue / totalAssetValue) * 100 : 0;
-                    const fiProgress = (financialData.sideIncome / financialData.monthlyExpenses) * 100;
-                    
-                    // Calculate health score (0-100)
-                    let healthScore = 0;
-                    healthScore += Math.max(0, 25 - (expenseRatio > 70 ? 25 : (expenseRatio - 70) / 2)); // Expense ratio
-                    healthScore += Math.min(25, savingsRate > 0 ? savingsRate / 2 : 0); // Savings rate
-                    healthScore += Math.max(0, 25 - (debtRatio / 4)); // Debt ratio
-                    healthScore += Math.min(25, fiProgress / 4); // FI progress
-                    
-                    const getScoreColor = (score: number) => {
-                      if (score >= 80) return 'text-green-600';
-                      if (score >= 60) return 'text-yellow-600';
-                      if (score >= 40) return 'text-orange-600';
-                      return 'text-red-600';
-                    };
-                    
-                    const getScoreLabel = (score: number) => {
-                      if (score >= 80) return 'Excellent';
-                      if (score >= 60) return 'Good';
-                      if (score >= 40) return 'Fair';
-                      return 'Needs Improvement';
-                    };
-
-                    return (
-                      <>
-                        <div className="text-center mb-6">
-                          <div className={`text-4xl font-bold ${getScoreColor(healthScore)} mb-2`}>
-                            {Math.round(healthScore)}/100
-                          </div>
-                          <Badge className={healthScore >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                            {getScoreLabel(healthScore)}
-                          </Badge>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Expense Control</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={Math.max(0, 100 - expenseRatio)} className="w-20 h-2" />
-                              <span className="text-sm font-medium">{expenseRatio.toFixed(1)}%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Savings Rate</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={Math.min(100, savingsRate)} className="w-20 h-2" />
-                              <span className="text-sm font-medium">{savingsRate.toFixed(1)}%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Debt Management</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={Math.max(0, 100 - debtRatio)} className="w-20 h-2" />
-                              <span className="text-sm font-medium">{debtRatio.toFixed(1)}%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">FI Progress</span>
-                            <div className="flex items-center gap-2">
-                              <Progress value={Math.min(100, fiProgress)} className="w-20 h-2" />
-                              <span className="text-sm font-medium">{fiProgress.toFixed(1)}%</span>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    );
-                  })()}
                 </CardContent>
               </Card>
-
+              
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                    <h3 className="text-lg font-semibold text-gray-800">Wealth Building Goals</h3>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {/* Emergency Fund Goal */}
-                    <div className="p-3 bg-blue-50 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-blue-800">Emergency Fund</span>
-                        <Badge variant="outline" className={financialData.bankBalance >= (financialData.monthlyExpenses * 6) ? 'text-green-600' : 'text-orange-600'}>
-                          {financialData.bankBalance >= (financialData.monthlyExpenses * 6) ? 'Complete' : 'In Progress'}
-                        </Badge>
-                      </div>
-                      <Progress value={Math.min(100, (financialData.bankBalance / (financialData.monthlyExpenses * 6)) * 100)} className="h-2 mb-2" />
-                      <div className="flex justify-between text-xs text-blue-600">
-                        <span>Current: ₹{financialData.bankBalance.toLocaleString()}</span>
-                        <span>Target: ₹{(financialData.monthlyExpenses * 6).toLocaleString()}</span>
-                      </div>
-                    </div>
-
-                    {/* Investment Goal */}
-                    <div className="p-3 bg-green-50 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-green-800">Investment Portfolio</span>
-                        <Badge variant="outline" className={totalAssetValue >= 1000000 ? 'text-green-600' : 'text-orange-600'}>
-                          {totalAssetValue >= 1000000 ? 'Milestone Reached' : 'Building'}
-                        </Badge>
-                      </div>
-                      <Progress value={Math.min(100, (totalAssetValue / 1000000) * 100)} className="h-2 mb-2" />
-                      <div className="flex justify-between text-xs text-green-600">
-                        <span>Assets: ₹{totalAssetValue.toLocaleString()}</span>
-                        <span>Target: ₹10,00,000</span>
-                      </div>
-                    </div>
-
-                    {/* Debt Freedom Goal */}
-                    <div className="p-3 bg-red-50 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-red-800">Debt Freedom</span>
-                        <Badge variant="outline" className={totalLiabilityValue === 0 ? 'text-green-600' : 'text-red-600'}>
-                          {totalLiabilityValue === 0 ? 'Debt Free!' : `₹${totalLiabilityValue.toLocaleString()} left`}
-                        </Badge>
-                      </div>
-                      <Progress value={totalLiabilityValue === 0 ? 100 : Math.max(0, 100 - (totalLiabilityValue / 5000000) * 100)} className="h-2 mb-2" />
-                      <div className="text-xs text-red-600 text-center">
-                        {totalLiabilityValue === 0 ? 'No outstanding debt' : `Monthly EMI: ₹${monthlyLiabilityPayment.toLocaleString()}`}
-                      </div>
-                    </div>
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">Income Distribution</h3>
+                  <div className="h-32">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[
+                        { name: 'Main', value: financialData.mainIncome },
+                        { name: 'Side', value: financialData.sideIncome }
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Income']} />
+                        <Bar dataKey="value" fill="#3b82f6" />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Action Recommendations */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Personalized Recommendations</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(() => {
-                    const recommendations = [];
-                    
-                    // Emergency fund recommendation
-                    if (financialData.bankBalance < financialData.monthlyExpenses * 3) {
-                      recommendations.push({
-                        title: 'Build Emergency Fund',
-                        description: 'Focus on saving 6 months of expenses before investing',
-                        priority: 'High',
-                        color: 'red'
-                      });
-                    }
-                    
-                    // Debt recommendation
-                    if (totalLiabilityValue > totalAssetValue * 0.3) {
-                      recommendations.push({
-                        title: 'Reduce Debt Burden',
-                        description: 'Consider debt consolidation or aggressive repayment',
-                        priority: 'High',
-                        color: 'red'
-                      });
-                    }
-                    
-                    // Savings rate recommendation
-                    if ((netCashflow / totalIncome) * 100 < 20) {
-                      recommendations.push({
-                        title: 'Increase Savings Rate',
-                        description: 'Aim for at least 20% savings rate for wealth building',
-                        priority: 'Medium',
-                        color: 'yellow'
-                      });
-                    }
-                    
-                    // FI recommendation
-                    if (financialData.sideIncome < financialData.monthlyExpenses * 0.25) {
-                      recommendations.push({
-                        title: 'Build Passive Income',
-                        description: 'Focus on investments that generate regular income',
-                        priority: 'Medium',
-                        color: 'blue'
-                      });
-                    }
-                    
-                    // Success message if doing well
-                    if (recommendations.length === 0) {
-                      recommendations.push({
-                        title: 'Excellent Progress!',
-                        description: 'Your financial health is on track. Keep it up!',
-                        priority: 'Success',
-                        color: 'green'
-                      });
-                    }
-                    
-                    return recommendations.map((rec, index) => (
-                      <div key={index} className={`p-4 rounded-lg border-l-4 border-${rec.color}-500 bg-${rec.color}-50`}>
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className={`font-semibold text-${rec.color}-800`}>{rec.title}</h4>
-                          <Badge className={`bg-${rec.color}-100 text-${rec.color}-800`}>
-                            {rec.priority}
-                          </Badge>
-                        </div>
-                        <p className={`text-sm text-${rec.color}-700`}>{rec.description}</p>
-                      </div>
-                    ));
-                  })()}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         )}
       </div>
