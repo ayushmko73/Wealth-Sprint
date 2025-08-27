@@ -231,6 +231,36 @@ const FinancialManagementSection: React.FC = () => {
 
   return (
     <div className="space-y-0">
+      <style>
+        {`
+          .pie-chart-container * {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .pie-chart-container svg,
+          .pie-chart-container g,
+          .pie-chart-container path,
+          .pie-chart-container circle {
+            outline: none !important;
+            border: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+          }
+          .pie-chart-container:focus,
+          .pie-chart-container *:focus {
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+        `}
+      </style>
       {/* Blue Header Section with Banking/Stock Market Style */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-t-lg">
         {/* Top Header */}
@@ -345,23 +375,15 @@ const FinancialManagementSection: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Cashflow Visual</h3>
                 </div>
                 <div 
-                  className="h-64 select-none" 
+                  className="h-64 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handlePieDoubleClick('cashflow');
                   }}
-                  style={{ 
-                    userSelect: 'none', 
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none',
-                    WebkitTouchCallout: 'none',
-                    WebkitTapHighlightColor: 'transparent'
-                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
+                    <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -379,7 +401,13 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'cashflow')}
                         onMouseEnter={(_, index) => setActiveCashflowIndex(index)}
                         onMouseLeave={() => activeCashflowIndex === null && setActiveCashflowIndex(null)}
-                        style={{ cursor: 'pointer', outline: 'none' }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
                       >
                         {[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -472,23 +500,15 @@ const FinancialManagementSection: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Income Sources Breakdown</h3>
                 </div>
                 <div 
-                  className="h-64 select-none" 
+                  className="h-64 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handlePieDoubleClick('income');
                   }}
-                  style={{ 
-                    userSelect: 'none', 
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none',
-                    WebkitTouchCallout: 'none',
-                    WebkitTapHighlightColor: 'transparent'
-                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
+                    <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
@@ -506,7 +526,13 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'income')}
                         onMouseEnter={(_, index) => setActiveIncomeIndex(index)}
                         onMouseLeave={() => activeIncomeIndex === null && setActiveIncomeIndex(null)}
-                        style={{ cursor: 'pointer', outline: 'none' }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
                       >
                         {[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
@@ -602,23 +628,15 @@ const FinancialManagementSection: React.FC = () => {
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
                 <div 
-                  className="h-64 mb-4 select-none" 
+                  className="h-64 mb-4 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handlePieDoubleClick('expense');
                   }}
-                  style={{ 
-                    userSelect: 'none', 
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none',
-                    WebkitTouchCallout: 'none',
-                    WebkitTapHighlightColor: 'transparent'
-                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
+                    <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={expenseData}
                         cx="50%"
@@ -632,7 +650,13 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'expense')}
                         onMouseEnter={(_, index) => setActiveExpenseIndex(index)}
                         onMouseLeave={() => activeExpenseIndex === null && setActiveExpenseIndex(null)}
-                        style={{ cursor: 'pointer', outline: 'none' }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
                       >
                         {expenseData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
