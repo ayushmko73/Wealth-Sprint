@@ -577,176 +577,13 @@ const FinancialManagementSection: React.FC = () => {
         )}
 
         {selectedCategory === 'Financial Health' && (
-          <div className="space-y-6">
-            {/* Financial Cockpit Dashboard */}
-            <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-2xl p-6 text-white">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">Financial Cockpit</h2>
-                  <p className="text-slate-300">Real-time financial monitoring</p>
-                </div>
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                  <span className="text-xl">⚡</span>
-                </div>
-              </div>
-              
-              {/* Dashboard Gauges */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {(() => {
-                  const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
-                  const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
-                  const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
-                  const fiProgress = financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100) : 0;
-                  
-                  const gauges = [
-                    {
-                      label: "Savings",
-                      value: Math.min(100, savingsRate),
-                      display: `${savingsRate.toFixed(1)}%`,
-                      color: savingsRate >= 20 ? "emerald" : savingsRate >= 10 ? "yellow" : "red",
-                      icon: "💰"
-                    },
-                    {
-                      label: "Emergency",
-                      value: Math.min(100, (emergencyMonths / 6) * 100),
-                      display: `${emergencyMonths.toFixed(1)}m`,
-                      color: emergencyMonths >= 6 ? "emerald" : emergencyMonths >= 3 ? "yellow" : "red",
-                      icon: "🛡️"
-                    },
-                    {
-                      label: "Debt Risk",
-                      value: Math.min(100, 100 - debtRatio),
-                      display: `${debtRatio.toFixed(1)}%`,
-                      color: debtRatio <= 30 ? "emerald" : debtRatio <= 60 ? "yellow" : "red",
-                      icon: "⚠️"
-                    },
-                    {
-                      label: "FI Progress",
-                      value: Math.min(100, fiProgress),
-                      display: `${fiProgress.toFixed(1)}%`,
-                      color: fiProgress >= 100 ? "emerald" : fiProgress >= 50 ? "yellow" : "red",
-                      icon: "🎯"
-                    }
-                  ];
-                  
-                  return gauges.map((gauge, index) => (
-                    <div key={index} className="text-center">
-                      <div className="relative w-20 h-20 mx-auto mb-3">
-                        <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
-                          {/* Background circle */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            stroke="currentColor"
-                            strokeWidth="8"
-                            fill="none"
-                            className="text-slate-600"
-                          />
-                          {/* Progress circle */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            stroke="currentColor"
-                            strokeWidth="8"
-                            fill="none"
-                            strokeDasharray={`${2 * Math.PI * 40}`}
-                            strokeDashoffset={`${2 * Math.PI * 40 * (1 - gauge.value / 100)}`}
-                            className={`${
-                              gauge.color === 'emerald' ? 'text-emerald-400' :
-                              gauge.color === 'yellow' ? 'text-yellow-400' : 'text-red-400'
-                            } transition-all duration-1000`}
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-lg">{gauge.icon}</span>
-                        </div>
-                      </div>
-                      <div className="text-xs text-slate-300 mb-1">{gauge.label}</div>
-                      <div className={`text-sm font-bold ${
-                        gauge.color === 'emerald' ? 'text-emerald-400' :
-                        gauge.color === 'yellow' ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
-                        {gauge.display}
-                      </div>
-                    </div>
-                  ));
-                })()}
-              </div>
-            </div>
-
-            {/* Financial Signals */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(() => {
-                const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
-                const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
-                const cashflowDirection = netCashflow >= 0 ? "positive" : "negative";
-                
-                const signals = [
-                  {
-                    title: "Cash Flow Signal",
-                    status: cashflowDirection === "positive" ? "Strong" : "Weak",
-                    value: `₹${Math.abs(netCashflow).toLocaleString()}`,
-                    direction: cashflowDirection,
-                    icon: cashflowDirection === "positive" ? "📈" : "📉",
-                    color: cashflowDirection === "positive" ? "green" : "red"
-                  },
-                  {
-                    title: "Wealth Building",
-                    status: savingsRate >= 15 ? "Active" : savingsRate >= 5 ? "Moderate" : "Inactive",
-                    value: `${savingsRate.toFixed(1)}%`,
-                    direction: "rate",
-                    icon: "💎",
-                    color: savingsRate >= 15 ? "green" : savingsRate >= 5 ? "yellow" : "red"
-                  },
-                  {
-                    title: "Safety Buffer",
-                    status: emergencyMonths >= 6 ? "Secure" : emergencyMonths >= 3 ? "Moderate" : "At Risk",
-                    value: `${emergencyMonths.toFixed(1)} months`,
-                    direction: "buffer",
-                    icon: "🛡️",
-                    color: emergencyMonths >= 6 ? "green" : emergencyMonths >= 3 ? "yellow" : "red"
-                  }
-                ];
-                
-                return signals.map((signal, index) => (
-                  <Card key={index} className={`border-l-4 ${
-                    signal.color === 'green' ? 'border-green-500 bg-green-50' :
-                    signal.color === 'yellow' ? 'border-yellow-500 bg-yellow-50' :
-                    'border-red-500 bg-red-50'
-                  }`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-2xl">{signal.icon}</span>
-                        <div className={`w-3 h-3 rounded-full ${
-                          signal.color === 'green' ? 'bg-green-500 animate-pulse' :
-                          signal.color === 'yellow' ? 'bg-yellow-500' :
-                          'bg-red-500 animate-pulse'
-                        }`}></div>
-                      </div>
-                      <h3 className="font-semibold text-gray-800 text-sm mb-1">{signal.title}</h3>
-                      <p className={`text-lg font-bold mb-1 ${
-                        signal.color === 'green' ? 'text-green-700' :
-                        signal.color === 'yellow' ? 'text-yellow-700' :
-                        'text-red-700'
-                      }`}>
-                        {signal.status}
-                      </p>
-                      <p className="text-sm text-gray-600">{signal.value}</p>
-                    </CardContent>
-                  </Card>
-                ));
-              })()}
-            </div>
-
-            {/* Financial Temperature */}
+          <div className="space-y-4">
+            {/* Financial Health */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="w-5 h-5" />
-                  Financial Temperature Check
+                  Financial Health
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -783,14 +620,6 @@ const FinancialManagementSection: React.FC = () => {
                     return "text-red-600";
                   };
                   
-                  const getTemperatureEmoji = (temp: number) => {
-                    if (temp >= 80) return "🔥";
-                    if (temp >= 60) return "☀️";
-                    if (temp >= 40) return "🌤️";
-                    if (temp >= 20) return "🌧️";
-                    return "❄️";
-                  };
-                  
                   const getTemperatureStatus = (temp: number) => {
                     if (temp >= 80) return "Hot - Excellent Financial Health";
                     if (temp >= 60) return "Warm - Good Financial Position";
@@ -802,7 +631,9 @@ const FinancialManagementSection: React.FC = () => {
                   return (
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-4">
-                        <div className="text-6xl mr-4">{getTemperatureEmoji(temperature)}</div>
+                        <div className="text-6xl mr-4">
+                          <Activity className="w-16 h-16 text-orange-500" />
+                        </div>
                         <div>
                           <div className={`text-4xl font-bold ${getTemperatureColor(temperature)}`}>
                             {temperature.toFixed(0)}°
@@ -832,6 +663,44 @@ const FinancialManagementSection: React.FC = () => {
                     </div>
                   );
                 })()}
+              </CardContent>
+            </Card>
+
+            {/* Financial Health Metrics */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Financial Health Metrics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Expense Ratio</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalIncome > 0 ? ((financialData.monthlyExpenses / totalIncome) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Savings Rate</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Debt-to-Asset Ratio</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">FI Progress</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
