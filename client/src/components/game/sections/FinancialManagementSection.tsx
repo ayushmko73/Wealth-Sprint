@@ -113,27 +113,33 @@ const FinancialManagementSection: React.FC = () => {
   // Handle clicks outside pie charts to reset to previous position
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
+      const target = event.target as Element;
       
-      // Check if click is outside cashflow chart
-      if (cashflowChartRef.current && !cashflowChartRef.current.contains(target) && activeCashflowIndex !== null) {
+      // Check if click is outside any chart and reset accordingly
+      const isInsideCashflow = cashflowChartRef.current?.contains(target);
+      const isInsideIncome = incomeChartRef.current?.contains(target);
+      const isInsideExpense = expenseChartRef.current?.contains(target);
+      
+      if (!isInsideCashflow && activeCashflowIndex !== null) {
         setActiveCashflowIndex(null);
       }
       
-      // Check if click is outside income chart
-      if (incomeChartRef.current && !incomeChartRef.current.contains(target) && activeIncomeIndex !== null) {
+      if (!isInsideIncome && activeIncomeIndex !== null) {
         setActiveIncomeIndex(null);
       }
       
-      // Check if click is outside expense chart
-      if (expenseChartRef.current && !expenseChartRef.current.contains(target) && activeExpenseIndex !== null) {
+      if (!isInsideExpense && activeExpenseIndex !== null) {
         setActiveExpenseIndex(null);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Use both mousedown and click events for better reliability
+    document.addEventListener('click', handleClickOutside, true);
+    document.addEventListener('mousedown', handleClickOutside, true);
+    
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside, true);
+      document.removeEventListener('mousedown', handleClickOutside, true);
     };
   }, [activeCashflowIndex, activeIncomeIndex, activeExpenseIndex]);
 
@@ -432,8 +438,18 @@ const FinancialManagementSection: React.FC = () => {
                         activeIndex={activeCashflowIndex ?? undefined}
                         activeShape={renderActiveShape}
                         onClick={(_, index) => handlePieClick(index, 'cashflow')}
-                        onMouseEnter={(_, index) => setActiveCashflowIndex(index)}
-                        onMouseLeave={() => activeCashflowIndex === null && setActiveCashflowIndex(null)}
+                        onMouseEnter={(_, index) => {
+                          if (activeCashflowIndex === null) {
+                            setActiveCashflowIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeCashflowIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
                         style={{ 
                           cursor: 'pointer', 
                           outline: 'none',
@@ -558,8 +574,18 @@ const FinancialManagementSection: React.FC = () => {
                         activeIndex={activeIncomeIndex ?? undefined}
                         activeShape={renderActiveShape}
                         onClick={(_, index) => handlePieClick(index, 'income')}
-                        onMouseEnter={(_, index) => setActiveIncomeIndex(index)}
-                        onMouseLeave={() => activeIncomeIndex === null && setActiveIncomeIndex(null)}
+                        onMouseEnter={(_, index) => {
+                          if (activeIncomeIndex === null) {
+                            setActiveIncomeIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeIncomeIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
                         style={{ 
                           cursor: 'pointer', 
                           outline: 'none',
@@ -683,8 +709,18 @@ const FinancialManagementSection: React.FC = () => {
                         activeIndex={activeExpenseIndex ?? undefined}
                         activeShape={renderActiveShape}
                         onClick={(_, index) => handlePieClick(index, 'expense')}
-                        onMouseEnter={(_, index) => setActiveExpenseIndex(index)}
-                        onMouseLeave={() => activeExpenseIndex === null && setActiveExpenseIndex(null)}
+                        onMouseEnter={(_, index) => {
+                          if (activeExpenseIndex === null) {
+                            setActiveExpenseIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeExpenseIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
                         style={{ 
                           cursor: 'pointer', 
                           outline: 'none',
