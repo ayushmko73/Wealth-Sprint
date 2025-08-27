@@ -577,129 +577,210 @@ const FinancialManagementSection: React.FC = () => {
         )}
 
         {selectedCategory === 'Financial Health' && (
-          <div className="space-y-4">
-            {/* Financial Health */}
-            <Card>
+          <div className="space-y-6">
+            {/* Financial Wellness Center */}
+            <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-8 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-black opacity-20 rounded-3xl"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold mb-2">💎 Wealth Wellness</h2>
+                    <p className="text-indigo-100">Your financial vitality score</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-5xl font-bold">
+                      {(() => {
+                        const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+                        const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+                        const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
+                        
+                        let score = 0;
+                        if (savingsRate >= 20) score += 25;
+                        else if (savingsRate >= 10) score += 15;
+                        else if (savingsRate >= 5) score += 8;
+                        
+                        if (emergencyMonths >= 6) score += 25;
+                        else if (emergencyMonths >= 3) score += 15;
+                        else if (emergencyMonths >= 1) score += 8;
+                        
+                        if (debtRatio <= 30) score += 25;
+                        else if (debtRatio <= 50) score += 15;
+                        else if (debtRatio <= 70) score += 8;
+                        
+                        if (netCashflow > 0) score += 25;
+                        else if (netCashflow >= -5000) score += 10;
+                        
+                        return Math.max(0, Math.min(100, score));
+                      })()}
+                    </div>
+                    <div className="text-indigo-100 text-sm">Wellness Score</div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(() => {
+                    const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+                    const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+                    const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
+                    const cashflowHealth = netCashflow > 0 ? "Positive" : "Negative";
+                    
+                    const metrics = [
+                      { icon: "💰", label: "Savings", value: `${savingsRate.toFixed(1)}%`, status: savingsRate >= 15 ? "Good" : "Needs Work" },
+                      { icon: "🛡️", label: "Emergency", value: `${emergencyMonths.toFixed(1)}m`, status: emergencyMonths >= 3 ? "Safe" : "Build More" },
+                      { icon: "⚖️", label: "Debt Load", value: `${debtRatio.toFixed(1)}%`, status: debtRatio <= 40 ? "Healthy" : "High" },
+                      { icon: "📈", label: "Cash Flow", value: cashflowHealth, status: netCashflow > 0 ? "Strong" : "Weak" }
+                    ];
+                    
+                    return metrics.map((metric, index) => (
+                      <div key={index} className="bg-white bg-opacity-20 rounded-xl p-4 text-center backdrop-blur-sm">
+                        <div className="text-2xl mb-2">{metric.icon}</div>
+                        <div className="text-sm text-indigo-100 mb-1">{metric.label}</div>
+                        <div className="font-bold text-lg">{metric.value}</div>
+                        <div className="text-xs text-indigo-200">{metric.status}</div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Financial Insights Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Money Flow Tracker */}
+              <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                    <span className="text-xl">🌊</span>
+                    Money Flow Tracker
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-blue-700">Monthly Inflow</span>
+                      <span className="font-bold text-green-600">+₹{totalIncome.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-blue-700">Monthly Outflow</span>
+                      <span className="font-bold text-red-600">-₹{financialData.monthlyExpenses.toLocaleString()}</span>
+                    </div>
+                    <div className="border-t border-blue-200 pt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-blue-800 font-semibold">Net Flow</span>
+                        <span className={`font-bold text-lg ${netCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {netCashflow >= 0 ? '+' : ''}₹{netCashflow.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-blue-200 rounded-full h-3">
+                      <div 
+                        className={`h-3 rounded-full ${netCashflow >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                        style={{ width: `${Math.min(100, Math.abs(netCashflow) / Math.max(totalIncome, 1) * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Wealth Building Progress */}
+              <Card className="border-2 border-green-200 bg-green-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-green-800">
+                    <span className="text-xl">🏗️</span>
+                    Wealth Building
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-700">₹{netWorth.toLocaleString()}</div>
+                      <div className="text-green-600 text-sm">Current Net Worth</div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-700">Assets</span>
+                        <span className="font-medium">₹{totalAssetValue.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-700">Liabilities</span>
+                        <span className="font-medium">₹{totalLiabilityValue.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-700">Monthly Growth</span>
+                        <span className="font-medium">₹{Math.max(0, netCashflow).toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-green-200 rounded-full h-3">
+                      <div 
+                        className="h-3 bg-green-500 rounded-full"
+                        style={{ width: `${Math.min(100, (totalAssetValue / Math.max(totalAssetValue + totalLiabilityValue, 1)) * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Financial Freedom Roadmap */}
+            <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Financial Health
+                <CardTitle className="flex items-center gap-2 text-purple-800">
+                  <span className="text-xl">🗺️</span>
+                  Financial Freedom Roadmap
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {(() => {
-                  const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
-                  const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
-                  const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
-                  
-                  // Calculate temperature (0-100)
-                  let temperature = 50; // Start at neutral
-                  
-                  // Adjust based on savings rate
-                  if (savingsRate >= 20) temperature += 20;
-                  else if (savingsRate >= 10) temperature += 10;
-                  else if (savingsRate < 5) temperature -= 15;
-                  
-                  // Adjust based on emergency fund
-                  if (emergencyMonths >= 6) temperature += 15;
-                  else if (emergencyMonths >= 3) temperature += 5;
-                  else if (emergencyMonths < 1) temperature -= 20;
-                  
-                  // Adjust based on debt
-                  if (debtRatio <= 30) temperature += 15;
-                  else if (debtRatio <= 60) temperature -= 5;
-                  else temperature -= 20;
-                  
-                  temperature = Math.max(0, Math.min(100, temperature));
-                  
-                  const getTemperatureColor = (temp: number) => {
-                    if (temp >= 80) return "text-green-600";
-                    if (temp >= 60) return "text-blue-600";
-                    if (temp >= 40) return "text-yellow-600";
-                    if (temp >= 20) return "text-orange-600";
-                    return "text-red-600";
-                  };
-                  
-                  const getTemperatureStatus = (temp: number) => {
-                    if (temp >= 80) return "Hot - Excellent Financial Health";
-                    if (temp >= 60) return "Warm - Good Financial Position";
-                    if (temp >= 40) return "Cool - Moderate Financial State";
-                    if (temp >= 20) return "Cold - Needs Attention";
-                    return "Frozen - Critical State";
-                  };
-                  
-                  return (
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-4">
-                        <div className="text-6xl mr-4">
-                          <Activity className="w-16 h-16 text-orange-500" />
-                        </div>
-                        <div>
-                          <div className={`text-4xl font-bold ${getTemperatureColor(temperature)}`}>
-                            {temperature.toFixed(0)}°
-                          </div>
-                          <div className="text-sm text-gray-600">Financial Temperature</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mb-4">
-                        <div className="w-full bg-gray-200 rounded-full h-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {(() => {
+                    const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+                    const fiProgress = financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100) : 0;
+                    const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+                    
+                    const milestones = [
+                      {
+                        title: "Emergency Shield",
+                        target: "6 months expenses",
+                        current: `${emergencyMonths.toFixed(1)} months`,
+                        progress: Math.min(100, (emergencyMonths / 6) * 100),
+                        status: emergencyMonths >= 6 ? "✅ Complete" : emergencyMonths >= 3 ? "🟡 Good Progress" : "🔴 Start Building",
+                        color: emergencyMonths >= 6 ? "green" : emergencyMonths >= 3 ? "yellow" : "red"
+                      },
+                      {
+                        title: "Savings Habit",
+                        target: "20% savings rate",
+                        current: `${savingsRate.toFixed(1)}%`,
+                        progress: Math.min(100, (savingsRate / 20) * 100),
+                        status: savingsRate >= 20 ? "✅ Excellent" : savingsRate >= 10 ? "🟡 Good" : "🔴 Improve",
+                        color: savingsRate >= 20 ? "green" : savingsRate >= 10 ? "yellow" : "red"
+                      },
+                      {
+                        title: "FI Progress",
+                        target: "100% passive income",
+                        current: `${fiProgress.toFixed(1)}%`,
+                        progress: Math.min(100, fiProgress),
+                        status: fiProgress >= 100 ? "✅ Achieved!" : fiProgress >= 50 ? "🟡 Halfway" : "🔴 Just Started",
+                        color: fiProgress >= 100 ? "green" : fiProgress >= 50 ? "yellow" : "red"
+                      }
+                    ];
+                    
+                    return milestones.map((milestone, index) => (
+                      <div key={index} className="bg-white rounded-lg p-4 border border-purple-200">
+                        <div className="text-sm font-semibold text-purple-800 mb-2">{milestone.title}</div>
+                        <div className="text-xs text-gray-600 mb-2">Target: {milestone.target}</div>
+                        <div className="text-lg font-bold text-purple-700 mb-2">{milestone.current}</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                           <div 
-                            className={`h-4 rounded-full transition-all duration-1000 ${
-                              temperature >= 80 ? 'bg-gradient-to-r from-orange-400 to-red-500' :
-                              temperature >= 60 ? 'bg-gradient-to-r from-yellow-400 to-orange-400' :
-                              temperature >= 40 ? 'bg-gradient-to-r from-blue-400 to-yellow-400' :
-                              temperature >= 20 ? 'bg-gradient-to-r from-blue-600 to-blue-400' :
-                              'bg-gradient-to-r from-gray-400 to-blue-600'
+                            className={`h-2 rounded-full ${
+                              milestone.color === 'green' ? 'bg-green-500' :
+                              milestone.color === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
-                            style={{ width: `${temperature}%` }}
+                            style={{ width: `${milestone.progress}%` }}
                           ></div>
                         </div>
+                        <div className="text-xs text-gray-700">{milestone.status}</div>
                       </div>
-                      
-                      <p className={`text-lg font-semibold ${getTemperatureColor(temperature)}`}>
-                        {getTemperatureStatus(temperature)}
-                      </p>
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-
-            {/* Financial Health Metrics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Financial Health Metrics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Expense Ratio</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalIncome > 0 ? ((financialData.monthlyExpenses / totalIncome) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Savings Rate</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Debt-to-Asset Ratio</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">FI Progress</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
+                    ));
+                  })()}
                 </div>
               </CardContent>
             </Card>
