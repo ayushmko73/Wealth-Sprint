@@ -1941,8 +1941,6 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         timestamp: new Date()
       });
 
-      // Gain some clarity XP for strategic expansion
-      get().gainClarityXP(25, `strategic sector expansion`);
 
       return true;
     },
