@@ -25,7 +25,29 @@ import {
   PiggyBank,
   Wallet
 } from 'lucide-react';
-import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
+
+// Custom active shape for pie chart interactions
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        stroke={fill}
+        strokeWidth={3}
+        opacity={0.9}
+      />
+    </g>
+  );
+};
 
 const FinancialManagementSection: React.FC = () => {
   const { 
@@ -45,6 +67,9 @@ const FinancialManagementSection: React.FC = () => {
   const selectedCategory = uiState.financialManagementCategory || 'Cashflow Overview';
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
+  const [activeCashflowIndex, setActiveCashflowIndex] = useState<number | null>(null);
+  const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | null>(null);
+  const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | null>(null);
 
   // Categories for the horizontal menu - Combined from both sections
   const categories = [
@@ -300,6 +325,10 @@ const FinancialManagementSection: React.FC = () => {
                         outerRadius={100}
                         paddingAngle={5}
                         dataKey="value"
+                        activeIndex={activeCashflowIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setActiveCashflowIndex(index)}
+                        onMouseLeave={() => setActiveCashflowIndex(null)}
                       >
                         {[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -397,6 +426,10 @@ const FinancialManagementSection: React.FC = () => {
                         outerRadius={100}
                         paddingAngle={5}
                         dataKey="value"
+                        activeIndex={activeIncomeIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setActiveIncomeIndex(index)}
+                        onMouseLeave={() => setActiveIncomeIndex(null)}
                       >
                         {[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
@@ -451,6 +484,10 @@ const FinancialManagementSection: React.FC = () => {
                         outerRadius={100}
                         paddingAngle={5}
                         dataKey="value"
+                        activeIndex={activeExpenseIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setActiveExpenseIndex(index)}
+                        onMouseLeave={() => setActiveExpenseIndex(null)}
                       >
                         {expenseData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
