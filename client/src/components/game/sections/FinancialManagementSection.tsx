@@ -359,22 +359,31 @@ const FinancialManagementSection: React.FC = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-center gap-6 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Income</span>
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Income</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{totalIncome.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm">Expenses</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <span className="text-sm">Expenses</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{financialData.monthlyExpenses.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">Savings</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">Savings</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{Math.max(0, netCashflow).toLocaleString()}</span>
                   </div>
                 </div>
               </CardContent>
@@ -462,27 +471,36 @@ const FinancialManagementSection: React.FC = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-center gap-4 mt-4">
+                <div className="grid grid-cols-1 gap-2 mt-4">
                   {financialData.mainIncome > 0 && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm">Main Income</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-sm">Main Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
                     </div>
                   )}
                   {financialData.sideIncome > 0 && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm">Side Income</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">Side Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
                     </div>
                   )}
                   {monthlyAssetIncome > 0 && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm">Asset Income</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span className="text-sm">Asset Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{monthlyAssetIncome.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -518,7 +536,7 @@ const FinancialManagementSection: React.FC = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
