@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
 
-// Custom active shape for pie chart interactions with smooth animation
+// Custom active shape for pie chart interactions with subtle professional animation
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   
@@ -37,7 +37,7 @@ const renderActiveShape = (props: any) => {
         cx={cx}
         cy={cy}
         innerRadius={innerRadius}
-        outerRadius={outerRadius + 15}
+        outerRadius={outerRadius + 8}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -45,23 +45,8 @@ const renderActiveShape = (props: any) => {
         strokeWidth={0}
         opacity={1}
         style={{
-          filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.2))',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: 'scale(1.05)'
-        }}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius + 12}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill="rgba(255,255,255,0.3)"
-        stroke="none"
-        strokeWidth={0}
-        style={{
-          transition: 'all 0.3s ease-in-out'
+          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       />
     </g>
