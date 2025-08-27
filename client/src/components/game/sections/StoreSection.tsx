@@ -59,6 +59,7 @@ const StoreSection: React.FC = () => {
     addTransaction, 
     updateFinancialData, 
     addAsset,
+    addLiability,
     chargeToCredit 
   } = useWealthSprintGame();
   const { purchaseItem, getPurchasedItems } = useStore();
@@ -229,22 +230,42 @@ const StoreSection: React.FC = () => {
         passiveIncome: item.passiveIncome || 0
       });
 
-      const assetCategory = getCategoryMapping(item.category);
-      const assetType = item.isLiability ? assetCategory : assetCategory;
+      // Calculate net monthly cashflow to determine if it's an asset or liability
+      const monthlyIncome = item.passiveIncome || 0;
+      const maintenanceCost = item.maintenanceCost || getMaintenanceCost(item.category, item.price);
+      const netCashflow = monthlyIncome - maintenanceCost;
       
-      addAsset({
-        name: item.name,
-        category: assetType,
-        value: item.price,
-        purchasePrice: item.price,
-        purchaseDate: new Date(),
-        monthlyIncome: item.passiveIncome || 0,
-        appreciationRate: item.appreciationRate || getAppreciationRate(item.category),
-        maintenanceCost: item.maintenanceCost || getMaintenanceCost(item.category, item.price),
-        description: item.description,
-        icon: item.icon,
-        storeItemId: item.id,
-      });
+      const assetCategory = getCategoryMapping(item.category);
+      
+      if (netCashflow > 0) {
+        // Positive cashflow = Asset
+        addAsset({
+          name: item.name,
+          category: assetCategory,
+          value: item.price,
+          purchasePrice: item.price,
+          purchaseDate: new Date(),
+          monthlyIncome: monthlyIncome,
+          appreciationRate: item.appreciationRate || getAppreciationRate(item.category),
+          maintenanceCost: maintenanceCost,
+          description: item.description,
+          icon: item.icon,
+          storeItemId: item.id,
+        });
+      } else {
+        // Negative cashflow = Liability
+        const liabilityCategory = getLiabilityCategoryMapping(item.category);
+        addLiability({
+          name: item.name,
+          category: liabilityCategory,
+          outstandingAmount: item.price,
+          originalAmount: item.price,
+          interestRate: 0, // No interest on purchases, just ongoing costs
+          emi: Math.abs(netCashflow), // Monthly drain on finances
+          tenure: 0, // Indefinite liability
+          description: item.description,
+        });
+      }
 
       addTransaction({
         type: 'store_purchase',
@@ -284,6 +305,17 @@ const StoreSection: React.FC = () => {
       case 'gadget': return 'gadget';
       case 'investment': return 'investment';
       default: return 'entertainment';
+    }
+  };
+
+  const getLiabilityCategoryMapping = (storeCategory: string): 'home_loan' | 'car_loan' | 'education_loan' | 'credit_card' | 'business_debt' | 'personal_loan' => {
+    switch (storeCategory) {
+      case 'property': return 'home_loan';
+      case 'vehicle': return 'car_loan';
+      case 'business': return 'business_debt';
+      case 'gadget': return 'personal_loan';
+      case 'investment': return 'personal_loan';
+      default: return 'personal_loan';
     }
   };
 

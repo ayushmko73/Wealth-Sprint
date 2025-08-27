@@ -20,7 +20,6 @@ export interface IndustrySector {
   icon: string;
   description: string;
   unlockRequirements: {
-    clarityXP: number;
     sectorsCompleted: number;
     maxLoopScore: number;
   };
@@ -132,7 +131,6 @@ export interface StrategyCard {
     businessBonus?: number;
   };
   unlockConditions: {
-    clarityXP?: number;
     defeatedBosses?: string[];
     founderTrait?: string;
   };

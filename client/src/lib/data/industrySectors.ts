@@ -7,7 +7,6 @@ export const industrySectors: IndustrySector[] = [
     icon: '🍟',
     description: 'Choose recipe quality, speed, locations. Manage customer satisfaction vs cost.',
     unlockRequirements: {
-      clarityXP: 0,
       sectorsCompleted: 0,
       maxLoopScore: 100,
     },
@@ -49,7 +48,6 @@ export const industrySectors: IndustrySector[] = [
     icon: '💻',
     description: 'Build product → feedback → pivot. Overcome shiny object syndrome.',
     unlockRequirements: {
-      clarityXP: 50,
       sectorsCompleted: 1,
       maxLoopScore: 80,
     },
@@ -91,7 +89,6 @@ export const industrySectors: IndustrySector[] = [
     icon: '📦',
     description: 'Marketing, fulfillment, warehousing. Navigate fake influencers and thin margins.',
     unlockRequirements: {
-      clarityXP: 100,
       sectorsCompleted: 2,
       maxLoopScore: 60,
     },
@@ -133,7 +130,6 @@ export const industrySectors: IndustrySector[] = [
     icon: '🏥',
     description: 'Research, trials, hospitals. Navigate guilt loop between saving lives vs profit.',
     unlockRequirements: {
-      clarityXP: 150,
       sectorsCompleted: 3,
       maxLoopScore: 50,
     },
@@ -271,7 +267,6 @@ export const strategyCards: StrategyCard[] = [
       businessBonus: 15
     },
     unlockConditions: {
-      clarityXP: 75,
       founderTrait: 'visionary'
     }
   },
@@ -298,7 +293,6 @@ export const strategyCards: StrategyCard[] = [
       businessBonus: 20
     },
     unlockConditions: {
-      clarityXP: 100,
       founderTrait: 'reflective'
     }
   },
@@ -339,7 +333,6 @@ export const strategyCards: StrategyCard[] = [
       teamBonus: 15
     },
     unlockConditions: {
-      clarityXP: 50
     }
   },
   {
@@ -352,7 +345,6 @@ export const strategyCards: StrategyCard[] = [
       teamBonus: 40
     },
     unlockConditions: {
-      clarityXP: 150
     }
   },
   {
@@ -365,15 +357,13 @@ export const strategyCards: StrategyCard[] = [
       businessBonus: 30
     },
     unlockConditions: {
-      clarityXP: 200
     }
   }
 ];
 
 // Helper functions
-export const getUnlockedSectors = (clarityXP: number, sectorsCompleted: number, loopScore: number): IndustrySector[] => {
+export const getUnlockedSectors = (sectorsCompleted: number, loopScore: number): IndustrySector[] => {
   return industrySectors.filter(sector => 
-    clarityXP >= sector.unlockRequirements.clarityXP &&
     sectorsCompleted >= sector.unlockRequirements.sectorsCompleted &&
     loopScore <= sector.unlockRequirements.maxLoopScore
   );
@@ -405,7 +395,6 @@ export const getAvailableStrategyCards = (playerStats: any, defeatedBosses: stri
   return strategyCards.filter(card => {
     const { unlockConditions } = card;
     
-    if (unlockConditions.clarityXP && playerStats.clarityXP < unlockConditions.clarityXP) return false;
     if (unlockConditions.founderTrait && playerStats.founderTrait !== unlockConditions.founderTrait) return false;
     if (unlockConditions.defeatedBosses) {
       const hasRequiredBosses = unlockConditions.defeatedBosses.every(boss => defeatedBosses.includes(boss));

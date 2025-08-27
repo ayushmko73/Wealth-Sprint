@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWealthSprintGame, Asset, Liability } from '../../../lib/stores/useWealthSprintGame';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -12,7 +12,6 @@ import {
   PieChart, 
   BarChart3,
   Calculator,
-  Activity,
   ArrowUpCircle,
   ArrowDownCircle,
   Home,
@@ -26,7 +25,33 @@ import {
   PiggyBank,
   Wallet
 } from 'lucide-react';
-import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
+
+// Custom active shape for pie chart interactions with subtle professional animation
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius + 8}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        stroke="none"
+        strokeWidth={0}
+        opacity={1}
+        style={{
+          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
+      />
+    </g>
+  );
+};
 
 const FinancialManagementSection: React.FC = () => {
   const { 
@@ -46,6 +71,77 @@ const FinancialManagementSection: React.FC = () => {
   const selectedCategory = uiState.financialManagementCategory || 'Cashflow Overview';
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [selectedLiability, setSelectedLiability] = useState<string | null>(null);
+  const [activeCashflowIndex, setActiveCashflowIndex] = useState<number | null>(null);
+  const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | null>(null);
+  const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | null>(null);
+  
+  // Refs for pie chart containers
+  const cashflowChartRef = useRef<HTMLDivElement>(null);
+  const incomeChartRef = useRef<HTMLDivElement>(null);
+  const expenseChartRef = useRef<HTMLDivElement>(null);
+  
+  // Handle pie chart click interactions
+  const handlePieClick = (index: number, type: 'cashflow' | 'income' | 'expense') => {
+    switch (type) {
+      case 'cashflow':
+        setActiveCashflowIndex(activeCashflowIndex === index ? null : index);
+        break;
+      case 'income':
+        setActiveIncomeIndex(activeIncomeIndex === index ? null : index);
+        break;
+      case 'expense':
+        setActiveExpenseIndex(activeExpenseIndex === index ? null : index);
+        break;
+    }
+  };
+
+  // Handle pie chart double-click to reset to previous position
+  const handlePieDoubleClick = (type: 'cashflow' | 'income' | 'expense') => {
+    switch (type) {
+      case 'cashflow':
+        setActiveCashflowIndex(null);
+        break;
+      case 'income':
+        setActiveIncomeIndex(null);
+        break;
+      case 'expense':
+        setActiveExpenseIndex(null);
+        break;
+    }
+  };
+
+  // Handle clicks outside pie charts to reset to previous position
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      
+      // Check if click is outside any chart and reset accordingly
+      const isInsideCashflow = cashflowChartRef.current?.contains(target);
+      const isInsideIncome = incomeChartRef.current?.contains(target);
+      const isInsideExpense = expenseChartRef.current?.contains(target);
+      
+      if (!isInsideCashflow && activeCashflowIndex !== null) {
+        setActiveCashflowIndex(null);
+      }
+      
+      if (!isInsideIncome && activeIncomeIndex !== null) {
+        setActiveIncomeIndex(null);
+      }
+      
+      if (!isInsideExpense && activeExpenseIndex !== null) {
+        setActiveExpenseIndex(null);
+      }
+    };
+
+    // Use both mousedown and click events for better reliability
+    document.addEventListener('click', handleClickOutside, true);
+    document.addEventListener('mousedown', handleClickOutside, true);
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+      document.removeEventListener('mousedown', handleClickOutside, true);
+    };
+  }, [activeCashflowIndex, activeIncomeIndex, activeExpenseIndex]);
 
   // Categories for the horizontal menu - Combined from both sections
   const categories = [
@@ -53,8 +149,7 @@ const FinancialManagementSection: React.FC = () => {
     'Income Sources', 
     'Expense Breakdown', 
     'Assets Management',
-    'Liabilities', 
-    'Financial Health'
+    'Liabilities'
   ];
 
   // Category icons mapping
@@ -63,8 +158,7 @@ const FinancialManagementSection: React.FC = () => {
     'Income Sources': <TrendingUp className="w-4 h-4" />,
     'Expense Breakdown': <PieChart className="w-4 h-4" />,
     'Assets Management': <Home className="w-4 h-4" />,
-    'Liabilities': <CreditCard className="w-4 h-4" />,
-    'Financial Health': <Activity className="w-4 h-4" />
+    'Liabilities': <CreditCard className="w-4 h-4" />
   };
 
   // Calculate cashflow data
@@ -175,6 +269,36 @@ const FinancialManagementSection: React.FC = () => {
 
   return (
     <div className="space-y-0">
+      <style>
+        {`
+          .pie-chart-container * {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .pie-chart-container svg,
+          .pie-chart-container g,
+          .pie-chart-container path,
+          .pie-chart-container circle {
+            outline: none !important;
+            border: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+          }
+          .pie-chart-container:focus,
+          .pie-chart-container *:focus {
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+        `}
+      </style>
       {/* Blue Header Section with Banking/Stock Market Style */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-t-lg">
         {/* Top Header */}
@@ -288,9 +412,17 @@ const FinancialManagementSection: React.FC = () => {
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">Cashflow Visual</h3>
                 </div>
-                <div className="h-64">
+                <div 
+                  ref={cashflowChartRef}
+                  className="h-64 select-none pie-chart-container" 
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('cashflow');
+                  }}
+                >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
+                    <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -301,8 +433,30 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={5}
+                        paddingAngle={2}
                         dataKey="value"
+                        activeIndex={activeCashflowIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onClick={(_, index) => handlePieClick(index, 'cashflow')}
+                        onMouseEnter={(_, index) => {
+                          if (activeCashflowIndex === null) {
+                            setActiveCashflowIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeCashflowIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
                       >
                         {[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -312,22 +466,31 @@ const FinancialManagementSection: React.FC = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-center gap-6 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Income</span>
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Income</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{totalIncome.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm">Expenses</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <span className="text-sm">Expenses</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{financialData.monthlyExpenses.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">Savings</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">Savings</span>
+                    </div>
+                    <span className="text-sm font-medium">₹{Math.max(0, netCashflow).toLocaleString()}</span>
                   </div>
                 </div>
               </CardContent>
@@ -378,31 +541,199 @@ const FinancialManagementSection: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Income Sources Pie Chart */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">Income Sources Breakdown</h3>
+                </div>
+                <div 
+                  ref={incomeChartRef}
+                  className="h-64 select-none pie-chart-container" 
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('income');
+                  }}
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart style={{ outline: 'none' }}>
+                      <Pie
+                        data={[
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
+                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
+                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                        ].filter(item => item.value > 0)}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={2}
+                        dataKey="value"
+                        activeIndex={activeIncomeIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onClick={(_, index) => handlePieClick(index, 'income')}
+                        onMouseEnter={(_, index) => {
+                          if (activeIncomeIndex === null) {
+                            setActiveIncomeIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeIncomeIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
+                      >
+                        {[
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
+                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
+                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                        ].filter(item => item.value > 0).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  {financialData.mainIncome > 0 && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-sm">Main Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {financialData.sideIncome > 0 && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">Side Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {monthlyAssetIncome > 0 && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span className="text-sm">Asset Income</span>
+                      </div>
+                      <span className="text-sm font-medium">₹{monthlyAssetIncome.toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
         {selectedCategory === 'Expense Breakdown' && (
           <div className="space-y-4">
+            {/* Expense Categories Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800">Living Expenses</p>
+                      <p className="text-2xl font-bold text-red-600">₹{(financialData.monthlyExpenses * 0.4).toLocaleString()}</p>
+                      <p className="text-xs text-red-600">Daily necessities</p>
+                    </div>
+                    <ArrowDownCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-orange-800">Business Costs</p>
+                      <p className="text-2xl font-bold text-orange-600">₹{(financialData.monthlyExpenses * 0.25).toLocaleString()}</p>
+                      <p className="text-xs text-orange-600">Operations & growth</p>
+                    </div>
+                    <Briefcase className="w-8 h-8 text-orange-600" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-purple-800">Total Expenses</p>
+                      <p className="text-2xl font-bold text-purple-600">₹{financialData.monthlyExpenses.toLocaleString()}</p>
+                      <p className="text-xs text-purple-600">Monthly recurring</p>
+                    </div>
+                    <Calculator className="w-8 h-8 text-purple-600" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
-                <div className="h-64 mb-4">
+                <div 
+                  ref={expenseChartRef}
+                  className="h-64 mb-4 select-none pie-chart-container" 
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('expense');
+                  }}
+                >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
+                    <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={expenseData}
                         cx="50%"
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={5}
+                        paddingAngle={2}
                         dataKey="value"
+                        activeIndex={activeExpenseIndex ?? undefined}
+                        activeShape={renderActiveShape}
+                        onClick={(_, index) => handlePieClick(index, 'expense')}
+                        onMouseEnter={(_, index) => {
+                          if (activeExpenseIndex === null) {
+                            setActiveExpenseIndex(index);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Only reset on mouse leave if it was set by hover (not by click)
+                          if (activeExpenseIndex !== null) {
+                            // Check if we should keep it active (it was clicked)
+                            // We'll let the click outside handler manage this
+                          }
+                        }}
+                        style={{ 
+                          cursor: 'pointer', 
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                          WebkitUserSelect: 'none',
+                          userSelect: 'none'
+                        }}
                       >
                         {expenseData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`]} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -518,6 +849,7 @@ const FinancialManagementSection: React.FC = () => {
             </Card>
           </div>
         )}
+
 
         {selectedCategory === 'Liabilities' && (
           <div className="space-y-4">
