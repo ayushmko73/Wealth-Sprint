@@ -519,6 +519,190 @@ const FinancialManagementSection: React.FC = () => {
           </div>
         )}
 
+        {selectedCategory === 'Financial Health' && (
+          <div className="space-y-4">
+            {/* Financial Health Metrics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Financial Health Metrics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Expense Ratio</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalIncome > 0 ? ((financialData.monthlyExpenses / totalIncome) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Savings Rate</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">Debt-to-Asset Ratio</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">FI Progress</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Income Distribution Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <PieChart className="w-5 h-5" />
+                  Income Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { 
+                        name: 'Main Income', 
+                        value: financialData.mainIncome,
+                        fill: '#3b82f6'
+                      },
+                      { 
+                        name: 'Side Income', 
+                        value: financialData.sideIncome,
+                        fill: '#10b981'
+                      },
+                      { 
+                        name: 'Asset Income', 
+                        value: monthlyAssetIncome,
+                        fill: '#f59e0b'
+                      }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Amount']} />
+                      <Bar dataKey="value" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Financial Health Score */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="w-5 h-5" />
+                  Overall Financial Health Score
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  // Calculate overall health score based on multiple factors
+                  const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
+                  const debtRatio = totalAssetValue > 0 ? (totalLiabilityValue / totalAssetValue) * 100 : 0;
+                  const fiProgress = financialData.monthlyExpenses > 0 ? (financialData.sideIncome / financialData.monthlyExpenses) * 100 : 0;
+                  
+                  // Scoring logic (out of 100)
+                  let score = 0;
+                  
+                  // Savings rate (30 points max)
+                  if (savingsRate >= 20) score += 30;
+                  else if (savingsRate >= 10) score += 20;
+                  else if (savingsRate >= 5) score += 10;
+                  
+                  // Debt ratio (25 points max)
+                  if (debtRatio <= 30) score += 25;
+                  else if (debtRatio <= 50) score += 15;
+                  else if (debtRatio <= 70) score += 5;
+                  
+                  // FI Progress (25 points max)
+                  if (fiProgress >= 100) score += 25;
+                  else if (fiProgress >= 50) score += 15;
+                  else if (fiProgress >= 25) score += 10;
+                  else if (fiProgress >= 10) score += 5;
+                  
+                  // Emergency fund simulation (20 points max)
+                  const emergencyFund = financialData.bankBalance;
+                  const monthlyExpenses = financialData.monthlyExpenses;
+                  const emergencyMonths = monthlyExpenses > 0 ? emergencyFund / monthlyExpenses : 0;
+                  
+                  if (emergencyMonths >= 6) score += 20;
+                  else if (emergencyMonths >= 3) score += 15;
+                  else if (emergencyMonths >= 1) score += 10;
+                  
+                  const getScoreColor = (score: number) => {
+                    if (score >= 80) return 'text-green-600';
+                    if (score >= 60) return 'text-yellow-600';
+                    if (score >= 40) return 'text-orange-600';
+                    return 'text-red-600';
+                  };
+                  
+                  const getScoreDescription = (score: number) => {
+                    if (score >= 80) return 'Excellent financial health!';
+                    if (score >= 60) return 'Good financial health with room for improvement';
+                    if (score >= 40) return 'Fair financial health - focus on key areas';
+                    return 'Needs improvement - consider financial planning';
+                  };
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
+                          {Math.round(score)}/100
+                        </div>
+                        <p className="text-gray-600 mt-2">{getScoreDescription(score)}</p>
+                      </div>
+                      
+                      <Progress value={score} className="w-full" />
+                      
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="flex justify-between">
+                          <span>Savings Rate:</span>
+                          <span className={savingsRate >= 20 ? 'text-green-600' : savingsRate >= 10 ? 'text-yellow-600' : 'text-red-600'}>
+                            {savingsRate.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Debt Ratio:</span>
+                          <span className={debtRatio <= 30 ? 'text-green-600' : debtRatio <= 50 ? 'text-yellow-600' : 'text-red-600'}>
+                            {debtRatio.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>FI Progress:</span>
+                          <span className={fiProgress >= 100 ? 'text-green-600' : fiProgress >= 50 ? 'text-yellow-600' : 'text-red-600'}>
+                            {fiProgress.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Emergency Fund:</span>
+                          <span className={emergencyMonths >= 6 ? 'text-green-600' : emergencyMonths >= 3 ? 'text-yellow-600' : 'text-red-600'}>
+                            {emergencyMonths.toFixed(1)} months
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {selectedCategory === 'Liabilities' && (
           <div className="space-y-4">
             {/* Liabilities Overview Cards */}
