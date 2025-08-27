@@ -511,6 +511,48 @@ const FinancialManagementSection: React.FC = () => {
 
         {selectedCategory === 'Expense Breakdown' && (
           <div className="space-y-4">
+            {/* Expense Categories Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800">Living Expenses</p>
+                      <p className="text-2xl font-bold text-red-600">₹{(financialData.monthlyExpenses * 0.4).toLocaleString()}</p>
+                      <p className="text-xs text-red-600">Daily necessities</p>
+                    </div>
+                    <ArrowDownCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-orange-800">Business Costs</p>
+                      <p className="text-2xl font-bold text-orange-600">₹{(financialData.monthlyExpenses * 0.25).toLocaleString()}</p>
+                      <p className="text-xs text-orange-600">Operations & growth</p>
+                    </div>
+                    <Briefcase className="w-8 h-8 text-orange-600" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-purple-800">Total Expenses</p>
+                      <p className="text-2xl font-bold text-purple-600">₹{financialData.monthlyExpenses.toLocaleString()}</p>
+                      <p className="text-xs text-purple-600">Monthly recurring</p>
+                    </div>
+                    <Calculator className="w-8 h-8 text-purple-600" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
