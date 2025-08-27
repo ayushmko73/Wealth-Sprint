@@ -329,7 +329,11 @@ const FinancialManagementSection: React.FC = () => {
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">Cashflow Visual</h3>
                 </div>
-                <div className="h-64">
+                <div 
+                  className="h-64 select-none" 
+                  onDoubleClick={(e) => e.preventDefault()}
+                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
@@ -441,7 +445,11 @@ const FinancialManagementSection: React.FC = () => {
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">Income Sources Breakdown</h3>
                 </div>
-                <div className="h-64">
+                <div 
+                  className="h-64 select-none" 
+                  onDoubleClick={(e) => e.preventDefault()}
+                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
@@ -556,7 +564,11 @@ const FinancialManagementSection: React.FC = () => {
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
-                <div className="h-64 mb-4">
+                <div 
+                  className="h-64 mb-4 select-none" 
+                  onDoubleClick={(e) => e.preventDefault()}
+                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
