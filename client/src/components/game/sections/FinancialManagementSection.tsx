@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWealthSprintGame, Asset, Liability } from '../../../lib/stores/useWealthSprintGame';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -75,6 +75,11 @@ const FinancialManagementSection: React.FC = () => {
   const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | null>(null);
   const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | null>(null);
   
+  // Refs for pie chart containers
+  const cashflowChartRef = useRef<HTMLDivElement>(null);
+  const incomeChartRef = useRef<HTMLDivElement>(null);
+  const expenseChartRef = useRef<HTMLDivElement>(null);
+  
   // Handle pie chart click interactions
   const handlePieClick = (index: number, type: 'cashflow' | 'income' | 'expense') => {
     switch (type) {
@@ -104,6 +109,33 @@ const FinancialManagementSection: React.FC = () => {
         break;
     }
   };
+
+  // Handle clicks outside pie charts to reset to previous position
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // Check if click is outside cashflow chart
+      if (cashflowChartRef.current && !cashflowChartRef.current.contains(target) && activeCashflowIndex !== null) {
+        setActiveCashflowIndex(null);
+      }
+      
+      // Check if click is outside income chart
+      if (incomeChartRef.current && !incomeChartRef.current.contains(target) && activeIncomeIndex !== null) {
+        setActiveIncomeIndex(null);
+      }
+      
+      // Check if click is outside expense chart
+      if (expenseChartRef.current && !expenseChartRef.current.contains(target) && activeExpenseIndex !== null) {
+        setActiveExpenseIndex(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeCashflowIndex, activeIncomeIndex, activeExpenseIndex]);
 
   // Categories for the horizontal menu - Combined from both sections
   const categories = [
@@ -375,6 +407,7 @@ const FinancialManagementSection: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Cashflow Visual</h3>
                 </div>
                 <div 
+                  ref={cashflowChartRef}
                   className="h-64 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -500,6 +533,7 @@ const FinancialManagementSection: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Income Sources Breakdown</h3>
                 </div>
                 <div 
+                  ref={incomeChartRef}
                   className="h-64 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
@@ -628,6 +662,7 @@ const FinancialManagementSection: React.FC = () => {
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
                 <div 
+                  ref={expenseChartRef}
                   className="h-64 mb-4 select-none pie-chart-container" 
                   onDoubleClick={(e) => {
                     e.preventDefault();
