@@ -1454,6 +1454,23 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         toAccount: 'business'
       });
       
+      // Add sector-specific business investment as an asset
+      get().addAsset({
+        name: `${sectorName} Investment`,
+        category: 'business',
+        value: amount,
+        purchasePrice: amount,
+        purchaseDate: new Date(),
+        monthlyIncome: 0, // Revenue handled separately by business calculations
+        appreciationRate: 12, // Business investments appreciate at 12% annually
+        maintenanceCost: 0, // Operational costs handled separately
+        description: `${investmentType} in ${sectorName}`,
+        icon: sectorId === 'fast_food' ? '🍟' : 
+              sectorId === 'tech_startups' ? '💻' : 
+              sectorId === 'ecommerce' ? '📦' : 
+              sectorId === 'healthcare' ? '🏥' : '🏢',
+      });
+      
       // Recalculate business revenue
       get().updateBusinessSectorRevenue();
       
@@ -1897,6 +1914,15 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       const state = get();
       const investmentAmount = 200000; // ₹2 lakhs
 
+      // Get sector name from ID
+      const sectorNames = {
+        'fast_food': 'Fast Food Chains',
+        'tech_startups': 'Tech Startups', 
+        'ecommerce': 'E-commerce',
+        'healthcare': 'Healthcare'
+      };
+      const sectorName = sectorNames[sectorId as keyof typeof sectorNames] || 'Business Sector';
+
       // Check if sector is already purchased
       if (state.purchasedSectors.includes(sectorId)) {
         return false;
@@ -1927,7 +1953,7 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       get().addTransaction({
         type: 'sector_purchase',
         amount: -investmentAmount,
-        description: `Purchased ${sectorId} business sector`,
+        description: `Purchased ${sectorName} business sector`,
         fromAccount: 'bank',
         toAccount: 'business'
       });
@@ -1941,6 +1967,22 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         timestamp: new Date()
       });
 
+      // Add sector purchase as an asset (since sectors generate positive revenue)
+      get().addAsset({
+        name: `${sectorName} Business`,
+        category: 'business',
+        value: investmentAmount,
+        purchasePrice: investmentAmount,
+        purchaseDate: new Date(),
+        monthlyIncome: 0, // Will be calculated by business revenue system
+        appreciationRate: 15, // Business appreciates at 15% annually
+        maintenanceCost: 0, // Sector maintenance handled by business operations
+        description: `Business investment in ${sectorName} sector`,
+        icon: sectorId === 'fast_food' ? '🍟' : 
+              sectorId === 'tech_startups' ? '💻' : 
+              sectorId === 'ecommerce' ? '📦' : 
+              sectorId === 'healthcare' ? '🏥' : '🏢',
+      });
 
       return true;
     },
