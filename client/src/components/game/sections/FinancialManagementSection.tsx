@@ -90,6 +90,21 @@ const FinancialManagementSection: React.FC = () => {
     }
   };
 
+  // Handle pie chart double-click to reset to previous position
+  const handlePieDoubleClick = (type: 'cashflow' | 'income' | 'expense') => {
+    switch (type) {
+      case 'cashflow':
+        setActiveCashflowIndex(null);
+        break;
+      case 'income':
+        setActiveIncomeIndex(null);
+        break;
+      case 'expense':
+        setActiveExpenseIndex(null);
+        break;
+    }
+  };
+
   // Categories for the horizontal menu - Combined from both sections
   const categories = [
     'Cashflow Overview', 
@@ -331,8 +346,19 @@ const FinancialManagementSection: React.FC = () => {
                 </div>
                 <div 
                   className="h-64 select-none" 
-                  onDoubleClick={(e) => e.preventDefault()}
-                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('cashflow');
+                  }}
+                  style={{ 
+                    userSelect: 'none', 
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
@@ -353,7 +379,7 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'cashflow')}
                         onMouseEnter={(_, index) => setActiveCashflowIndex(index)}
                         onMouseLeave={() => activeCashflowIndex === null && setActiveCashflowIndex(null)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', outline: 'none' }}
                       >
                         {[
                           { name: 'Income', value: totalIncome, color: '#10b981' },
@@ -447,8 +473,19 @@ const FinancialManagementSection: React.FC = () => {
                 </div>
                 <div 
                   className="h-64 select-none" 
-                  onDoubleClick={(e) => e.preventDefault()}
-                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('income');
+                  }}
+                  style={{ 
+                    userSelect: 'none', 
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
@@ -469,7 +506,7 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'income')}
                         onMouseEnter={(_, index) => setActiveIncomeIndex(index)}
                         onMouseLeave={() => activeIncomeIndex === null && setActiveIncomeIndex(null)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', outline: 'none' }}
                       >
                         {[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
@@ -566,8 +603,19 @@ const FinancialManagementSection: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Expense Breakdown</h3>
                 <div 
                   className="h-64 mb-4 select-none" 
-                  onDoubleClick={(e) => e.preventDefault()}
-                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePieDoubleClick('expense');
+                  }}
+                  style={{ 
+                    userSelect: 'none', 
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
@@ -584,7 +632,7 @@ const FinancialManagementSection: React.FC = () => {
                         onClick={(_, index) => handlePieClick(index, 'expense')}
                         onMouseEnter={(_, index) => setActiveExpenseIndex(index)}
                         onMouseLeave={() => activeExpenseIndex === null && setActiveExpenseIndex(null)}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', outline: 'none' }}
                       >
                         {expenseData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
