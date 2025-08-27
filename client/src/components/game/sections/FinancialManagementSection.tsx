@@ -521,110 +521,302 @@ const FinancialManagementSection: React.FC = () => {
 
         {selectedCategory === 'Financial Health' && (
           <div className="space-y-4">
-            {/* Financial Health Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-green-800">Savings Rate</p>
-                      <p className="text-2xl font-bold text-green-600">
-                        {totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100).toFixed(1) : '0.0'}%
-                      </p>
-                      <p className="text-xs text-green-600">Of total income</p>
+            {/* Financial Health Status */}
+            {(() => {
+              const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+              const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+              const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
+              const fiProgress = financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100) : 0;
+              
+              // Calculate overall health score
+              let healthScore = 0;
+              let healthStatus = "Critical";
+              let healthColor = "red";
+              
+              // Savings rate (25 points)
+              if (savingsRate >= 20) healthScore += 25;
+              else if (savingsRate >= 15) healthScore += 20;
+              else if (savingsRate >= 10) healthScore += 15;
+              else if (savingsRate >= 5) healthScore += 10;
+              
+              // Emergency fund (25 points)
+              if (emergencyMonths >= 6) healthScore += 25;
+              else if (emergencyMonths >= 3) healthScore += 20;
+              else if (emergencyMonths >= 2) healthScore += 15;
+              else if (emergencyMonths >= 1) healthScore += 10;
+              
+              // Debt ratio (25 points)
+              if (debtRatio <= 20) healthScore += 25;
+              else if (debtRatio <= 40) healthScore += 20;
+              else if (debtRatio <= 60) healthScore += 15;
+              else if (debtRatio <= 80) healthScore += 10;
+              
+              // FI Progress (25 points)
+              if (fiProgress >= 100) healthScore += 25;
+              else if (fiProgress >= 75) healthScore += 20;
+              else if (fiProgress >= 50) healthScore += 15;
+              else if (fiProgress >= 25) healthScore += 10;
+              else if (fiProgress >= 10) healthScore += 5;
+              
+              if (healthScore >= 80) {
+                healthStatus = "Excellent";
+                healthColor = "green";
+              } else if (healthScore >= 60) {
+                healthStatus = "Good";
+                healthColor = "blue";
+              } else if (healthScore >= 40) {
+                healthStatus = "Fair";
+                healthColor = "yellow";
+              } else if (healthScore >= 20) {
+                healthStatus = "Poor";
+                healthColor = "orange";
+              }
+              
+              return (
+                <Card className={`bg-gradient-to-r ${
+                  healthColor === 'green' ? 'from-green-500 to-emerald-600' :
+                  healthColor === 'blue' ? 'from-blue-500 to-sky-600' :
+                  healthColor === 'yellow' ? 'from-yellow-500 to-amber-600' :
+                  healthColor === 'orange' ? 'from-orange-500 to-red-500' :
+                  'from-red-500 to-red-700'
+                } text-white`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-2xl font-bold mb-2">Financial Health Status</h2>
+                        <p className="text-3xl font-bold">{healthStatus}</p>
+                        <p className="text-lg opacity-90">{healthScore}/100 Health Score</p>
+                      </div>
+                      <div className="text-right">
+                        <div className={`w-20 h-20 rounded-full border-4 border-white flex items-center justify-center`}>
+                          <span className="text-2xl">
+                            {healthColor === 'green' ? '💚' : 
+                             healthColor === 'blue' ? '💙' :
+                             healthColor === 'yellow' ? '💛' :
+                             healthColor === 'orange' ? '🧡' : '❤️'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <PiggyBank className="w-8 h-8 text-green-600" />
+                    <div className="mt-4">
+                      <Progress value={healthScore} className="h-3" />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Income Sources Pie Chart */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Income Sources</h3>
+                  </div>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={[
+                            { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
+                            { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
+                            { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          ].filter(item => item.value > 0)}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {[
+                            { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
+                            { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
+                            { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          ].filter(item => item.value > 0).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, '']} />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-4 mt-4">
+                    {financialData.mainIncome > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-sm">Main Income</span>
+                      </div>
+                    )}
+                    {financialData.sideIncome > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">Side Income</span>
+                      </div>
+                    )}
+                    {monthlyAssetIncome > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span className="text-sm">Asset Income</span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-blue-50 to-sky-50 border-blue-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-blue-800">Emergency Fund</p>
-                      <p className="text-2xl font-bold text-blue-600">
-                        {financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses).toFixed(1) : '0.0'}
-                      </p>
-                      <p className="text-xs text-blue-600">Months covered</p>
-                    </div>
-                    <Wallet className="w-8 h-8 text-blue-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-purple-800">Debt-to-Asset Ratio</p>
-                      <p className="text-2xl font-bold text-purple-600">
-                        {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%
-                      </p>
-                      <p className="text-xs text-purple-600">Debt vs assets</p>
-                    </div>
-                    <Calculator className="w-8 h-8 text-purple-600" />
-                  </div>
+              {/* Health Checkup */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Health Checkup
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+                    const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+                    const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
+                    
+                    const healthChecks = [
+                      {
+                        name: "Savings Health",
+                        value: savingsRate,
+                        status: savingsRate >= 20 ? "Healthy" : savingsRate >= 10 ? "Moderate" : "Critical",
+                        color: savingsRate >= 20 ? "green" : savingsRate >= 10 ? "yellow" : "red",
+                        icon: "💰"
+                      },
+                      {
+                        name: "Emergency Fund",
+                        value: emergencyMonths,
+                        status: emergencyMonths >= 6 ? "Healthy" : emergencyMonths >= 3 ? "Moderate" : "Critical",
+                        color: emergencyMonths >= 6 ? "green" : emergencyMonths >= 3 ? "yellow" : "red",
+                        icon: "🛡️"
+                      },
+                      {
+                        name: "Debt Health",
+                        value: debtRatio,
+                        status: debtRatio <= 30 ? "Healthy" : debtRatio <= 60 ? "Moderate" : "Critical",
+                        color: debtRatio <= 30 ? "green" : debtRatio <= 60 ? "yellow" : "red",
+                        icon: "⚖️"
+                      }
+                    ];
+                    
+                    return (
+                      <div className="space-y-4">
+                        {healthChecks.map((check, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg">{check.icon}</span>
+                              <div>
+                                <p className="font-medium text-sm">{check.name}</p>
+                                <p className={`text-xs ${
+                                  check.color === 'green' ? 'text-green-600' :
+                                  check.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'
+                                }`}>
+                                  {check.status}
+                                </p>
+                              </div>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              check.color === 'green' ? 'bg-green-100 text-green-800' :
+                              check.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {check.name === "Emergency Fund" ? 
+                                `${check.value.toFixed(1)}m` : 
+                                `${check.value.toFixed(1)}%`}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Financial Health Details */}
+            {/* Health Recommendations */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Financial Health Metrics
+                  <AlertTriangle className="w-5 h-5" />
+                  Health Recommendations
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Monthly Cash Flow</span>
-                      <span className={`text-lg font-bold ${netCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        ₹{netCashflow.toLocaleString()}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">FI Progress</span>
-                      <span className="text-lg font-bold text-gray-900">
-                        {financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1) : '0.0'}%
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Investment Income</span>
-                      <span className="text-lg font-bold text-gray-900">
-                        ₹{monthlyAssetIncome.toLocaleString()}/month
-                      </span>
-                    </div>
-                  </div>
+                {(() => {
+                  const savingsRate = totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100) : 0;
+                  const emergencyMonths = financialData.monthlyExpenses > 0 ? (financialData.bankBalance / financialData.monthlyExpenses) : 0;
+                  const debtRatio = totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100) : 0;
                   
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Total Assets</span>
-                      <span className="text-lg font-bold text-green-600">
-                        ₹{totalAssetValue.toLocaleString()}
-                      </span>
+                  const recommendations = [];
+                  
+                  if (savingsRate < 10) {
+                    recommendations.push({
+                      priority: "High",
+                      title: "Improve Savings Rate",
+                      description: "Aim to save at least 10-20% of your income",
+                      action: "Review and reduce expenses",
+                      color: "red"
+                    });
+                  }
+                  
+                  if (emergencyMonths < 3) {
+                    recommendations.push({
+                      priority: "High",
+                      title: "Build Emergency Fund",
+                      description: "You need 3-6 months of expenses saved",
+                      action: "Set up automatic savings",
+                      color: "red"
+                    });
+                  }
+                  
+                  if (debtRatio > 60) {
+                    recommendations.push({
+                      priority: "Medium",
+                      title: "Reduce Debt Load",
+                      description: "High debt-to-asset ratio detected",
+                      action: "Focus on paying down high-interest debt",
+                      color: "yellow"
+                    });
+                  }
+                  
+                  if (recommendations.length === 0) {
+                    recommendations.push({
+                      priority: "Maintenance",
+                      title: "Maintain Good Health",
+                      description: "Your financial health is looking good!",
+                      action: "Continue current healthy habits",
+                      color: "green"
+                    });
+                  }
+                  
+                  return (
+                    <div className="space-y-3">
+                      {recommendations.map((rec, index) => (
+                        <div key={index} className={`p-4 rounded-lg border-l-4 ${
+                          rec.color === 'red' ? 'bg-red-50 border-red-500' :
+                          rec.color === 'yellow' ? 'bg-yellow-50 border-yellow-500' :
+                          'bg-green-50 border-green-500'
+                        }`}>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant={rec.color === 'red' ? 'destructive' : rec.color === 'yellow' ? 'secondary' : 'default'}>
+                                  {rec.priority}
+                                </Badge>
+                                <h4 className="font-semibold text-sm">{rec.title}</h4>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-1">{rec.description}</p>
+                              <p className="text-sm font-medium">{rec.action}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Total Liabilities</span>
-                      <span className="text-lg font-bold text-red-600">
-                        ₹{totalLiabilityValue.toLocaleString()}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">Net Worth</span>
-                      <span className={`text-lg font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        ₹{netWorth.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>
