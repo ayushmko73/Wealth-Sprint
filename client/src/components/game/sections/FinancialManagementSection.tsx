@@ -520,186 +520,355 @@ const FinancialManagementSection: React.FC = () => {
         )}
 
         {selectedCategory === 'Financial Health' && (
-          <div className="space-y-4">
-            {/* Financial Health Metrics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Financial Health Metrics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Expense Ratio</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalIncome > 0 ? ((financialData.monthlyExpenses / totalIncome) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Savings Rate</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalIncome > 0 ? ((Math.max(0, netCashflow) / totalIncome) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">Debt-to-Asset Ratio</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {totalAssetValue > 0 ? ((totalLiabilityValue / totalAssetValue) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700">FI Progress</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {financialData.monthlyExpenses > 0 ? ((financialData.sideIncome / financialData.monthlyExpenses) * 100).toFixed(1) : '0.0'}%
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Income Distribution Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChart className="w-5 h-5" />
-                  Income Distribution
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={[
-                      { 
-                        name: 'Main Income', 
-                        value: financialData.mainIncome,
-                        fill: '#3b82f6'
-                      },
-                      { 
-                        name: 'Side Income', 
-                        value: financialData.sideIncome,
-                        fill: '#10b981'
-                      },
-                      { 
-                        name: 'Asset Income', 
-                        value: monthlyAssetIncome,
-                        fill: '#f59e0b'
-                      }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Amount']} />
-                      <Bar dataKey="value" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Financial Health Score */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calculator className="w-5 h-5" />
-                  Overall Financial Health Score
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {(() => {
-                  // Calculate overall health score based on multiple factors
-                  const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
-                  const debtRatio = totalAssetValue > 0 ? (totalLiabilityValue / totalAssetValue) * 100 : 0;
-                  const fiProgress = financialData.monthlyExpenses > 0 ? (financialData.sideIncome / financialData.monthlyExpenses) * 100 : 0;
-                  
-                  // Scoring logic (out of 100)
-                  let score = 0;
-                  
-                  // Savings rate (30 points max)
-                  if (savingsRate >= 20) score += 30;
-                  else if (savingsRate >= 10) score += 20;
-                  else if (savingsRate >= 5) score += 10;
-                  
-                  // Debt ratio (25 points max)
-                  if (debtRatio <= 30) score += 25;
-                  else if (debtRatio <= 50) score += 15;
-                  else if (debtRatio <= 70) score += 5;
-                  
-                  // FI Progress (25 points max)
-                  if (fiProgress >= 100) score += 25;
-                  else if (fiProgress >= 50) score += 15;
-                  else if (fiProgress >= 25) score += 10;
-                  else if (fiProgress >= 10) score += 5;
-                  
-                  // Emergency fund simulation (20 points max)
-                  const emergencyFund = financialData.bankBalance;
-                  const monthlyExpenses = financialData.monthlyExpenses;
-                  const emergencyMonths = monthlyExpenses > 0 ? emergencyFund / monthlyExpenses : 0;
-                  
-                  if (emergencyMonths >= 6) score += 20;
-                  else if (emergencyMonths >= 3) score += 15;
-                  else if (emergencyMonths >= 1) score += 10;
-                  
-                  const getScoreColor = (score: number) => {
-                    if (score >= 80) return 'text-green-600';
-                    if (score >= 60) return 'text-yellow-600';
-                    if (score >= 40) return 'text-orange-600';
-                    return 'text-red-600';
-                  };
-                  
-                  const getScoreDescription = (score: number) => {
-                    if (score >= 80) return 'Excellent financial health!';
-                    if (score >= 60) return 'Good financial health with room for improvement';
-                    if (score >= 40) return 'Fair financial health - focus on key areas';
-                    return 'Needs improvement - consider financial planning';
-                  };
-
-                  return (
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
-                          {Math.round(score)}/100
-                        </div>
-                        <p className="text-gray-600 mt-2">{getScoreDescription(score)}</p>
+          <div className="space-y-6">
+            {/* Financial Fitness Level */}
+            <div className="relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 rounded-2xl p-6 text-white overflow-hidden">
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 left-4 w-20 h-20 border border-white/20 rounded-full"></div>
+                <div className="absolute top-12 right-8 w-12 h-12 border border-white/20 rounded-full"></div>
+                <div className="absolute bottom-8 left-12 w-16 h-16 border border-white/20 rounded-full"></div>
+              </div>
+              
+              {(() => {
+                const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
+                const debtRatio = totalAssetValue > 0 ? (totalLiabilityValue / totalAssetValue) * 100 : 0;
+                const fiProgress = financialData.monthlyExpenses > 0 ? (financialData.sideIncome / financialData.monthlyExpenses) * 100 : 0;
+                const emergencyMonths = financialData.monthlyExpenses > 0 ? financialData.bankBalance / financialData.monthlyExpenses : 0;
+                
+                // Calculate fitness level
+                let level = 1;
+                let levelName = "Financial Rookie";
+                let nextMilestone = "Save 10% of income";
+                let progress = 0;
+                
+                if (savingsRate >= 5 && emergencyMonths >= 1) {
+                  level = 2;
+                  levelName = "Money Manager";
+                  nextMilestone = "Build 3-month emergency fund";
+                  progress = Math.min(100, (emergencyMonths / 3) * 100);
+                }
+                if (savingsRate >= 10 && emergencyMonths >= 3) {
+                  level = 3;
+                  levelName = "Wealth Builder";
+                  nextMilestone = "Achieve 50% FI progress";
+                  progress = Math.min(100, (fiProgress / 50) * 100);
+                }
+                if (savingsRate >= 15 && fiProgress >= 50) {
+                  level = 4;
+                  levelName = "Investment Pro";
+                  nextMilestone = "Reach Financial Independence";
+                  progress = Math.min(100, fiProgress);
+                }
+                if (fiProgress >= 100) {
+                  level = 5;
+                  levelName = "Financial Freedom";
+                  nextMilestone = "Expand wealth empire";
+                  progress = 100;
+                }
+                
+                return (
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h2 className="text-2xl font-bold">Level {level}</h2>
+                        <p className="text-xl text-purple-200">{levelName}</p>
                       </div>
-                      
-                      <Progress value={score} className="w-full" />
-                      
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex justify-between">
-                          <span>Savings Rate:</span>
-                          <span className={savingsRate >= 20 ? 'text-green-600' : savingsRate >= 10 ? 'text-yellow-600' : 'text-red-600'}>
-                            {savingsRate.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Debt Ratio:</span>
-                          <span className={debtRatio <= 30 ? 'text-green-600' : debtRatio <= 50 ? 'text-yellow-600' : 'text-red-600'}>
-                            {debtRatio.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>FI Progress:</span>
-                          <span className={fiProgress >= 100 ? 'text-green-600' : fiProgress >= 50 ? 'text-yellow-600' : 'text-red-600'}>
-                            {fiProgress.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Emergency Fund:</span>
-                          <span className={emergencyMonths >= 6 ? 'text-green-600' : emergencyMonths >= 3 ? 'text-yellow-600' : 'text-red-600'}>
-                            {emergencyMonths.toFixed(1)} months
-                          </span>
+                      <div className="text-right">
+                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                          <span className="text-2xl font-bold">{level}</span>
                         </div>
                       </div>
                     </div>
-                  );
-                })()}
+                    
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-purple-200">Next Milestone</span>
+                        <span className="text-sm font-medium">{progress.toFixed(0)}%</span>
+                      </div>
+                      <div className="w-full bg-white/20 rounded-full h-3 backdrop-blur-sm">
+                        <div 
+                          className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-1000"
+                          style={{ width: `${progress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-sm text-purple-200 mt-2">{nextMilestone}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Achievement Badges */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Badge className="w-5 h-5" />
+                  Financial Achievements
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(() => {
+                    const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
+                    const emergencyMonths = financialData.monthlyExpenses > 0 ? financialData.bankBalance / financialData.monthlyExpenses : 0;
+                    const fiProgress = financialData.monthlyExpenses > 0 ? (financialData.sideIncome / financialData.monthlyExpenses) * 100 : 0;
+                    
+                    const achievements = [
+                      {
+                        name: "First Savings",
+                        description: "Save money for the first time",
+                        earned: savingsRate > 0,
+                        icon: "💰",
+                        color: "bg-green-100 text-green-800"
+                      },
+                      {
+                        name: "Emergency Ready",
+                        description: "Build 3-month emergency fund",
+                        earned: emergencyMonths >= 3,
+                        icon: "🛡️",
+                        color: "bg-blue-100 text-blue-800"
+                      },
+                      {
+                        name: "Income Diversifier",
+                        description: "Earn passive income",
+                        earned: financialData.sideIncome > 0,
+                        icon: "📈",
+                        color: "bg-purple-100 text-purple-800"
+                      },
+                      {
+                        name: "Debt Free",
+                        description: "Achieve zero debt",
+                        earned: totalLiabilityValue === 0,
+                        icon: "🎯",
+                        color: "bg-orange-100 text-orange-800"
+                      },
+                      {
+                        name: "Asset Builder",
+                        description: "Own 5+ assets",
+                        earned: assets.length >= 5,
+                        icon: "🏠",
+                        color: "bg-indigo-100 text-indigo-800"
+                      },
+                      {
+                        name: "High Saver",
+                        description: "Save 20%+ of income",
+                        earned: savingsRate >= 20,
+                        icon: "🎖️",
+                        color: "bg-yellow-100 text-yellow-800"
+                      },
+                      {
+                        name: "FI Achiever",
+                        description: "Reach Financial Independence",
+                        earned: fiProgress >= 100,
+                        icon: "👑",
+                        color: "bg-pink-100 text-pink-800"
+                      },
+                      {
+                        name: "Wealth Master",
+                        description: "Net worth > ₹10 lakh",
+                        earned: netWorth >= 1000000,
+                        icon: "💎",
+                        color: "bg-cyan-100 text-cyan-800"
+                      }
+                    ];
+                    
+                    return achievements.map((achievement, index) => (
+                      <div 
+                        key={index}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          achievement.earned 
+                            ? `${achievement.color} border-current shadow-md` 
+                            : 'bg-gray-50 text-gray-400 border-gray-200'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className={`text-2xl mb-2 ${achievement.earned ? '' : 'grayscale'}`}>
+                            {achievement.icon}
+                          </div>
+                          <h4 className="font-semibold text-sm mb-1">{achievement.name}</h4>
+                          <p className="text-xs leading-tight">{achievement.description}</p>
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
               </CardContent>
             </Card>
+
+            {/* Financial Vitals Dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Quick Health Check */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Financial Vitals
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {(() => {
+                      const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
+                      const debtRatio = totalAssetValue > 0 ? (totalLiabilityValue / totalAssetValue) * 100 : 0;
+                      const emergencyMonths = financialData.monthlyExpenses > 0 ? financialData.bankBalance / financialData.monthlyExpenses : 0;
+                      
+                      const vitals = [
+                        {
+                          name: "Savings Rate",
+                          value: savingsRate,
+                          target: 20,
+                          unit: "%",
+                          icon: "🎯"
+                        },
+                        {
+                          name: "Emergency Fund",
+                          value: emergencyMonths,
+                          target: 6,
+                          unit: " months",
+                          icon: "🛡️"
+                        },
+                        {
+                          name: "Debt Level",
+                          value: debtRatio,
+                          target: 30,
+                          unit: "%",
+                          icon: "⚠️",
+                          inverse: true
+                        }
+                      ];
+                      
+                      return vitals.map((vital, index) => {
+                        const isHealthy = vital.inverse 
+                          ? vital.value <= vital.target 
+                          : vital.value >= vital.target;
+                        const progressValue = vital.inverse 
+                          ? Math.max(0, 100 - (vital.value / vital.target) * 100)
+                          : Math.min(100, (vital.value / vital.target) * 100);
+                        
+                        return (
+                          <div key={index} className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span>{vital.icon}</span>
+                                <span className="text-sm font-medium">{vital.name}</span>
+                              </div>
+                              <span className={`text-sm font-bold ${isHealthy ? 'text-green-600' : 'text-red-600'}`}>
+                                {vital.value.toFixed(1)}{vital.unit}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all duration-1000 ${
+                                  isHealthy ? 'bg-green-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${progressValue}%` }}
+                              ></div>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Target: {vital.target}{vital.unit}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Recommendations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    Smart Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {(() => {
+                      const savingsRate = totalIncome > 0 ? (Math.max(0, netCashflow) / totalIncome) * 100 : 0;
+                      const emergencyMonths = financialData.monthlyExpenses > 0 ? financialData.bankBalance / financialData.monthlyExpenses : 0;
+                      const fiProgress = financialData.monthlyExpenses > 0 ? (financialData.sideIncome / financialData.monthlyExpenses) * 100 : 0;
+                      
+                      const recommendations = [];
+                      
+                      if (savingsRate < 10) {
+                        recommendations.push({
+                          type: "urgent",
+                          icon: "🚨",
+                          title: "Increase Savings Rate",
+                          description: "Try to save at least 10% of income",
+                          action: "Review expenses and cut unnecessary costs"
+                        });
+                      }
+                      
+                      if (emergencyMonths < 3) {
+                        recommendations.push({
+                          type: "important",
+                          icon: "🛡️",
+                          title: "Build Emergency Fund",
+                          description: "Aim for 3-6 months of expenses",
+                          action: "Set up automatic savings"
+                        });
+                      }
+                      
+                      if (totalLiabilityValue > totalAssetValue * 0.7) {
+                        recommendations.push({
+                          type: "warning",
+                          icon: "⚖️",
+                          title: "Reduce Debt Burden",
+                          description: "High debt-to-asset ratio detected",
+                          action: "Focus on paying down high-interest debt"
+                        });
+                      }
+                      
+                      if (fiProgress < 25 && savingsRate >= 10) {
+                        recommendations.push({
+                          type: "opportunity",
+                          icon: "📈",
+                          title: "Boost Passive Income",
+                          description: "Start building side income streams",
+                          action: "Explore investment opportunities"
+                        });
+                      }
+                      
+                      if (recommendations.length === 0) {
+                        recommendations.push({
+                          type: "success",
+                          icon: "🎉",
+                          title: "Great Financial Health!",
+                          description: "Keep up the excellent work",
+                          action: "Continue current strategy"
+                        });
+                      }
+                      
+                      return recommendations.slice(0, 3).map((rec, index) => (
+                        <div 
+                          key={index}
+                          className={`p-3 rounded-lg border-l-4 ${
+                            rec.type === 'urgent' ? 'bg-red-50 border-red-500' :
+                            rec.type === 'important' ? 'bg-orange-50 border-orange-500' :
+                            rec.type === 'warning' ? 'bg-yellow-50 border-yellow-500' :
+                            rec.type === 'opportunity' ? 'bg-blue-50 border-blue-500' :
+                            'bg-green-50 border-green-500'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-lg">{rec.icon}</span>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-sm">{rec.title}</h4>
+                              <p className="text-xs text-gray-600 mb-1">{rec.description}</p>
+                              <p className="text-xs font-medium text-gray-800">{rec.action}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
