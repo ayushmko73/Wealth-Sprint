@@ -988,6 +988,11 @@ const FinancialManagementSection: React.FC = () => {
                               <div className="flex-1">
                                 <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
                                 <p className="text-sm text-gray-600 capitalize font-medium">{liability.category.replace('_', ' ')}</p>
+                                {liability.emi > 0 && liability.tenure > 0 && (
+                                  <p className="text-xs text-gray-500">
+                                    EMI: ₹{liability.emi.toLocaleString()}/mo • {Math.ceil(liability.outstandingAmount / liability.emi)} months left
+                                  </p>
+                                )}
                               </div>
                             </div>
                             <div className="text-right">

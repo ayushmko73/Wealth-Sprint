@@ -71,11 +71,13 @@ const DealsSection: React.FC = () => {
 
   // Credit limit calculation helper
   const getCreditInfo = () => {
-    const totalLiabilities = financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const creditCardLiabilities = financialData.liabilities.filter(l => l.category === 'credit_card');
+    const totalCreditUsed = creditCardLiabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const totalMonthlyEmi = creditCardLiabilities.reduce((sum, liability) => sum + liability.emi, 0);
     const creditLimit = 500000; // ₹5 lakh credit limit
-    const availableCredit = creditLimit - totalLiabilities;
-    const canPayFull = totalLiabilities < creditLimit && showPurchaseModal && showPurchaseModal.investmentRequired <= availableCredit;
-    return { totalLiabilities, creditLimit, availableCredit, canPayFull };
+    const availableCredit = creditLimit - totalCreditUsed;
+    const canPayFull = showPurchaseModal && showPurchaseModal.investmentRequired <= availableCredit;
+    return { totalCreditUsed, totalMonthlyEmi, creditLimit, availableCredit, canPayFull };
   };
 
   // Categories for navigation
@@ -1154,7 +1156,11 @@ const DealsSection: React.FC = () => {
                             onClick={() => setShowEmiDropdown(false)}
                           />
                           <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded shadow-lg z-20 overflow-hidden">
-                            {[3, 6, 12, 24, 60].map((months) => (
+                            {[3, 6, 12, 24, 60].filter(months => {
+                              // Only show EMI options that user can afford based on credit limit
+                              const { availableCredit } = getCreditInfo();
+                              return showPurchaseModal.investmentRequired <= availableCredit;
+                            }).map((months) => (
                               <button
                                 key={months}
                                 onClick={() => {
