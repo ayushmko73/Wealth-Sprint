@@ -79,8 +79,10 @@ const StoreSection: React.FC = () => {
   const getAvailableEmiOptions = (itemPrice: number) => {
     const { availableCredit, totalMonthlyEmi } = getCreditInfo();
     const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
-    const maxAffordableEmi = monthlyIncome * 0.4; // Max 40% of income for EMI
+    const maxAffordableEmi = monthlyIncome * 0.5; // Increased to 50% of income for EMI (was too restrictive at 40%)
     const remainingEmiCapacity = maxAffordableEmi - totalMonthlyEmi;
+    
+
     
     const baseOptions = [
       { months: 3, label: '3 months' },
@@ -92,11 +94,19 @@ const StoreSection: React.FC = () => {
     
     // Filter options based on:
     // 1. Total purchase amount should not exceed available credit
-    // 2. Monthly EMI should not exceed remaining EMI capacity
-    return baseOptions.filter(option => {
+    // 2. Monthly EMI should be reasonable (at least ₹500/month but not exceed EMI capacity)
+    const filteredOptions = baseOptions.filter(option => {
       const monthlyEmi = Math.ceil(itemPrice / option.months);
-      return itemPrice <= availableCredit && monthlyEmi <= remainingEmiCapacity;
+      const creditCheck = itemPrice <= availableCredit;
+      const minEmiCheck = monthlyEmi >= 100; // Minimum ₹100 EMI per month (more reasonable)
+      const maxEmiCheck = monthlyEmi <= remainingEmiCapacity;
+      
+
+      
+      return creditCheck && minEmiCheck && maxEmiCheck;
     });
+    
+    return filteredOptions;
   };
 
   // Credit limit calculation helper
@@ -202,8 +212,10 @@ const StoreSection: React.FC = () => {
   const handlePurchase = (item: any) => {
     const { totalCreditUsed, totalMonthlyEmi, availableCredit } = getCreditInfo();
     const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
-    const maxAffordableEmi = monthlyIncome * 0.4;
+    const maxAffordableEmi = monthlyIncome * 0.5; // Match the 50% from getAvailableEmiOptions
     const remainingEmiCapacity = maxAffordableEmi - totalMonthlyEmi;
+    
+
     
     // Check if user can afford this item either via bank balance or credit
     const canAffordCash = financialData.bankBalance >= item.price;
