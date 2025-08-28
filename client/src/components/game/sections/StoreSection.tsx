@@ -75,19 +75,35 @@ const StoreSection: React.FC = () => {
     cat.charAt(0).toUpperCase() + cat.slice(1)
   )];
   
-  const emiOptions = [
-    { months: 1, label: 'Full Payment' },
-    { months: 2, label: '2 Months' },
-    { months: 6, label: '6 Months' },
-    { months: 12, label: '1 Year' },
-    { months: 60, label: '5 Years' }
-  ];
+  // Dynamic EMI options based on user's credit limit and affordability
+  const getAvailableEmiOptions = (itemPrice: number) => {
+    const { availableCredit, totalMonthlyEmi } = getCreditInfo();
+    const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
+    const maxAffordableEmi = monthlyIncome * 0.4; // Max 40% of income for EMI
+    const remainingEmiCapacity = maxAffordableEmi - totalMonthlyEmi;
+    
+    const baseOptions = [
+      { months: 3, label: '3 months' },
+      { months: 6, label: '6 months' },
+      { months: 12, label: '1 year' },
+      { months: 24, label: '2 years' },
+      { months: 60, label: '5 years' }
+    ];
+    
+    // Filter options based on:
+    // 1. Total purchase amount should not exceed available credit
+    // 2. Monthly EMI should not exceed remaining EMI capacity
+    return baseOptions.filter(option => {
+      const monthlyEmi = Math.ceil(itemPrice / option.months);
+      return itemPrice <= availableCredit && monthlyEmi <= remainingEmiCapacity;
+    });
+  };
 
   // Credit limit calculation helper
   const getCreditInfo = () => {
     const creditCardLiabilities = financialData.liabilities.filter(l => l.category === 'credit_card');
     const totalCreditUsed = creditCardLiabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
-    const totalMonthlyEmi = creditCardLiabilities.reduce((sum, liability) => sum + liability.emi, 0);
+    const totalMonthlyEmi = financialData.liabilities.reduce((sum, liability) => sum + liability.emi, 0);
     const creditLimit = 500000; // ₹5 lakh credit limit
     const availableCredit = creditLimit - totalCreditUsed;
     const canPayFull = showPurchaseModal && showPurchaseModal.price <= availableCredit;
@@ -185,15 +201,23 @@ const StoreSection: React.FC = () => {
 
   const handlePurchase = (item: any) => {
     const { totalCreditUsed, totalMonthlyEmi, availableCredit } = getCreditInfo();
+    const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
+    const maxAffordableEmi = monthlyIncome * 0.4;
+    const remainingEmiCapacity = maxAffordableEmi - totalMonthlyEmi;
     
-    if (financialData.bankBalance < item.price && availableCredit < item.price) {
-      toast.error(`Insufficient funds! Bank: ₹${financialData.bankBalance.toLocaleString()}, Available Credit: ₹${availableCredit.toLocaleString()}`);
+    // Check if user can afford this item either via bank balance or credit
+    const canAffordCash = financialData.bankBalance >= item.price;
+    const canAffordCredit = availableCredit >= item.price;
+    const availableEmiOptions = getAvailableEmiOptions(item.price);
+    
+    if (!canAffordCash && !canAffordCredit && availableEmiOptions.length === 0) {
+      toast.error(`Cannot afford this item! Bank: ₹${financialData.bankBalance.toLocaleString()}, Available Credit: ₹${availableCredit.toLocaleString()}, EMI Capacity: ₹${remainingEmiCapacity.toLocaleString()}/mo`);
       return;
     }
     
     // Show EMI info if they have existing EMIs
     if (totalMonthlyEmi > 0) {
-      toast.info(`Current total EMI: ₹${totalMonthlyEmi.toLocaleString()}/month`);
+      toast.info(`Current total EMI: ₹${totalMonthlyEmi.toLocaleString()}/month (${remainingEmiCapacity.toLocaleString()} remaining capacity)`);
     }
     
     setShowPurchaseModal(item);
@@ -206,7 +230,7 @@ const StoreSection: React.FC = () => {
       
       // Check current total EMI commitments
       const currentTotalEmi = financialData.liabilities
-        .filter(l => l.category === 'credit_card' || l.emi > 0)
+        .filter(l => l.emi > 0)
         .reduce((sum, l) => sum + l.emi, 0);
       
       // Determine payment method based on user selection or funds availability
@@ -226,18 +250,32 @@ const StoreSection: React.FC = () => {
           return;
         }
         
+        // Check EMI affordability for multi-month EMIs
+        if (emiMonths > 1) {
+          const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
+          const maxAffordableEmi = monthlyIncome * 0.4;
+          
+          if (totalNewEmi > maxAffordableEmi) {
+            toast.error(`EMI exceeds affordability! New EMI: ₹${newMonthlyEmi.toLocaleString()}/mo would make total EMI ₹${totalNewEmi.toLocaleString()}/mo (Max affordable: ₹${maxAffordableEmi.toLocaleString()}/mo)`);
+            return;
+          }
+        }
+        
         // Create EMI liability if more than 1 month
         if (emiMonths > 1) {
-          // Add new EMI liability
+          // Add new EMI liability with unique identifier to ensure separate entries
+          const emiId = `${item.id}_emi_${Date.now()}`;
           addLiability({
             name: `${item.name} EMI`,
-            category: 'credit_card',
+            category: 'credit_card', // Use credit_card category for EMI tracking
             outstandingAmount: item.price,
             originalAmount: item.price,
             interestRate: 18, // 18% annual interest for EMI
             emi: newMonthlyEmi,
             tenure: emiMonths,
-            description: `${emiMonths}-month EMI for ${item.name}`,
+            remainingMonths: emiMonths,
+            description: `${emiMonths}-month EMI for ${item.name} (${item.category})`,
+            icon: '💳',
           });
           
           paymentMethod = `Credit Card (${emiMonths} month EMI - ₹${newMonthlyEmi.toLocaleString()}/mo)`;
@@ -303,7 +341,9 @@ const StoreSection: React.FC = () => {
           interestRate: 0, // No interest on purchases, just ongoing costs
           emi: Math.abs(netCashflow), // Monthly drain on finances
           tenure: 0, // Indefinite liability
+          remainingMonths: 0, // Indefinite
           description: item.description,
+          icon: item.icon || '💸',
         });
       }
 
@@ -819,16 +859,24 @@ const StoreSection: React.FC = () => {
                     {/* EMI Button */}
                     <button
                       onClick={() => {
-                        setPaymentType('emi');
-                        setEmiDuration(3);
+                        const availableOptions = getAvailableEmiOptions(showPurchaseModal.price);
+                        if (availableOptions.length > 0) {
+                          setPaymentType('emi');
+                          setEmiDuration(availableOptions[0].months);
+                        }
                       }}
+                      disabled={getAvailableEmiOptions(showPurchaseModal.price).length === 0}
                       className={`p-1.5 rounded text-xs font-medium transition-all ${
-                        paymentType === 'emi'
+                        getAvailableEmiOptions(showPurchaseModal.price).length === 0
+                          ? 'bg-red-100 border border-red-300 text-red-800 cursor-not-allowed opacity-60'
+                          : paymentType === 'emi'
                           ? 'bg-blue-100 border border-blue-300 text-blue-800'
                           : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
                       }`}
                     >
-                      EMI 3M
+                      {getAvailableEmiOptions(showPurchaseModal.price).length === 0 
+                        ? 'EMI Not Available' 
+                        : `EMI Options`}
                     </button>
                   </div>
 
@@ -853,25 +901,31 @@ const StoreSection: React.FC = () => {
                             onClick={() => setShowEmiDropdown(false)}
                           />
                           <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded shadow-lg z-20 overflow-hidden">
-                            {[3, 6, 12, 24, 60].map((months) => (
-                              <button
-                                key={months}
-                                onClick={() => {
-                                  setEmiDuration(months);
-                                  setShowEmiDropdown(false);
-                                }}
-                                className={`w-full p-2 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
-                                  emiDuration === months
-                                    ? 'bg-blue-50 text-blue-800'
-                                    : 'text-gray-700 hover:bg-gray-50'
-                                }`}
-                              >
-                                <span>{months < 12 ? `${months} months` : `${months/12} year${months/12 > 1 ? 's' : ''}`}</span>
-                                <span className="text-xs text-gray-500">
-                                  ₹{Math.ceil(showPurchaseModal.price / months).toLocaleString()}/mo
-                                </span>
-                              </button>
-                            ))}
+                            {getAvailableEmiOptions(showPurchaseModal.price).length === 0 ? (
+                              <div className="p-2 text-xs text-red-600 text-center">
+                                No EMI options available within your credit limit
+                              </div>
+                            ) : (
+                              getAvailableEmiOptions(showPurchaseModal.price).map((option) => (
+                                <button
+                                  key={option.months}
+                                  onClick={() => {
+                                    setEmiDuration(option.months);
+                                    setShowEmiDropdown(false);
+                                  }}
+                                  className={`w-full p-2 text-xs font-medium transition-all flex justify-between items-center border-b border-gray-100 last:border-b-0 ${
+                                    emiDuration === option.months
+                                      ? 'bg-blue-50 text-blue-800'
+                                      : 'text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <span>{option.label}</span>
+                                  <span className="text-xs text-gray-500">
+                                    ₹{Math.ceil(showPurchaseModal.price / option.months).toLocaleString()}/mo
+                                  </span>
+                                </button>
+                              ))
+                            )}
                           </div>
                         </>
                       )}
