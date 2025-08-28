@@ -577,15 +577,15 @@ const FinancialManagementSection: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-orange-800">Side Income</p>
-                      <p className="text-2xl font-bold text-orange-600">₹{financialData.sideIncome.toLocaleString()}</p>
-                      <p className="text-xs text-orange-600">Investment returns</p>
+                      <p className="text-sm font-medium text-yellow-800">Side Income</p>
+                      <p className="text-2xl font-bold text-yellow-600">₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-yellow-600">Investment returns</p>
                     </div>
-                    <TrendingUp className="w-8 h-8 text-orange-600" />
+                    <TrendingUp className="w-8 h-8 text-yellow-600" />
                   </div>
                 </CardContent>
               </Card>
@@ -595,7 +595,7 @@ const FinancialManagementSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-blue-800">Total Income</p>
-                      <p className="text-2xl font-bold text-blue-600">₹{totalIncome.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-blue-600">₹{(financialData.mainIncome + financialData.sideIncome).toLocaleString()}</p>
                       <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
                     </div>
                     <DollarSign className="w-8 h-8 text-blue-600" />
@@ -623,9 +623,8 @@ const FinancialManagementSection: React.FC = () => {
                     <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
-                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
+                          { name: 'Side Income', value: financialData.sideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0)}
                         cx="50%"
                         cy="50%"
@@ -657,9 +656,8 @@ const FinancialManagementSection: React.FC = () => {
                         }}
                       >
                         {[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
-                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
+                          { name: 'Side Income', value: financialData.sideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
@@ -672,7 +670,7 @@ const FinancialManagementSection: React.FC = () => {
                   {financialData.mainIncome > 0 && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         <span className="text-sm">Main Income</span>
                       </div>
                       <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
@@ -681,19 +679,10 @@ const FinancialManagementSection: React.FC = () => {
                   {financialData.sideIncome > 0 && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                         <span className="text-sm">Side Income</span>
                       </div>
                       <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {monthlyAssetIncome > 0 && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-sm">Asset Income</span>
-                      </div>
-                      <span className="text-sm font-medium">₹{monthlyAssetIncome.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
