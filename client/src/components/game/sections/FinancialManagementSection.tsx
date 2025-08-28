@@ -71,6 +71,7 @@ const FinancialManagementSection: React.FC = () => {
     getAssets,
     getLiabilities,
     removeAsset,
+    removeLiability,
     updateLiability,
     addTransaction
   } = useWealthSprintGame();
@@ -174,12 +175,13 @@ const FinancialManagementSection: React.FC = () => {
 
   // Assets and liabilities data
   const assets = getAssets() || [];
-  const liabilities = getLiabilities() || [];
+  const liabilities = (getLiabilities() || []).filter(liability => liability.outstandingAmount > 0);
   const totalAssetValue = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalLiabilityValue = liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
   const netWorth = totalAssetValue - totalLiabilityValue;
   const monthlyAssetIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
   const monthlyLiabilityPayment = liabilities.reduce((sum, liability) => sum + liability.emi, 0);
+  const monthlyLiabilityCashflow = -monthlyLiabilityPayment; // Negative cashflow impact
 
   // Prepare circular chart data for expense breakdown
   const expenseData = [
@@ -215,29 +217,52 @@ const FinancialManagementSection: React.FC = () => {
     const liability = liabilities.find(l => l.id === liabilityId);
     if (liability && financialData.bankBalance >= amount) {
       const newOutstanding = Math.max(0, liability.outstandingAmount - amount);
-      const newEmi = newOutstanding > 0 ? liability.emi : 0;
       
-      updateLiability(liabilityId, {
-        outstandingAmount: newOutstanding,
-        emi: newEmi
-      });
+      if (newOutstanding === 0) {
+        // Liability is fully paid - remove it completely
+        removeLiability(liabilityId);
+        
+        // Add achievement notification for full payoff
+        addTransaction({
+          type: 'loan_deducted',
+          amount: -amount,
+          description: `Fully paid off ${liability.name} - Congratulations!`,
+          fromAccount: 'bank',
+          toAccount: 'business',
+        });
+        
+        // Bigger karma boost for full payoff
+        updatePlayerStats({
+          karma: Math.min(100, playerStats.karma + 10),
+          stress: Math.max(0, playerStats.stress - 15),
+          logic: playerStats.logic + 3,
+        });
+      } else {
+        // Partial payment - update the liability
+        const newEmi = Math.ceil((newOutstanding * (liability.interestRate / 100 / 12)) / (1 - Math.pow(1 + (liability.interestRate / 100 / 12), -Math.ceil(newOutstanding / (liability.emi || 1000)))));
+        
+        updateLiability(liabilityId, {
+          outstandingAmount: newOutstanding,
+          emi: newEmi
+        });
+        
+        addTransaction({
+          type: 'loan_deducted',
+          amount: -amount,
+          description: `Prepaid ${liability.name}`,
+          fromAccount: 'bank',
+          toAccount: 'business',
+        });
+        
+        updatePlayerStats({
+          karma: playerStats.karma + 5,
+          stress: Math.max(0, playerStats.stress - 10),
+          logic: playerStats.logic + 2,
+        });
+      }
       
       updateFinancialData({
         bankBalance: financialData.bankBalance - amount,
-      });
-      
-      addTransaction({
-        type: 'loan_deducted',
-        amount: -amount,
-        description: `Prepaid ${liability.name}`,
-        fromAccount: 'bank',
-        toAccount: 'business',
-      });
-      
-      updatePlayerStats({
-        karma: playerStats.karma + 5,
-        stress: Math.max(0, playerStats.stress - 10),
-        logic: playerStats.logic + 2,
       });
     }
   };
@@ -892,9 +917,9 @@ const FinancialManagementSection: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-orange-800">Monthly EMI</p>
-                      <p className="text-2xl font-bold text-orange-600">₹{monthlyLiabilityPayment.toLocaleString()}</p>
-                      <p className="text-xs text-orange-600">Total payments</p>
+                      <p className="text-sm font-medium text-orange-800">Monthly Cashflow</p>
+                      <p className="text-2xl font-bold text-red-600">-₹{monthlyLiabilityPayment.toLocaleString()}</p>
+                      <p className="text-xs text-orange-600">Maintenance costs</p>
                     </div>
                     <Calculator className="w-8 h-8 text-orange-600" />
                   </div>
@@ -947,10 +972,11 @@ const FinancialManagementSection: React.FC = () => {
                             </div>
                             <div className="text-right">
                               <p className="text-xl font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
-                              <p className="text-sm font-semibold text-gray-700 flex items-center gap-1">
-                                <Calculator className="w-3 h-3" />
-                                ₹{liability.emi.toLocaleString()}/mo EMI
+                              <p className="text-sm font-semibold text-red-600 flex items-center gap-1">
+                                <TrendingDown className="w-3 h-3" />
+                                -₹{liability.emi.toLocaleString()}/mo
                               </p>
+                              <p className="text-xs text-gray-500">Maintenance cost</p>
                             </div>
                           </div>
                           <div className="mt-4 pt-3 border-t border-red-100">
