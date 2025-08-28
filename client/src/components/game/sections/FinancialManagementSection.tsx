@@ -1008,13 +1008,16 @@ const FinancialManagementSection: React.FC = () => {
                             </div>
                           </div>
                           <div className="mt-4 pt-3 border-t border-red-100 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
+                              <Badge 
+                                variant="outline" 
+                                className={`${risk.color} border-current bg-white/70 font-semibold`}
+                              >
+                                -{liability.interestRate}% growth
+                              </Badge>
                               <div className="text-xs text-gray-500 flex items-center gap-1">
-                                <AlertTriangle className="w-3 h-3" />
-                                {Math.ceil(liability.outstandingAmount / liability.emi)} months left
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {liability.interestRate}% interest
+                                <BarChart3 className="w-3 h-3" />
+                                ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
                               </div>
                             </div>
                             <Button 
@@ -1022,9 +1025,9 @@ const FinancialManagementSection: React.FC = () => {
                               variant="outline" 
                               size="sm"
                               disabled={financialData.bankBalance < 1000}
-                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 font-medium"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 font-medium"
                             >
-                              Prepay
+                              Sell Liability
                             </Button>
                           </div>
                         </div>
