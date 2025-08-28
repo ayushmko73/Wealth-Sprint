@@ -85,11 +85,13 @@ const StoreSection: React.FC = () => {
 
   // Credit limit calculation helper
   const getCreditInfo = () => {
-    const totalLiabilities = financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const creditCardLiabilities = financialData.liabilities.filter(l => l.category === 'credit_card');
+    const totalCreditUsed = creditCardLiabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const totalMonthlyEmi = creditCardLiabilities.reduce((sum, liability) => sum + liability.emi, 0);
     const creditLimit = 500000; // ₹5 lakh credit limit
-    const availableCredit = creditLimit - totalLiabilities;
-    const canPayFull = totalLiabilities < creditLimit && showPurchaseModal && showPurchaseModal.price <= availableCredit;
-    return { totalLiabilities, creditLimit, availableCredit, canPayFull };
+    const availableCredit = creditLimit - totalCreditUsed;
+    const canPayFull = showPurchaseModal && showPurchaseModal.price <= availableCredit;
+    return { totalCreditUsed, totalMonthlyEmi, creditLimit, availableCredit, canPayFull };
   };
   
   const categoryIcons: Record<string, React.ReactNode> = {
@@ -182,14 +184,18 @@ const StoreSection: React.FC = () => {
   });
 
   const handlePurchase = (item: any) => {
-    const currentCreditUsed = financialData.liabilities.find(l => l.category === 'credit_card')?.outstandingAmount || 0;
-    const creditLimit = 500000;
-    const availableCredit = creditLimit - currentCreditUsed;
+    const { totalCreditUsed, totalMonthlyEmi, availableCredit } = getCreditInfo();
     
     if (financialData.bankBalance < item.price && availableCredit < item.price) {
-      toast.error('Insufficient funds and credit limit exceeded');
+      toast.error(`Insufficient funds! Bank: ₹${financialData.bankBalance.toLocaleString()}, Available Credit: ₹${availableCredit.toLocaleString()}`);
       return;
     }
+    
+    // Show EMI info if they have existing EMIs
+    if (totalMonthlyEmi > 0) {
+      toast.info(`Current total EMI: ₹${totalMonthlyEmi.toLocaleString()}/month`);
+    }
+    
     setShowPurchaseModal(item);
   };
 
@@ -198,21 +204,55 @@ const StoreSection: React.FC = () => {
       let paymentMethod = '';
       let useCredit = false;
       
+      // Check current total EMI commitments
+      const currentTotalEmi = financialData.liabilities
+        .filter(l => l.category === 'credit_card' || l.emi > 0)
+        .reduce((sum, l) => sum + l.emi, 0);
+      
       // Determine payment method based on user selection or funds availability
       if (selectedPaymentMethod === 'credit' || (financialData.bankBalance < item.price)) {
-        const success = chargeToCredit(item.price, item.name);
-        if (!success) {
-          toast.error('Credit limit exceeded');
+        // Calculate new EMI amount
+        const newMonthlyEmi = emiMonths > 1 ? Math.ceil(item.price / emiMonths) : 0;
+        const totalNewEmi = currentTotalEmi + newMonthlyEmi;
+        
+        // Check credit limit - total outstanding amount should not exceed limit
+        const currentCreditUsed = financialData.liabilities
+          .filter(l => l.category === 'credit_card')
+          .reduce((sum, l) => sum + l.outstandingAmount, 0);
+        const creditLimit = 500000;
+        
+        if (currentCreditUsed + item.price > creditLimit) {
+          toast.error(`Credit limit exceeded! Available credit: ₹${(creditLimit - currentCreditUsed).toLocaleString()}`);
           return;
         }
-        paymentMethod = 'Credit Card';
-        useCredit = true;
         
-        // Create EMI entry if credit card and months > 1
+        // Create EMI liability if more than 1 month
         if (emiMonths > 1) {
-          const monthlyEmi = Math.ceil(item.price / emiMonths);
-          paymentMethod += ` (${emiMonths} month EMI)`;
+          // Add new EMI liability
+          addLiability({
+            name: `${item.name} EMI`,
+            category: 'credit_card',
+            outstandingAmount: item.price,
+            originalAmount: item.price,
+            interestRate: 18, // 18% annual interest for EMI
+            emi: newMonthlyEmi,
+            tenure: emiMonths,
+            description: `${emiMonths}-month EMI for ${item.name}`,
+          });
+          
+          paymentMethod = `Credit Card (${emiMonths} month EMI - ₹${newMonthlyEmi.toLocaleString()}/mo)`;
+          toast.success(`New EMI added! Total monthly EMI: ₹${totalNewEmi.toLocaleString()}`);
+        } else {
+          // Full payment on credit card
+          const success = chargeToCredit(item.price, item.name);
+          if (!success) {
+            toast.error('Credit limit exceeded');
+            return;
+          }
+          paymentMethod = 'Credit Card (Full Payment)';
         }
+        
+        useCredit = true;
       } else {
         updateFinancialData({
           bankBalance: financialData.bankBalance - item.price,
@@ -394,16 +434,16 @@ const StoreSection: React.FC = () => {
             <p className="text-sm font-bold">{formatMoney(financialData.bankBalance)}</p>
           </div>
           <div>
-            <p className="text-blue-200 text-xs">Owned</p>
+            <p className="text-blue-200 text-xs">Credit Used</p>
+            <p className="text-sm font-bold text-orange-400">{formatMoney(getCreditInfo().totalCreditUsed)}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Monthly EMI</p>
+            <p className="text-sm font-bold text-red-400">{formatMoney(getCreditInfo().totalMonthlyEmi)}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Owned Items</p>
             <p className="text-sm font-bold text-green-400">{purchasedItems.length}</p>
-          </div>
-          <div>
-            <p className="text-blue-200 text-xs">Available</p>
-            <p className="text-sm font-bold text-white">{totalItems - purchasedItems.length}</p>
-          </div>
-          <div>
-            <p className="text-blue-200 text-xs">Categories</p>
-            <p className="text-sm font-bold">{getCategories().length}</p>
           </div>
         </div>
         
