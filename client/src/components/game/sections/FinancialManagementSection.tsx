@@ -936,7 +936,9 @@ const FinancialManagementSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-orange-800">Monthly Cashflow</p>
-                      <p className="text-2xl font-bold text-red-600">-₹{monthlyLiabilityPayment.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-red-600">
+                        {monthlyLiabilityPayment === 0 ? '₹0' : `-₹${monthlyLiabilityPayment.toLocaleString()}`}
+                      </p>
                       <p className="text-xs text-orange-600">Maintenance costs</p>
                     </div>
                     <Calculator className="w-8 h-8 text-orange-600" />
