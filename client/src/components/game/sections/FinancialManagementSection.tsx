@@ -30,7 +30,12 @@ import {
   Rocket,
   GraduationCap,
   Smartphone,
-  Package
+  Package,
+  Shirt,
+  PawPrint,
+  Music,
+  Watch,
+  ShoppingBag
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
 
@@ -284,8 +289,32 @@ const FinancialManagementSection: React.FC = () => {
       case 'credit_card': return <CreditCard {...iconProps} />;
       case 'business_debt': return <Building2 {...iconProps} />;
       case 'personal_loan': return <Wallet {...iconProps} />;
+      // Additional specific icons for better matching
+      case 'clothing': return <Shirt {...iconProps} />;
+      case 'designer_clothing': return <Shirt {...iconProps} />;
+      case 'pets': return <PawPrint {...iconProps} />;
+      case 'exotic_pets': return <PawPrint {...iconProps} />;
+      case 'luxury': return <Watch {...iconProps} />;
+      case 'shopping': return <ShoppingBag {...iconProps} />;
+      case 'lifestyle': return <Watch {...iconProps} />;
       default: return <Package {...iconProps} />;
     }
+  };
+  
+  // Function to get icon based on liability name for better matching
+  const getLiabilityIcon = (liability: any, className: string = "w-6 h-6") => {
+    const iconProps = { className };
+    const name = liability.name?.toLowerCase() || '';
+    
+    // Match by name first for more accurate icons
+    if (name.includes('clothing') || name.includes('designer')) return <Shirt {...iconProps} />;
+    if (name.includes('pet') || name.includes('exotic')) return <PawPrint {...iconProps} />;
+    if (name.includes('music') || name.includes('instrument')) return <Music {...iconProps} />;
+    if (name.includes('watch') || name.includes('luxury') || name.includes('jewelry')) return <Watch {...iconProps} />;
+    if (name.includes('shopping') || name.includes('collection')) return <ShoppingBag {...iconProps} />;
+    
+    // Fallback to category-based icon
+    return getAssetCategoryIcon(liability.category, className);
   };
 
   const getAppreciationColor = (rate: number) => {
@@ -963,7 +992,7 @@ const FinancialManagementSection: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               <div className="bg-gradient-to-br from-red-50 to-orange-100 p-3 rounded-xl">
-                                {getAssetCategoryIcon(liability.category, "w-6 h-6 text-red-600")}
+                                {getLiabilityIcon(liability, "w-6 h-6 text-red-600")}
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
@@ -972,51 +1001,34 @@ const FinancialManagementSection: React.FC = () => {
                             </div>
                             <div className="text-right">
                               <p className="text-xl font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
-                              <p className="text-sm font-semibold text-red-600 flex items-center gap-1">
+                              <p className="text-sm font-semibold text-red-600 flex items-center gap-1 justify-end">
                                 <TrendingDown className="w-3 h-3" />
                                 -₹{liability.emi.toLocaleString()}/mo
                               </p>
-                              <p className="text-xs text-gray-500">Maintenance cost</p>
                             </div>
                           </div>
-                          <div className="mt-4 pt-3 border-t border-red-100">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-3">
-                                <Badge 
-                                  variant="outline" 
-                                  className={`${risk.color} border-current bg-white/70 font-semibold`}
-                                >
-                                  {liability.interestRate}% interest • {risk.level} risk
-                                </Badge>
-                                <div className="text-xs text-gray-500 flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" />
-                                  {Math.ceil(liability.outstandingAmount / liability.emi)} months left
-                                </div>
-                              </div>
-                              <Button 
-                                onClick={() => handlePrepayLiability(liability.id, Math.min(liability.outstandingAmount, financialData.bankBalance))}
+                          <div className="mt-4 pt-3 border-t border-red-100 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Badge 
                                 variant="outline" 
-                                size="sm"
-                                disabled={financialData.bankBalance < 1000}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 font-medium"
+                                className={`${risk.color} border-current bg-white/70 font-semibold`}
                               >
-                                Prepay
-                              </Button>
-                            </div>
-                            <div className="space-y-2">
-                              <Progress 
-                                value={100 - ((liability.outstandingAmount / liability.originalAmount) * 100)} 
-                                className="h-3 bg-red-100"
-                              />
-                              <div className="flex justify-between items-center">
-                                <p className="text-xs text-gray-600 font-medium">
-                                  {(100 - ((liability.outstandingAmount / liability.originalAmount) * 100)).toFixed(1)}% paid off
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  ₹{(liability.originalAmount - liability.outstandingAmount).toLocaleString()} / ₹{liability.originalAmount.toLocaleString()}
-                                </p>
+                                {liability.interestRate}% interest • {risk.level} risk
+                              </Badge>
+                              <div className="text-xs text-gray-500 flex items-center gap-1">
+                                <AlertTriangle className="w-3 h-3" />
+                                {Math.ceil(liability.outstandingAmount / liability.emi)} months left
                               </div>
                             </div>
+                            <Button 
+                              onClick={() => handlePrepayLiability(liability.id, Math.min(liability.outstandingAmount, financialData.bankBalance))}
+                              variant="outline" 
+                              size="sm"
+                              disabled={financialData.bankBalance < 1000}
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 font-medium"
+                            >
+                              Prepay
+                            </Button>
                           </div>
                         </div>
                       );
