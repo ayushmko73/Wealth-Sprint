@@ -236,6 +236,7 @@ const StoreSection: React.FC = () => {
   };
 
   const confirmPurchase = (item: any, selectedPaymentMethod?: string, emiMonths: number = 1) => {
+    console.log('confirmPurchase called with:', { item: item.name, selectedPaymentMethod, emiMonths });
     try {
       let paymentMethod = '';
       let useCredit = false;
@@ -265,7 +266,7 @@ const StoreSection: React.FC = () => {
         // Check EMI affordability for multi-month EMIs
         if (emiMonths > 1) {
           const monthlyIncome = financialData.mainIncome + financialData.sideIncome;
-          const maxAffordableEmi = monthlyIncome * 0.4;
+          const maxAffordableEmi = monthlyIncome * 0.5;
           
           if (totalNewEmi > maxAffordableEmi) {
             toast.error(`EMI exceeds affordability! New EMI: ₹${newMonthlyEmi.toLocaleString()}/mo would make total EMI ₹${totalNewEmi.toLocaleString()}/mo (Max affordable: ₹${maxAffordableEmi.toLocaleString()}/mo)`);
@@ -385,6 +386,7 @@ const StoreSection: React.FC = () => {
         toast.success(`Successfully purchased ${item.name} using ${paymentMethod}!`);
       }
     } catch (error) {
+      console.error('Purchase failed with error:', error);
       toast.error('Purchase failed. Please try again.');
     }
   };
