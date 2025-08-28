@@ -874,11 +874,11 @@ const FinancialManagementSection: React.FC = () => {
                 ) : (
                   <div className="space-y-3">
                     {assets.map((asset) => (
-                      <div key={asset.id} className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300">
+                      <div key={asset.id} className="bg-gradient-to-r from-white to-green-50 border border-green-200 rounded-xl p-4 hover:shadow-lg hover:border-green-300 transition-all duration-300">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-3 rounded-xl">
-                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-blue-600")}
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-xl">
+                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-green-600")}
                             </div>
                             <div className="flex-1">
                               <h3 className="font-bold text-gray-900 text-lg">{asset.name}</h3>
@@ -886,14 +886,14 @@ const FinancialManagementSection: React.FC = () => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-xl font-bold text-gray-900">₹{asset.value.toLocaleString()}</p>
-                            <p className="text-sm font-semibold text-green-600 flex items-center gap-1">
+                            <p className="text-xl font-bold text-green-600">₹{asset.value.toLocaleString()}</p>
+                            <p className="text-sm font-semibold text-green-600 flex items-center gap-1 justify-end">
                               <TrendingUp className="w-3 h-3" />
                               +₹{asset.monthlyIncome.toLocaleString()}/mo
                             </p>
                           </div>
                         </div>
-                        <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-green-100 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <Badge 
                               variant="outline" 
@@ -1008,16 +1008,13 @@ const FinancialManagementSection: React.FC = () => {
                             </div>
                           </div>
                           <div className="mt-4 pt-3 border-t border-red-100 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <Badge 
-                                variant="outline" 
-                                className={`${risk.color} border-current bg-white/70 font-semibold`}
-                              >
-                                {liability.interestRate}% interest • {risk.level} risk
-                              </Badge>
+                            <div className="flex items-center gap-2">
                               <div className="text-xs text-gray-500 flex items-center gap-1">
                                 <AlertTriangle className="w-3 h-3" />
                                 {Math.ceil(liability.outstandingAmount / liability.emi)} months left
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {liability.interestRate}% interest
                               </div>
                             </div>
                             <Button 
