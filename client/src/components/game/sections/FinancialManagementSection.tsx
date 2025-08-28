@@ -23,7 +23,14 @@ import {
   Building2,
   CreditCard,
   PiggyBank,
-  Wallet
+  Wallet,
+  Laptop,
+  GamepadIcon,
+  Landmark,
+  Rocket,
+  GraduationCap,
+  Smartphone,
+  Package
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
 
@@ -235,23 +242,24 @@ const FinancialManagementSection: React.FC = () => {
     }
   };
 
-  const getAssetCategoryIcon = (category: string) => {
+  const getAssetCategoryIcon = (category: string, className: string = "w-6 h-6") => {
+    const iconProps = { className };
     switch (category) {
-      case 'real_estate': return '🏠';
-      case 'stocks': return '📈';
-      case 'bonds': return '🏛️';
-      case 'business': return '🚀';
-      case 'gadget': return '💻';
-      case 'vehicles': return '🚗';
-      case 'investment': return '🪙';
-      case 'entertainment': return '🎮';
-      case 'home_loan': return '🏠';
-      case 'car_loan': return '🚗';
-      case 'education_loan': return '🎓';
-      case 'credit_card': return '💳';
-      case 'business_debt': return '🏢';
-      case 'personal_loan': return '💰';
-      default: return '📦';
+      case 'real_estate': return <Home {...iconProps} />;
+      case 'stocks': return <TrendingUp {...iconProps} />;
+      case 'bonds': return <Landmark {...iconProps} />;
+      case 'business': return <Rocket {...iconProps} />;
+      case 'gadget': return <Laptop {...iconProps} />;
+      case 'vehicles': return <Car {...iconProps} />;
+      case 'investment': return <PiggyBank {...iconProps} />;
+      case 'entertainment': return <GamepadIcon {...iconProps} />;
+      case 'home_loan': return <Home {...iconProps} />;
+      case 'car_loan': return <Car {...iconProps} />;
+      case 'education_loan': return <GraduationCap {...iconProps} />;
+      case 'credit_card': return <CreditCard {...iconProps} />;
+      case 'business_debt': return <Building2 {...iconProps} />;
+      case 'personal_loan': return <Wallet {...iconProps} />;
+      default: return <Package {...iconProps} />;
     }
   };
 
@@ -810,33 +818,45 @@ const FinancialManagementSection: React.FC = () => {
                     <p>No assets yet. Visit the Store to purchase your first asset!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {assets.map((asset) => (
-                      <div key={asset.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div key={asset.id} className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{getAssetCategoryIcon(asset.category)}</span>
-                            <div>
-                              <h3 className="font-semibold">{asset.name}</h3>
-                              <p className="text-sm text-gray-500">{asset.category.replace('_', ' ')}</p>
+                          <div className="flex items-center gap-4">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-3 rounded-xl">
+                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-blue-600")}
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-bold text-gray-900 text-lg">{asset.name}</h3>
+                              <p className="text-sm text-gray-600 capitalize font-medium">{asset.category.replace('_', ' ')}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold">₹{asset.value.toLocaleString()}</p>
-                            <p className="text-sm text-green-600">+₹{asset.monthlyIncome.toLocaleString()}/mo</p>
+                            <p className="text-xl font-bold text-gray-900">₹{asset.value.toLocaleString()}</p>
+                            <p className="text-sm font-semibold text-green-600 flex items-center gap-1">
+                              <TrendingUp className="w-3 h-3" />
+                              +₹{asset.monthlyIncome.toLocaleString()}/mo
+                            </p>
                           </div>
                         </div>
-                        <div className="mt-3 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className={getAppreciationColor(asset.appreciationRate || 0)}>
+                        <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Badge 
+                              variant="outline" 
+                              className={`${getAppreciationColor(asset.appreciationRate || 0)} border-current bg-white/70 font-semibold`}
+                            >
                               {(asset.appreciationRate || 0) > 0 ? '+' : ''}{asset.appreciationRate || 0}% growth
                             </Badge>
+                            <div className="text-xs text-gray-500 flex items-center gap-1">
+                              <BarChart3 className="w-3 h-3" />
+                              ROI: {asset.monthlyIncome > 0 ? ((asset.monthlyIncome / asset.value) * 100 * 12).toFixed(1) : '0.0'}%
+                            </div>
                           </div>
                           <Button 
                             onClick={() => handleSellAsset(asset.id)}
                             variant="outline" 
                             size="sm"
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 font-medium"
                           >
                             Sell Asset
                           </Button>
@@ -910,50 +930,67 @@ const FinancialManagementSection: React.FC = () => {
                     <p>No active liabilities. Great financial health!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {liabilities.map((liability) => {
                       const risk = getDebtRisk(liability);
                       return (
-                        <div key={liability.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div key={liability.id} className="bg-gradient-to-r from-white to-red-50 border border-red-200 rounded-xl p-4 hover:shadow-lg hover:border-red-300 transition-all duration-300">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{getAssetCategoryIcon(liability.category)}</span>
-                              <div>
-                                <h3 className="font-semibold">{liability.name}</h3>
-                                <p className="text-sm text-gray-500">{liability.category.replace('_', ' ')}</p>
+                            <div className="flex items-center gap-4">
+                              <div className="bg-gradient-to-br from-red-50 to-orange-100 p-3 rounded-xl">
+                                {getAssetCategoryIcon(liability.category, "w-6 h-6 text-red-600")}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
+                                <p className="text-sm text-gray-600 capitalize font-medium">{liability.category.replace('_', ' ')}</p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
-                              <p className="text-sm text-gray-600">₹{liability.emi.toLocaleString()}/mo EMI</p>
+                              <p className="text-xl font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
+                              <p className="text-sm font-semibold text-gray-700 flex items-center gap-1">
+                                <Calculator className="w-3 h-3" />
+                                ₹{liability.emi.toLocaleString()}/mo EMI
+                              </p>
                             </div>
                           </div>
-                          <div className="mt-3 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className={risk.color}>
-                                {liability.interestRate}% interest • {risk.level} risk
-                              </Badge>
-                            </div>
-                            <div className="flex gap-2">
+                          <div className="mt-4 pt-3 border-t border-red-100">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <Badge 
+                                  variant="outline" 
+                                  className={`${risk.color} border-current bg-white/70 font-semibold`}
+                                >
+                                  {liability.interestRate}% interest • {risk.level} risk
+                                </Badge>
+                                <div className="text-xs text-gray-500 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  {Math.ceil(liability.outstandingAmount / liability.emi)} months left
+                                </div>
+                              </div>
                               <Button 
                                 onClick={() => handlePrepayLiability(liability.id, Math.min(liability.outstandingAmount, financialData.bankBalance))}
                                 variant="outline" 
                                 size="sm"
                                 disabled={financialData.bankBalance < 1000}
-                                className="text-blue-600 hover:text-blue-700"
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 font-medium"
                               >
                                 Prepay
                               </Button>
                             </div>
-                          </div>
-                          <div className="mt-2">
-                            <Progress 
-                              value={100 - ((liability.outstandingAmount / liability.originalAmount) * 100)} 
-                              className="h-2"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                              {(100 - ((liability.outstandingAmount / liability.originalAmount) * 100)).toFixed(1)}% paid off
-                            </p>
+                            <div className="space-y-2">
+                              <Progress 
+                                value={100 - ((liability.outstandingAmount / liability.originalAmount) * 100)} 
+                                className="h-3 bg-red-100"
+                              />
+                              <div className="flex justify-between items-center">
+                                <p className="text-xs text-gray-600 font-medium">
+                                  {(100 - ((liability.outstandingAmount / liability.originalAmount) * 100)).toFixed(1)}% paid off
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  ₹{(liability.originalAmount - liability.outstandingAmount).toLocaleString()} / ₹{liability.originalAmount.toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       );
