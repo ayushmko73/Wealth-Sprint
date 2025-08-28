@@ -1012,13 +1012,13 @@ const FinancialManagementSection: React.FC = () => {
                               </div>
                             </div>
                             <Button 
-                              onClick={() => handlePrepayLiability(liability.id, Math.min(liability.outstandingAmount, financialData.bankBalance))}
+                              onClick={() => handlePrepayLiability(liability.id, liability.outstandingAmount)}
                               variant="outline" 
                               size="sm"
-                              disabled={financialData.bankBalance < 1000}
+                              disabled={financialData.bankBalance < liability.outstandingAmount}
                               className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 font-medium"
                             >
-                              Sell Liability
+                              Pay Full Amount
                             </Button>
                           </div>
                         </div>
