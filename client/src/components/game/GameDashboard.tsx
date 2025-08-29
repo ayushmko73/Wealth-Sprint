@@ -27,7 +27,6 @@ import {
   PiggyBank, 
   Users, 
   UserCog,
-  UserPlus,
   Briefcase, 
   Target, 
   Settings,
@@ -59,8 +58,7 @@ import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StoreSection from './sections/StoreSection';
 
-import TeamManagementSection from './sections/TeamManagementSection';
-import TeamHiringSection from './sections/TeamHiringSection';
+import FuturisticTeamHiring from './sections/FuturisticTeamHiring';
 import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
@@ -113,7 +111,6 @@ const GameDashboard: React.FC = () => {
     { id: 'store', label: 'Store', icon: ShoppingCart },
 
     { id: 'team_management', label: 'Team Mgmt', icon: UserCog },
-    { id: 'team_hiring', label: 'Hiring', icon: UserPlus },
     { id: 'industry_sectors', label: 'Sectors', icon: Briefcase },
     { id: 'business_deals', label: 'Deals', icon: Briefcase },
     { id: 'strategy_hub', label: 'Strategy', icon: Target },
@@ -136,9 +133,7 @@ const GameDashboard: React.FC = () => {
         return <StoreSection />;
 
       case 'team_management':
-        return <TeamManagementSection />;
-      case 'team_hiring':
-        return <TeamHiringSection />;
+        return <FuturisticTeamHiring />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'business_deals':

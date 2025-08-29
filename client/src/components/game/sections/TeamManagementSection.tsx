@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, 
   UserPlus, 
@@ -17,88 +18,205 @@ import {
   Building2,
   BarChart3,
   Crown,
-  Activity
+  Activity,
+  Filter,
+  Search,
+  Calendar,
+  ArrowUp,
+  Code,
+  Palette,
+  Database,
+  Phone,
+  UserCheck,
+  Scale,
+  Heart,
+  Package,
+  ChevronDown
 } from 'lucide-react';
 import { useWealthSprintGame } from '@/lib/stores/useWealthSprintGame';
 import { useTeamManagement } from '@/lib/stores/useTeamManagement';
 import { TeamMember } from '@/lib/types/GameTypes';
 import { toast } from 'sonner';
 
+// Employee Categories with icons
+const employeeCategories = [
+  { id: 'business', name: 'Business', icon: Building2, color: 'from-blue-500 to-blue-700' },
+  { id: 'finance', name: 'Finance', icon: DollarSign, color: 'from-green-500 to-green-700' },
+  { id: 'tech', name: 'Tech', icon: Code, color: 'from-purple-500 to-purple-700' },
+  { id: 'operations', name: 'Operations', icon: Target, color: 'from-orange-500 to-orange-700' },
+  { id: 'marketing', name: 'Marketing', icon: TrendingUp, color: 'from-pink-500 to-pink-700' },
+  { id: 'creative', name: 'Creative', icon: Palette, color: 'from-indigo-500 to-indigo-700' },
+];
+
+// Employee Roles with 4 seniority levels
+const employeeRoles = [
+  { id: 'business_analyst', name: 'Business Analyst', category: 'business', icon: BarChart3, baseSalary: 45000 },
+  { id: 'financial_advisor', name: 'Financial Advisor', category: 'finance', icon: DollarSign, baseSalary: 55000 },
+  { id: 'marketing_strategist', name: 'Marketing Strategist', category: 'marketing', icon: TrendingUp, baseSalary: 50000 },
+  { id: 'operations_manager', name: 'Operations Manager', category: 'operations', icon: Target, baseSalary: 60000 },
+  { id: 'software_engineer', name: 'Software Engineer', category: 'tech', icon: Code, baseSalary: 70000 },
+  { id: 'ui_ux_designer', name: 'UI/UX Designer', category: 'creative', icon: Palette, baseSalary: 48000 },
+  { id: 'data_scientist', name: 'Data Scientist', category: 'tech', icon: Database, baseSalary: 75000 },
+  { id: 'sales_executive', name: 'Sales Executive', category: 'business', icon: Phone, baseSalary: 42000 },
+  { id: 'hr_specialist', name: 'Human Resources Specialist', category: 'operations', icon: UserCheck, baseSalary: 46000 },
+  { id: 'legal_consultant', name: 'Legal Consultant', category: 'business', icon: Scale, baseSalary: 65000 },
+  { id: 'customer_success', name: 'Customer Success Manager', category: 'operations', icon: Heart, baseSalary: 52000 },
+  { id: 'product_manager', name: 'Product Manager', category: 'business', icon: Package, baseSalary: 68000 },
+];
+
+// Seniority levels with promotion requirements
+const seniorityLevels = [
+  { id: 'new_member', name: 'New Member', yearsRequired: 0, salaryMultiplier: 1.0, color: 'bg-gray-600' },
+  { id: 'junior', name: 'Junior', yearsRequired: 1, salaryMultiplier: 1.3, color: 'bg-blue-600' },
+  { id: 'senior', name: 'Senior', yearsRequired: 5, salaryMultiplier: 1.8, color: 'bg-purple-600' },
+  { id: 'veteran', name: 'Veteran', yearsRequired: 10, salaryMultiplier: 2.5, color: 'bg-yellow-600' },
+];
+
+// Name generator system with 50 first names and 50 surnames
+const firstNames = [
+  'Aarav', 'Ishaan', 'Neel', 'Ruhan', 'Tanmay', 'Viren', 'Reyansh', 'Devika', 'Meera', 'Kavya',
+  'Arjun', 'Rohan', 'Karan', 'Vikram', 'Aditya', 'Priya', 'Ananya', 'Riya', 'Shreya', 'Pooja',
+  'Rahul', 'Amit', 'Suresh', 'Rajesh', 'Deepak', 'Neha', 'Sunita', 'Rekha', 'Geeta', 'Sonia',
+  'Akash', 'Nitin', 'Sanjay', 'Manoj', 'Vinod', 'Seema', 'Radha', 'Kiran', 'Lata', 'Maya',
+  'Harsh', 'Gaurav', 'Yogesh', 'Ramesh', 'Sunil', 'Kavita', 'Usha', 'Sushma', 'Nisha', 'Parul'
+];
+
+const surnames = [
+  'Sharma', 'Mehta', 'Kapoor', 'Iyer', 'Raghavan', 'Sinha', 'Deshmukh', 'Chauhan', 'Oberoi', 'Malhotra',
+  'Gupta', 'Singh', 'Kumar', 'Verma', 'Agarwal', 'Jain', 'Patel', 'Shah', 'Modi', 'Thakur',
+  'Yadav', 'Reddy', 'Nair', 'Pillai', 'Menon', 'Bhat', 'Rao', 'Prasad', 'Mishra', 'Tiwari',
+  'Pandey', 'Saxena', 'Bansal', 'Mittal', 'Agnihotri', 'Bhardwaj', 'Chopra', 'Dhawan', 'Khanna', 'Sethi',
+  'Bajaj', 'Jindal', 'Khurana', 'Mahajan', 'Nagpal', 'Sawhney', 'Trehan', 'Vohra', 'Wadhwa', 'Ahuja'
+];
+
 interface Employee {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   role: string;
-  sector?: string; // Optional - assigned after hiring
+  roleId: string;
+  category: string;
+  seniority: string;
+  yearsWorked: number;
+  hireDate: Date;
   experience: number;
   performance: number;
   salary: number;
   hired: boolean;
+  skills: string[];
 }
+
+// Generate random name
+const generateRandomName = () => {
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = surnames[Math.floor(Math.random() * surnames.length)];
+  return { firstName, lastName };
+};
+
+// Calculate promotion progress
+const calculatePromotionProgress = (yearsWorked: number, currentSeniority: string) => {
+  const currentLevel = seniorityLevels.find(level => level.id === currentSeniority);
+  const nextLevel = seniorityLevels.find(level => level.yearsRequired > yearsWorked);
+  
+  if (!nextLevel) return { progress: 100, nextLevel: null, yearsToPromotion: 0 };
+  
+  const progress = currentLevel ? (yearsWorked / nextLevel.yearsRequired) * 100 : 0;
+  const yearsToPromotion = nextLevel.yearsRequired - yearsWorked;
+  
+  return { progress, nextLevel, yearsToPromotion };
+};
+
+// Auto-promote employee based on years worked
+const getPromotedSeniority = (yearsWorked: number) => {
+  for (let i = seniorityLevels.length - 1; i >= 0; i--) {
+    if (yearsWorked >= seniorityLevels[i].yearsRequired) {
+      return seniorityLevels[i].id;
+    }
+  }
+  return 'new_member';
+};
 
 export default function TeamManagementSection() {
   const { financialData, updateFinancialData, purchasedSectors, uiState, updateUIState } = useWealthSprintGame();
   const { teamMembers, addTeamMember, updateTeamMember } = useTeamManagement();
   
-  const activeTab = uiState.teamManagementActiveTab;
-  const currentTeam = teamMembers; // Use teamMembers from useTeamManagement instead
-  
-  // Available employees to hire (no automatic sector assignment)
-  const [availableEmployees] = useState<Employee[]>([
-    {
-      id: 'emp_001',
-      name: 'Rajesh Kumar',
-      role: 'Operations Manager',
-      experience: 5,
-      performance: 85,
-      salary: 45000,
-      hired: false
-    },
-    {
-      id: 'emp_002',
-      name: 'Priya Sharma',
-      role: 'Software Developer',
-      experience: 3,
-      performance: 92,
-      salary: 60000,
-      hired: false
-    },
-    {
-      id: 'emp_003',
-      name: 'Amit Patel',
-      role: 'Marketing Specialist',
-      experience: 4,
-      performance: 78,
-      salary: 40000,
-      hired: false
-    },
-    {
-      id: 'emp_004',
-      name: 'Dr. Sneha Reddy',
-      role: 'Medical Director',
-      experience: 8,
-      performance: 95,
-      salary: 80000,
-      hired: false
-    },
-    {
-      id: 'emp_005',
-      name: 'Vikram Singh',
-      role: 'Chef Manager',
-      experience: 6,
-      performance: 88,
-      salary: 35000,
-      hired: false
-    },
-    {
-      id: 'emp_006',
-      name: 'Anita Gupta',
-      role: 'Tech Lead',
-      experience: 7,
-      performance: 90,
-      salary: 75000,
-      hired: false
-    }
-  ]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [currentTeam, setCurrentTeam] = useState<Employee[]>([]);
+  const [activeTab, setActiveTab] = useState('hiring');
+
+  // Generate initial employee pool
+  useEffect(() => {
+    const generateEmployeePool = () => {
+      const pool: Employee[] = [];
+      
+      // Generate 3-4 employees per role
+      employeeRoles.forEach(role => {
+        const count = Math.floor(Math.random() * 2) + 3; // 3-4 employees per role
+        
+        for (let i = 0; i < count; i++) {
+          const { firstName, lastName } = generateRandomName();
+          const employee: Employee = {
+            id: `emp_${role.id}_${i}`,
+            firstName,
+            lastName,
+            role: role.name,
+            roleId: role.id,
+            category: role.category,
+            seniority: 'new_member',
+            yearsWorked: 0,
+            hireDate: new Date(),
+            experience: Math.floor(Math.random() * 5) + 1, // 1-5 years experience
+            performance: Math.floor(Math.random() * 40) + 60, // 60-100% performance
+            salary: role.baseSalary,
+            hired: false,
+            skills: [],
+          };
+          pool.push(employee);
+        }
+      });
+      
+      return pool;
+    };
+    
+    setEmployees(generateEmployeePool());
+  }, []);
+
+  // Auto-promote employees based on time (demo purposes - fast progression)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTeam(prevTeam => 
+        prevTeam.map(employee => {
+          const yearsWorked = employee.yearsWorked + (1/365); // Increment daily
+          const newSeniority = getPromotedSeniority(yearsWorked);
+          const newSalary = newSeniority !== employee.seniority 
+            ? Math.round((employeeRoles.find(r => r.id === employee.roleId)?.baseSalary || 0) * 
+                (seniorityLevels.find(s => s.id === newSeniority)?.salaryMultiplier || 1))
+            : employee.salary;
+            
+          return {
+            ...employee,
+            yearsWorked,
+            seniority: newSeniority,
+            salary: newSalary,
+          };
+        })
+      );
+    }, 10000); // Update every 10 seconds for demo purposes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Filter employees based on category and search
+  const filteredEmployees = employees.filter(employee => {
+    const matchesCategory = selectedCategory === 'all' || employee.category === selectedCategory;
+    const matchesSearch = searchTerm === '' || 
+      `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.role.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch && !employee.hired;
+  });
 
   // currentTeam is now managed globally via uiState
   
