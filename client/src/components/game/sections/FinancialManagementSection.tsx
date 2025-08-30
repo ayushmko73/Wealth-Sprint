@@ -36,7 +36,8 @@ import {
   PawPrint,
   Music,
   Watch,
-  ShoppingBag
+  ShoppingBag,
+  Zap
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
 
@@ -305,7 +306,7 @@ const FinancialManagementSection: React.FC = () => {
     const name = assetName?.toLowerCase() || '';
     
     // Name-based matching first for more specific icons
-    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <PiggyBank {...iconProps} />;
+    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <Zap {...iconProps} />;
     if (name.includes('jet') || name.includes('plane') || name.includes('aircraft')) return <Rocket {...iconProps} />;
     if (name.includes('car') || name.includes('vehicle') || name.includes('auto')) return <Car {...iconProps} />;
     if (name.includes('home') || name.includes('house') || name.includes('property') || name.includes('apartment') || name.includes('villa')) return <Home {...iconProps} />;

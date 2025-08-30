@@ -63,6 +63,26 @@ interface Deal {
 const DealsSection: React.FC = () => {
   const { playerStats, financialData, purchaseDeal } = useWealthSprintGame();
   const [selectedCategory, setSelectedCategory] = useState('Overview');
+
+  // Get asset icon for investment portfolio
+  const getAssetIcon = (asset: any) => {
+    const name = asset.name?.toLowerCase() || '';
+    
+    // Enhanced name-based matching for investment assets
+    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <Zap className="w-4 h-4 text-white" />;
+    if (name.includes('tech') || name.includes('software') || name.includes('app') || name.includes('digital')) return <Brain className="w-4 h-4 text-white" />;
+    if (name.includes('healthcare') || name.includes('medical') || name.includes('pharma')) return <Shield className="w-4 h-4 text-white" />;
+    if (name.includes('real estate') || name.includes('property') || name.includes('housing')) return <Home className="w-4 h-4 text-white" />;
+    if (name.includes('crypto') || name.includes('bitcoin') || name.includes('blockchain')) return <Coins className="w-4 h-4 text-white" />;
+    if (name.includes('stock') || name.includes('equity') || name.includes('share')) return <TrendingUp className="w-4 h-4 text-white" />;
+    if (name.includes('bond') || name.includes('government') || name.includes('municipal')) return <Building2 className="w-4 h-4 text-white" />;
+    
+    // Category-based fallback
+    if (asset.category === 'investment') return <Briefcase className="w-4 h-4 text-white" />;
+    
+    // Default fallback
+    return <Target className="w-4 h-4 text-white" />;
+  };
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState<Deal | null>(null);
@@ -493,7 +513,7 @@ const DealsSection: React.FC = () => {
               {investmentAssets.map((asset) => (
                 <div key={asset.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white text-sm">{asset.icon}</span>
+                    {getAssetIcon(asset)}
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-800">{asset.name}</div>
