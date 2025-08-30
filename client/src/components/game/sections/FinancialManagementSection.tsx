@@ -891,7 +891,7 @@ const FinancialManagementSection: React.FC = () => {
                               variant="outline" 
                               className={`${getAppreciationColor(asset.appreciationRate || 0)} border-current bg-white/70 font-semibold`}
                             >
-                              {(asset.appreciationRate || 0) > 0 ? '+' : ''}{asset.appreciationRate || 0}% growth
+                              {(asset.appreciationRate || 0) > 0 ? '+' : ''}{(asset.appreciationRate || 0).toFixed(2)}% growth
                             </Badge>
                             <div className="text-xs text-gray-500 flex items-center gap-1">
                               <BarChart3 className="w-3 h-3" />
@@ -1012,7 +1012,7 @@ const FinancialManagementSection: React.FC = () => {
                                 variant="outline" 
                                 className={`${risk.color} border-current bg-white/70 font-semibold`}
                               >
-                                -{liability.interestRate}% growth
+                                -{liability.interestRate.toFixed(2)}% growth
                               </Badge>
                               <div className="text-xs text-gray-500 flex items-center gap-1">
                                 <BarChart3 className="w-3 h-3" />
@@ -1092,31 +1092,28 @@ const FinancialManagementSection: React.FC = () => {
 
       {/* Sell Confirmation Dialog */}
       <Dialog open={!!sellConfirmationAsset} onOpenChange={() => setSellConfirmationAsset(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
-              <AlertTriangle className="w-5 h-5" />
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-red-600 text-base">
+              <AlertTriangle className="w-4 h-4" />
               Confirm Asset Sale
             </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to sell this asset? This action cannot be undone.
-            </DialogDescription>
           </DialogHeader>
           
           {sellConfirmationAsset && (
-            <div className="py-4">
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white p-2 rounded-lg">
-                    {getAssetCategoryIcon(sellConfirmationAsset.category, "w-6 h-6 text-gray-600")}
+            <div className="py-2">
+              <div className="bg-white rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-lg">
+                    {getAssetCategoryIcon(sellConfirmationAsset.category, "w-4 h-4 text-gray-600")}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{sellConfirmationAsset.name}</h3>
-                    <p className="text-sm text-gray-600 capitalize">{sellConfirmationAsset.category.replace('_', ' ')}</p>
+                    <h3 className="font-semibold text-gray-900 text-sm">{sellConfirmationAsset.name}</h3>
+                    <p className="text-xs text-gray-600 capitalize">{sellConfirmationAsset.category.replace('_', ' ')}</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <p className="text-gray-500">Current Value</p>
                     <p className="font-semibold text-gray-900">₹{sellConfirmationAsset.value.toLocaleString()}</p>
@@ -1127,26 +1124,26 @@ const FinancialManagementSection: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
                   <p className="text-xs text-yellow-800">
-                    <strong>Note:</strong> 5% transaction fee will be deducted from the sale amount.
+                    <strong>Note:</strong> 5% transaction fee will be deducted.
                   </p>
                 </div>
               </div>
             </div>
           )}
           
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-2">
             <Button
               variant="outline"
               onClick={() => setSellConfirmationAsset(null)}
-              className="flex-1"
+              className="flex-1 text-sm py-1.5"
             >
               Cancel
             </Button>
             <Button
               onClick={() => sellConfirmationAsset && handleSellAsset(sellConfirmationAsset.id)}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm py-1.5"
             >
               Confirm Sale
             </Button>
