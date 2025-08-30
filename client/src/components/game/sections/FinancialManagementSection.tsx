@@ -176,10 +176,6 @@ const FinancialManagementSection: React.FC = () => {
     'Liabilities': <CreditCard className="w-4 h-4" />
   };
 
-  // Calculate cashflow data
-  const totalIncome = financialData.mainIncome + financialData.sideIncome;
-  const netCashflow = totalIncome - financialData.monthlyExpenses;
-
   // Assets and liabilities data
   const assets = getAssets() || [];
   const liabilities = (getLiabilities() || []).filter(liability => liability.outstandingAmount > 0);
@@ -187,6 +183,11 @@ const FinancialManagementSection: React.FC = () => {
   const totalLiabilityValue = liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
   const netWorth = totalAssetValue - totalLiabilityValue;
   const monthlyAssetIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
+
+  // Calculate cashflow data using actual asset income
+  const actualSideIncome = monthlyAssetIncome;
+  const totalIncome = financialData.mainIncome + actualSideIncome;
+  const netCashflow = totalIncome - financialData.monthlyExpenses;
   const monthlyLiabilityPayment = liabilities.reduce((sum, liability) => sum + liability.emi, 0);
   const monthlyLiabilityCashflow = -monthlyLiabilityPayment; // Negative cashflow impact
 
@@ -435,7 +436,7 @@ const FinancialManagementSection: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-green-800">Total Income</p>
                       <p className="text-2xl font-bold text-green-600">₹{totalIncome.toLocaleString()}</p>
-                      <p className="text-xs text-green-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-green-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{actualSideIncome.toLocaleString()}</p>
                     </div>
                     <ArrowUpCircle className="w-8 h-8 text-green-600" />
                   </div>
@@ -598,8 +599,8 @@ const FinancialManagementSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-blue-800">Total Income</p>
-                      <p className="text-2xl font-bold text-blue-600">₹{(financialData.mainIncome + financialData.sideIncome).toLocaleString()}</p>
-                      <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-blue-600">₹{totalIncome.toLocaleString()}</p>
+                      <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{actualSideIncome.toLocaleString()}</p>
                     </div>
                     <DollarSign className="w-8 h-8 text-blue-600" />
                   </div>
@@ -902,7 +903,7 @@ const FinancialManagementSection: React.FC = () => {
                             onClick={() => setSellConfirmationAsset(asset)}
                             variant="outline" 
                             size="sm"
-                            className="bg-red-400 text-white hover:bg-red-500 hover:text-white border-red-400 hover:border-red-500 font-medium"
+                            className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
                           >
                             Sell Asset
                           </Button>
@@ -1024,7 +1025,7 @@ const FinancialManagementSection: React.FC = () => {
                               variant="outline" 
                               size="sm"
                               disabled={financialData.bankBalance < liability.outstandingAmount}
-                              className="text-red-400 hover:text-red-500 hover:bg-red-50 border-red-200 font-medium"
+                              className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200 font-medium"
                             >
                               Pay Full Amount
                             </Button>
@@ -1143,7 +1144,7 @@ const FinancialManagementSection: React.FC = () => {
             </Button>
             <Button
               onClick={() => sellConfirmationAsset && handleSellAsset(sellConfirmationAsset.id)}
-              className="flex-1 bg-red-400 hover:bg-red-500 text-white text-sm py-1.5"
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5"
             >
               Confirm Sale
             </Button>

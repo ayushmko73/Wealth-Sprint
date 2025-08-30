@@ -21,8 +21,12 @@ import {
 } from 'lucide-react';
 
 const DashboardBar: React.FC = () => {
-  const { playerStats, financialData, currentWeek, currentDay, gameState } = useWealthSprintGame();
+  const { playerStats, financialData, currentWeek, currentDay, gameState, getAssets } = useWealthSprintGame();
   const { startDailyDecisions, hasCompletedToday } = useDecisionSystem();
+  
+  // Calculate actual side income from assets
+  const assets = getAssets() || [];
+  const actualSideIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
 
   // Using the new Indian currency formatting function
 
@@ -56,7 +60,7 @@ const DashboardBar: React.FC = () => {
     }
   };
 
-  const fiProgress = Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100);
+  const fiProgress = Math.min(100, (actualSideIncome / financialData.monthlyExpenses) * 100);
 
   const stats = [
     {
@@ -126,7 +130,7 @@ const DashboardBar: React.FC = () => {
                 <span className="text-sm opacity-90">Monthly Income</span>
               </div>
               <div className="text-2xl font-bold">
-                {formatIndianCurrency(financialData.mainIncome + financialData.sideIncome)}
+                {formatIndianCurrency(financialData.mainIncome + actualSideIncome)}
               </div>
               <div className="text-xs opacity-75">Main + Side Income</div>
             </div>
@@ -139,7 +143,7 @@ const DashboardBar: React.FC = () => {
             </div>
             <div className="flex justify-between text-xs opacity-80 mb-3">
               <span>Week {currentWeek}, Day {currentDay}</span>
-              <span>{formatIndianCurrency(financialData.sideIncome)} / {formatIndianCurrency(financialData.monthlyExpenses)}</span>
+              <span>{formatIndianCurrency(actualSideIncome)} / {formatIndianCurrency(financialData.monthlyExpenses)}</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2 mb-2">
               <div 
