@@ -1385,7 +1385,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         financialData: {
           ...state.financialData,
           assets: [...state.financialData.assets, newAsset],
-          totalAssets: state.financialData.totalAssets + amount
+          totalAssets: state.financialData.totalAssets + amount,
+          sideIncome: state.financialData.sideIncome + (deal.cashflowMonthly || 0)
         }
       }));
       
