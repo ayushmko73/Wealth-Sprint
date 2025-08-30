@@ -89,6 +89,7 @@ const FinancialManagementSection: React.FC = () => {
   const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | null>(null);
   const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | null>(null);
   const [sellConfirmationAsset, setSellConfirmationAsset] = useState<Asset | null>(null);
+  const [sellConfirmationLiability, setSellConfirmationLiability] = useState<Liability | null>(null);
   
   // Refs for pie chart containers
   const cashflowChartRef = useRef<HTMLDivElement>(null);
@@ -219,6 +220,28 @@ const FinancialManagementSection: React.FC = () => {
       removeAsset(assetId);
       setSelectedAsset(null);
       setSellConfirmationAsset(null);
+    }
+  };
+
+  const handleSellLiability = (liabilityId: string) => {
+    const liability = liabilities.find(l => l.id === liabilityId);
+    if (liability) {
+      const saleValue = liability.originalAmount * 0.4; // 40% of original value
+      updateFinancialData({
+        bankBalance: financialData.bankBalance + saleValue,
+      });
+      
+      addTransaction({
+        type: 'investment',
+        amount: saleValue,
+        description: `Sold ${liability.name}`,
+        fromAccount: 'business',
+        toAccount: 'bank',
+      });
+      
+      removeLiability(liabilityId);
+      setSelectedLiability(null);
+      setSellConfirmationLiability(null);
     }
   };
 
@@ -1021,13 +1044,12 @@ const FinancialManagementSection: React.FC = () => {
                               </div>
                             </div>
                             <Button 
-                              onClick={() => handlePrepayLiability(liability.id, liability.outstandingAmount)}
+                              onClick={() => setSellConfirmationLiability(liability)}
                               variant="outline" 
                               size="sm"
-                              disabled={financialData.bankBalance < liability.outstandingAmount}
-                              className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200 font-medium"
+                              className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
                             >
-                              Pay Full Amount
+                              Sell Item
                             </Button>
                           </div>
                         </div>
@@ -1144,6 +1166,67 @@ const FinancialManagementSection: React.FC = () => {
             </Button>
             <Button
               onClick={() => sellConfirmationAsset && handleSellAsset(sellConfirmationAsset.id)}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5"
+            >
+              Confirm Sale
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sell Liability Confirmation Dialog */}
+      <Dialog open={!!sellConfirmationLiability} onOpenChange={() => setSellConfirmationLiability(null)}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-red-600 text-base">
+              <AlertTriangle className="w-4 h-4" />
+              Confirm Item Sale
+            </DialogTitle>
+          </DialogHeader>
+          
+          {sellConfirmationLiability && (
+            <div className="py-2">
+              <div className="bg-white rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-lg">
+                    {getLiabilityIcon(sellConfirmationLiability, "w-4 h-4 text-gray-600")}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{sellConfirmationLiability.name}</h3>
+                    <p className="text-xs text-gray-600 capitalize">{sellConfirmationLiability.category.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-gray-500">Original Value</p>
+                    <p className="font-semibold text-gray-900">₹{sellConfirmationLiability.originalAmount.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Sale Amount</p>
+                    <p className="font-semibold text-green-600">₹{(sellConfirmationLiability.originalAmount * 0.4).toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> You'll receive 40% of original purchase value. Outstanding debt will be cleared.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setSellConfirmationLiability(null)}
+              className="flex-1 text-sm py-1.5"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => sellConfirmationLiability && handleSellLiability(sellConfirmationLiability.id)}
               className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5"
             >
               Confirm Sale
