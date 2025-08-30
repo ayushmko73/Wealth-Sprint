@@ -299,8 +299,20 @@ const FinancialManagementSection: React.FC = () => {
     }
   };
 
-  const getAssetCategoryIcon = (category: string, className: string = "w-6 h-6") => {
+  // Enhanced function to get icon based on asset name and category
+  const getAssetCategoryIcon = (category: string, className: string = "w-6 h-6", assetName?: string) => {
     const iconProps = { className };
+    const name = assetName?.toLowerCase() || '';
+    
+    // Name-based matching first for more specific icons
+    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <PiggyBank {...iconProps} />;
+    if (name.includes('jet') || name.includes('plane') || name.includes('aircraft')) return <Rocket {...iconProps} />;
+    if (name.includes('car') || name.includes('vehicle') || name.includes('auto')) return <Car {...iconProps} />;
+    if (name.includes('home') || name.includes('house') || name.includes('property') || name.includes('apartment') || name.includes('villa')) return <Home {...iconProps} />;
+    if (name.includes('coffee') || name.includes('restaurant') || name.includes('food')) return <Building2 {...iconProps} />;
+    if (name.includes('tech') || name.includes('software') || name.includes('app') || name.includes('digital')) return <Laptop {...iconProps} />;
+    
+    // Category-based fallback
     switch (category) {
       case 'real_estate': return <Home {...iconProps} />;
       case 'stocks': return <TrendingUp {...iconProps} />;
@@ -334,11 +346,17 @@ const FinancialManagementSection: React.FC = () => {
     const name = liability.name?.toLowerCase() || '';
     
     // Match by name first for more accurate icons
-    if (name.includes('clothing') || name.includes('designer')) return <Shirt {...iconProps} />;
-    if (name.includes('pet') || name.includes('exotic')) return <PawPrint {...iconProps} />;
-    if (name.includes('music') || name.includes('instrument')) return <Music {...iconProps} />;
+    if (name.includes('jet') || name.includes('plane') || name.includes('aircraft') || name.includes('aviation')) return <Rocket {...iconProps} />;
+    if (name.includes('car') || name.includes('vehicle') || name.includes('auto')) return <Car {...iconProps} />;
+    if (name.includes('home') || name.includes('house') || name.includes('property') || name.includes('theater') || name.includes('apartment')) return <Home {...iconProps} />;
+    if (name.includes('club') || name.includes('membership') || name.includes('exclusive')) return <Building2 {...iconProps} />;
+    if (name.includes('clothing') || name.includes('designer') || name.includes('fashion')) return <Shirt {...iconProps} />;
+    if (name.includes('pet') || name.includes('exotic') || name.includes('animal')) return <PawPrint {...iconProps} />;
+    if (name.includes('music') || name.includes('instrument') || name.includes('sound')) return <Music {...iconProps} />;
     if (name.includes('watch') || name.includes('luxury') || name.includes('jewelry')) return <Watch {...iconProps} />;
     if (name.includes('shopping') || name.includes('collection')) return <ShoppingBag {...iconProps} />;
+    if (name.includes('credit') || name.includes('card')) return <CreditCard {...iconProps} />;
+    if (name.includes('education') || name.includes('school') || name.includes('university')) return <GraduationCap {...iconProps} />;
     
     // Fallback to category-based icon
     return getAssetCategoryIcon(liability.category, className);
@@ -894,7 +912,7 @@ const FinancialManagementSection: React.FC = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-xl">
-                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-green-600")}
+                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-green-600", asset.name)}
                             </div>
                             <div className="flex-1">
                               <h3 className="font-bold text-gray-900 text-lg">{asset.name}</h3>
@@ -1128,7 +1146,7 @@ const FinancialManagementSection: React.FC = () => {
               <div className="bg-white rounded-lg p-3 space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="bg-gray-100 p-2 rounded-lg">
-                    {getAssetCategoryIcon(sellConfirmationAsset.category, "w-4 h-4 text-gray-600")}
+                    {getAssetCategoryIcon(sellConfirmationAsset.category, "w-4 h-4 text-gray-600", sellConfirmationAsset.name)}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 text-sm">{sellConfirmationAsset.name}</h3>

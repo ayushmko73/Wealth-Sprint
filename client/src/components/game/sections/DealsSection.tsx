@@ -30,7 +30,9 @@ import {
   Eye,
   X,
   Briefcase,
-  ChevronDown
+  ChevronDown,
+  ShoppingBag,
+  Home
 } from 'lucide-react';
 
 interface Deal {
@@ -578,8 +580,21 @@ const DealsSection: React.FC = () => {
     );
   };
 
-  // Get deal type icon
+  // Get deal type icon with enhanced matching
   const getDealIcon = (deal: Deal) => {
+    const title = deal.title?.toLowerCase() || '';
+    const sector = deal.sector?.toLowerCase() || '';
+    
+    // Specific name/sector based matching first
+    if (title.includes('renewable') || title.includes('energy') || title.includes('solar') || title.includes('wind') || sector.includes('renewable')) return <Zap className="w-6 h-6" />;
+    if (title.includes('telecom') || title.includes('infrastructure') || title.includes('network')) return <Activity className="w-6 h-6" />;
+    if (title.includes('restaurant') || title.includes('food') || sector.includes('fast_food')) return <Users className="w-6 h-6" />;
+    if (title.includes('tech') || title.includes('software') || title.includes('app') || sector.includes('tech')) return <Brain className="w-6 h-6" />;
+    if (title.includes('healthcare') || title.includes('medical') || sector.includes('healthcare')) return <Shield className="w-6 h-6" />;
+    if (title.includes('ecommerce') || title.includes('retail') || sector.includes('ecommerce')) return <ShoppingBag className="w-6 h-6" />;
+    if (title.includes('real estate') || title.includes('property') || sector.includes('real_estate')) return <Home className="w-6 h-6" />;
+    
+    // Deal type fallback
     const iconMap: Record<string, JSX.Element> = {
       'sector': <Building2 className="w-6 h-6" />,
       'stock': <TrendingUp className="w-6 h-6" />,
