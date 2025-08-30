@@ -902,7 +902,7 @@ const FinancialManagementSection: React.FC = () => {
                             onClick={() => setSellConfirmationAsset(asset)}
                             variant="outline" 
                             size="sm"
-                            className="bg-red-600 text-white hover:bg-red-700 hover:text-white border-red-600 hover:border-red-700 font-medium"
+                            className="bg-red-400 text-white hover:bg-red-500 hover:text-white border-red-400 hover:border-red-500 font-medium"
                           >
                             Sell Asset
                           </Button>
@@ -1024,7 +1024,7 @@ const FinancialManagementSection: React.FC = () => {
                               variant="outline" 
                               size="sm"
                               disabled={financialData.bankBalance < liability.outstandingAmount}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 font-medium"
+                              className="text-red-400 hover:text-red-500 hover:bg-red-50 border-red-200 font-medium"
                             >
                               Pay Full Amount
                             </Button>
@@ -1143,7 +1143,7 @@ const FinancialManagementSection: React.FC = () => {
             </Button>
             <Button
               onClick={() => sellConfirmationAsset && handleSellAsset(sellConfirmationAsset.id)}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm py-1.5"
+              className="flex-1 bg-red-400 hover:bg-red-500 text-white text-sm py-1.5"
             >
               Confirm Sale
             </Button>
