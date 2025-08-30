@@ -13,9 +13,12 @@ import {
 } from 'lucide-react';
 
 const CompactDashboard: React.FC = () => {
-  const { financialData, playerStats, currentWeek, currentDay } = useWealthSprintGame();
+  const { financialData, playerStats, currentWeek, currentDay, getAssets } = useWealthSprintGame();
   
-  const progressToFI = Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100);
+  // Calculate actual side income from assets
+  const assets = getAssets() || [];
+  const actualSideIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
+  const progressToFI = Math.min(100, (actualSideIncome / financialData.monthlyExpenses) * 100);
 
   return (
     <div className="p-3 max-w-sm mx-auto">
@@ -36,7 +39,7 @@ const CompactDashboard: React.FC = () => {
           </div>
           <div className="flex justify-between items-center text-xs mb-2">
             <span>0 weeks played • Building Wealth...</span>
-            <span>{formatIndianCurrency(financialData.sideIncome)}/{formatIndianCurrency(financialData.monthlyExpenses)}</span>
+            <span>{formatIndianCurrency(actualSideIncome)}/{formatIndianCurrency(financialData.monthlyExpenses)}</span>
           </div>
           <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
             <div 

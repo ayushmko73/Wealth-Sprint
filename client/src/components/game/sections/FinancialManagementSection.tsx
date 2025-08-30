@@ -586,7 +586,7 @@ const FinancialManagementSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-yellow-800">Side Income</p>
-                      <p className="text-2xl font-bold text-yellow-600">₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-yellow-600">₹{actualSideIncome.toLocaleString()}</p>
                       <p className="text-xs text-yellow-600">Investment returns</p>
                     </div>
                     <TrendingUp className="w-8 h-8 text-yellow-600" />
@@ -628,7 +628,7 @@ const FinancialManagementSection: React.FC = () => {
                       <Pie
                         data={[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#eab308' }
+                          { name: 'Side Income', value: actualSideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0)}
                         cx="50%"
                         cy="50%"
@@ -661,7 +661,7 @@ const FinancialManagementSection: React.FC = () => {
                       >
                         {[
                           { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#eab308' }
+                          { name: 'Side Income', value: actualSideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
@@ -680,13 +680,13 @@ const FinancialManagementSection: React.FC = () => {
                       <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
                     </div>
                   )}
-                  {financialData.sideIncome > 0 && (
+                  {actualSideIncome > 0 && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                         <span className="text-sm">Side Income</span>
                       </div>
-                      <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
+                      <span className="text-sm font-medium">₹{actualSideIncome.toLocaleString()}</span>
                     </div>
                   )}
                 </div>

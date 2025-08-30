@@ -5,10 +5,13 @@ import { formatIndianCurrency } from '../../lib/utils';
 import { Progress } from '../ui/progress';
 
 const WealthTracker: React.FC = () => {
-  const { financialData } = useWealthSprintGame();
+  const { financialData, getAssets } = useWealthSprintGame();
   
-  const progressToFI = Math.min(100, (financialData.sideIncome / financialData.monthlyExpenses) * 100);
-  const isFinanciallyIndependent = financialData.sideIncome >= financialData.monthlyExpenses;
+  // Calculate actual side income from assets
+  const assets = getAssets() || [];
+  const actualSideIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
+  const progressToFI = Math.min(100, (actualSideIncome / financialData.monthlyExpenses) * 100);
+  const isFinanciallyIndependent = actualSideIncome >= financialData.monthlyExpenses;
 
   return (
     <div className="bg-[#75746E] border-t border-[#6b6a64] p-4">
@@ -38,7 +41,7 @@ const WealthTracker: React.FC = () => {
           <div>
             <p className="text-xs text-gray-500">Side Income</p>
             <p className="text-sm font-semibold text-[#3a3a3a]">
-{formatIndianCurrency(financialData.sideIncome)}/month
+{formatIndianCurrency(actualSideIncome)}/month
             </p>
           </div>
         </div>

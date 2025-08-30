@@ -312,11 +312,11 @@ const initialFinancialData: FinancialData = {
   bankBalance: 500000, // ₹5 lakhs starting cash
   netWorth: 500000,
   mainIncome: 75000, // ₹75k monthly salary
-  sideIncome: 15000, // ₹15k side income
+  sideIncome: 0, // Side income starts at 0, earned from assets
   monthlyExpenses: 45000, // ₹45k monthly expenses
   totalAssets: 500000,
   totalLiabilities: 0, // No default liabilities
-  cashflow: 45000, // 75k + 15k - 45k = 45k
+  cashflow: 30000, // 75k + 0k - 45k = 30k
   investments: {
     stocks: 0,
     bonds: 0,
