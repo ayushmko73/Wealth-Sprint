@@ -58,7 +58,7 @@ import IndustrySectorsSection from './sections/IndustrySectorsSection';
 import BusinessSection from './sections/BusinessSection';
 import StoreSection from './sections/StoreSection';
 
-import FuturisticTeamHiring from './sections/FuturisticTeamHiring';
+import TeamManagementSection from './sections/TeamManagementSection';
 import { DecisionManager } from './decisions';
 
 import ProfessionalStockMarket from './ProfessionalStockMarket';
@@ -133,7 +133,7 @@ const GameDashboard: React.FC = () => {
         return <StoreSection />;
 
       case 'team_management':
-        return <FuturisticTeamHiring />;
+        return <TeamManagementSection />;
       case 'industry_sectors':
         return <IndustrySectorsSection />;
       case 'business_deals':
