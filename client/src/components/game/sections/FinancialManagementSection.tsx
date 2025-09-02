@@ -1005,7 +1005,7 @@ const FinancialManagementSection: React.FC = () => {
                       <p className="text-sm font-medium text-purple-800">ROI potential</p>
                       <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
                         {totalLiabilityValue > 0 ? 
-                          `${((monthlyLiabilityPayment / totalLiabilityValue) * 100 * 12).toFixed(1)}%` :
+                          `-${((monthlyLiabilityPayment / totalLiabilityValue) * 100 * 12).toFixed(1)}%` :
                           '0.0%'
                         }
                       </p>
