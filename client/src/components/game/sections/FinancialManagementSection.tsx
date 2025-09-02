@@ -1033,7 +1033,7 @@ const FinancialManagementSection: React.FC = () => {
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
-                                {liability.description && (
+                                {liability.description && !liability.description.toLowerCase().startsWith(liability.name.toLowerCase()) && (
                                   <p className="text-sm text-gray-600 capitalize font-medium">{liability.description}</p>
                                 )}
                                 {liability.emi > 0 && liability.tenure > 0 && (
@@ -1063,8 +1063,16 @@ const FinancialManagementSection: React.FC = () => {
                                 ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
                               </div>
                             </div>
-                            {/* Show sell button only for non-financial liability items (goods/products) */}
-                            {!(['home_loan', 'car_loan', 'education_loan', 'credit_card', 'business_debt', 'personal_loan'].includes(liability.category)) && (
+                            {/* Show sell button for physical goods/products, not for pure loans/credit */}
+                            {(liability.name.toLowerCase().includes('car') || 
+                              liability.name.toLowerCase().includes('villa') || 
+                              liability.name.toLowerCase().includes('house') ||
+                              liability.name.toLowerCase().includes('apartment') ||
+                              liability.name.toLowerCase().includes('vehicle') ||
+                              liability.category === 'real_estate' ||
+                              liability.category === 'vehicles' ||
+                              (!['personal_loan', 'education_loan', 'credit_card', 'business_debt'].includes(liability.category) && 
+                               !liability.name.toLowerCase().includes('loan'))) && (
                               <Button 
                                 onClick={() => setSellConfirmationLiability(liability)}
                                 variant="outline" 
