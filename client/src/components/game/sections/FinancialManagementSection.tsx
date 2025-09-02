@@ -1003,8 +1003,13 @@ const FinancialManagementSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-purple-800">ROI potential</p>
-                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-purple-600' : 'text-red-600'}`}>₹{netWorth.toLocaleString()}</p>
-                      <p className="text-xs text-purple-600">Assets - Liabilities</p>
+                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
+                        {totalLiabilityValue > 0 ? 
+                          `${((monthlyLiabilityPayment / totalLiabilityValue) * 100 * 12).toFixed(1)}%` :
+                          '0.0%'
+                        }
+                      </p>
+                      <p className="text-xs text-purple-600">Avg ROI impact</p>
                     </div>
                     <PiggyBank className="w-8 h-8 text-purple-600" />
                   </div>
