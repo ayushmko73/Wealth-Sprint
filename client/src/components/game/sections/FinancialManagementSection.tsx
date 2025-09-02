@@ -998,15 +998,15 @@ const FinancialManagementSection: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-800">Net Worth</p>
-                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{netWorth.toLocaleString()}</p>
-                      <p className="text-xs text-green-600">Assets - Liabilities</p>
+                      <p className="text-sm font-medium text-purple-800">ROI potential</p>
+                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-purple-600' : 'text-red-600'}`}>₹{netWorth.toLocaleString()}</p>
+                      <p className="text-xs text-purple-600">Assets - Liabilities</p>
                     </div>
-                    <PiggyBank className="w-8 h-8 text-green-600" />
+                    <PiggyBank className="w-8 h-8 text-purple-600" />
                   </div>
                 </CardContent>
               </Card>
