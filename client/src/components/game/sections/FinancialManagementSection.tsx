@@ -541,7 +541,9 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeCashflowIndex ?? undefined}
                         activeShape={renderActiveShape}
@@ -676,7 +678,9 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeIncomeIndex ?? undefined}
                         activeShape={renderActiveShape}
@@ -801,7 +805,9 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeExpenseIndex ?? undefined}
                         activeShape={renderActiveShape}
