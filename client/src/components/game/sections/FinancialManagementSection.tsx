@@ -1033,7 +1033,7 @@ const FinancialManagementSection: React.FC = () => {
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
-                                <p className="text-sm text-gray-600 capitalize font-medium">{liability.category.replace('_', ' ')}</p>
+                                <p className="text-sm text-gray-600 capitalize font-medium">{liability.description || liability.category.replace('_', ' ')}</p>
                                 {liability.emi > 0 && liability.tenure > 0 && (
                                   <p className="text-xs text-gray-500">
                                     EMI: -₹{liability.emi.toLocaleString()}/mo • {Math.ceil(liability.outstandingAmount / liability.emi)} months left
@@ -1061,7 +1061,7 @@ const FinancialManagementSection: React.FC = () => {
                                 ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
                               </div>
                             </div>
-                            {/* Hide sell button for loan/credit categories only */}
+                            {/* Show sell button for all liabilities except loan/credit categories */}
                             {!['home_loan', 'car_loan', 'education_loan', 'credit_card', 'business_debt', 'personal_loan'].includes(liability.category) && (
                               <Button 
                                 onClick={() => setSellConfirmationLiability(liability)}
