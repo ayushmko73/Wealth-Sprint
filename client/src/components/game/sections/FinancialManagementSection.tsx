@@ -1036,7 +1036,7 @@ const FinancialManagementSection: React.FC = () => {
                                 <p className="text-sm text-gray-600 capitalize font-medium">{liability.category.replace('_', ' ')}</p>
                                 {liability.emi > 0 && liability.tenure > 0 && (
                                   <p className="text-xs text-gray-500">
-                                    EMI: ₹{liability.emi.toLocaleString()}/mo • {Math.ceil(liability.outstandingAmount / liability.emi)} months left
+                                    EMI: -₹{liability.emi.toLocaleString()}/mo • {Math.ceil(liability.outstandingAmount / liability.emi)} months left
                                   </p>
                                 )}
                               </div>
@@ -1044,7 +1044,6 @@ const FinancialManagementSection: React.FC = () => {
                             <div className="text-right">
                               <p className="text-xl font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
                               <p className="text-sm font-semibold text-red-600 flex items-center gap-1 justify-end">
-                                <TrendingDown className="w-3 h-3" />
                                 -₹{liability.emi.toLocaleString()}/mo
                               </p>
                             </div>
