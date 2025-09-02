@@ -875,7 +875,7 @@ const FinancialManagementSection: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-800">Monthly Income</p>
+                      <p className="text-sm font-medium text-blue-800">Monthly Cashflow</p>
                       <p className="text-2xl font-bold text-blue-600">₹{monthlyAssetIncome.toLocaleString()}</p>
                       <p className="text-xs text-blue-600">From assets</p>
                     </div>
