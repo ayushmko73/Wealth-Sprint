@@ -1061,14 +1061,17 @@ const FinancialManagementSection: React.FC = () => {
                                 ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
                               </div>
                             </div>
-                            <Button 
-                              onClick={() => setSellConfirmationLiability(liability)}
-                              variant="outline" 
-                              size="sm"
-                              className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
-                            >
-                              Sell Item
-                            </Button>
+                            {/* Only show sell button if there's no EMI (emi is 0 or undefined) */}
+                            {(!liability.emi || liability.emi === 0) && (
+                              <Button 
+                                onClick={() => setSellConfirmationLiability(liability)}
+                                variant="outline" 
+                                size="sm"
+                                className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
+                              >
+                                Sell Item
+                              </Button>
+                            )}
                           </div>
                         </div>
                       );
