@@ -1061,8 +1061,8 @@ const FinancialManagementSection: React.FC = () => {
                                 ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
                               </div>
                             </div>
-                            {/* Only show sell button if there's no EMI (emi is 0 or undefined) */}
-                            {(!liability.emi || liability.emi === 0) && (
+                            {/* Hide sell button for loan/credit categories only */}
+                            {!['home_loan', 'car_loan', 'education_loan', 'credit_card', 'business_debt', 'personal_loan'].includes(liability.category) && (
                               <Button 
                                 onClick={() => setSellConfirmationLiability(liability)}
                                 variant="outline" 
