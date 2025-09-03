@@ -27,7 +27,8 @@ import {
   ChevronRight,
   Plus,
   Minus,
-  AlertTriangle
+  AlertTriangle,
+  Wifi
 } from 'lucide-react';
 import { FaCcVisa } from 'react-icons/fa';
 import { toast } from 'sonner';
@@ -297,50 +298,82 @@ const BankSection: React.FC = () => {
 
         {selectedCategory === 'Credit' && (
           <div className="space-y-4">
-            {/* Professional Visa Credit Card */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 rounded-2xl p-6 text-white shadow-2xl relative overflow-hidden">
-                {/* Card Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-pulse"></div>
+            {/* Premium VISA Credit Card */}
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-slate-900 via-gray-800 to-black rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden transform transition-transform hover:scale-[1.02] duration-300">
+                {/* Premium Card Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                 
-                {/* Chip and Contactless */}
-                <div className="flex justify-between items-start mb-6">
+                {/* Premium Background Pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-4 right-8 w-24 h-24 border border-white/20 rounded-full"></div>
+                  <div className="absolute top-8 right-12 w-16 h-16 border border-white/10 rounded-full"></div>
+                  <div className="absolute bottom-8 left-8 w-32 h-32 border border-white/10 rounded-full"></div>
+                </div>
+                
+                {/* Card Header with Bank Name and Chip */}
+                <div className="flex justify-between items-start mb-8">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-9 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-md shadow-sm flex items-center justify-center">
-                      <div className="w-8 h-6 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-sm"></div>
+                    {/* Premium Chip */}
+                    <div className="w-14 h-10 bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 rounded-xl shadow-lg flex items-center justify-center relative">
+                      <div className="w-10 h-7 bg-gradient-to-br from-amber-300 to-yellow-600 rounded-lg relative">
+                        <div className="absolute inset-1 bg-gradient-to-br from-yellow-200 to-amber-400 rounded-md"></div>
+                      </div>
                     </div>
-                    <div className="opacity-80">
-                      <Wifi className="w-5 h-5 rotate-90" />
+                    {/* Contactless Payment */}
+                    <div className="opacity-70">
+                      <Wifi className="w-6 h-6 rotate-90" />
                     </div>
                   </div>
-                  <FaCcVisa className="w-16 h-10 opacity-90" />
-                </div>
-                
-                {/* Card Number */}
-                <div className="font-mono text-2xl tracking-[0.2em] mb-6 text-center">
-                  4532 •••• •••• 1234
-                </div>
-                
-                {/* Card Details */}
-                <div className="flex justify-between items-end">
-                  <div>
-                    <p className="text-xs opacity-70 tracking-wider mb-1">CARDHOLDER</p>
-                    <p className="font-bold text-sm tracking-wide">WEALTH PLAYER</p>
+                  
+                  <div className="text-right">
+                    <div className="text-xs text-gray-300 tracking-[0.15em] mb-1">WEALTH SPRINT BANK</div>
+                    <FaCcVisa className="w-20 h-12 opacity-95" />
                   </div>
+                </div>
+                
+                {/* Card Number - Premium Styling */}
+                <div className="font-mono text-3xl tracking-[0.25em] mb-8 text-center font-light">
+                  <span className="text-gray-100">4532</span>
+                  <span className="mx-3 text-gray-400">••••</span>
+                  <span className="mx-3 text-gray-400">••••</span>
+                  <span className="text-gray-100">1234</span>
+                </div>
+                
+                {/* Card Details - Premium Layout */}
+                <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <p className="text-xs opacity-70 tracking-wider mb-1">VALID THRU</p>
-                    <p className="font-bold text-sm">12/29</p>
+                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">CARDHOLDER</p>
+                    <p className="font-bold text-sm tracking-wide text-gray-100">WEALTH PLAYER</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">VALID THRU</p>
+                    <p className="font-bold text-sm text-gray-100">12/29</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs opacity-70 tracking-wider mb-1">CREDIT LIMIT</p>
-                    <p className="font-bold text-yellow-300">{formatMoney(creditLimit)}</p>
+                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">CREDIT LIMIT</p>
+                    <p className="font-bold text-lg text-yellow-400">{formatMoney(creditLimit)}</p>
                   </div>
                 </div>
                 
-                {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
-                <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full -ml-10 -mb-10"></div>
+                {/* Premium Security Features */}
+                <div className="absolute bottom-4 left-8">
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="tracking-wide">SECURE • CONTACTLESS • GLOBAL</span>
+                  </div>
+                </div>
+                
+                {/* Card Type Badge */}
+                <div className="absolute top-4 left-4">
+                  <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-black px-2 py-1 rounded-md text-xs font-bold tracking-wide">
+                    PREMIUM
+                  </div>
+                </div>
               </div>
+              
+              {/* Premium Card Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 rounded-3xl -z-10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
 
           {/* Compact Credit Dashboard */}
@@ -438,50 +471,119 @@ const BankSection: React.FC = () => {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base text-purple-800">
                 <Calendar className="w-4 h-4" />
-                EMI Status & Management
+                EMI Status & Usage History
               </CardTitle>
-              <p className="text-xs text-purple-700">Auto-deducted every 4 weeks • Manage your installments</p>
+              <p className="text-xs text-purple-700">Auto-deducted every 4 weeks • Track your EMI transactions</p>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Sample EMI entries - would be populated from actual EMI data */}
-              <div className="text-sm text-purple-600">
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <div>
-                      <p className="font-semibold text-purple-800">No Active EMIs</p>
-                      <p className="text-xs text-purple-600">Purchase items with EMI to see them here</p>
+              {(() => {
+                const activeEmis = financialData.liabilities.filter(l => 
+                  l.category === 'credit_card' && l.name.includes('EMI') && l.outstandingAmount > 0
+                );
+                const emiTransactions = financialData.transactionHistory.filter(t => 
+                  t.description.includes('EMI Setup') || t.description.includes('EMI:')
+                );
+                
+                return (
+                  <>
+                    {/* Active EMI Transactions */}
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {activeEmis.length > 0 ? (
+                        activeEmis.map((emi) => {
+                          const relatedTransaction = emiTransactions.find(t => 
+                            t.description.includes(emi.name.replace(' EMI', ''))
+                          );
+                          return (
+                            <div key={emi.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200 hover:shadow-sm transition-shadow">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-xs">💳</span>
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-purple-800 text-sm">{emi.name}</p>
+                                  <p className="text-xs text-purple-600">
+                                    Used for: {relatedTransaction ? relatedTransaction.description.split(' - ')[0].replace('EMI Setup: ', '') : 'Investment Purchase'}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {emi.remainingMonths} of {emi.tenure} months remaining • {formatMoney(emi.emi)}/month
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-purple-900 text-sm">{formatMoney(emi.outstandingAmount)}</p>
+                                <p className="text-xs text-gray-500">Outstanding</p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="flex items-center justify-center p-6 bg-white rounded-lg border border-purple-200">
+                          <div className="text-center">
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <Calendar className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <p className="font-semibold text-purple-800">No Active EMIs</p>
+                            <p className="text-xs text-purple-600">Purchase items with EMI to see them here</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* EMI Summary */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-white p-2 rounded border border-purple-200 text-center">
-                  <p className="text-xs text-purple-600">Total EMIs</p>
-                  <p className="font-bold text-purple-800">0</p>
-                </div>
-                <div className="bg-white p-2 rounded border border-purple-200 text-center">
-                  <p className="text-xs text-purple-600">Monthly Total</p>
-                  <p className="font-bold text-purple-800">{formatMoney(0)}</p>
-                </div>
-                <div className="bg-white p-2 rounded border border-purple-200 text-center">
-                  <p className="text-xs text-purple-600">Next Payment</p>
-                  <p className="font-bold text-purple-800">-</p>
-                </div>
-              </div>
-              
-              <div className="bg-amber-50 border border-amber-200 rounded p-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="w-4 h-4 text-amber-600" />
-                  <span className="text-sm font-semibold text-amber-800">EMI Payment Schedule</span>
-                </div>
-                <p className="text-xs text-amber-700">
-                  EMI payments are automatically deducted from your account every 4 weeks. 
-                  Ensure sufficient balance to avoid late fees.
-                </p>
-              </div>
+
+                    {/* EMI Summary */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                        <p className="text-xs text-purple-600">Active EMIs</p>
+                        <p className="font-bold text-purple-800">{activeEmis.length}</p>
+                      </div>
+                      <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                        <p className="text-xs text-purple-600">Monthly Total</p>
+                        <p className="font-bold text-purple-800">
+                          {formatMoney(activeEmis.reduce((sum, emi) => sum + emi.emi, 0))}
+                        </p>
+                      </div>
+                      <div className="bg-white p-2 rounded border border-purple-200 text-center">
+                        <p className="text-xs text-purple-600">Total Outstanding</p>
+                        <p className="font-bold text-purple-800">
+                          {formatMoney(activeEmis.reduce((sum, emi) => sum + emi.outstandingAmount, 0))}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Recent EMI History */}
+                    {emiTransactions.length > 0 && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Clock className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm font-semibold text-blue-800">Recent EMI History</span>
+                        </div>
+                        <div className="space-y-1 max-h-24 overflow-y-auto">
+                          {emiTransactions.slice(0, 3).map((transaction) => (
+                            <div key={transaction.id} className="flex justify-between items-center text-xs">
+                              <span className="text-blue-700 truncate">
+                                {transaction.description.replace('EMI Setup: ', '')}
+                              </span>
+                              <span className="text-blue-600 ml-2">
+                                {new Date(transaction.timestamp).toLocaleDateString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="bg-amber-50 border border-amber-200 rounded p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                        <span className="text-sm font-semibold text-amber-800">EMI Payment Schedule</span>
+                      </div>
+                      <p className="text-xs text-amber-700">
+                        EMI payments are automatically deducted from your account every 4 weeks. 
+                        Ensure sufficient balance to avoid late fees.
+                      </p>
+                    </div>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
           </div>
