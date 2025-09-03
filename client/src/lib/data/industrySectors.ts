@@ -48,10 +48,10 @@ export const industrySectors: IndustrySector[] = [
     icon: '💻',
     description: 'Build product → feedback → pivot. Overcome shiny object syndrome.',
     unlockRequirements: {
-      sectorsCompleted: 1,
-      maxLoopScore: 80,
+      sectorsCompleted: 0,
+      maxLoopScore: 100,
     },
-    isUnlocked: false,
+    isUnlocked: true,
     businesses: [
       {
         id: 'app_dev_studio',
@@ -89,10 +89,10 @@ export const industrySectors: IndustrySector[] = [
     icon: '📦',
     description: 'Marketing, fulfillment, warehousing. Navigate fake influencers and thin margins.',
     unlockRequirements: {
-      sectorsCompleted: 2,
-      maxLoopScore: 60,
+      sectorsCompleted: 0,
+      maxLoopScore: 100,
     },
-    isUnlocked: false,
+    isUnlocked: true,
     businesses: [
       {
         id: 'fashion_marketplace',
@@ -130,10 +130,10 @@ export const industrySectors: IndustrySector[] = [
     icon: '🏥',
     description: 'Research, trials, hospitals. Navigate guilt loop between saving lives vs profit.',
     unlockRequirements: {
-      sectorsCompleted: 3,
-      maxLoopScore: 50,
+      sectorsCompleted: 0,
+      maxLoopScore: 100,
     },
-    isUnlocked: false,
+    isUnlocked: true,
     businesses: [
       {
         id: 'telemedicine_platform',
