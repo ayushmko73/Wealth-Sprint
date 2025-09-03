@@ -298,19 +298,26 @@ const BankSection: React.FC = () => {
 
         {selectedCategory === 'Credit' && (
           <div className="space-y-4">
-            {/* Compact Blue Credit Card */}
+            {/* Compact Dark Blue Credit Card */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+              <div className="bg-gradient-to-br from-blue-800 via-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
                 {/* Card Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="text-white font-bold text-lg tracking-wide">WEALTH SPRINT</div>
-                    <div className="text-blue-200 text-xs tracking-wider">PREMIUM ELITE</div>
+                    <div className="text-blue-300 text-xs tracking-wider">PREMIUM ELITE</div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <div className="w-10 h-7 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-md shadow-sm"></div>
-                    <div className="w-8 h-8 bg-orange-500 rounded-md shadow-sm"></div>
+                    <div className="bg-white rounded-md p-1.5 shadow-sm">
+                      <FaCcVisa className="w-8 h-5 text-blue-600" />
+                    </div>
                   </div>
+                </div>
+                
+                {/* Contactless Icon */}
+                <div className="absolute top-16 left-6 opacity-70">
+                  <Wifi className="w-5 h-5 rotate-90 text-blue-300" />
                 </div>
                 
                 {/* Card Number with Dots */}
@@ -318,48 +325,42 @@ const BankSection: React.FC = () => {
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="flex gap-1">
                       {[...Array(4)].map((_, i) => (
-                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-70"></div>
                       ))}
                     </div>
                     <div className="flex gap-1">
                       {[...Array(4)].map((_, i) => (
-                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-70"></div>
                       ))}
                     </div>
                     <div className="flex gap-1">
                       {[...Array(4)].map((_, i) => (
-                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-70"></div>
                       ))}
                     </div>
-                    <div className="font-mono text-xl tracking-wider font-medium">1234</div>
+                    <div className="font-mono text-xl tracking-wider font-medium text-white">1234</div>
                   </div>
                 </div>
                 
                 {/* Card Details - Bottom Row */}
-                <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="grid grid-cols-3 gap-4 text-sm mt-6">
                   <div>
-                    <p className="text-blue-200 text-xs mb-1">CARDHOLDER</p>
-                    <p className="font-medium">WEALTH PLAYER</p>
+                    <p className="text-blue-300 text-xs mb-1 tracking-wide">CARDHOLDER</p>
+                    <p className="font-medium text-white">WEALTH PLAYER</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-blue-200 text-xs mb-1">VALID THRU</p>
-                    <p className="font-medium">12/29</p>
+                    <p className="text-blue-300 text-xs mb-1 tracking-wide">VALID THRU</p>
+                    <p className="font-medium text-white">12/29</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-blue-200 text-xs mb-1">CREDIT LIMIT</p>
-                    <p className="font-bold text-yellow-300">{formatMoney(creditLimit)}</p>
+                    <p className="text-blue-300 text-xs mb-1 tracking-wide">CREDIT LIMIT</p>
+                    <p className="font-bold text-yellow-400">{formatMoney(creditLimit)}</p>
                   </div>
                 </div>
                 
-                {/* VISA Logo */}
-                <div className="absolute top-6 right-6">
-                  <FaCcVisa className="w-12 h-8 opacity-90" />
-                </div>
-                
-                {/* Contactless Icon */}
-                <div className="absolute top-20 left-20 opacity-60">
-                  <Wifi className="w-4 h-4 rotate-90" />
-                </div>
+                {/* Subtle Background Pattern */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
               </div>
             </div>
 
