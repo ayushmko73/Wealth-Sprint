@@ -307,9 +307,7 @@ const BankSection: React.FC = () => {
                     <div className="text-white font-bold text-lg tracking-wide">WEALTH SPRINT</div>
                     <div className="text-blue-300 text-xs tracking-wider">PREMIUM ELITE</div>
                   </div>
-                  <div className="bg-white rounded-md p-2 shadow-sm">
-                    <FaCcVisa className="w-12 h-8 text-blue-600" />
-                  </div>
+                  <FaCcVisa className="w-12 h-8 text-white opacity-90" />
                 </div>
                 
                 {/* Contactless Icon */}
