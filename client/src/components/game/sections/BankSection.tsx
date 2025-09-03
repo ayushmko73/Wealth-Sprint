@@ -29,6 +29,7 @@ import {
   Minus,
   AlertTriangle
 } from 'lucide-react';
+import { FaCcVisa } from 'react-icons/fa';
 import { toast } from 'sonner';
 
 const BankSection: React.FC = () => {
@@ -295,42 +296,52 @@ const BankSection: React.FC = () => {
         )}
 
         {selectedCategory === 'Credit' && (
-          <div className="space-y-3">
-            {/* Enhanced Premium Credit Card */}
-          <Card className="bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900 text-white border-0 shadow-2xl overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12"></div>
-            <CardContent className="p-4 relative z-10">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-lg font-bold tracking-wide">WEALTH SPRINT</h3>
-                  <p className="text-xs opacity-90 tracking-wider">PREMIUM ELITE</p>
+          <div className="space-y-4">
+            {/* Professional Visa Credit Card */}
+            <div className="relative">
+              <div className="bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 rounded-2xl p-6 text-white shadow-2xl relative overflow-hidden">
+                {/* Card Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-pulse"></div>
+                
+                {/* Chip and Contactless */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-9 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-md shadow-sm flex items-center justify-center">
+                      <div className="w-8 h-6 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-sm"></div>
+                    </div>
+                    <div className="opacity-80">
+                      <Wifi className="w-5 h-5 rotate-90" />
+                    </div>
+                  </div>
+                  <FaCcVisa className="w-16 h-10 opacity-90" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-5 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-sm shadow-md"></div>
-                  <div className="w-6 h-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-sm opacity-80"></div>
+                
+                {/* Card Number */}
+                <div className="font-mono text-2xl tracking-[0.2em] mb-6 text-center">
+                  4532 •••• •••• 1234
                 </div>
+                
+                {/* Card Details */}
+                <div className="flex justify-between items-end">
+                  <div>
+                    <p className="text-xs opacity-70 tracking-wider mb-1">CARDHOLDER</p>
+                    <p className="font-bold text-sm tracking-wide">WEALTH PLAYER</p>
+                  </div>
+                  <div>
+                    <p className="text-xs opacity-70 tracking-wider mb-1">VALID THRU</p>
+                    <p className="font-bold text-sm">12/29</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs opacity-70 tracking-wider mb-1">CREDIT LIMIT</p>
+                    <p className="font-bold text-yellow-300">{formatMoney(creditLimit)}</p>
+                  </div>
+                </div>
+                
+                {/* Background Pattern */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full -ml-10 -mb-10"></div>
               </div>
-              
-              <div className="font-mono text-lg tracking-[0.3em] mb-4 text-center py-2">
-                •••• •••• •••• 1234
-              </div>
-              
-              <div className="flex justify-between items-end text-xs">
-                <div>
-                  <p className="opacity-70 text-[10px] tracking-wider">CARDHOLDER</p>
-                  <p className="font-bold text-sm">WEALTH PLAYER</p>
-                </div>
-                <div>
-                  <p className="opacity-70 text-[10px] tracking-wider">VALID THRU</p>
-                  <p className="font-bold text-sm">12/29</p>
-                </div>
-                <div className="text-right">
-                  <p className="opacity-70 text-[10px] tracking-wider">CREDIT LIMIT</p>
-                  <p className="font-bold text-yellow-400 text-sm">{formatMoney(creditLimit)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Compact Credit Dashboard */}
           <div className="grid grid-cols-3 gap-2">
