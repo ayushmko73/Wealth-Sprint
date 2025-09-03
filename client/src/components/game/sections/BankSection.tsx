@@ -298,82 +298,69 @@ const BankSection: React.FC = () => {
 
         {selectedCategory === 'Credit' && (
           <div className="space-y-4">
-            {/* Premium VISA Credit Card */}
-            <div className="relative group">
-              <div className="bg-gradient-to-br from-slate-900 via-gray-800 to-black rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden transform transition-transform hover:scale-[1.02] duration-300">
-                {/* Premium Card Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                
-                {/* Premium Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-4 right-8 w-24 h-24 border border-white/20 rounded-full"></div>
-                  <div className="absolute top-8 right-12 w-16 h-16 border border-white/10 rounded-full"></div>
-                  <div className="absolute bottom-8 left-8 w-32 h-32 border border-white/10 rounded-full"></div>
-                </div>
-                
-                {/* Card Header with Bank Name and Chip */}
-                <div className="flex justify-between items-start mb-8">
-                  <div className="flex items-center gap-4">
-                    {/* Premium Chip */}
-                    <div className="w-14 h-10 bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 rounded-xl shadow-lg flex items-center justify-center relative">
-                      <div className="w-10 h-7 bg-gradient-to-br from-amber-300 to-yellow-600 rounded-lg relative">
-                        <div className="absolute inset-1 bg-gradient-to-br from-yellow-200 to-amber-400 rounded-md"></div>
-                      </div>
-                    </div>
-                    {/* Contactless Payment */}
-                    <div className="opacity-70">
-                      <Wifi className="w-6 h-6 rotate-90" />
-                    </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className="text-xs text-gray-300 tracking-[0.15em] mb-1">WEALTH SPRINT BANK</div>
-                    <FaCcVisa className="w-20 h-12 opacity-95" />
-                  </div>
-                </div>
-                
-                {/* Card Number - Premium Styling */}
-                <div className="font-mono text-3xl tracking-[0.25em] mb-8 text-center font-light">
-                  <span className="text-gray-100">4532</span>
-                  <span className="mx-3 text-gray-400">••••</span>
-                  <span className="mx-3 text-gray-400">••••</span>
-                  <span className="text-gray-100">1234</span>
-                </div>
-                
-                {/* Card Details - Premium Layout */}
-                <div className="grid grid-cols-3 gap-4">
+            {/* Compact Blue Credit Card */}
+            <div className="relative">
+              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                {/* Card Header */}
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">CARDHOLDER</p>
-                    <p className="font-bold text-sm tracking-wide text-gray-100">WEALTH PLAYER</p>
+                    <div className="text-white font-bold text-lg tracking-wide">WEALTH SPRINT</div>
+                    <div className="text-blue-200 text-xs tracking-wider">PREMIUM ELITE</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-7 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-md shadow-sm"></div>
+                    <div className="w-8 h-8 bg-orange-500 rounded-md shadow-sm"></div>
+                  </div>
+                </div>
+                
+                {/* Card Number with Dots */}
+                <div className="text-center my-6">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="flex gap-1">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
+                      ))}
+                    </div>
+                    <div className="font-mono text-xl tracking-wider font-medium">1234</div>
+                  </div>
+                </div>
+                
+                {/* Card Details - Bottom Row */}
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-blue-200 text-xs mb-1">CARDHOLDER</p>
+                    <p className="font-medium">WEALTH PLAYER</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">VALID THRU</p>
-                    <p className="font-bold text-sm text-gray-100">12/29</p>
+                    <p className="text-blue-200 text-xs mb-1">VALID THRU</p>
+                    <p className="font-medium">12/29</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mb-1">CREDIT LIMIT</p>
-                    <p className="font-bold text-lg text-yellow-400">{formatMoney(creditLimit)}</p>
+                    <p className="text-blue-200 text-xs mb-1">CREDIT LIMIT</p>
+                    <p className="font-bold text-yellow-300">{formatMoney(creditLimit)}</p>
                   </div>
                 </div>
                 
-                {/* Premium Security Features */}
-                <div className="absolute bottom-4 left-8">
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="tracking-wide">SECURE • CONTACTLESS • GLOBAL</span>
-                  </div>
+                {/* VISA Logo */}
+                <div className="absolute top-6 right-6">
+                  <FaCcVisa className="w-12 h-8 opacity-90" />
                 </div>
                 
-                {/* Card Type Badge */}
-                <div className="absolute top-4 left-4">
-                  <div className="bg-gradient-to-r from-yellow-500 to-amber-600 text-black px-2 py-1 rounded-md text-xs font-bold tracking-wide">
-                    PREMIUM
-                  </div>
+                {/* Contactless Icon */}
+                <div className="absolute top-20 left-20 opacity-60">
+                  <Wifi className="w-4 h-4 rotate-90" />
                 </div>
               </div>
-              
-              {/* Premium Card Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 rounded-3xl -z-10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
 
           {/* Compact Credit Dashboard */}
