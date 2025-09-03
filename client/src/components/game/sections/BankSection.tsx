@@ -307,11 +307,8 @@ const BankSection: React.FC = () => {
                     <div className="text-white font-bold text-lg tracking-wide">WEALTH SPRINT</div>
                     <div className="text-blue-300 text-xs tracking-wider">PREMIUM ELITE</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-7 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-md shadow-sm"></div>
-                    <div className="bg-white rounded-md p-1.5 shadow-sm">
-                      <FaCcVisa className="w-8 h-5 text-blue-600" />
-                    </div>
+                  <div className="bg-white rounded-md p-2 shadow-sm">
+                    <FaCcVisa className="w-12 h-8 text-blue-600" />
                   </div>
                 </div>
                 
