@@ -76,106 +76,200 @@ interface LogisticsModel {
 }
 
 const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) => {
-  const { financialData, updateFinancialData, fastFoodChains, setFastFoodState } = useWealthSprintGame();
+  const { financialData, updateFinancialData, fastFoodChains, setFastFoodState, investInBusinessSector } = useWealthSprintGame();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [brandName, setBrandName] = useState('My Fast Food Chain');
   const [customerSatisfaction] = useState(78);
+
+  // Use persistent data from store
+  const cities = fastFoodChains?.cities || [];
+  const menuTypes = fastFoodChains?.menuTypes || [];
+  const pricingStrategies = fastFoodChains?.pricingStrategies || [];
+  const logisticsModels = fastFoodChains?.logisticsModels || [];
   
-  // Cities for expansion
-  const [cities, setCities] = useState<City[]>([
-    {
-      id: 'ranikhet',
-      name: 'Ranikhet',
-      cost: 250000,
-      population: '50K',
-      customerBoost: 15,
-      deliveryTime: '25 min',
-      unlocked: false
-    },
-    {
-      id: 'jaipur',
-      name: 'Jaipur',
-      cost: 500000,
-      population: '3.5M',
-      customerBoost: 35,
-      deliveryTime: '35 min',
-      unlocked: false
-    },
-    {
-      id: 'delhi',
-      name: 'Delhi',
-      cost: 750000,
-      population: '32M',
-      customerBoost: 50,
-      deliveryTime: '45 min',
-      unlocked: false
+  // Initialize default data structure if not exists
+  useEffect(() => {
+    if (!fastFoodChains) {
+      const defaultData = {
+        cities: [
+          {
+            id: 'ranikhet',
+            name: 'Ranikhet',
+            cost: 250000,
+            population: '50K',
+            customerBoost: 15,
+            deliveryTime: '25 min',
+            unlocked: false
+          },
+          {
+            id: 'jaipur',
+            name: 'Jaipur', 
+            cost: 500000,
+            population: '3.5M',
+            customerBoost: 35,
+            deliveryTime: '35 min',
+            unlocked: false
+          },
+          {
+            id: 'delhi',
+            name: 'Delhi',
+            cost: 750000,
+            population: '32M',
+            customerBoost: 50,
+            deliveryTime: '45 min',
+            unlocked: false
+          },
+          {
+            id: 'mumbai',
+            name: 'Mumbai',
+            cost: 950000,
+            population: '21M',
+            customerBoost: 60,
+            deliveryTime: '40 min',
+            unlocked: false
+          },
+          {
+            id: 'bangalore',
+            name: 'Bangalore',
+            cost: 650000,
+            population: '8.5M',
+            customerBoost: 45,
+            deliveryTime: '30 min',
+            unlocked: false
+          }
+        ],
+        menuTypes: [
+          {
+            id: 'classic',
+            name: 'Classic Burgers',
+            description: 'Traditional fast food menu with burgers, fries, and shakes',
+            cost: 150000,
+            customerAppeal: 'High',
+            revenueBoost: 20,
+            active: false
+          },
+          {
+            id: 'healthy',
+            name: 'Healthy Options',
+            description: 'Salads, wraps, and organic ingredients',
+            cost: 200000,
+            customerAppeal: 'Medium',
+            revenueBoost: 15,
+            active: false
+          },
+          {
+            id: 'premium',
+            name: 'Premium Menu',
+            description: 'Gourmet burgers and artisanal ingredients',
+            cost: 350000,
+            customerAppeal: 'Very High',
+            revenueBoost: 45,
+            active: false
+          },
+          {
+            id: 'breakfast',
+            name: 'Breakfast Menu',
+            description: 'All-day breakfast items and coffee',
+            cost: 180000,
+            customerAppeal: 'High',
+            revenueBoost: 25,
+            active: false
+          },
+          {
+            id: 'regional',
+            name: 'Regional Specials',
+            description: 'Local cuisine adapted for fast food',
+            cost: 220000,
+            customerAppeal: 'Very High',
+            revenueBoost: 35,
+            active: false
+          }
+        ],
+        pricingStrategies: [
+          {
+            id: 'premium',
+            name: 'Premium Pricing',
+            description: 'High-quality ingredients with premium pricing',
+            cost: 100000,
+            customerFootfall: 'Medium',
+            profitMargin: 'Very High',
+            active: false
+          },
+          {
+            id: 'value',
+            name: 'Value Pricing',
+            description: 'Competitive pricing to attract more customers',
+            cost: 75000,
+            customerFootfall: 'High',
+            profitMargin: 'Medium',
+            active: false
+          },
+          {
+            id: 'dynamic',
+            name: 'Dynamic Pricing',
+            description: 'AI-powered pricing based on demand and competition',
+            cost: 250000,
+            customerFootfall: 'Very High',
+            profitMargin: 'High',
+            active: false
+          },
+          {
+            id: 'bundle',
+            name: 'Bundle Deals',
+            description: 'Combo offers and family packs',
+            cost: 120000,
+            customerFootfall: 'High',
+            profitMargin: 'High',
+            active: false
+          }
+        ],
+        logisticsModels: [
+          {
+            id: 'express',
+            name: 'Express Delivery',
+            description: 'Fast delivery service with dedicated fleet',
+            cost: 300000,
+            deliveryTime: '15-20 min',
+            active: false
+          },
+          {
+            id: 'standard',
+            name: 'Standard Delivery',
+            description: 'Regular delivery service with third-party partners',
+            cost: 150000,
+            deliveryTime: '30-40 min',
+            active: false
+          },
+          {
+            id: 'drone',
+            name: 'Drone Delivery',
+            description: 'Ultra-fast drone delivery for premium areas',
+            cost: 500000,
+            deliveryTime: '10-15 min',
+            active: false
+          },
+          {
+            id: 'pickup',
+            name: 'Smart Pickup Points',
+            description: 'Automated pickup lockers in high-traffic areas',
+            cost: 200000,
+            deliveryTime: '0 min (pickup)',
+            active: false
+          },
+          {
+            id: 'subscription',
+            name: 'Subscription Service',
+            description: 'Monthly meal subscriptions with bulk delivery',
+            cost: 180000,
+            deliveryTime: 'Weekly bulk',
+            active: false
+          }
+        ]
+      };
+      setFastFoodState(defaultData);
     }
-  ]);
-
-  // Menu types
-  const [menuTypes, setMenuTypes] = useState<MenuType[]>([
-    {
-      id: 'classic',
-      name: 'Classic Burgers',
-      description: 'Traditional fast food menu with burgers, fries, and shakes',
-      cost: 150000,
-      customerAppeal: 'High',
-      revenueBoost: 20,
-      active: false
-    },
-    {
-      id: 'healthy',
-      name: 'Healthy Options',
-      description: 'Salads, wraps, and organic ingredients',
-      cost: 200000,
-      customerAppeal: 'Medium',
-      revenueBoost: 15,
-      active: false
-    }
-  ]);
-
-  // Pricing strategies
-  const [pricingStrategies, setPricingStrategies] = useState<PricingStrategy[]>([
-    {
-      id: 'premium',
-      name: 'Premium Pricing',
-      description: 'High-quality ingredients with premium pricing',
-      cost: 100000,
-      customerFootfall: 'Medium',
-      profitMargin: 'High',
-      active: false
-    },
-    {
-      id: 'value',
-      name: 'Value Pricing',
-      description: 'Competitive pricing to attract more customers',
-      cost: 75000,
-      customerFootfall: 'High',
-      profitMargin: 'Medium',
-      active: false
-    }
-  ]);
-
-  // Logistics models
-  const [logisticsModels, setLogisticsModels] = useState<LogisticsModel[]>([
-    {
-      id: 'express',
-      name: 'Express Delivery',
-      description: 'Fast delivery service with dedicated fleet',
-      cost: 300000,
-      deliveryTime: '15-20 min',
-      active: false
-    },
-    {
-      id: 'standard',
-      name: 'Standard Delivery',
-      description: 'Regular delivery service with third-party partners',
-      cost: 150000,
-      deliveryTime: '30-40 min',
-      active: false
-    }
-  ]);
+  }, [fastFoodChains, setFastFoodState]);
 
   // Helper functions
   const activeCities = cities.filter(c => c.unlocked);
@@ -197,17 +291,19 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     if (!city) return;
 
     if (!checkFunds(city.cost)) return;
-
-    const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `City expansion to ${city.name}`, city.cost);
     
     if (success) {
-      setCities(prev => 
-        prev.map(c => 
-          c.id === cityId ? { ...c, unlocked: true } : c
-        )
+      const updatedCities = cities.map(c => 
+        c.id === cityId ? { ...c, unlocked: true } : c
       );
+      
+      setFastFoodState({
+        ...fastFoodChains,
+        cities: updatedCities
+      });
+      
       toast.success(`🏪 Successfully expanded to ${city.name}!`);
     }
   };
@@ -218,17 +314,19 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     if (!menu) return;
 
     if (!checkFunds(menu.cost)) return;
-
-    const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${menu.name}`, menu.cost);
     
     if (success) {
-      setMenuTypes(prev => 
-        prev.map(m => 
-          m.id === menuId ? { ...m, active: true } : m
-        )
+      const updatedMenuTypes = menuTypes.map(m => 
+        m.id === menuId ? { ...m, active: true } : m
       );
+      
+      setFastFoodState({
+        ...fastFoodChains,
+        menuTypes: updatedMenuTypes
+      });
+      
       toast.success(`🍽️ ${menu.name} activated!`);
     }
   };
@@ -239,15 +337,19 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     if (!strategy) return;
 
     if (!checkFunds(strategy.cost)) return;
-
-    const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${strategy.name} pricing strategy`, strategy.cost);
     
     if (success) {
-      setPricingStrategies(prev => 
-        prev.map(s => ({ ...s, active: s.id === strategyId }))
+      const updatedPricingStrategies = pricingStrategies.map(s => 
+        ({ ...s, active: s.id === strategyId })
       );
+      
+      setFastFoodState({
+        ...fastFoodChains,
+        pricingStrategies: updatedPricingStrategies
+      });
+      
       toast.success(`💰 ${strategy.name} pricing strategy activated!`);
     }
   };
@@ -258,15 +360,19 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
     if (!model) return;
 
     if (!checkFunds(model.cost)) return;
-
-    const { investInBusinessSector } = useWealthSprintGame.getState();
     
     const success = investInBusinessSector('fast_food', 'Fast Food Chains', `Activated ${model.name} logistics model`, model.cost);
     
     if (success) {
-      setLogisticsModels(prev => 
-        prev.map(m => ({ ...m, active: m.id === modelId }))
+      const updatedLogisticsModels = logisticsModels.map(m => 
+        ({ ...m, active: m.id === modelId })
       );
+      
+      setFastFoodState({
+        ...fastFoodChains,
+        logisticsModels: updatedLogisticsModels
+      });
+      
       toast.success(`🚚 ${model.name} logistics activated!`);
     }
   };
