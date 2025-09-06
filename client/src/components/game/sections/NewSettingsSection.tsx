@@ -77,16 +77,30 @@ const NewSettingsSection: React.FC = () => {
     {
       id: 'entrepreneur',
       src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
-      alt: 'Innovator',
+      alt: 'Entrepreneur',
       icon: Lightbulb,
       color: 'from-yellow-500 to-orange-500'
     },
     {
       id: 'tech_dev',
       src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
-      alt: 'Tech Visionary',
+      alt: 'Tech Developer',
       icon: Monitor,
       color: 'from-green-500 to-green-600'
+    },
+    {
+      id: 'innovator',
+      src: '/avatars/innovator.webp',
+      alt: 'Innovator',
+      icon: Lightbulb,
+      color: 'from-blue-500 to-blue-600'
+    },
+    {
+      id: 'tech_visionary',
+      src: '/avatars/tech-visionary.jpg',
+      alt: 'Tech Visionary',
+      icon: Monitor,
+      color: 'from-purple-500 to-purple-600'
     }
   ];
 
