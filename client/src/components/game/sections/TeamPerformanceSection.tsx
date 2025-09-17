@@ -47,10 +47,25 @@ const TeamPerformanceSection: React.FC<TeamPerformanceSectionProps> = ({ onNavig
     const sectorBonus = sector ? sector.incomeBoost * 100 : 0;
     const totalPerformance = Math.min(100, basePerformance + sectorBonus * 0.3);
     
+    // Calculate monthly contribution as 1.1x to 5x of company's monthly business income
+    const companyMonthlyIncome = financialData.businessRevenue || 50000; // Default if no business revenue yet
+    const memberImpact = member.stats.impact || 70; // Member's impact score (0-100)
+    const sectorMultiplier = sector ? (1 + sector.incomeBoost) : 1; // Sector bonus multiplier
+    
+    // Calculate contribution multiplier based on member performance (1.1x to 5x range)
+    const baseMultiplier = 1.1; // Minimum multiplier
+    const maxMultiplier = 5.0;   // Maximum multiplier
+    
+    // Performance factor: higher impact = higher multiplier
+    const performanceFactor = (memberImpact / 100) * sectorMultiplier;
+    const contributionMultiplier = baseMultiplier + (performanceFactor * (maxMultiplier - baseMultiplier));
+    
+    const monthlyContribution = Math.round(companyMonthlyIncome * contributionMultiplier);
+    
     return {
       sector: sector,
       performance: Math.round(totalPerformance),
-      monthlyContribution: Math.round(member.salary * ((sector?.incomeBoost || 0) + ((member.stats.impact || 70) / 100) * 0.15) / 12),
+      monthlyContribution: monthlyContribution,
       growthContribution: Math.round((basePerformance / 100) * 2.5), // Percentage contribution to company growth
       role: getSectorRole(member.assignedSector, member.role)
     };
