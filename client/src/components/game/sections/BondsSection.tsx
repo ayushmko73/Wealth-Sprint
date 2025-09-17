@@ -35,39 +35,30 @@ const BondsSection: React.FC = () => {
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<number | null>(null);
   const [showTimePeriodMenu, setShowTimePeriodMenu] = useState(false);
 
-  // Dynamic bond calculator function
+  // Fixed bond calculator function with consistent ROI values
   const calculateBondReturns = (principalAmount: number, bondType: 'government' | 'corporate' | 'high_yield') => {
-    // Set interest rate and maturity ranges based on bond type
-    const bondRanges = {
+    // Fixed interest rates and maturity based on bond type (High yield > Corporate > Government)
+    const bondSettings = {
       government: { 
-        interestMin: 7, interestMax: 18, 
-        maturityMin: 12, maturityMax: 36 
+        interestRate: 12.3,  // Lowest ROI
+        maturityMonths: 24
       },
       corporate: { 
-        interestMin: 9, interestMax: 20, 
-        maturityMin: 12, maturityMax: 36 
+        interestRate: 15.0,  // Medium ROI
+        maturityMonths: 24
       },
       high_yield: { 
-        interestMin: 12, interestMax: 25, 
-        maturityMin: 12, maturityMax: 36 
+        interestRate: 20.7,  // Highest ROI
+        maturityMonths: 24
       }
     };
 
-    const range = bondRanges[bondType];
+    const settings = bondSettings[bondType];
+    const interestRate = settings.interestRate;
+    const maturityMonths = settings.maturityMonths;
     
-    // Randomly select interest rate and maturity within ranges
-    const interestRate = Math.random() * (range.interestMax - range.interestMin) + range.interestMin;
-    const maturityMonths = Math.floor(Math.random() * (range.maturityMax - range.maturityMin + 1)) + range.maturityMin;
-    
-    let totalReturn;
-    
-    if (bondType === 'high_yield') {
-      // Apply risk factor for high yield bonds
-      const riskFactor = Math.random() * 0.5 + 0.5; // Between 0.5 and 1.0
-      totalReturn = principalAmount * (1 + (interestRate * maturityMonths / 12) / 100) * riskFactor;
-    } else {
-      totalReturn = principalAmount * (1 + (interestRate * maturityMonths / 12) / 100);
-    }
+    // Calculate total return without random risk factors
+    const totalReturn = principalAmount * (1 + (interestRate * maturityMonths / 12) / 100);
 
     return {
       interestRate: parseFloat(interestRate.toFixed(1)),
