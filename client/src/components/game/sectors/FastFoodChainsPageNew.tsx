@@ -76,7 +76,7 @@ interface LogisticsModel {
 }
 
 const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) => {
-  const { financialData, updateFinancialData, fastFoodChains, setFastFoodState, investInBusinessSector } = useWealthSprintGame();
+  const { financialData, updateFinancialData, fastFoodChains, setFastFoodState, investInBusinessSector, updateBusinessSectorRevenue } = useWealthSprintGame();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [brandName, setBrandName] = useState('My Fast Food Chain');
@@ -304,6 +304,9 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
         cities: updatedCities
       });
       
+      // Update business revenue calculation
+      updateBusinessSectorRevenue();
+      
       toast.success(`🏪 Successfully expanded to ${city.name}!`);
     }
   };
@@ -326,6 +329,9 @@ const FastFoodChainsPageNew: React.FC<FastFoodChainsPageProps> = ({ onBack }) =>
         ...fastFoodChains,
         menuTypes: updatedMenuTypes
       });
+      
+      // Update business revenue calculation
+      updateBusinessSectorRevenue();
       
       toast.success(`🍽️ ${menu.name} activated!`);
     }
