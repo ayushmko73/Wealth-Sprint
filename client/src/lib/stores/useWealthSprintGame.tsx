@@ -312,11 +312,11 @@ const initialFinancialData: FinancialData = {
   bankBalance: 500000, // ₹5 lakhs starting cash
   netWorth: 500000,
   mainIncome: 75000, // ₹75k monthly salary
-  sideIncome: 15000, // ₹15k side income
+  sideIncome: 0, // Side income starts at 0, earned from assets
   monthlyExpenses: 45000, // ₹45k monthly expenses
   totalAssets: 500000,
   totalLiabilities: 0, // No default liabilities
-  cashflow: 45000, // 75k + 15k - 45k = 45k
+  cashflow: 30000, // 75k + 0k - 45k = 30k
   investments: {
     stocks: 0,
     bonds: 0,
@@ -429,8 +429,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         Object.entries(updates).forEach(([key, value]) => {
           if (typeof value === 'number') {
             if (key === 'bankBalance') {
-              // Add the value (could be positive or negative)
-              newFinancialData.bankBalance = Math.max(0, newFinancialData.bankBalance + value);
+              // Direct assignment (callers pass the new balance value)
+              newFinancialData.bankBalance = Math.max(0, value);
             } else {
               // Direct assignment for other numeric values
               (newFinancialData as any)[key] = value;
@@ -1385,7 +1385,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         financialData: {
           ...state.financialData,
           assets: [...state.financialData.assets, newAsset],
-          totalAssets: state.financialData.totalAssets + amount
+          totalAssets: state.financialData.totalAssets + amount,
+          sideIncome: state.financialData.sideIncome + (deal.cashflowMonthly || 0)
         }
       }));
       
@@ -1481,32 +1482,51 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
       const state = get();
       let totalMonthlyRevenue = 0;
       
-      state.financialData.businessSectors.forEach(sector => {
-        if (sector.sectorId === 'fast_food') {
-          // Calculate Fast Food Chain revenue based on active components
-          let baseRevenue = sector.activeCities.length * 15000; // ₹15k per city per month
+      // Calculate Fast Food Chain revenue from actual fastFoodChains data
+      if (state.fastFoodChains) {
+        const activeCities = state.fastFoodChains.cities?.filter(c => c.unlocked) || [];
+        const activeMenuTypes = state.fastFoodChains.menuTypes?.filter(m => m.active) || [];
+        const activePricingStrategies = state.fastFoodChains.pricingStrategies?.filter(s => s.active) || [];
+        const activeLogisticsModels = state.fastFoodChains.logisticsModels?.filter(l => l.active) || [];
+        
+        if (activeCities.length > 0) {
+          // Base revenue calculation: ₹15k per city per month
+          let baseRevenue = activeCities.length * 15000;
           
           // Apply menu type bonuses
           let menuBonus = 0;
-          if (sector.activeMenuTypes.includes('standard')) menuBonus += 0.2;
-          if (sector.activeMenuTypes.includes('premium')) menuBonus += 0.45;
-          if (sector.activeMenuTypes.includes('local')) menuBonus += 0.3;
+          activeMenuTypes.forEach(menu => {
+            if (menu.id === 'standard') menuBonus += 0.2;
+            if (menu.id === 'premium') menuBonus += 0.45;
+            if (menu.id === 'local') menuBonus += 0.3;
+            if (menu.id === 'healthy') menuBonus += 0.25;
+            // Add other menu types as needed
+          });
           
           // Apply pricing strategy bonuses
           let pricingBonus = 0;
-          if (sector.activePricingStrategies.includes('high_margin')) pricingBonus += 0.45;
-          if (sector.activePricingStrategies.includes('volume_based')) pricingBonus += 0.25;
+          activePricingStrategies.forEach(strategy => {
+            if (strategy.id === 'high_margin') pricingBonus += 0.45;
+            if (strategy.id === 'volume_based') pricingBonus += 0.25;
+            if (strategy.id === 'dynamic') pricingBonus += 0.35;
+            // Add other pricing strategies as needed
+          });
           
           // Apply logistics bonuses
           let logisticsBonus = 0;
-          if (sector.activeLogisticsModels.includes('quick_commerce')) logisticsBonus += 0.2;
-          if (sector.activeLogisticsModels.includes('franchise')) logisticsBonus += 0.4;
+          activeLogisticsModels.forEach(model => {
+            if (model.id === 'express') logisticsBonus += 0.2;
+            if (model.id === 'drone') logisticsBonus += 0.4;
+            if (model.id === 'subscription') logisticsBonus += 0.3;
+            // Add other logistics models as needed
+          });
           
           const totalBonus = 1 + menuBonus + pricingBonus + logisticsBonus;
           totalMonthlyRevenue += Math.floor(baseRevenue * totalBonus);
         }
-        // Add other sector types here in the future
-      });
+      }
+      
+      // Add other sector types here in the future (tech_startups, healthcare, etc.)
       
       return totalMonthlyRevenue;
     },

@@ -30,7 +30,10 @@ import {
   Eye,
   X,
   Briefcase,
-  ChevronDown
+  ChevronDown,
+  ShoppingBag,
+  Home,
+  Utensils
 } from 'lucide-react';
 
 interface Deal {
@@ -61,6 +64,26 @@ interface Deal {
 const DealsSection: React.FC = () => {
   const { playerStats, financialData, purchaseDeal } = useWealthSprintGame();
   const [selectedCategory, setSelectedCategory] = useState('Overview');
+
+  // Get asset icon for investment portfolio
+  const getAssetIcon = (asset: any) => {
+    const name = asset.name?.toLowerCase() || '';
+    
+    // Enhanced name-based matching for investment assets
+    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <Zap className="w-4 h-4 text-white" />;
+    if (name.includes('tech') || name.includes('software') || name.includes('app') || name.includes('digital')) return <Brain className="w-4 h-4 text-white" />;
+    if (name.includes('healthcare') || name.includes('medical') || name.includes('pharma')) return <Shield className="w-4 h-4 text-white" />;
+    if (name.includes('real estate') || name.includes('property') || name.includes('housing')) return <Home className="w-4 h-4 text-white" />;
+    if (name.includes('crypto') || name.includes('bitcoin') || name.includes('blockchain')) return <Coins className="w-4 h-4 text-white" />;
+    if (name.includes('stock') || name.includes('equity') || name.includes('share')) return <TrendingUp className="w-4 h-4 text-white" />;
+    if (name.includes('bond') || name.includes('government') || name.includes('municipal')) return <Building2 className="w-4 h-4 text-white" />;
+    
+    // Category-based fallback
+    if (asset.category === 'investment') return <Briefcase className="w-4 h-4 text-white" />;
+    
+    // Default fallback
+    return <Target className="w-4 h-4 text-white" />;
+  };
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [expandedDeal, setExpandedDeal] = useState<string | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState<Deal | null>(null);
@@ -71,11 +94,13 @@ const DealsSection: React.FC = () => {
 
   // Credit limit calculation helper
   const getCreditInfo = () => {
-    const totalLiabilities = financialData.liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const creditCardLiabilities = financialData.liabilities.filter(l => l.category === 'credit_card');
+    const totalCreditUsed = creditCardLiabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
+    const totalMonthlyEmi = creditCardLiabilities.reduce((sum, liability) => sum + liability.emi, 0);
     const creditLimit = 500000; // ₹5 lakh credit limit
-    const availableCredit = creditLimit - totalLiabilities;
-    const canPayFull = totalLiabilities < creditLimit && showPurchaseModal && showPurchaseModal.investmentRequired <= availableCredit;
-    return { totalLiabilities, creditLimit, availableCredit, canPayFull };
+    const availableCredit = creditLimit - totalCreditUsed;
+    const canPayFull = showPurchaseModal && showPurchaseModal.investmentRequired <= availableCredit;
+    return { totalCreditUsed, totalMonthlyEmi, creditLimit, availableCredit, canPayFull };
   };
 
   // Categories for navigation
@@ -489,7 +514,7 @@ const DealsSection: React.FC = () => {
               {investmentAssets.map((asset) => (
                 <div key={asset.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white text-sm">{asset.icon}</span>
+                    {getAssetIcon(asset)}
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-800">{asset.name}</div>
@@ -576,8 +601,21 @@ const DealsSection: React.FC = () => {
     );
   };
 
-  // Get deal type icon
+  // Get deal type icon with enhanced matching
   const getDealIcon = (deal: Deal) => {
+    const title = deal.title?.toLowerCase() || '';
+    const sector = deal.sector?.toLowerCase() || '';
+    
+    // Specific name/sector based matching first
+    if (title.includes('renewable') || title.includes('energy') || title.includes('solar') || title.includes('wind') || sector.includes('renewable')) return <Zap className="w-6 h-6" />;
+    if (title.includes('telecom') || title.includes('infrastructure') || title.includes('network')) return <Activity className="w-6 h-6" />;
+    if (title.includes('restaurant') || title.includes('food') || sector.includes('fast_food')) return <Utensils className="w-6 h-6" />;
+    if (title.includes('tech') || title.includes('software') || title.includes('app') || sector.includes('tech')) return <Brain className="w-6 h-6" />;
+    if (title.includes('healthcare') || title.includes('medical') || sector.includes('healthcare')) return <Shield className="w-6 h-6" />;
+    if (title.includes('ecommerce') || title.includes('retail') || sector.includes('ecommerce')) return <ShoppingBag className="w-6 h-6" />;
+    if (title.includes('real estate') || title.includes('property') || sector.includes('real_estate')) return <Home className="w-6 h-6" />;
+    
+    // Deal type fallback
     const iconMap: Record<string, JSX.Element> = {
       'sector': <Building2 className="w-6 h-6" />,
       'stock': <TrendingUp className="w-6 h-6" />,
@@ -1154,7 +1192,11 @@ const DealsSection: React.FC = () => {
                             onClick={() => setShowEmiDropdown(false)}
                           />
                           <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-gray-200 rounded shadow-lg z-20 overflow-hidden">
-                            {[3, 6, 12, 24, 60].map((months) => (
+                            {[3, 6, 12, 24, 60].filter(months => {
+                              // Only show EMI options that user can afford based on credit limit
+                              const { availableCredit } = getCreditInfo();
+                              return showPurchaseModal.investmentRequired <= availableCredit;
+                            }).map((months) => (
                               <button
                                 key={months}
                                 onClick={() => {

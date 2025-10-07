@@ -11,7 +11,6 @@ import {
   Briefcase,
   DollarSign,
   Star,
-  Lock,
   Unlock,
   CheckCircle,
   TrendingUp,
@@ -32,19 +31,14 @@ export default function IndustrySectorsSection() {
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  // Calculate unlocked sectors based on player progress
-  const unlockedSectors = getUnlockedSectors(
-    playerStats.clarityXP, 
-    purchasedSectors.length,
-    playerStats.loopScore
-  );
+  // All sectors are now unlocked - no restrictions
+  const unlockedSectors = industrySectors;
 
   const handleSectorPurchase = (sectorId: string) => {
     const sector = industrySectors.find(s => s.id === sectorId);
     if (!sector) return;
 
-    const isUnlocked = unlockedSectors.some(s => s.id === sectorId);
-    if (!isUnlocked) return;
+    // All sectors are now unlocked
 
     if (purchasedSectors.includes(sectorId)) return;
 
@@ -209,7 +203,7 @@ export default function IndustrySectorsSection() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSectors.map((sector, index) => {
-              const isUnlocked = unlockedSectors.some(s => s.id === sector.id);
+              const isUnlocked = true; // All sectors are now unlocked
               const isPurchased = purchasedSectors.includes(sector.id);
 
               // Skip purchased sectors in this section
@@ -224,19 +218,12 @@ export default function IndustrySectorsSection() {
                       : 'border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100'
                   }`}
                 >
-                  {/* Status Badge */}
+                  {/* Status Badge - All Available */}
                   <div className="absolute top-3 right-3">
-                    {isUnlocked ? (
-                      <Badge className="bg-blue-600 text-white">
-                        <Unlock className="h-3 w-3 mr-1" />
-                        Available
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-gray-300 text-gray-600">
-                        <Lock className="h-3 w-3 mr-1" />
-                        Locked
-                      </Badge>
-                    )}
+                    <Badge className="bg-blue-600 text-white">
+                      <Unlock className="h-3 w-3 mr-1" />
+                      Available
+                    </Badge>
                   </div>
 
                   <CardContent className="p-4 pt-12">
@@ -253,9 +240,7 @@ export default function IndustrySectorsSection() {
                     </p>
 
                     {/* Investment Details */}
-                    <div className={`rounded-lg p-3 mb-4 ${
-                      isUnlocked ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-gray-200'
-                    }`}>
+                    <div className="rounded-lg p-3 mb-4 bg-blue-50 border border-blue-200">
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-gray-600">Investment:</span>
@@ -268,28 +253,16 @@ export default function IndustrySectorsSection() {
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    {isUnlocked ? (
-                      <Button 
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
-                        size="sm"
-                        onClick={() => handleSectorPurchase(sector.id)}
-                        disabled={financialData.bankBalance < 200000}
-                      >
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        Invest ₹2 Lakh
-                      </Button>
-                    ) : (
-                      <div className="text-center">
-                        <p className="text-xs text-gray-500 mb-2">
-                          Requirements: {getUnlockRequirementsText(sector)}
-                        </p>
-                        <Button variant="outline" size="sm" disabled className="w-full">
-                          <Lock className="h-4 w-4 mr-2" />
-                          Locked
-                        </Button>
-                      </div>
-                    )}
+                    {/* Action Button - All sectors available */}
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
+                      size="sm"
+                      onClick={() => handleSectorPurchase(sector.id)}
+                      disabled={financialData.bankBalance < 200000}
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Invest ₹2 Lakh
+                    </Button>
                   </CardContent>
                 </Card>
               );

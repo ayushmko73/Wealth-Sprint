@@ -63,7 +63,7 @@ const NewSettingsSection: React.FC = () => {
   });
 
   const [playerProfile, setPlayerProfile] = useState({
-    avatar: 'entrepreneur', // Default to entrepreneur since businessman was removed
+    avatar: 'innovator', // Default to innovator
     roleTitle: 'Founder',
     tagline: 'Everything begins with one decision.',
     displayName: 'Player',
@@ -75,18 +75,18 @@ const NewSettingsSection: React.FC = () => {
   // Avatar options with icons
   const avatarOptions = [
     {
-      id: 'entrepreneur',
-      src: '/avatars/Entrepreneur_leader_avatar_a3992558.png',
+      id: 'innovator',
+      src: '/avatars/innovator.webp',
       alt: 'Innovator',
       icon: Lightbulb,
-      color: 'from-yellow-500 to-orange-500'
+      color: 'from-blue-500 to-blue-600'
     },
     {
-      id: 'tech_dev',
-      src: '/avatars/Tech_developer_avatar_4ce56c86.png', 
+      id: 'tech_visionary',
+      src: '/avatars/tech-visionary.jpg',
       alt: 'Tech Visionary',
       icon: Monitor,
-      color: 'from-green-500 to-green-600'
+      color: 'from-purple-500 to-purple-600'
     }
   ];
 

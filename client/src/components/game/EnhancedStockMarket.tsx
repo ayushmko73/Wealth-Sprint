@@ -311,7 +311,7 @@ const EnhancedStockMarket: React.FC = () => {
           bankBalance: financialData.bankBalance + totalCost,
           investments: {
             ...financialData.investments,
-            stocks: Math.max(0, financialData.investments.stocks - (holding.avgPrice * quantity))
+            stocks: Math.max(0, financialData.investments.stocks - tradeValue)
           }
         });
 

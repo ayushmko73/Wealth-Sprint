@@ -5,6 +5,7 @@ import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
 import { Progress } from '../../ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -23,7 +24,20 @@ import {
   Building2,
   CreditCard,
   PiggyBank,
-  Wallet
+  Wallet,
+  Laptop,
+  GamepadIcon,
+  Landmark,
+  Rocket,
+  GraduationCap,
+  Smartphone,
+  Package,
+  Shirt,
+  PawPrint,
+  Music,
+  Watch,
+  ShoppingBag,
+  Zap
 } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Sector } from 'recharts';
 
@@ -64,6 +78,7 @@ const FinancialManagementSection: React.FC = () => {
     getAssets,
     getLiabilities,
     removeAsset,
+    removeLiability,
     updateLiability,
     addTransaction
   } = useWealthSprintGame();
@@ -74,6 +89,8 @@ const FinancialManagementSection: React.FC = () => {
   const [activeCashflowIndex, setActiveCashflowIndex] = useState<number | null>(null);
   const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | null>(null);
   const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | null>(null);
+  const [sellConfirmationAsset, setSellConfirmationAsset] = useState<Asset | null>(null);
+  const [sellConfirmationLiability, setSellConfirmationLiability] = useState<Liability | null>(null);
   
   // Refs for pie chart containers
   const cashflowChartRef = useRef<HTMLDivElement>(null);
@@ -161,18 +178,20 @@ const FinancialManagementSection: React.FC = () => {
     'Liabilities': <CreditCard className="w-4 h-4" />
   };
 
-  // Calculate cashflow data
-  const totalIncome = financialData.mainIncome + financialData.sideIncome;
-  const netCashflow = totalIncome - financialData.monthlyExpenses;
-
   // Assets and liabilities data
   const assets = getAssets() || [];
-  const liabilities = getLiabilities() || [];
+  const liabilities = (getLiabilities() || []).filter(liability => liability.outstandingAmount > 0);
   const totalAssetValue = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalLiabilityValue = liabilities.reduce((sum, liability) => sum + liability.outstandingAmount, 0);
   const netWorth = totalAssetValue - totalLiabilityValue;
   const monthlyAssetIncome = assets.reduce((sum, asset) => sum + asset.monthlyIncome, 0);
+
+  // Calculate cashflow data using actual asset income
+  const actualSideIncome = monthlyAssetIncome;
+  const totalIncome = financialData.mainIncome + actualSideIncome;
+  const netCashflow = totalIncome - financialData.monthlyExpenses;
   const monthlyLiabilityPayment = liabilities.reduce((sum, liability) => sum + liability.emi, 0);
+  const monthlyLiabilityCashflow = -monthlyLiabilityPayment; // Negative cashflow impact
 
   // Prepare circular chart data for expense breakdown
   const expenseData = [
@@ -201,6 +220,29 @@ const FinancialManagementSection: React.FC = () => {
       
       removeAsset(assetId);
       setSelectedAsset(null);
+      setSellConfirmationAsset(null);
+    }
+  };
+
+  const handleSellLiability = (liabilityId: string) => {
+    const liability = liabilities.find(l => l.id === liabilityId);
+    if (liability) {
+      const saleValue = liability.originalAmount * 0.4; // 40% of original value
+      updateFinancialData({
+        bankBalance: financialData.bankBalance + saleValue,
+      });
+      
+      addTransaction({
+        type: 'investment',
+        amount: saleValue,
+        description: `Sold ${liability.name}`,
+        fromAccount: 'business',
+        toAccount: 'bank',
+      });
+      
+      removeLiability(liabilityId);
+      setSelectedLiability(null);
+      setSellConfirmationLiability(null);
     }
   };
 
@@ -208,51 +250,117 @@ const FinancialManagementSection: React.FC = () => {
     const liability = liabilities.find(l => l.id === liabilityId);
     if (liability && financialData.bankBalance >= amount) {
       const newOutstanding = Math.max(0, liability.outstandingAmount - amount);
-      const newEmi = newOutstanding > 0 ? liability.emi : 0;
       
-      updateLiability(liabilityId, {
-        outstandingAmount: newOutstanding,
-        emi: newEmi
-      });
+      if (newOutstanding === 0) {
+        // Liability is fully paid - remove it completely
+        removeLiability(liabilityId);
+        
+        // Add achievement notification for full payoff
+        addTransaction({
+          type: 'loan_deducted',
+          amount: -amount,
+          description: `Fully paid off ${liability.name} - Congratulations!`,
+          fromAccount: 'bank',
+          toAccount: 'business',
+        });
+        
+        // Bigger karma boost for full payoff
+        updatePlayerStats({
+          karma: Math.min(100, playerStats.karma + 10),
+          stress: Math.max(0, playerStats.stress - 15),
+          logic: playerStats.logic + 3,
+        });
+      } else {
+        // Partial payment - update the liability
+        const newEmi = Math.ceil((newOutstanding * (liability.interestRate / 100 / 12)) / (1 - Math.pow(1 + (liability.interestRate / 100 / 12), -Math.ceil(newOutstanding / (liability.emi || 1000)))));
+        
+        updateLiability(liabilityId, {
+          outstandingAmount: newOutstanding,
+          emi: newEmi
+        });
+        
+        addTransaction({
+          type: 'loan_deducted',
+          amount: -amount,
+          description: `Prepaid ${liability.name}`,
+          fromAccount: 'bank',
+          toAccount: 'business',
+        });
+        
+        updatePlayerStats({
+          karma: playerStats.karma + 5,
+          stress: Math.max(0, playerStats.stress - 10),
+          logic: playerStats.logic + 2,
+        });
+      }
       
       updateFinancialData({
         bankBalance: financialData.bankBalance - amount,
       });
-      
-      addTransaction({
-        type: 'loan_deducted',
-        amount: -amount,
-        description: `Prepaid ${liability.name}`,
-        fromAccount: 'bank',
-        toAccount: 'business',
-      });
-      
-      updatePlayerStats({
-        karma: playerStats.karma + 5,
-        stress: Math.max(0, playerStats.stress - 10),
-        logic: playerStats.logic + 2,
-      });
     }
   };
 
-  const getAssetCategoryIcon = (category: string) => {
+  // Enhanced function to get icon based on asset name and category
+  const getAssetCategoryIcon = (category: string, className: string = "w-6 h-6", assetName?: string) => {
+    const iconProps = { className };
+    const name = assetName?.toLowerCase() || '';
+    
+    // Name-based matching first for more specific icons
+    if (name.includes('renewable') || name.includes('solar') || name.includes('wind') || name.includes('energy')) return <Zap {...iconProps} />;
+    if (name.includes('jet') || name.includes('plane') || name.includes('aircraft')) return <Rocket {...iconProps} />;
+    if (name.includes('car') || name.includes('vehicle') || name.includes('auto')) return <Car {...iconProps} />;
+    if (name.includes('home') || name.includes('house') || name.includes('property') || name.includes('apartment') || name.includes('villa')) return <Home {...iconProps} />;
+    if (name.includes('coffee') || name.includes('restaurant') || name.includes('food')) return <Building2 {...iconProps} />;
+    if (name.includes('tech') || name.includes('software') || name.includes('app') || name.includes('digital')) return <Laptop {...iconProps} />;
+    
+    // Category-based fallback
     switch (category) {
-      case 'real_estate': return '🏠';
-      case 'stocks': return '📈';
-      case 'bonds': return '🏛️';
-      case 'business': return '🚀';
-      case 'gadget': return '💻';
-      case 'vehicles': return '🚗';
-      case 'investment': return '🪙';
-      case 'entertainment': return '🎮';
-      case 'home_loan': return '🏠';
-      case 'car_loan': return '🚗';
-      case 'education_loan': return '🎓';
-      case 'credit_card': return '💳';
-      case 'business_debt': return '🏢';
-      case 'personal_loan': return '💰';
-      default: return '📦';
+      case 'real_estate': return <Home {...iconProps} />;
+      case 'stocks': return <TrendingUp {...iconProps} />;
+      case 'bonds': return <Landmark {...iconProps} />;
+      case 'business': return <Rocket {...iconProps} />;
+      case 'gadget': return <Laptop {...iconProps} />;
+      case 'vehicles': return <Car {...iconProps} />;
+      case 'investment': return <PiggyBank {...iconProps} />;
+      case 'entertainment': return <GamepadIcon {...iconProps} />;
+      case 'home_loan': return <Home {...iconProps} />;
+      case 'car_loan': return <Car {...iconProps} />;
+      case 'education_loan': return <GraduationCap {...iconProps} />;
+      case 'credit_card': return <CreditCard {...iconProps} />;
+      case 'business_debt': return <Building2 {...iconProps} />;
+      case 'personal_loan': return <Wallet {...iconProps} />;
+      // Additional specific icons for better matching
+      case 'clothing': return <Shirt {...iconProps} />;
+      case 'designer_clothing': return <Shirt {...iconProps} />;
+      case 'pets': return <PawPrint {...iconProps} />;
+      case 'exotic_pets': return <PawPrint {...iconProps} />;
+      case 'luxury': return <Watch {...iconProps} />;
+      case 'shopping': return <ShoppingBag {...iconProps} />;
+      case 'lifestyle': return <Watch {...iconProps} />;
+      default: return <Package {...iconProps} />;
     }
+  };
+  
+  // Function to get icon based on liability name for better matching
+  const getLiabilityIcon = (liability: any, className: string = "w-6 h-6") => {
+    const iconProps = { className };
+    const name = liability.name?.toLowerCase() || '';
+    
+    // Match by name first for more accurate icons
+    if (name.includes('jet') || name.includes('plane') || name.includes('aircraft') || name.includes('aviation')) return <Rocket {...iconProps} />;
+    if (name.includes('car') || name.includes('vehicle') || name.includes('auto')) return <Car {...iconProps} />;
+    if (name.includes('home') || name.includes('house') || name.includes('property') || name.includes('theater') || name.includes('apartment')) return <Home {...iconProps} />;
+    if (name.includes('club') || name.includes('membership') || name.includes('exclusive')) return <Building2 {...iconProps} />;
+    if (name.includes('clothing') || name.includes('designer') || name.includes('fashion')) return <Shirt {...iconProps} />;
+    if (name.includes('pet') || name.includes('exotic') || name.includes('animal')) return <PawPrint {...iconProps} />;
+    if (name.includes('music') || name.includes('instrument') || name.includes('sound')) return <Music {...iconProps} />;
+    if (name.includes('watch') || name.includes('luxury') || name.includes('jewelry')) return <Watch {...iconProps} />;
+    if (name.includes('shopping') || name.includes('collection')) return <ShoppingBag {...iconProps} />;
+    if (name.includes('credit') || name.includes('card')) return <CreditCard {...iconProps} />;
+    if (name.includes('education') || name.includes('school') || name.includes('university')) return <GraduationCap {...iconProps} />;
+    
+    // Fallback to category-based icon
+    return getAssetCategoryIcon(liability.category, className);
   };
 
   const getAppreciationColor = (rate: number) => {
@@ -370,7 +478,7 @@ const FinancialManagementSection: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-green-800">Total Income</p>
                       <p className="text-2xl font-bold text-green-600">₹{totalIncome.toLocaleString()}</p>
-                      <p className="text-xs text-green-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-green-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{actualSideIncome.toLocaleString()}</p>
                     </div>
                     <ArrowUpCircle className="w-8 h-8 text-green-600" />
                   </div>
@@ -433,7 +541,9 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeCashflowIndex ?? undefined}
                         activeShape={renderActiveShape}
@@ -515,15 +625,15 @@ const FinancialManagementSection: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-orange-800">Side Income</p>
-                      <p className="text-2xl font-bold text-orange-600">₹{financialData.sideIncome.toLocaleString()}</p>
-                      <p className="text-xs text-orange-600">Investment returns</p>
+                      <p className="text-sm font-medium text-yellow-800">Side Income</p>
+                      <p className="text-2xl font-bold text-yellow-600">₹{actualSideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-yellow-600">Investment returns</p>
                     </div>
-                    <TrendingUp className="w-8 h-8 text-orange-600" />
+                    <TrendingUp className="w-8 h-8 text-yellow-600" />
                   </div>
                 </CardContent>
               </Card>
@@ -534,7 +644,7 @@ const FinancialManagementSection: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-blue-800">Total Income</p>
                       <p className="text-2xl font-bold text-blue-600">₹{totalIncome.toLocaleString()}</p>
-                      <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{financialData.sideIncome.toLocaleString()}</p>
+                      <p className="text-xs text-blue-600">Main: ₹{financialData.mainIncome.toLocaleString()} | Side: ₹{actualSideIncome.toLocaleString()}</p>
                     </div>
                     <DollarSign className="w-8 h-8 text-blue-600" />
                   </div>
@@ -561,15 +671,16 @@ const FinancialManagementSection: React.FC = () => {
                     <RechartsPieChart style={{ outline: 'none' }}>
                       <Pie
                         data={[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
-                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
+                          { name: 'Side Income', value: actualSideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0)}
                         cx="50%"
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeIncomeIndex ?? undefined}
                         activeShape={renderActiveShape}
@@ -595,9 +706,8 @@ const FinancialManagementSection: React.FC = () => {
                         }}
                       >
                         {[
-                          { name: 'Main Income', value: financialData.mainIncome, color: '#3b82f6' },
-                          { name: 'Side Income', value: financialData.sideIncome, color: '#10b981' },
-                          { name: 'Asset Income', value: monthlyAssetIncome, color: '#f59e0b' }
+                          { name: 'Main Income', value: financialData.mainIncome, color: '#10b981' },
+                          { name: 'Side Income', value: actualSideIncome, color: '#eab308' }
                         ].filter(item => item.value > 0).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
@@ -610,28 +720,19 @@ const FinancialManagementSection: React.FC = () => {
                   {financialData.mainIncome > 0 && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         <span className="text-sm">Main Income</span>
                       </div>
                       <span className="text-sm font-medium">₹{financialData.mainIncome.toLocaleString()}</span>
                     </div>
                   )}
-                  {financialData.sideIncome > 0 && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-sm">Side Income</span>
-                      </div>
-                      <span className="text-sm font-medium">₹{financialData.sideIncome.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {monthlyAssetIncome > 0 && (
+                  {actualSideIncome > 0 && (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-sm">Asset Income</span>
+                        <span className="text-sm">Side Income</span>
                       </div>
-                      <span className="text-sm font-medium">₹{monthlyAssetIncome.toLocaleString()}</span>
+                      <span className="text-sm font-medium">₹{actualSideIncome.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -704,7 +805,9 @@ const FinancialManagementSection: React.FC = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={100}
-                        paddingAngle={2}
+                        paddingAngle={0}
+                        stroke="none"
+                        strokeWidth={0}
                         dataKey="value"
                         activeIndex={activeExpenseIndex ?? undefined}
                         activeShape={renderActiveShape}
@@ -772,7 +875,7 @@ const FinancialManagementSection: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-800">Monthly Income</p>
+                      <p className="text-sm font-medium text-blue-800">Monthly Cashflow</p>
                       <p className="text-2xl font-bold text-blue-600">₹{monthlyAssetIncome.toLocaleString()}</p>
                       <p className="text-xs text-blue-600">From assets</p>
                     </div>
@@ -810,33 +913,45 @@ const FinancialManagementSection: React.FC = () => {
                     <p>No assets yet. Visit the Store to purchase your first asset!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {assets.map((asset) => (
-                      <div key={asset.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div key={asset.id} className="bg-gradient-to-r from-white to-green-50 border border-green-200 rounded-xl p-4 hover:shadow-lg hover:border-green-300 transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{getAssetCategoryIcon(asset.category)}</span>
-                            <div>
-                              <h3 className="font-semibold">{asset.name}</h3>
-                              <p className="text-sm text-gray-500">{asset.category.replace('_', ' ')}</p>
+                          <div className="flex items-center gap-4">
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-3 rounded-xl">
+                              {getAssetCategoryIcon(asset.category, "w-6 h-6 text-green-600", asset.name)}
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-bold text-gray-900 text-lg">{asset.name}</h3>
+                              <p className="text-sm text-gray-600 capitalize font-medium">{asset.category.replace('_', ' ')}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold">₹{asset.value.toLocaleString()}</p>
-                            <p className="text-sm text-green-600">+₹{asset.monthlyIncome.toLocaleString()}/mo</p>
+                            <p className="text-xl font-bold text-green-600">₹{asset.value.toLocaleString()}</p>
+                            <p className="text-sm font-semibold text-green-600 flex items-center gap-1 justify-end">
+                              <TrendingUp className="w-3 h-3" />
+                              +₹{asset.monthlyIncome.toLocaleString()}/mo
+                            </p>
                           </div>
                         </div>
-                        <div className="mt-3 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className={getAppreciationColor(asset.appreciationRate || 0)}>
-                              {(asset.appreciationRate || 0) > 0 ? '+' : ''}{asset.appreciationRate || 0}% growth
+                        <div className="mt-4 pt-3 border-t border-green-100 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Badge 
+                              variant="outline" 
+                              className={`${getAppreciationColor(asset.appreciationRate || 0)} border-current bg-white/70 font-semibold`}
+                            >
+                              {(asset.appreciationRate || 0) > 0 ? '+' : ''}{(asset.appreciationRate || 0).toFixed(2)}% growth
                             </Badge>
+                            <div className="text-xs text-gray-500 flex items-center gap-1">
+                              <BarChart3 className="w-3 h-3" />
+                              ROI: {asset.monthlyIncome > 0 ? ((asset.monthlyIncome / asset.value) * 100 * 12).toFixed(1) : '0.0'}%
+                            </div>
                           </div>
                           <Button 
-                            onClick={() => handleSellAsset(asset.id)}
+                            onClick={() => setSellConfirmationAsset(asset)}
                             variant="outline" 
                             size="sm"
-                            className="text-red-600 hover:text-red-700"
+                            className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
                           >
                             Sell Asset
                           </Button>
@@ -872,24 +987,31 @@ const FinancialManagementSection: React.FC = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-orange-800">Monthly EMI</p>
-                      <p className="text-2xl font-bold text-orange-600">₹{monthlyLiabilityPayment.toLocaleString()}</p>
-                      <p className="text-xs text-orange-600">Total payments</p>
+                      <p className="text-sm font-medium text-orange-800">Monthly Cashflow</p>
+                      <p className="text-2xl font-bold text-red-600">
+                        {monthlyLiabilityPayment === 0 ? '₹0' : `-₹${monthlyLiabilityPayment.toLocaleString()}`}
+                      </p>
+                      <p className="text-xs text-orange-600">Maintenance costs</p>
                     </div>
                     <Calculator className="w-8 h-8 text-orange-600" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-800">Net Worth</p>
-                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{netWorth.toLocaleString()}</p>
-                      <p className="text-xs text-green-600">Assets - Liabilities</p>
+                      <p className="text-sm font-medium text-purple-800">ROI potential</p>
+                      <p className={`text-2xl font-bold ${netWorth >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
+                        {totalLiabilityValue > 0 ? 
+                          `-${((monthlyLiabilityPayment / totalLiabilityValue) * 100 * 12).toFixed(1)}%` :
+                          '0.0%'
+                        }
+                      </p>
+                      <p className="text-xs text-purple-600">Avg ROI impact</p>
                     </div>
-                    <PiggyBank className="w-8 h-8 text-green-600" />
+                    <PiggyBank className="w-8 h-8 text-purple-600" />
                   </div>
                 </CardContent>
               </Card>
@@ -910,50 +1032,67 @@ const FinancialManagementSection: React.FC = () => {
                     <p>No active liabilities. Great financial health!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {liabilities.map((liability) => {
                       const risk = getDebtRisk(liability);
                       return (
-                        <div key={liability.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div key={liability.id} className="bg-gradient-to-r from-white to-red-50 border border-red-200 rounded-xl p-4 hover:shadow-lg hover:border-red-300 transition-all duration-300">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{getAssetCategoryIcon(liability.category)}</span>
-                              <div>
-                                <h3 className="font-semibold">{liability.name}</h3>
-                                <p className="text-sm text-gray-500">{liability.category.replace('_', ' ')}</p>
+                            <div className="flex items-center gap-4">
+                              <div className="bg-gradient-to-br from-red-50 to-orange-100 p-3 rounded-xl">
+                                {getLiabilityIcon(liability, "w-6 h-6 text-red-600")}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-bold text-gray-900 text-lg">{liability.name}</h3>
+                                {liability.description && !liability.description.toLowerCase().startsWith(liability.name.toLowerCase()) && (
+                                  <p className="text-sm text-gray-600 capitalize font-medium">{liability.description}</p>
+                                )}
+                                {liability.emi > 0 && liability.tenure > 0 && (
+                                  <p className="text-xs text-gray-500">
+                                    EMI: -₹{liability.emi.toLocaleString()}/mo • {Math.ceil(liability.outstandingAmount / liability.emi)} months left
+                                  </p>
+                                )}
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
-                              <p className="text-sm text-gray-600">₹{liability.emi.toLocaleString()}/mo EMI</p>
+                              <p className="text-xl font-bold text-red-600">₹{liability.outstandingAmount.toLocaleString()}</p>
+                              <p className="text-sm font-semibold text-red-600 flex items-center gap-1 justify-end">
+                                -₹{liability.emi.toLocaleString()}/mo
+                              </p>
                             </div>
                           </div>
-                          <div className="mt-3 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className={risk.color}>
-                                {liability.interestRate}% interest • {risk.level} risk
+                          <div className="mt-4 pt-3 border-t border-red-100 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Badge 
+                                variant="outline" 
+                                className={`${risk.color} border-current bg-white/70 font-semibold`}
+                              >
+                                -{liability.interestRate.toFixed(2)}% growth
                               </Badge>
+                              <div className="text-xs text-gray-500 flex items-center gap-1">
+                                <BarChart3 className="w-3 h-3" />
+                                ROI: -{((liability.emi * 12 / liability.originalAmount) * 100).toFixed(1)}%
+                              </div>
                             </div>
-                            <div className="flex gap-2">
+                            {/* Show sell button for physical goods/products, not for pure loans/credit */}
+                            {(liability.name.toLowerCase().includes('car') || 
+                              liability.name.toLowerCase().includes('villa') || 
+                              liability.name.toLowerCase().includes('house') ||
+                              liability.name.toLowerCase().includes('apartment') ||
+                              liability.name.toLowerCase().includes('vehicle') ||
+                              liability.category === 'real_estate' ||
+                              liability.category === 'vehicles' ||
+                              (!['personal_loan', 'education_loan', 'credit_card', 'business_debt'].includes(liability.category) && 
+                               !liability.name.toLowerCase().includes('loan'))) && (
                               <Button 
-                                onClick={() => handlePrepayLiability(liability.id, Math.min(liability.outstandingAmount, financialData.bankBalance))}
+                                onClick={() => setSellConfirmationLiability(liability)}
                                 variant="outline" 
                                 size="sm"
-                                disabled={financialData.bankBalance < 1000}
-                                className="text-blue-600 hover:text-blue-700"
+                                className="bg-red-500 text-white hover:bg-red-600 hover:text-white border-red-500 hover:border-red-600 font-medium"
                               >
-                                Prepay
+                                Sell Item
                               </Button>
-                            </div>
-                          </div>
-                          <div className="mt-2">
-                            <Progress 
-                              value={100 - ((liability.outstandingAmount / liability.originalAmount) * 100)} 
-                              className="h-2"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                              {(100 - ((liability.outstandingAmount / liability.originalAmount) * 100)).toFixed(1)}% paid off
-                            </p>
+                            )}
                           </div>
                         </div>
                       );
@@ -1015,6 +1154,128 @@ const FinancialManagementSection: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Sell Confirmation Dialog */}
+      <Dialog open={!!sellConfirmationAsset} onOpenChange={() => setSellConfirmationAsset(null)}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-red-600 text-base">
+              <AlertTriangle className="w-4 h-4" />
+              Confirm Asset Sale
+            </DialogTitle>
+          </DialogHeader>
+          
+          {sellConfirmationAsset && (
+            <div className="py-2">
+              <div className="bg-white rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-lg">
+                    {getAssetCategoryIcon(sellConfirmationAsset.category, "w-4 h-4 text-gray-600", sellConfirmationAsset.name)}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{sellConfirmationAsset.name}</h3>
+                    <p className="text-xs text-gray-600 capitalize">{sellConfirmationAsset.category.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-gray-500">Current Value</p>
+                    <p className="font-semibold text-gray-900">₹{sellConfirmationAsset.value.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Sale Amount</p>
+                    <p className="font-semibold text-green-600">₹{(sellConfirmationAsset.value * 0.95).toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> 5% transaction fee will be deducted.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setSellConfirmationAsset(null)}
+              className="flex-1 text-sm py-1.5"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => sellConfirmationAsset && handleSellAsset(sellConfirmationAsset.id)}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5"
+            >
+              Confirm Sale
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sell Liability Confirmation Dialog */}
+      <Dialog open={!!sellConfirmationLiability} onOpenChange={() => setSellConfirmationLiability(null)}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-red-600 text-base">
+              <AlertTriangle className="w-4 h-4" />
+              Confirm Item Sale
+            </DialogTitle>
+          </DialogHeader>
+          
+          {sellConfirmationLiability && (
+            <div className="py-2">
+              <div className="bg-white rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-lg">
+                    {getLiabilityIcon(sellConfirmationLiability, "w-4 h-4 text-gray-600")}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{sellConfirmationLiability.name}</h3>
+                    <p className="text-xs text-gray-600 capitalize">{sellConfirmationLiability.category.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-gray-500">Original Value</p>
+                    <p className="font-semibold text-gray-900">₹{sellConfirmationLiability.originalAmount.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Sale Amount</p>
+                    <p className="font-semibold text-green-600">₹{(sellConfirmationLiability.originalAmount * 0.4).toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> You'll receive 40% of original purchase value. Outstanding debt will be cleared.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setSellConfirmationLiability(null)}
+              className="flex-1 text-sm py-1.5"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => sellConfirmationLiability && handleSellLiability(sellConfirmationLiability.id)}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5"
+            >
+              Confirm Sale
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
