@@ -19,14 +19,8 @@ import {
   VolumeX,
   RotateCcw, 
   Trash2,
-  Github,
-  Download,
-  Briefcase,
-  Users,
   Lightbulb,
   Monitor,
-  TrendingUp,
-  Crown,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -70,7 +64,6 @@ const NewSettingsSection: React.FC = () => {
   });
 
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const [isGithubPushing, setIsGithubPushing] = useState(false);
 
   // Avatar options with icons
   const avatarOptions = [
@@ -176,39 +169,6 @@ const NewSettingsSection: React.FC = () => {
     } catch (error) {
       console.error('Error clearing cache:', error);
       toast.error('Failed to clear cache');
-    }
-  };
-
-  const handlePushToGithub = async () => {
-    setIsGithubPushing(true);
-    
-    try {
-      const response = await fetch('/api/github/push-batch', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repository: 'Wealth-Sprint',
-          username: 'ayushmko73',
-          branch: 'main',
-          commitMessage: '🚀 Complete Wealth Sprint project push from Replit'
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        const stats = result.stats;
-        toast.success(`✅ Successfully pushed ${stats.totalFiles} files to GitHub!`);
-      } else {
-        toast.error(`❌ GitHub push failed: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('GitHub push error:', error);
-      toast.error('❌ Failed to push to GitHub. Check your connection.');
-    } finally {
-      setIsGithubPushing(false);
     }
   };
 
@@ -443,16 +403,6 @@ const NewSettingsSection: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              <Button 
-                variant="outline"
-                className="w-full text-yellow-700 border-yellow-300 hover:bg-yellow-50"
-                onClick={handlePushToGithub}
-                disabled={isGithubPushing}
-              >
-                <Github size={16} className="mr-2" />
-                {isGithubPushing ? 'Pushing...' : 'Push Full Project to GitHub'}
-              </Button>
-
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <p className="text-sm text-gray-600 text-center">
                   Game progress is automatically saved in browser storage. Your progress persists between sessions.

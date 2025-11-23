@@ -12,6 +12,7 @@ interface GitHubTreeItem {
 interface GitHubFile {
   path: string;
   content: string;
+  encoding?: 'utf-8' | 'base64';
 }
 
 async function getProjectFiles(): Promise<GitHubFile[]> {
@@ -52,26 +53,44 @@ async function getProjectFiles(): Promise<GitHubFile[]> {
           }
           readDirectory(fullPath, relativePath);
         } else {
-          // Skip binary files and certain extensions
           const ext = path.extname(item).toLowerCase();
-          if (['.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.eot', '.zip', '.tar', '.gz'].includes(ext)) {
-            continue;
-          }
           
           // Skip log files but keep important lock files
           if (item.endsWith('.log') || item === 'yarn.lock') {
             continue;
           }
           
+          // Binary file extensions that should be base64 encoded
+          const binaryExtensions = [
+            '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp', '.svg',
+            '.woff', '.woff2', '.ttf', '.eot',
+            '.mp3', '.wav', '.ogg',
+            '.glb', '.gltf',
+            '.zip', '.tar', '.gz'
+          ];
+          
+          const isBinary = binaryExtensions.includes(ext);
+          
           try {
-            const content = fs.readFileSync(fullPath, 'utf8');
-            files.push({
-              path: relativePath,
-              content
-            });
+            if (isBinary) {
+              // Read binary files as base64
+              const content = fs.readFileSync(fullPath, 'base64');
+              files.push({
+                path: relativePath,
+                content,
+                encoding: 'base64'
+              });
+            } else {
+              // Read text files as UTF-8
+              const content = fs.readFileSync(fullPath, 'utf8');
+              files.push({
+                path: relativePath,
+                content,
+                encoding: 'utf-8'
+              });
+            }
           } catch (error) {
-            // Skip files that can't be read as text
-            console.log(`Skipped binary file: ${relativePath}`);
+            console.log(`Skipped file ${relativePath}: ${error.message}`);
           }
         }
       }
@@ -87,7 +106,8 @@ async function getProjectFiles(): Promise<GitHubFile[]> {
         const content = fs.readFileSync(file, 'utf8');
         files.push({
           path: file,
-          content
+          content,
+          encoding: 'utf-8'
         });
       } catch (error) {
         console.log(`Skipped ${file}:`, error.message);
@@ -112,12 +132,21 @@ async function createGitHubTree(
   githubToken: string,
   baseSha?: string
 ): Promise<string> {
-  const treeItems: GitHubTreeItem[] = files.map(file => ({
-    path: file.path,
-    mode: '100644',
-    type: 'blob',
-    content: file.content
-  }));
+  const treeItems: GitHubTreeItem[] = files.map(file => {
+    const item: any = {
+      path: file.path,
+      mode: '100644',
+      type: 'blob',
+      content: file.content
+    };
+    
+    // Add encoding for base64 files
+    if (file.encoding === 'base64') {
+      item.encoding = 'base64';
+    }
+    
+    return item;
+  });
 
   const treePayload: any = {
     tree: treeItems

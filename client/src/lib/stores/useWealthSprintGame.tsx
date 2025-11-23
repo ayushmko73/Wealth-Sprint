@@ -429,8 +429,8 @@ export const useWealthSprintGame = create<WealthSprintGameState>()(
         Object.entries(updates).forEach(([key, value]) => {
           if (typeof value === 'number') {
             if (key === 'bankBalance') {
-              // Add the value (could be positive or negative)
-              newFinancialData.bankBalance = Math.max(0, newFinancialData.bankBalance + value);
+              // Direct assignment (callers pass the new balance value)
+              newFinancialData.bankBalance = Math.max(0, value);
             } else {
               // Direct assignment for other numeric values
               (newFinancialData as any)[key] = value;
